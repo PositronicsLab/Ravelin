@@ -1,0 +1,402 @@
+/// Default constructor - constructs an empty matrix
+MATRIXN::MATRIXN()
+{
+  _rows = _columns = 0;
+  _capacity = 0;
+}
+
+/// Constructs a rows x columns dimensional (unitialized) matrix 
+MATRIXN::MATRIXN(unsigned rows, unsigned columns)
+{
+  _rows = rows;
+  _columns = columns;
+  _capacity = rows*columns;
+  if (rows > 0 && columns > 0)
+    _data = shared_array<REAL>(new REAL[rows*columns]);
+}
+
+/// Constructs a matrix from a vector
+/**
+ * \param v the vector
+ * \param determines whether the vector will be transposed
+ */
+MATRIXN::MATRIXN(const VECTORN& v, Transposition trans)
+{
+  _rows = _columns = _capacity = 0;
+  set(v, trans);
+}
+
+/// Constructs a matrix from an array
+/**
+ * \param rows the number of rows of the matrix
+ * \param columns the number of columns of the matrix
+ * \param array an array of rows*columns REAL values in column-major format
+ */
+MATRIXN::MATRIXN(unsigned rows, unsigned columns, const REAL* array)
+{
+  _rows = _columns = _capacity = 0;
+  resize(rows, columns, false);
+  CBLAS::copy(rows*columns, array, 1, data(), 1);
+}
+
+/// Constructs a matrix from a MATRIX3
+MATRIXN::MATRIXN(const MATRIX3& m)
+{
+  _rows = _columns = _capacity = 0;
+  operator=(m);
+}
+
+/// Constructs a matrix from a pose
+/* 
+MATRIXN::MATRIXN(const POSE& m)
+{
+  _rows = _columns = _capacity = 0;
+  set(m);
+}
+*/
+
+/// Copy constructor
+MATRIXN::MATRIXN(const MATRIXN& source)
+{
+  _rows = _columns = _capacity = 0;
+  MATRIXN::operator=(source);
+}
+
+/// Sets a matrix from a MATRIX3
+MATRIXN& MATRIXN::operator=(const MATRIX3& m)
+{
+  const unsigned SZ = 3;
+  resize(SZ,SZ);
+  CBLAS::copy(SZ*SZ, m.data(), 1, _data.get(), 1);
+  return *this;
+}
+
+/*
+/// Sets a matrix from a pose 
+MATRIXN& MATRIXN::set(const POSE& p)
+{
+  // resize the matrix
+  const unsigned SZ = 4;
+  resize(SZ,SZ);
+
+  // copy
+  const unsigned MCOL1 = 0, MCOL2 = 3, MCOL3 = 6, MCOL4 = 9;
+  const unsigned COL1 = 0, COL2 = 4, COL3 = 8, COL4 = 12;
+  const unsigned WX = 3, WY = 7, WZ = 11, WW = 15;
+  const REAL* mdata = m.begin();
+  for (unsigned i=0; i< 3; i++)
+  {
+    _data[COL1 + i] = mdata[MCOL1 + i];
+    _data[COL2 + i] = mdata[MCOL2 + i];
+    _data[COL3 + i] = mdata[MCOL3 + i];
+    _data[COL4 + i] = mdata[MCOL4 + i];
+  }
+
+  // set last row
+  _data[WX] = _data[WY] = _data[WZ] = (REAL) 0.0;
+  _data[WW] = (REAL) 1.0;
+  return *this;
+}
+*/
+
+/// Constructs a MATRIXN using a variable number of double values
+/**
+ * \note the values are given row by row
+ * \note There is no means in C++ to check the types of a list of variable
+ * arguments.  If the variable arguments are not of type double, then
+ * unexpected values will result. Constructing a matrix using the
+ * statement MATRIXN::construct_variable(2, 2, 1.0, 1.0, 1.0, 0) is incorrect 
+ * because the programmer has assumed that the integer 0 will be converted to 
+ * a double type; this is not the case.
+ */
+MATRIXN MATRIXN::construct_variable(unsigned rows, unsigned cols, ...)
+{
+  MATRIXN m(rows, cols);
+  std::va_list lst;
+  va_start(lst, cols);
+  for (unsigned i=0; i< rows; i++)
+    for (unsigned j=0; j< cols; j++)
+      m(i,j) = (REAL) va_arg(lst, double);
+  va_end(lst);
+  return m;
+}
+
+/// Removes a row from the matrix
+/**
+ * \note downsizes the matrix -- does not reallocate memory
+ */
+MATRIXN& MATRIXN::remove_row(unsigned i)
+{
+  _workv().resize(_columns);
+  for (unsigned j=i+1; j< _rows; j++)
+  {
+    get_row(j, _workv());
+    set_row(j-1, _workv());
+  }
+
+  // downsize the matrix
+  _rows--;
+  return *this;
+}
+
+/// Removes a column from the matrix
+/**
+ * \note downsizes the matrix -- does not reallocate memory
+ */
+MATRIXN& MATRIXN::remove_column(unsigned i)
+{
+  _workv().resize(_rows);
+  for (unsigned j=i+1; j< _columns; j++)
+  {
+    get_column(j, _workv());
+    set_column(j-1, _workv());
+  }
+
+  // downsize the matrix
+  _columns--;
+  return *this;
+}
+
+/// Returns the zero matrix
+/**
+ * \param rows the number of rows
+ * \param columns the number of columns of the matrix
+ * \return a rows x columns zero matrix
+ */
+MATRIXN MATRIXN::zero(unsigned int rows, unsigned int columns)
+{
+  // create the new matrix
+  MATRIXN m(rows, columns);
+
+  // get the array for the matrix, and set all values to zero
+  REAL* x = m.data();
+  for (unsigned i=0; i< rows*columns; i++)
+    x[i] = (REAL) 0.0;
+
+  return m; 
+}
+
+/// Compresses this matrix's storage to minimum necessary, preserving contents 
+void MATRIXN::compress()
+{
+  shared_array<REAL> newdata;
+
+  // if the matrix is already the proper size, exit
+  if (_capacity == _rows * _columns)
+    return;
+
+  // see whether the necessary capacity is zero
+  if (_rows == 0 || _columns == 0)
+  {
+    _data = shared_array<REAL>();
+    _capacity = 0;
+    return;
+  }
+
+  // create a new array
+  newdata = shared_array<REAL>(new REAL[_rows*_columns]);
+
+  // preserve existing elements
+  const unsigned n = _rows * _columns; 
+    CBLAS::copy(n, _data.get(),1,newdata.get(),1);
+
+  // set the new data
+  _data = newdata;
+  _capacity = n;
+}
+
+/// Resizes this matrix, optionally preserving its existing elements
+/**
+ * \note this method keeps from reallocating memory unless absolutely
+ *       necessary (i.e., if the matrix grows or preserve=true, then memory
+ *       will need to be reallocated.
+ */
+MATRIXN& MATRIXN::resize(unsigned rows, unsigned columns, bool preserve)
+{
+  shared_array<REAL> newdata;
+
+  // if the matrix is already the proper size, exit
+  if (_rows == rows && _columns == columns)
+    return *this;
+
+  // if we can downsize, do that..
+  if (rows*columns <= _capacity && (_rows == rows || !preserve))
+  {
+    _rows = rows;
+    _columns = columns;
+    return *this;
+  }
+
+  // create a new array
+  if (rows > 0 && columns > 0)
+    newdata = shared_array<REAL>(new REAL[rows*columns]);
+
+  // preserve existing elements, if desired
+  if (preserve && _rows > 0 && _columns > 0)
+  {
+    const unsigned n = std::min(_rows, rows);
+    for (unsigned i=0; i< _columns; i++)
+      CBLAS::copy(n, _data.get()+_rows*i,1,newdata.get()+rows*i,1);
+  }
+
+  // set the new data
+  _data = newdata;
+  _rows = rows;
+  _columns = columns;
+  _capacity = rows*columns;
+  return *this;
+}
+
+/// Sets the matrix to the zero matrix
+MATRIXN& MATRIXN::set_zero()
+{
+  std::fill(_data.get(), _data.get()+_rows*_columns, (REAL) 0.0);
+  return *this;
+}
+
+/// Sets this matrix to its transpose
+MATRIXN& MATRIXN::transpose()
+{
+  // do fastest transpose first (if possible)
+  if (_rows == 1 || _columns == 1)
+  {
+    std::swap(_rows, _columns);
+    return *this;
+  }  
+
+  // do second fastest transpose, if possible
+  if (_rows == _columns)
+  {
+    for (unsigned i=0; i< _rows; i++)
+      for (unsigned j=i+1; j< _rows; j++)
+        std::swap(_data[i*_columns+j], _data[j*_rows+i]);
+
+    return *this;
+  }
+
+  // do slowest transpose operation
+  _n().resize(_columns, _rows);
+  REAL* ndata = _n().data();
+  for (unsigned i=0; i< _rows; i++)
+    for (unsigned j=0; j< _columns; j++)
+      ndata[i*_columns + j] = _data[j*_rows + i];
+  operator=(_n());
+
+  return *this;
+}
+
+/// Multiplies this matrix by another in place
+MATRIXN& MATRIXN::operator*=(REAL scalar)
+{
+  // call BLAS scaling function
+  if (_rows > 0 && _columns > 0)
+    CBLAS::scal(_rows*_columns, scalar, _data.get(), 1);
+  return *this;
+}
+
+/// Divides this matrix by a scalar in place
+MATRIXN& MATRIXN::operator/=(REAL scalar)
+{
+  // call BLAS scaling function
+  if (_rows > 0 && _columns > 0)
+    CBLAS::scal(_rows*_columns, (REAL) 1.0/scalar, _data.get(), 1);
+  return *this;
+}
+
+/// Negates this matrix in place
+MATRIXN& MATRIXN::negate()
+{
+  unsigned n = _rows * _columns;
+  for (unsigned i=0; i< n; i++)
+    _data[i] = -_data[i];
+  return *this;
+}
+
+/// Checks whether the given matrix is symmetric to the specified tolerance
+bool MATRIXN::is_symmetric(REAL tolerance) const
+{
+  if (_rows != _columns)
+    return false;
+
+  // make sure that tolerance is positive 
+  if (tolerance <= (REAL) 0.0)
+    tolerance = std::numeric_limits<REAL>::epsilon() * norm_inf() * _rows;
+
+  // check symmetry
+  const unsigned LD = leading_dim();
+
+  // loop over columns
+  for (unsigned i=0, ii=0; i< _rows; i++, ii+= LD)
+    for (unsigned j=0, jj=0; j< i; j++, jj+= LD)
+      if (std::fabs(_data[jj+i] - _data[ii+j]) > tolerance)
+        return false;
+
+  return true;
+}
+
+/// Zeros the upper triangle of the matrix
+MATRIXN& MATRIXN::zero_upper_triangle()
+{
+  // check for easy exit
+  if (_rows == 0 || _columns == 0)
+    return *this;
+
+  // zero the upper triangle
+  for (unsigned i=0, s=leading_dim(); i< _rows; i++, s+= leading_dim()+1)
+    for (unsigned j=i+1, r=0; j< _columns; j++, r+= leading_dim())
+      _data[r+s] = (REAL) 0.0;
+
+  return *this;
+}
+
+/// Zeros the lower triangle of the matrix
+MATRIXN& MATRIXN::zero_lower_triangle()
+{
+  // check for easy exit
+  if (_rows == 0 || _columns == 0)
+    return *this;
+
+  // zero the lower triangle
+  for (unsigned i=1, s=1; i< _rows; i++, s++)
+    for (unsigned j=0, r=0; j< std::min(i, _columns); j++, r+= leading_dim())
+      _data[r+s] = (REAL) 0.0;
+
+  return *this;
+}
+
+/// Returns an identity matrix
+MATRIXN MATRIXN::identity(unsigned n)
+{
+  MATRIXN m;
+  m.set_identity(n);
+  return m;
+}
+
+/// Sets this matrix to the identity matrix
+MATRIXN& MATRIXN::set_identity(unsigned i)
+{
+  resize(i,i);
+  return set_identity();
+}
+
+/// Sets this matrix to the identity matrix
+MATRIXN& MATRIXN::set_identity()
+{
+  if (_rows != _columns)
+    throw MissizeException();
+
+  // set matrix to identity
+  set_zero();
+
+  // set diagonal entries
+  for (unsigned i=0, j=0; i< _rows; i++, j+= leading_dim()+1)
+    _data[j] = (REAL) 1.0;
+
+  return *this;
+}
+
+// use common routines
+#define XMATRIXN MATRIXN
+#include "XMatrixN.cpp"
+#undef XMATRIXN
+

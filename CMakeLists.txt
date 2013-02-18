@@ -1,0 +1,68 @@
+# setup some things initially
+cmake_minimum_required (VERSION 2.6)
+project (Ravelin)
+include (CheckIncludeFiles)
+include (CheckLibraryExists)
+set (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_SOURCE_DIR}/CMakeModules)
+
+# setup include directories
+include_directories ("include")
+
+# setup library sources
+set (SOURCES AAnglef.cpp AAngled.cpp cblas.cpp LinAlgf.cpp LinAlgd.cpp Matrix2f.cpp Matrix2d.cpp Matrix3f.cpp Matrix3d.cpp MatrixNf.cpp MatrixNd.cpp Quatf.cpp Quatd.cpp SharedMatrixNf.cpp SharedMatrixNd.cpp SharedVectorNf.cpp SharedVectorNd.cpp Vector2f.cpp Vector2d.cpp Vector3f.cpp Vector3d.cpp VectorNf.cpp VectorNd.cpp)
+
+# build options 
+option (BUILD_SHARED_LIBS "Build Ravelin as a shared library?" ON)
+option (PROFILE "Build for profiling?" OFF)
+option (REENTRANT "Build Ravelin to be reentrant ? (slower)" OFF)
+option (ATLAS_BUGFIX "Use bugfix for Debian/Ubuntu ATLAS packages?" OFF)
+
+# modify C++ flags
+if (REENTRANT)
+  add_definitions (-DSAFESTATIC=)
+  add_definitions (-DREENTRANT)
+else (REENTRANT)
+  add_definitions (-DSAFESTATIC=static)
+endif (REENTRANT)
+if (PROFILE)
+  set (CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} "-pg -g")
+  set (CMAKE_CXX_FLAGS_DEBUG ${CMAKE_C_FLAGS_DEBUG} "-pg -g")
+  set (CMAKE_CXX_FLAGS_RELEASE ${CMAKE_C_FLAGS_RELEASE} "-pg -g")
+  set (CMAKE_CXX_FLAGS_RELDEB ${CMAKE_C_FLAGS_RELDEB} "pg -g")
+  set (CMAKE_CXX_FLAGS_MINSIZEREL ${CMAKE_C_FLAGS_MINSIZEREL} "pg -g")
+endif (PROFILE)
+
+# find libraries
+find_package (Boost REQUIRED)
+get_property(_LANGUAGES_ GLOBAL PROPERTY ENABLED_LANGUAGES)
+if (APPLE)
+  find_package (BLAS REQUIRED)
+  find_package (LAPACK REQUIRED)
+else (APPLE)
+  find_package (CBLAS REQUIRED)
+  find_package (LAPACKLite REQUIRED)
+  set (BLAS_LIBRARIES ${CBLAS_LIBRARIES})
+  set (ATLAS_BUGFIX ON)
+endif (APPLE)
+
+# use ATLAS bugfix if necessary
+if (ATLAS_BUGFIX)
+  add_definitions (-DATLAS_BUGFIX)
+endif (ATLAS_BUGFIX)
+
+# setup include directories, compiler flags, and libraries for required pkgs
+include_directories (${Boost_INCLUDE_DIR})
+
+# prepend "src/" to each source file
+foreach (i ${SOURCES})
+  set (LIBSOURCES ${LIBSOURCES} "${CMAKE_SOURCE_DIR}/src/${i}")
+endforeach (i)
+
+# create the library
+add_library(Ravelin "" "" ${LIBSOURCES})
+target_link_libraries (Ravelin ${BLAS_LIBRARIES} ${LAPACK_LIBRARIES} ${QHULL_LIBRARIES} ${EXTRA_LIBS})
+
+# setup install locations
+install (TARGETS Ravelin DESTINATION lib)
+install (DIRECTORY ${CMAKE_SOURCE_DIR}/include/Ravelin DESTINATION include)
+

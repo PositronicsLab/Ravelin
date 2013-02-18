@@ -1,0 +1,80 @@
+/****************************************************************************
+ * Copyright 2013 Evan Drumwright
+ * This library is distributed under the terms of the GNU Lesser General Public 
+ * License (found in COPYING).
+ ****************************************************************************/
+
+#ifndef VECTORN
+#error This class is not to be included by the user directly. Use VectorNf.h or VectorNd.h instead. 
+#endif
+
+/// A generic N-dimensional floating point vector
+class VECTORN 
+{
+  public:
+    template <class ForwardIterator>
+    VECTORN(ForwardIterator begin, ForwardIterator end);
+
+    VECTORN();
+    VECTORN(unsigned N);
+    VECTORN(const VECTORN& source);
+    VECTORN(const SHAREDVECTORN& source);
+    VECTORN(const VECTOR2& v);
+    VECTORN(const VECTOR3& v);
+    VECTORN(unsigned N, const REAL* array);
+    static VECTORN construct_variable(unsigned N, ...);
+    virtual ~VECTORN() {}
+    VECTORN& normalize() { assert(norm() > EPS); operator*=((REAL) 1.0/norm()); return *this; }
+    unsigned size() const { return _len; }
+    static REAL norm_sq(const VECTORN& v) { return VECTORN::dot(v, v); }
+    static REAL norm(const VECTORN& v) { return std::sqrt(norm_sq(v)); } 
+    REAL norm_inf() const { return norm_inf(*this); }
+    REAL norm1() const { return norm1(*this); }
+    REAL norm() const { return norm(*this); }
+    REAL norm_sq() const { return norm_sq(*this); }
+    static VECTORN one(unsigned N);
+    static VECTORN& concat(const VECTORN& v1, const VECTORN& v2, VECTORN& result);
+    VECTORN& augment(const VECTORN& v);
+    VECTORN& resize(unsigned N, bool preserve = false);
+    SHAREDVECTORN get_sub_vec(unsigned start_idx, unsigned end_idx);
+    static VECTORN zero(unsigned n);
+    VECTORN& operator=(REAL r);
+    VECTORN& operator=(const VECTOR2& source);
+    VECTORN& operator=(const VECTOR3& source);
+    VECTORN& operator=(const VECTORN& source);
+    VECTORN& operator=(const SHAREDVECTORN& source);
+    VECTORN& operator/=(REAL scalar) { return operator*=((REAL) 1.0/scalar); }
+    REAL* data() { return _data.get(); }
+    const REAL* data() const { return _data.get(); }
+    static VECTORN& parse(const std::string& s, VECTORN& v);
+    VECTORN& resize(unsigned m, unsigned n, bool preserve = false) { assert(n == 1); resize(m, preserve); return *this; }
+
+    /// Sets this to a n-length zero vector
+    VECTORN& set_zero(unsigned n) { return resize(n).set_zero(); } 
+
+    /// Sets this to a n-length ones vector
+    VECTORN& set_one(unsigned n) { return resize(n).set_one(); }
+
+    void compress();
+    unsigned rows() const { return _len; }
+    unsigned columns() const { return 1; }
+    unsigned leading_dim() const { return _len; }
+    unsigned inc() const { return 1; }
+
+    // inline code specific to VectorN
+    #include "VectorN.inl"
+
+    // inline code for VectorN/SharedVectorN
+    #define XVECTORN VECTORN
+    #include "XVectorN.inl"
+    #undef XVECTORN
+
+  protected:
+    boost::shared_array<REAL> _data;
+    unsigned _len;
+    unsigned _capacity;
+}; // end class
+
+std::ostream& operator<<(std::ostream& out, const VECTORN& v);
+std::istream& operator>>(std::istream& in, VECTORN& v);
+
