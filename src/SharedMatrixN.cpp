@@ -80,7 +80,7 @@ SHAREDMATRIXN& SHAREDMATRIXN::operator*=(REAL scalar)
   // call BLAS scaling function
   if (_rows > 0)
   {
-    Real* colstart = _data.get()+start; 
+    REAL* colstart = _data.get()+_start; 
     for (unsigned i=0; i< _columns; i++)
     {
       CBLAS::scal(_rows, scalar, colstart, 1);
@@ -97,7 +97,7 @@ SHAREDMATRIXN& SHAREDMATRIXN::operator/=(REAL scalar)
   // call BLAS scaling function
   if (_rows > 0)
   {
-    Real* colstart = _data.get()+start; 
+    REAL* colstart = _data.get()+_start; 
     for (unsigned i=0; i< _columns; i++)
     {
       CBLAS::scal(_rows, (REAL) 1.0/scalar, colstart, 1);

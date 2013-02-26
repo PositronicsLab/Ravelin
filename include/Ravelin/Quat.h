@@ -30,12 +30,13 @@ class QUAT
     static QUAT zero();
     void conjugate();
     static QUAT conjugate(const QUAT& q);
+    static QUAT identity() { return QUAT((REAL) 0.0, (REAL) 0.0, (REAL) 0.0, (REAL) 1.0); }
     void slerp(const QUAT& q, REAL alpha);
     void lerp(const QUAT& q, REAL alpha);
     static QUAT slerp(const QUAT& q1, const QUAT& q2, REAL alpha);
     static QUAT lerp(const QUAT& q1, const QUAT& q2, REAL alpha);
-    void inverse();
-    static QUAT inverse(const QUAT& q);
+    QUAT& inverse();
+    static QUAT invert(const QUAT& q);
     REAL norm_sq() const;
     REAL norm() const { return magnitude(); }
     REAL norm_inf() const;

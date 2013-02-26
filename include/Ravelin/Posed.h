@@ -7,6 +7,7 @@
 #ifndef _POSED_H
 #define _POSED_H
 
+#include <boost/shared_ptr.hpp>
 #include <Ravelin/Vector3d.h>
 #include <Ravelin/Quatd.h>
 #include <Ravelin/AAngled.h>

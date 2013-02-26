@@ -7,6 +7,8 @@
 #ifndef _POSEF_H
 #define _POSEF_H
 
+#include <boost/shared_ptr.hpp>
+#include <iostream>
 #include <Ravelin/Vector3f.h>
 #include <Ravelin/Quatf.h>
 #include <Ravelin/AAnglef.h>

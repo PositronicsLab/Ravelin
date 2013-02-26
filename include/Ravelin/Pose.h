@@ -8,36 +8,35 @@
 #error This class is not to be included by the user directly. Use Posed.h or Posef.h instead. 
 #endif
 
-#include <boost/shared_ptr.hpp>
-
 /// A rigid body pose 
 class POSE
 {
   public:
     POSE();
     POSE(const POSE& source) { operator=(source); }
-    POSE(const REAL* array);
     POSE(const AANGLE& a);
     POSE(const MATRIX3& m);
     POSE(const QUAT& q);
-    POSE(const AANGLE& a, const VECTOR& v);
-    POSE(const MATRIX3& m, const VECTOR& v);
-    POSE(const QUAT& q, const VECTOR& v);
-    POSE(const VECTOR& v);
+    POSE(const AANGLE& a, const VECTOR3& v);
+    POSE(const MATRIX3& m, const VECTOR3& v);
+    POSE(const QUAT& q, const VECTOR3& v);
+    POSE(const VECTOR3& v);
     static POSE identity() { POSE T; T.set_identity(); return T; }
     static POSE interpolate(const POSE& m1, const POSE& m2, REAL t);
-    VECTOR mult_point(const VECTOR& v) const;
-    VECTOR mult_vector(const VECTOR& v) const;
-    VECTOR inverse_mult_point(const VECTOR& v) const;
-    VECTOR transpose_mult_vector(const VECTOR& v) const;
-    void set_identity();
-    void invert_transform();
-    POSE inverse_transform() const { return inverse_transform(*this); }
-    static POSE inverse_transform(const POSE& m);
-    void set(const REAL* array);
-    void set(const AANGLE& a, const VECTOR&  v);
-    void set(const MATRIX3& m, const VECTOR&  v);
-    void set(const QUAT& q, const VECTOR&  v);
+    VECTOR3 mult_point(const VECTOR3& v) const;
+    VECTOR3 mult_vector(const VECTOR3& v) const;
+    VECTOR3 inverse_mult_point(const VECTOR3& v) const;
+    VECTOR3 inverse_mult_vector(const VECTOR3& v) const;
+    POSE& set_identity();
+    POSE& invert();
+    POSE inverse() const { return inverse(*this); }
+    static POSE inverse(const POSE& m);
+    POSE& set(const AANGLE& a);
+    POSE& set(const MATRIX3& m);
+    POSE& set(const QUAT& q);
+    POSE& set(const AANGLE& a, const VECTOR3& v);
+    POSE& set(const MATRIX3& m, const VECTOR3& v);
+    POSE& set(const QUAT& q, const VECTOR3& v);
     POSE& operator=(const POSE& source);
     POSE operator*(const POSE& m) const;
 
@@ -45,9 +44,9 @@ class POSE
     QUAT q;
 
     /// the position of the pose frame
-    VECTOR x;
+    VECTOR3 x;
 
-    /// the pose that *this* pose is relative to
+    /// the pose that *this* pose is relative to (if any)
     boost::shared_ptr<POSE> rpose; 
 }; // end class
 
