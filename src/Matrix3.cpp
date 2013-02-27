@@ -100,6 +100,20 @@ MATRIX3::MATRIX3(const REAL* array)
     _data[i] = array[i];
 }
 
+/// Constructs a matrix from a set of values
+MATRIX3::MATRIX3(REAL m00, REAL m01, REAL m02, REAL m10, REAL m11, REAL m12, REAL m20, REAL m21, REAL m22)
+{
+  _data[0] = m00;
+  _data[1] = m10;
+  _data[2] = m20;
+  _data[3] = m01;
+  _data[4] = m11;
+  _data[5] = m12;
+  _data[6] = m20;
+  _data[7] = m21;
+  _data[8] = m22;
+}
+
 /// Multiplies the transpose of this matrix by a vector and returns the result in a new vector
 VECTOR3 MATRIX3::transpose_mult(const VECTOR3& v) const
 {

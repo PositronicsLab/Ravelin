@@ -1,3 +1,8 @@
+#ifndef THREADSAFE
+FastThreadable<MATRIXN> MATRIXN::_n;
+FastThreadable<VECTORN> MATRIXN::_workv;
+#endif
+
 /// Default constructor - constructs an empty matrix
 MATRIXN::MATRIXN()
 {
@@ -69,6 +74,16 @@ MATRIXN& MATRIXN::operator=(const MATRIX3& m)
   resize(SZ,SZ);
   CBLAS::copy(SZ*SZ, m.data(), 1, _data.get(), 1);
   return *this;
+}
+
+/// Sets this matrix from a vector
+MATRIXN& MATRIXN::set(const VECTORN& v, Transposition trans)
+{
+  if (trans == eNoTranspose)
+    resize(v.rows(), 1, false);
+  else
+    resize(1, v.columns(), false);
+  std::copy(v.data(), v.data()+v.size(), _data.get());
 }
 
 /*
@@ -379,6 +394,22 @@ MATRIXN& MATRIXN::set_identity(unsigned i)
   return set_identity();
 }
 
+/// Gets the desired entry
+REAL MATRIXN::operator()(unsigned i, unsigned j) const
+{
+  if (i >= _rows || j >= _columns)
+    throw InvalidIndexException();
+  return _data[j*_rows+i];
+}
+
+/// Gets the desired entry
+REAL& MATRIXN::operator()(unsigned i, unsigned j) 
+{
+  if (i >= _rows || j >= _columns)
+    throw InvalidIndexException();
+  return _data[j*_rows+i];
+}
+
 /// Sets this matrix to the identity matrix
 MATRIXN& MATRIXN::set_identity()
 {
@@ -392,6 +423,42 @@ MATRIXN& MATRIXN::set_identity()
   for (unsigned i=0, j=0; i< _rows; i++, j+= leading_dim()+1)
     _data[j] = (REAL) 1.0;
 
+  return *this;
+}
+
+/// Subtracts m from this 
+MATRIXN& MATRIXN::operator-=(const MATRIXN& m)
+{
+  if (_rows != m._rows || _columns != m._columns)
+    throw MissizeException(); 
+
+  const unsigned N = _rows*_columns;
+  if (N > 0)
+    std::transform(_data.get(), _data.get()+N, m._data.get(), _data.get(), std::minus<REAL>());
+  return *this;
+}
+
+/// Adds m to this 
+MATRIXN& MATRIXN::operator+=(const MATRIXN& m)
+{
+  if (_rows != m._rows || _columns != m._columns)
+    throw MissizeException(); 
+
+  const unsigned N = _rows*_columns;
+  if (N > 0)
+    std::transform(_data.get(), _data.get()+N, m._data.get(), _data.get(), std::plus<REAL>());
+  return *this;
+}
+
+/// Sets this to m 
+MATRIXN& MATRIXN::operator=(const MATRIXN& m)
+{
+  // resize this (don't preserve)
+  resize(m.rows(), m.columns(), false);
+
+  const unsigned N = _rows*_columns;
+  if (N > 0)
+    std::copy(m._data.get(), m._data.get()+N, _data.get());
   return *this;
 }
 

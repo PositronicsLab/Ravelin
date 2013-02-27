@@ -176,3 +176,8 @@ SHAREDMATRIXN& SHAREDMATRIXN::set_identity()
   return *this;
 }
 
+// use common routines
+#define XMATRIXN SHAREDMATRIXN
+#include "XMatrixN.cpp"
+#undef XMATRIXN
+

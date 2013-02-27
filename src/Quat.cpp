@@ -35,6 +35,12 @@ QUAT::QUAT(const QUAT& q)
   *this = q;
 }
 
+/// Sets the quaternion from a rotation matrix
+QUAT::QUAT(const AANGLE& a)
+{
+  *this = a;
+}
+
 /// Constructs a zero quaternion
 QUAT QUAT::zero()
 {

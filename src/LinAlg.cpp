@@ -272,10 +272,12 @@ void LINALG::householder(REAL alpha, const VECTORN& x, REAL& tau, VECTORN& v)
  * \param Q a m x min(m,n) matrix
  * \param R a min(m,n) x n matrix
  */
+/*
 void LINALG::update_QR_rank1(MATRIXN& Q, MATRIXN& R, const VECTORN& u, const VECTORN& v)
 {
   // apply Givens rotations
 }
+*/
 
 /// Updates a QR factorization by deleting p columns starting at column idx k
 /**
@@ -284,6 +286,7 @@ void LINALG::update_QR_rank1(MATRIXN& Q, MATRIXN& R, const VECTORN& u, const VEC
  * \param k the column index to start deleting at
  * \parma p the number of columns to delete 
  */
+/*
 void LINALG::update_QR_delete_cols(MATRIXN& Q, MATRIXN& R, unsigned k, unsigned p)
 {
   SAFESTATIC VECTORN workv, workv2;
@@ -418,6 +421,7 @@ void LINALG::update_QR_delete_cols(MATRIXN& Q, MATRIXN& R, unsigned k, unsigned 
   Q.get_sub_mat(0,m,0,m, workM);
   Q = workM;
 }
+*/
 
 /// Updates a QR factorization by inserting one or more columns at column idx k
 /**
@@ -425,6 +429,7 @@ void LINALG::update_QR_delete_cols(MATRIXN& Q, MATRIXN& R, unsigned k, unsigned 
  * \param R a min(m,n) x n matrix
  * \param U a m x p matrix, destroyed on return
  */
+/*
 void LINALG::update_QR_insert_cols(MATRIXN& Q, MATRIXN& R, MATRIXN& U, unsigned k)
 {
   SAFESTATIC VECTORN workv;
@@ -535,6 +540,7 @@ void LINALG::update_QR_insert_cols(MATRIXN& Q, MATRIXN& R, MATRIXN& U, unsigned 
     }
   }
 }
+*/
 
 /// Updates a QR factorization by inserting a block of rows, starting at index k
 /**
@@ -543,6 +549,7 @@ void LINALG::update_QR_insert_cols(MATRIXN& Q, MATRIXN& R, MATRIXN& U, unsigned 
  * \param U a p x n matrix (destroyed on return)
  * \param k the index to insert at
  */
+/*
 void LINALG::update_QR_insert_rows(MATRIXN& Q, MATRIXN& R, MATRIXN& U, unsigned k)
 {
   SAFESTATIC VECTORN workv, workv2, workv3, workv4;
@@ -745,6 +752,7 @@ void LINALG::update_QR_insert_rows(MATRIXN& Q, MATRIXN& R, MATRIXN& U, unsigned 
     }
   }
 }
+*/
 
 /// Updates a QR factorization by deleting a block of rows 
 /**
@@ -753,6 +761,7 @@ void LINALG::update_QR_insert_rows(MATRIXN& Q, MATRIXN& R, MATRIXN& U, unsigned 
  * \param k the index to start deleting at
  * \param p the number of rows to delete
  */
+/*
 void LINALG::update_QR_delete_rows(MATRIXN& Q, MATRIXN& R, unsigned k, unsigned p)
 {
   SAFESTATIC vector<REAL> c, s;
@@ -871,4 +880,5 @@ void LINALG::update_QR_delete_rows(MATRIXN& Q, MATRIXN& R, unsigned k, unsigned 
   Q.get_sub_mat(p,m,p,m,workM);
   Q = workM;
 }
+*/
 

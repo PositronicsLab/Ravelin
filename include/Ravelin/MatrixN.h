@@ -66,7 +66,7 @@ class MATRIXN
     /// Sets this to a m x n sized zero matrix
     MATRIXN& set_zero(unsigned m, unsigned n) { return resize(m,n).set_zero(); }
 
-    const REAL& operator()(unsigned i, unsigned j) const;
+    REAL operator()(unsigned i, unsigned j) const;
     REAL& operator()(const unsigned i, const unsigned j);
 
     #define MATRIXX MATRIXN
