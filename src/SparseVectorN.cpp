@@ -1,19 +1,11 @@
 /****************************************************************************
- * Copyright 2010 Evan Drumwright
+ * Copyright 2013 Evan Drumwright
  * This library is distributed under the terms of the GNU  General Public 
  * License (found in COPYING).
  ****************************************************************************/
 
-#include <Ravelin/MissizeException.h>
-#include <Ravelin/Constants.h>
-#include <Ravelin/SparseVectorN.h>
-
-using std::map;
-using boost::shared_array;
-using namespace Ravelin;
-
 /// Creates a sparse vector from a dense vector
-SparseVectorN::SparseVectorN(const VectorN& x)
+SPARSEVECTORN::SPARSEVECTORN(const VECTORN& x)
 {
   // setup the vector size
   _size = x.size();
@@ -22,7 +14,7 @@ SparseVectorN::SparseVectorN(const VectorN& x)
   _nelm = 0;
   shared_array<bool> nz_elms(new bool[x.size()]);
   for (unsigned i=0; i< x.size(); i++)
-    if (std::fabs(x[i]) < NEAR_ZERO)
+    if (std::fabs(x[i]) < EPS)
     {
       _nelm++;
       nz_elms[i] = true;
@@ -32,7 +24,7 @@ SparseVectorN::SparseVectorN(const VectorN& x)
 
   // declare memory
   _indices = shared_array<unsigned>(new unsigned[_nelm]);
-  _data = shared_array<Real>(new Real[_nelm]);
+  _data = shared_array<REAL>(new REAL[_nelm]);
 
   // setup data
   for (unsigned i=0, j=0; i< x.size(); i++)
@@ -44,16 +36,16 @@ SparseVectorN::SparseVectorN(const VectorN& x)
     }
 }
 
-SparseVectorN::SparseVectorN(unsigned n, const map<unsigned, Real>& values)
+SPARSEVECTORN::SPARSEVECTORN(unsigned n, const map<unsigned, REAL>& values)
 {
   // declare memory
   _nelm = values.size();
   _size = n;
   _indices = shared_array<unsigned>(new unsigned[_nelm]);
-  _data = shared_array<Real>(new Real[_nelm]);
+  _data = shared_array<REAL>(new REAL[_nelm]);
   
   unsigned j=0;
-  for (map<unsigned, Real>::const_iterator i = values.begin(); i != values.end(); i++)
+  for (map<unsigned, REAL>::const_iterator i = values.begin(); i != values.end(); i++)
   {
     _indices[j] = i->first;
     _data[j] = i->second;
@@ -61,7 +53,7 @@ SparseVectorN::SparseVectorN(unsigned n, const map<unsigned, Real>& values)
   }
 }
 
-SparseVectorN::SparseVectorN(unsigned n, unsigned nelms, shared_array<unsigned> indices, shared_array<Real> data)
+SPARSEVECTORN::SPARSEVECTORN(unsigned n, unsigned nelms, shared_array<unsigned> indices, shared_array<REAL> data)
 {
   _size = n;
   _nelm = nelms;
@@ -70,9 +62,9 @@ SparseVectorN::SparseVectorN(unsigned n, unsigned nelms, shared_array<unsigned> 
 }
 
 /// Computes the dot product between a sparse vector and itself
-Real SparseVectorN::square() const
+REAL SPARSEVECTORN::square() const
 {
-  Real result = 0;
+  REAL result = 0;
 
   for (unsigned i=0; i< _nelm; i++)
     result += _data[i] * _data[i];
@@ -81,9 +73,9 @@ Real SparseVectorN::square() const
 }
 
 /// Computes the dot product between a sparse vector and a dense vector
-Real SparseVectorN::dot(const VectorN& x) const
+REAL SPARSEVECTORN::dot(const VECTORN& x) const
 {
-  Real result = 0;
+  REAL result = 0;
 
   if (x.size() != _size)
     throw MissizeException();
@@ -95,7 +87,7 @@ Real SparseVectorN::dot(const VectorN& x) const
 }
 
 /// Gets the dense version of the vector 
-VectorN& SparseVectorN::to_dense(VectorN& result) const
+VECTORN& SPARSEVECTORN::to_dense(VECTORN& result) const
 {
   result.set_zero(_size);
   for (unsigned i=0; i< _nelm; i++)
@@ -105,7 +97,7 @@ VectorN& SparseVectorN::to_dense(VectorN& result) const
 }
 
 /// Multiplies this sparse vector by a scalar (in place)
-SparseVectorN& SparseVectorN::operator*=(Real scalar)
+SPARSEVECTORN& SPARSEVECTORN::operator*=(REAL scalar)
 {
   for (unsigned i=0; i< _nelm; i++)
     _data[i] *= scalar;
@@ -113,12 +105,12 @@ SparseVectorN& SparseVectorN::operator*=(Real scalar)
 }
 
 /// Multiplies this sparse vector by a scalar and returns the result in a new vector
-SparseVectorN& SparseVectorN::mult(Real scalar, SparseVectorN& result) const
+SPARSEVECTORN& SPARSEVECTORN::mult(REAL scalar, SPARSEVECTORN& result) const
 {
   result._size = this->_size;
   result._nelm = this->_nelm;
   result._indices = shared_array<unsigned>(new unsigned[this->_nelm]);
-  result._data = shared_array<Real>(new Real[this->_nelm]);
+  result._data = shared_array<REAL>(new REAL[this->_nelm]);
   for (unsigned i=0; i< this->_nelm; i++)
   {
     result._indices[i] = this->_indices[i];
@@ -128,19 +120,10 @@ SparseVectorN& SparseVectorN::mult(Real scalar, SparseVectorN& result) const
   return result;
 }
 
-/// Negates this sparse vector and returns the result in a new vector
-SparseVectorN SparseVectorN::operator-() const
+/// Negates this sparse vector in place 
+SPARSEVECTORN& SPARSEVECTORN::negate()
 {
-  SparseVectorN s;
-  s._size = this->_size;
-  s._nelm = this->_nelm;
-  s._indices = shared_array<unsigned>(new unsigned[this->_nelm]);
-  s._data = shared_array<Real>(new Real[this->_nelm]);
-  for (unsigned i=0; i< this->_nelm; i++)
-  {
-    s._indices[i] = this->_indices[i];
-    s._data[i] = -this->_data[i];
-  }
-  return s;
+  std::transform(_data.get(), _data.get()+_nelm, _data.get(), std::negate<REAL>());
+  return *this;
 }
 
