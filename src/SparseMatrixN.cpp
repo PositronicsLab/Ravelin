@@ -1,35 +1,20 @@
 /****************************************************************************
- * Copyright 2010 Evan Drumwright
+ * Copyright 2013 Evan Drumwright
  * This library is distributed under the terms of the GNU  General Public 
  * License (found in COPYING).
  ****************************************************************************/
 
-#include <Ravelin/FastThreadable.h>
-#include <Ravelin/Constants.h>
-#include <Ravelin/MissizeException.h>
-#include <Ravelin/InvalidIndexException.h>
-#include <Ravelin/SparseMatrixN.h>
-#include <Ravelin/MatrixN.h>
-
-using std::pair;
-using boost::shared_array;
-using std::map;
-using std::make_pair;
-using std::vector;
-
-using namespace Ravelin;
-
-SparseMatrixN::SparseMatrixN()
+SPARSEMATRIXN::SPARSEMATRIXN()
 {
   _rows = _columns = 0;
 }
 
-SparseMatrixN::SparseMatrixN(unsigned m, unsigned n, const map<pair<unsigned, unsigned>, Real>& values)
+SPARSEMATRIXN::SPARSEMATRIXN(unsigned m, unsigned n, const map<pair<unsigned, unsigned>, REAL>& values)
 {
   set(m, n, values);
 }
 
-SparseMatrixN::SparseMatrixN(unsigned m, unsigned n, shared_array<unsigned> ptr, shared_array<unsigned> indices, shared_array<Real> data) 
+SPARSEMATRIXN::SPARSEMATRIXN(unsigned m, unsigned n, shared_array<unsigned> ptr, shared_array<unsigned> indices, shared_array<REAL> data) 
 {
   _rows = m;
   _columns = n;
@@ -39,12 +24,12 @@ SparseMatrixN::SparseMatrixN(unsigned m, unsigned n, shared_array<unsigned> ptr,
 }
 
 /// Creates a sparse matrix from a dense matrix
-SparseMatrixN::SparseMatrixN(const MatrixN& m)
+SPARSEMATRIXN::SPARSEMATRIXN(const MATRIXN& m)
 {
-  map<pair<unsigned, unsigned>, Real> values;
+  map<pair<unsigned, unsigned>, REAL> values;
   for (unsigned i=0; i< m.rows(); i++)
     for (unsigned j=0; j< m.columns(); j++)
-      if (std::fabs(m(i,j)) > NEAR_ZERO)
+      if (std::fabs(m(i,j)) > EPS)
         values[make_pair(i,j)] = m(i,j);
 
   // setup the matrix
@@ -52,22 +37,22 @@ SparseMatrixN::SparseMatrixN(const MatrixN& m)
 }
 
 /// Sets up an identity matrix from a sparse matrix
-SparseMatrixN SparseMatrixN::identity(unsigned n)
+SPARSEMATRIXN SPARSEMATRIXN::identity(unsigned n)
 {
-  SparseMatrixN m;
+  SPARSEMATRIXN m;
 
   // init matrix dimensions
   m._rows = m._columns = n;
 
   // initialize arrays
-  m._data = shared_array<Real>(new Real[n]);
+  m._data = shared_array<REAL>(new REAL[n]);
   m._ptr = shared_array<unsigned>(new unsigned[n+1]);
   m._indices = shared_array<unsigned>(new unsigned[n]);
 
   // populate the matrix data, indices, and row pointers
   for (unsigned i=0; i< n; i++)
   {
-    m._data[i] = (Real) 1.0;
+    m._data[i] = (REAL) 1.0;
     m._indices[i] = i;
     m._ptr[i] = i;
   }
@@ -77,17 +62,17 @@ SparseMatrixN SparseMatrixN::identity(unsigned n)
 }
 
 /// Sets up a sparse matrix from a map 
-void SparseMatrixN::set(unsigned m, unsigned n, const map<pair<unsigned, unsigned>, Real>& values)
+void SPARSEMATRIXN::set(unsigned m, unsigned n, const map<pair<unsigned, unsigned>, REAL>& values)
 {
   const unsigned nv = values.size();
   _rows = m;
   _columns = n;
-  _data = shared_array<Real>(new Real[nv]);
+  _data = shared_array<REAL>(new REAL[nv]);
   _ptr = shared_array<unsigned>(new unsigned[m+1]);
   _indices = shared_array<unsigned>(new unsigned[nv]);
 
   // populate the matrix data
-  map<pair<unsigned, unsigned>, Real>::const_iterator i = values.begin();
+  map<pair<unsigned, unsigned>, REAL>::const_iterator i = values.begin();
   unsigned j;
   for (j=0; j< nv; j++, i++)
     _data[j] = i->second;
@@ -109,14 +94,7 @@ void SparseMatrixN::set(unsigned m, unsigned n, const map<pair<unsigned, unsigne
 }
 
 /// Gets a column of the sparse matrix as a sparse vector
-SparseVectorN SparseMatrixN::get_column(unsigned i) const
-{
-  SparseVectorN column;
-  return get_column(i, column);
-}
-
-/// Gets a column of the sparse matrix as a sparse vector
-SparseVectorN& SparseMatrixN::get_column(unsigned i, SparseVectorN& column) const
+SPARSEVECTORN& SPARSEMATRIXN::get_column(unsigned i, SPARSEVECTORN& column) const
 {
   if (i >= _columns)
     throw InvalidIndexException();
@@ -129,7 +107,7 @@ SparseVectorN& SparseMatrixN::get_column(unsigned i, SparseVectorN& column) cons
 
   // create new arrays
   shared_array<unsigned> indices(new unsigned[nelm]);
-  shared_array<Real> data(new Real[nelm]);
+  shared_array<REAL> data(new REAL[nelm]);
   unsigned elm = 0;
   for (unsigned row=0; row< _rows; row++)
     for (unsigned k=_ptr[row]; k< _ptr[row+1]; k++)
@@ -150,19 +128,12 @@ SparseVectorN& SparseMatrixN::get_column(unsigned i, SparseVectorN& column) cons
     }
 
   // create the sparse vector
-  column = SparseVectorN(_rows, nelm, indices, data);
+  column = SPARSEVECTORN(_rows, nelm, indices, data);
   return column;
 }
 
 /// Gets a row of the sparse matrix as a sparse vector
-SparseVectorN SparseMatrixN::get_row(unsigned i) const
-{
-  SparseVectorN row;
-  return get_row(i, row);
-}
-
-/// Gets a row of the sparse matrix as a sparse vector
-SparseVectorN& SparseMatrixN::get_row(unsigned i, SparseVectorN& row) const
+SPARSEVECTORN& SPARSEMATRIXN::get_row(unsigned i, SPARSEVECTORN& row) const
 {
   if (i >= _rows)
     throw InvalidIndexException();
@@ -172,21 +143,21 @@ SparseVectorN& SparseMatrixN::get_row(unsigned i, SparseVectorN& row) const
   
   // create new arrays
   shared_array<unsigned> indices(new unsigned[nelm]);
-  shared_array<Real> data(new Real[nelm]);
+  shared_array<REAL> data(new REAL[nelm]);
   for (unsigned j=_ptr[i], k=0; j< _ptr[i+1]; j++, k++)
   {
     indices[k] = _indices[j];
     data[k] = _data[j];
   }
 
-  row = SparseVectorN(_columns, nelm, indices, data);
+  row = SPARSEVECTORN(_columns, nelm, indices, data);
   return row;
 }
 
 /// Gets a submatrix of the sparse matrix
-SparseMatrixN SparseMatrixN::get_sub_mat(unsigned rstart, unsigned rend, unsigned cstart, unsigned cend) const
+SPARSEMATRIXN SPARSEMATRIXN::get_sub_mat(unsigned rstart, unsigned rend, unsigned cstart, unsigned cend) const
 {
-  SparseMatrixN sub(rend - rstart, cend - cstart);
+  SPARSEMATRIXN sub(rend - rstart, cend - cstart);
 
   if (rend < rstart || cend < cstart)
     throw InvalidIndexException();
@@ -201,7 +172,7 @@ SparseMatrixN SparseMatrixN::get_sub_mat(unsigned rstart, unsigned rend, unsigne
         nv++;
 
   // setup arrays
-  shared_array<Real> data(new Real[nv]);
+  shared_array<REAL> data(new REAL[nv]);
   shared_array<unsigned> ptr(new unsigned[rend - rstart + 1]);
   shared_array<unsigned> indices(new unsigned[nv]);
 
@@ -234,15 +205,7 @@ SparseMatrixN SparseMatrixN::get_sub_mat(unsigned rstart, unsigned rend, unsigne
 }
 
 /// Multiplies this sparse matrix by a dense matrix
-MatrixN SparseMatrixN::mult(const MatrixN& m) const
-{
-  MatrixN result;
-  mult(m, result);
-  return result;
-}
-
-/// Multiplies this sparse matrix by a dense matrix
-MatrixN& SparseMatrixN::mult(const MatrixN& m, MatrixN& result) const
+MATRIXN& SPARSEMATRIXN::mult(const MATRIXN& m, MATRIXN& result) const
 {
   if (_columns != m.rows())
     throw MissizeException();
@@ -254,7 +217,7 @@ MatrixN& SparseMatrixN::mult(const MatrixN& m, MatrixN& result) const
   for (unsigned col=0; col < m.columns(); col++)
     for (unsigned row=0; row < _rows; row++)
     {
-      Real dot = (Real) 0.0;
+      REAL dot = (REAL) 0.0;
       unsigned row_start = _ptr[row];
       unsigned row_end = _ptr[row+1];
       for (unsigned jj= row_start; jj< row_end; jj++)
@@ -266,7 +229,7 @@ MatrixN& SparseMatrixN::mult(const MatrixN& m, MatrixN& result) const
 }
 
 /// Multiplies this sparse matrix by a dense vector
-VectorN& SparseMatrixN::mult(const VectorN& x, VectorN& result) const
+VECTORN& SPARSEMATRIXN::mult(const VECTORN& x, VECTORN& result) const
 {
   if (_columns != x.size())
     throw MissizeException();
@@ -276,7 +239,7 @@ VectorN& SparseMatrixN::mult(const VectorN& x, VectorN& result) const
 
   for (unsigned row=0; row < _rows; row++)
   {
-    Real dot = (Real) 0.0;
+    REAL dot = (REAL) 0.0;
     unsigned row_start = _ptr[row];
     unsigned row_end = _ptr[row+1];
     for (unsigned jj= row_start; jj< row_end; jj++)
@@ -289,7 +252,7 @@ VectorN& SparseMatrixN::mult(const VectorN& x, VectorN& result) const
 }
 
 /// Multiplies the transpose of this sparse matrix by a dense vector
-VectorN& SparseMatrixN::transpose_mult(const VectorN& x, VectorN& result) const
+VECTORN& SPARSEMATRIXN::transpose_mult(const VECTORN& x, VECTORN& result) const
 {
   if (_rows != x.size())
     throw MissizeException();
@@ -305,7 +268,7 @@ VectorN& SparseMatrixN::transpose_mult(const VectorN& x, VectorN& result) const
 }
 
 /// Multiplies the transpose of this sparse matrix by a dense matrix
-MatrixN& SparseMatrixN::transpose_mult(const MatrixN& m, MatrixN& result) const
+MATRIXN& SPARSEMATRIXN::transpose_mult(const MATRIXN& m, MATRIXN& result) const
 {
   if (_rows != m.rows())
     throw MissizeException();
@@ -320,24 +283,8 @@ MatrixN& SparseMatrixN::transpose_mult(const MatrixN& m, MatrixN& result) const
   return result;
 }
 
-/// Multiplies the transpose of this sparse matrix by a dense matrix
-MatrixN SparseMatrixN::transpose_mult(const MatrixN& m) const
-{
-  MatrixN result;
-  transpose_mult(m, result);
-  return result;
-}
-
 /// Multiplies this matrix by the transpose of a dense matrix
-MatrixN SparseMatrixN::mult_transpose(const MatrixN& m) const
-{
-  MatrixN result;
-  mult_transpose(m, result);
-  return result;
-}
-
-/// Multiplies this matrix by the transpose of a dense matrix
-MatrixN& SparseMatrixN::mult_transpose(const MatrixN& m, MatrixN& result) const
+MATRIXN& SPARSEMATRIXN::mult_transpose(const MATRIXN& m, MATRIXN& result) const
 {
   if (_columns != m.columns())
     throw MissizeException();
@@ -348,7 +295,7 @@ MatrixN& SparseMatrixN::mult_transpose(const MatrixN& m, MatrixN& result) const
   for (unsigned col=0; col < m.rows(); col++)
     for (unsigned row=0; row < _rows; row++)
     {
-      Real dot = (Real) 0.0;
+      REAL dot = (REAL) 0.0;
       unsigned row_start = _ptr[row];
       unsigned row_end = _ptr[row+1];
       for (unsigned jj= row_start; jj< row_end; jj++)
@@ -360,7 +307,7 @@ MatrixN& SparseMatrixN::mult_transpose(const MatrixN& m, MatrixN& result) const
 }
 
 /// Multiplies the transpose of this sparse matrix by the transpose of a dense matrix
-MatrixN& SparseMatrixN::transpose_mult_transpose(const MatrixN& m, MatrixN& result) const
+MATRIXN& SPARSEMATRIXN::transpose_mult_transpose(const MATRIXN& m, MATRIXN& result) const
 {
   if (_rows != m.columns())
     throw MissizeException();
@@ -377,15 +324,7 @@ MatrixN& SparseMatrixN::transpose_mult_transpose(const MatrixN& m, MatrixN& resu
 }
 
 /// Gets a dense matrix from this sparse matrix
-MatrixN SparseMatrixN::to_dense() const
-{
-  MatrixN result;
-  to_dense(result);
-  return result;
-}
-
-/// Gets a dense matrix from this sparse matrix
-MatrixN& SparseMatrixN::to_dense(MatrixN& m) const
+MATRIXN& SPARSEMATRIXN::to_dense(MATRIXN& m) const
 {
   // resize m and make it zero
   m.set_zero(_rows, _columns);
@@ -398,7 +337,7 @@ MatrixN& SparseMatrixN::to_dense(MatrixN& m) const
 }
 
 /// Subtracts a sparse matrix from this one -- attempts to do it in place
-SparseMatrixN& SparseMatrixN::operator-=(const SparseMatrixN& m)
+SPARSEMATRIXN& SPARSEMATRIXN::operator-=(const SPARSEMATRIXN& m)
 {
   // check rows/columns match up
   if (_rows != m._rows || _columns != m._columns)
@@ -465,7 +404,7 @@ SparseMatrixN& SparseMatrixN::operator-=(const SparseMatrixN& m)
   // matrices do not match up..  need to create a new matrix
   shared_array<unsigned> nptr(new unsigned[_rows+1]);
   shared_array<unsigned> nindices(new unsigned[nz]);
-  shared_array<Real> ndata(new Real[nz]);
+  shared_array<REAL> ndata(new REAL[nz]);
   
   // setup ptr
   nptr[0] = 0;
@@ -540,7 +479,7 @@ SparseMatrixN& SparseMatrixN::operator-=(const SparseMatrixN& m)
 }
 
 /// Adds a sparse matrix to this one -- attempts to do it in place
-SparseMatrixN& SparseMatrixN::operator+=(const SparseMatrixN& m)
+SPARSEMATRIXN& SPARSEMATRIXN::operator+=(const SPARSEMATRIXN& m)
 {
   // check rows/columns match up
   if (_rows != m._rows || _columns != m._columns)
@@ -606,7 +545,7 @@ SparseMatrixN& SparseMatrixN::operator+=(const SparseMatrixN& m)
   // matrices do not match up..  need to create a new matrix
   shared_array<unsigned> nptr(new unsigned[_rows+1]);
   shared_array<unsigned> nindices(new unsigned[nz]);
-  shared_array<Real> ndata(new Real[nz]);
+  shared_array<REAL> ndata(new REAL[nz]);
   
   // setup ptr
   nptr[0] = 0;
@@ -681,7 +620,7 @@ SparseMatrixN& SparseMatrixN::operator+=(const SparseMatrixN& m)
 }
 
 /// Multiplies a sparse matrix by a scalar
-SparseMatrixN& SparseMatrixN::operator*=(Real scalar)
+SPARSEMATRIXN& SPARSEMATRIXN::operator*=(REAL scalar)
 {
   for (unsigned i=0; i< _ptr[_rows]; i++)
     _data[i] *= scalar;
@@ -689,7 +628,7 @@ SparseMatrixN& SparseMatrixN::operator*=(Real scalar)
 }
 
 /// Negates this sparse matrix
-SparseMatrixN& SparseMatrixN::negate()
+SPARSEMATRIXN& SPARSEMATRIXN::negate()
 {
   for (unsigned i=0; i< _ptr[_rows]; i++)
     _data[i] = -_data[i];
@@ -697,9 +636,9 @@ SparseMatrixN& SparseMatrixN::negate()
 }
 
 /// Calculates the outer product of a vector with itself and stores the result in a sparse matrix
-SparseMatrixN& SparseMatrixN::outer_square(const SparseVectorN& v, SparseMatrixN& result)
+SPARSEMATRIXN& SPARSEMATRIXN::outer_square(const SPARSEVECTORN& v, SPARSEMATRIXN& result)
 {
-  SAFESTATIC FastThreadable<VectorN> tmp;
+  SAFESTATIC FastThreadable<VECTORN> tmp;
 
   // determine the size of the matrix
   unsigned n = v.size();
@@ -708,8 +647,8 @@ SparseMatrixN& SparseMatrixN::outer_square(const SparseVectorN& v, SparseMatrixN
   unsigned nz = v.num_elements();
 
   // get the indices of non-zero elements of v
-  shared_array<unsigned> nz_indices = v.get_indices();
-  shared_array<Real> v_data = v.get_data();
+  const unsigned* nz_indices = v.get_indices();
+  const REAL* v_data = v.get_data();
   shared_array<bool> nz_elements(shared_array<bool>(new bool[n]));
   for (unsigned i=0; i< n; i++) nz_elements[i] = false;
   for (unsigned i=0; i< nz; i++) nz_elements[nz_indices[i]] = true;
@@ -717,7 +656,7 @@ SparseMatrixN& SparseMatrixN::outer_square(const SparseVectorN& v, SparseMatrixN
   // setup ptr, indices, data
   shared_array<unsigned> ptr(new unsigned[n+1]);
   shared_array<unsigned> indices(new unsigned[nz*nz]);
-  shared_array<Real> data(new Real[nz*nz]);
+  shared_array<REAL> data(new REAL[nz*nz]);
 
   // setup ptr
   ptr[0] = 0;
@@ -761,7 +700,7 @@ SparseMatrixN& SparseMatrixN::outer_square(const SparseVectorN& v, SparseMatrixN
 }
 
 /// Calculates the outer product of a vector with itself and stores the result in a sparse matrix
-SparseMatrixN& SparseMatrixN::outer_square(const VectorN& x, SparseMatrixN& result)
+SPARSEMATRIXN& SPARSEMATRIXN::outer_square(const VECTORN& x, SPARSEMATRIXN& result)
 {
   // determine the size of the matrix
   unsigned n = x.size();
@@ -771,7 +710,7 @@ SparseMatrixN& SparseMatrixN::outer_square(const VectorN& x, SparseMatrixN& resu
   for (unsigned i=0; i< n; i++) nz_elements[i] = false;
   unsigned nz = 0;
   for (unsigned i=0; i< n; i++)
-    if (std::fabs(x[i]) > NEAR_ZERO)
+    if (std::fabs(x[i]) > EPS)
     {
       nz_elements[i] = true;
       nz++;
@@ -780,7 +719,7 @@ SparseMatrixN& SparseMatrixN::outer_square(const VectorN& x, SparseMatrixN& resu
   // setup ptr, indices, data
   shared_array<unsigned> ptr(new unsigned[n+1]);
   shared_array<unsigned> indices(new unsigned[nz*nz]);
-  shared_array<Real> data(new Real[nz*nz]);
+  shared_array<REAL> data(new REAL[nz*nz]);
 
   // setup ptr
   ptr[0] = 0;
@@ -822,12 +761,12 @@ SparseMatrixN& SparseMatrixN::outer_square(const VectorN& x, SparseMatrixN& resu
   return result;
 }
 
-std::ostream& Ravelin::operator<<(std::ostream& out, const SparseMatrixN& s)
+std::ostream& Ravelin::operator<<(std::ostream& out, const SPARSEMATRIXN& s)
 {
-  shared_array<unsigned> indices = s.get_indices();
-  shared_array<unsigned> ptr = s.get_ptr();
-  shared_array<Real> data = s.get_data();
-  vector<Real> present(s.columns());
+  const unsigned* indices = s.get_indices();
+  const unsigned* ptr = s.get_ptr();
+  const REAL* data = s.get_data();
+  vector<REAL> present(s.columns());
 
   out << "ptr:";
   for (unsigned i=0; i<= s.rows(); i++)
@@ -847,7 +786,7 @@ std::ostream& Ravelin::operator<<(std::ostream& out, const SparseMatrixN& s)
   for (unsigned i=0; i< s.rows(); i++)
   {
     // mark all as not present
-    for (unsigned j=0; j< present.size(); j++) present[j] = (Real) 0.0;
+    for (unsigned j=0; j< present.size(); j++) present[j] = (REAL) 0.0;
 
     // mark ones that are present
     for (unsigned j=ptr[i]; j< ptr[i+1]; j++)

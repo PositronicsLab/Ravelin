@@ -10,6 +10,7 @@
 #include <map>
 #include <boost/shared_ptr.hpp>
 #include <Ravelin/SparseVectorNf.h>
+#include <Ravelin/MatrixNf.h>
 #include <Ravelin/VectorNf.h>
 
 namespace Ravelin {

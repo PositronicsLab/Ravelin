@@ -14,8 +14,10 @@ class SPARSEVECTORN
     REAL square() const;
     unsigned size() const { return _size; }
     unsigned num_elements() const { return _nelm; }
-    unsigned* get_indices() const { return _indices.get(); }
-    REAL* get_data() const { return _data.get(); }
+    unsigned* get_indices() { return _indices.get(); }
+    REAL* get_data() { return _data.get(); }
+    const unsigned* get_indices() const { return _indices.get(); }
+    const REAL* get_data() const { return _data.get(); }
     VECTORN& to_dense(VECTORN& result) const;
     SPARSEVECTORN& negate();
     SPARSEVECTORN& operator*=(REAL scalar);

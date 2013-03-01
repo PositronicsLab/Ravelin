@@ -18,9 +18,12 @@ class SPARSEMATRIXN
     SPARSEMATRIXN get_sub_mat(unsigned rstart, unsigned rend, unsigned cstart, unsigned cend) const;
     SPARSEVECTORN& get_row(unsigned i, SPARSEVECTORN& row) const;
     SPARSEVECTORN& get_column(unsigned i, SPARSEVECTORN& column) const;
-    unsigned* get_indices() const { return _indices.get(); }
-    unsigned* get_ptr() const { return _ptr.get(); }
-    REAL* get_data() const { return _data.get(); }
+    unsigned* get_indices() { return _indices.get(); }
+    unsigned* get_ptr() { return _ptr.get(); }
+    REAL* get_data() { return _data.get(); }
+    const unsigned* get_indices() const { return _indices.get(); }
+    const unsigned* get_ptr() const { return _ptr.get(); }
+    const REAL* get_data() const { return _data.get(); }
     SPARSEMATRIXN& operator-=(const SPARSEMATRIXN& m);
     SPARSEMATRIXN& operator+=(const SPARSEMATRIXN& m);
     SPARSEMATRIXN& operator*=(REAL scalar);
