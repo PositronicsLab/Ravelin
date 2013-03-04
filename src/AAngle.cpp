@@ -167,6 +167,7 @@ AANGLE& AANGLE::operator*=(const AANGLE& a)
   QUAT q2 = a;
   q1 *= q2;
   *this = q1;
+  return *this;
 }
 
 /// Sends the representation to the specified stream

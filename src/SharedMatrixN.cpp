@@ -13,6 +13,22 @@ SHAREDMATRIXN::SHAREDMATRIXN(const SHAREDMATRIXN& source)
   _data = source._data;
 }
 
+/// Accesses the given element
+REAL& SHAREDMATRIXN::operator()(unsigned i, unsigned j)
+{
+  if (i >= _rows || j >= _columns)
+    throw InvalidIndexException();
+  return _data[_start + j*_ld + i];
+}
+
+/// Accesses the given element
+REAL SHAREDMATRIXN::operator()(unsigned i, unsigned j) const
+{
+  if (i >= _rows || j >= _columns)
+    throw InvalidIndexException();
+  return _data[_start + j*_ld + i];
+}
+
 /// Sets a matrix from a MATRIX3
 SHAREDMATRIXN& SHAREDMATRIXN::operator=(const MATRIX3& m)
 {

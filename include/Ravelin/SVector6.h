@@ -1,12 +1,14 @@
 /****************************************************************************
- * Copyright 2005 Evan Drumwright
+ * Copyright 2013 Evan Drumwright
  * This library is distributed under the terms of the GNU Lesser General Public 
  * License (found in COPYING).
  ****************************************************************************/
 
-#ifndef VECTOR6
+#ifndef SVECTOR6
 #error This class is not to be included by the user directly. Use Wrenchd.h, Wrenchf.h, Twistd.h, or Twistf.h instead.
 #endif
+
+class POSE;
 
 /// A 6-dimensional floating-point vector for use with spatial algebra
 /**
@@ -30,8 +32,6 @@ class SVECTOR6
     VECTOR3 get_lower() const;
     VECTOR3 get_upper() const;
     SVECTOR6& operator=(const SVECTOR6& source);
-    void transpose();
-    static SVECTOR6 transpose(const SVECTOR6& v);
     REAL& operator[](const unsigned i) { assert(i < 6); return _data[i]; }
     REAL operator[](const unsigned i) const { assert(i < 6); return _data[i]; }
     REAL* data() { return _data; }
@@ -49,24 +49,28 @@ class SVECTOR6
     unsigned columns() const { return 1; }
     SVECTOR6& resize(unsigned rows, unsigned columns) { assert (rows == 6 && columns == 1); return *this; } 
     SVECTOR6& resize(unsigned rows) { assert (rows == 6); return *this; } 
-
-    /// Get iterator to the start of the data
-    REAL* begin() { return _data; }
-
-    /// Get iterator to the start of the data
-    const REAL* begin() const { return _data; }
-
-    /// Get iterator to the end of the data
-    REAL* end() { return _data + 6; }
-
-    /// Get iterator to the end of the data
-    const REAL* end() const { return _data + 6; }
+    ITERATOR begin();
+    CONST_ITERATOR begin() const;
+    ITERATOR end();
+    CONST_ITERATOR end() const;
 
     /// The frame that this vector is defined in
     boost::shared_ptr<POSE> pose;
 
   private:
     REAL _data[6];
+
+  public:
+
+    template <class V>
+    SVECTOR6(const V& v)
+    {
+      const unsigned SPATIAL_DIM = 6;
+      if (v.rows()*v.columns() != SPATIAL_DIM)
+        throw MissizeException();
+
+      std::copy(v.begin(), v.end(), begin());
+    }
 }; // end class
 
 

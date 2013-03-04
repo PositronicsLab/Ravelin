@@ -1,20 +1,11 @@
 /****************************************************************************
- * Copyright 2005 Evan Drumwright
+ * Copyright 2013 Evan Drumwright
  * This library is distributed under the terms of the GNU Lesser General Public 
  * License (found in COPYING).
  ****************************************************************************/
 
-#include <Moby/cblas.h>
-#include <cstring>
-#include <functional>
-#include <algorithm>
-#include <Moby/Matrix3.h>
-#include <Moby/SVector6.h>
-
-using namespace Moby;
-
 /// Constructs this vector with the given values
-SVector6::SVector6(Real x, Real y, Real z, Real a, Real b, Real c)
+SVECTOR6::SVECTOR6(REAL x, REAL y, REAL z, REAL a, REAL b, REAL c)
 {
   _data[0] = x;
   _data[1] = y;
@@ -28,57 +19,97 @@ SVector6::SVector6(Real x, Real y, Real z, Real a, Real b, Real c)
 /**
  * \param array a 6-dimensional (or larger) array
  */
-SVector6::SVector6(const Real* array)
+SVECTOR6::SVECTOR6(const REAL* array)
 {
   for (unsigned i=0; i< 6; i++)
     _data[i] = array[i];
 }
 
 /// Constructs the given spatial vector with given upper and lower components
-SVector6::SVector6(const Vector3& upper, const Vector3& lower)
+SVECTOR6::SVECTOR6(const VECTOR3& upper, const VECTOR3& lower)
 {
   set_upper(upper);
   set_lower(lower);
 }
 
-/// Constructs the given spatial vector using a VectorN
-SVector6::SVector6(const VectorN& v)
+/// Gets an iterator to the beginning of the data
+CONST_ITERATOR SVECTOR6::begin() const
 {
-  if (v.size() != 6)
-    throw MissizeException();
-  for (unsigned i=0; i< 6; i++)
-    _data[i] = v.data()[i];
+  CONST_ITERATOR i;
+  i._sz = 6;
+  i._ld = 6;
+  i._rows = i._sz;
+  i._columns = 1;
+  i._data_start = i._current_data  = _data;
+  return i;
+}
+
+/// Gets an iterator to the end of the data
+CONST_ITERATOR SVECTOR6::end() const
+{
+  CONST_ITERATOR i;
+  i._sz = 6;
+  i._ld = 6;
+  i._rows = i._sz;
+  i._columns = 1;
+  i._data_start = _data;
+  i._current_data  = data() + i._sz;
+  return i;
+}
+
+/// Gets an iterator to the beginning of the data
+ITERATOR SVECTOR6::begin()
+{
+  ITERATOR i;
+  i._sz = 6;
+  i._ld = 6;
+  i._rows = i._sz;
+  i._columns = 1;
+  i._data_start = i._current_data  = _data;
+  return i;
+}
+
+/// Gets an iterator to the end of the data
+ITERATOR SVECTOR6::end()
+{
+  ITERATOR i;
+  i._sz = 6;
+  i._ld = 6;
+  i._rows = i._sz;
+  i._columns = 1;
+  i._data_start = _data;
+  i._current_data  = data() + i._sz;
+  return i;
 }
 
 /// Computes the spatial cross product between two vectors
-SVector6 SVector6::spatial_cross(const SVector6& v1, const SVector6& v2)
+SVECTOR6 SVECTOR6::spatial_cross(const SVECTOR6& v1, const SVECTOR6& v2)
 {
-  // get the two skew symmetric matrices we need
-  Matrix3 ax = Matrix3::skew_symmetric(v1.get_upper());
-  Matrix3 bx = Matrix3::skew_symmetric(v1.get_lower());
+  VECTOR3 ax = v1.get_upper();
+  VECTOR3 bx = v1.get_lower();
 
   // multiply
-  Vector3 v2top = v2.get_upper();
-  Vector3 v2bot = v2.get_lower();
-  Vector3 top = ax * v2top;
-  Vector3 bot = (bx * v2top) + (ax * v2bot);
-  return SVector6(top, bot);
+  VECTOR3 v2top = v2.get_upper();
+  VECTOR3 v2bot = v2.get_lower();
+  VECTOR3 top = VECTOR3::cross(ax, v2top);
+  VECTOR3 bot = VECTOR3::cross(bx, v2top) + VECTOR3::cross(ax, v2bot);
+  return SVECTOR6(top, bot);
 }
 
 /// Gets the lower 3-dimensional vector
-Vector3 SVector6::get_lower() const
+VECTOR3 SVECTOR6::get_lower() const
 {
-  return Vector3(_data[3], _data[4], _data[5]);
+  return VECTOR3(_data[3], _data[4], _data[5]);
 }
 
 /// Gets the upper 3-dimensional vector
-Vector3 SVector6::get_upper() const
+VECTOR3 SVECTOR6::get_upper() const
 {
-  return Vector3(_data[0], _data[1], _data[2]);
+  return VECTOR3(_data[0], _data[1], _data[2]);
 }
  
 /// Sets the lower 3-dimensional vector
-void SVector6::set_lower(const Vector3& lower)
+void SVECTOR6::set_lower(const VECTOR3& lower)
 {
   _data[3] = lower[0];
   _data[4] = lower[1];
@@ -86,7 +117,7 @@ void SVector6::set_lower(const Vector3& lower)
 }
 
 /// Sets the upper 3-dimensional vector
-void SVector6::set_upper(const Vector3& upper)
+void SVECTOR6::set_upper(const VECTOR3& upper)
 {
   _data[0] = upper[0];
   _data[1] = upper[1];
@@ -94,81 +125,89 @@ void SVector6::set_upper(const Vector3& upper)
 }
 
 /// Performs the dot product
-Real SVector6::dot(const SVector6& v1, const SVector6& v2)
+REAL SVECTOR6::dot(const SVECTOR6& v1, const SVECTOR6& v2)
 {
   return v1[3]*v2[0] + v1[4]*v2[1] + v1[5]*v2[2] + v1[0]*v2[3] + v1[1]*v2[4] + v1[2]*v2[5];
 }
 
-/// Sets this vector to its spatial vector transpose
-void SVector6::transpose()
+/// Copies this vector from another SVECTOR6
+SVECTOR6& SVECTOR6::operator=(const SVECTOR6& v)
 {
-  std::swap(_data[0], _data[3]);
-  std::swap(_data[1], _data[4]);
-  std::swap(_data[2], _data[5]);
-}
-
-/// Returns the spatial transpose of the given vector
-SVector6 SVector6::transpose(const SVector6& v)
-{
-  return SVector6(v.get_lower(), v.get_upper());
-}
-
-/// Copies this vector from another SVector6
-SVector6& SVector6::operator=(const SVector6& v)
-{
-  const unsigned SZ = 6;
-  for (unsigned i=0; i< SZ; i++)
-    _data[i] = v.data()[i];
+  _data[0] = v._data[0];
+  _data[1] = v._data[1];
+  _data[2] = v._data[2];
+  _data[3] = v._data[3];
+  _data[4] = v._data[4];
+  _data[5] = v._data[5];
   return *this;
 }
 
 /// Returns the negation of this vector
-SVector6 SVector6::operator-() const
+SVECTOR6 SVECTOR6::operator-() const
 {
-  SVector6 v;
-  std::transform(begin(), end(), v.begin(), std::negate<Real>());
+  SVECTOR6 v;
+  v._data[0] = -_data[0]; 
+  v._data[1] = -_data[1]; 
+  v._data[2] = -_data[2]; 
+  v._data[3] = -_data[3]; 
+  v._data[4] = -_data[4]; 
+  v._data[5] = -_data[5]; 
 
   return v;
 }
 
 /// Multiplies this vector by a scalar in place
-SVector6& SVector6::operator*=(Real scalar)
+SVECTOR6& SVECTOR6::operator*=(REAL scalar)
 {
-  for (unsigned i=0; i< 6; i++)
-    _data[i] *= scalar;
+  _data[0] *= scalar;
+  _data[1] *= scalar;
+  _data[2] *= scalar;
+  _data[3] *= scalar;
+  _data[4] *= scalar;
+  _data[5] *= scalar;
 
   return *this;
 }
 
 /// Adds another vector to this one in place
-SVector6& SVector6::operator+=(const SVector6& v)
+SVECTOR6& SVECTOR6::operator+=(const SVECTOR6& v)
 {
-  std::transform(begin(), end(), v.begin(), begin(), std::plus<Real>());
+  _data[0] += v._data[0];
+  _data[1] += v._data[1];
+  _data[2] += v._data[2];
+  _data[3] += v._data[3];
+  _data[4] += v._data[4];
+  _data[5] += v._data[5];
 
   return *this;
 }
 
 /// Subtracts another vector from this one in place
-SVector6& SVector6::operator-=(const SVector6& v)
+SVECTOR6& SVECTOR6::operator-=(const SVECTOR6& v)
 {
-  std::transform(begin(), end(), v.begin(), begin(), std::minus<Real>());
+  _data[0] -= v._data[0];
+  _data[1] -= v._data[1];
+  _data[2] -= v._data[2];
+  _data[3] -= v._data[3];
+  _data[4] -= v._data[4];
+  _data[5] -= v._data[5];
 
   return *this;
 }
 
 /// Adds this vector to another and returns the result in a new vector
-SVector6 SVector6::operator+(const SVector6& v) const
+SVECTOR6 SVECTOR6::operator+(const SVECTOR6& v) const
 {
-  SVector6 result;
-  std::transform(begin(), end(), v.begin(), result.begin(), std::plus<Real>());
+  SVECTOR6 result;
+  std::transform(begin(), end(), v.begin(), result.begin(), std::plus<REAL>());
   return result;
 }
 
 /// Subtracts another vector from this vector and returns the result in a new vector
-SVector6 SVector6::operator-(const SVector6& v) const
+SVECTOR6 SVECTOR6::operator-(const SVECTOR6& v) const
 {
-  SVector6 result;
-  std::transform(begin(), end(), v.begin(), result.begin(), std::minus<Real>());
+  SVECTOR6 result;
+  std::transform(begin(), end(), v.begin(), result.begin(), std::minus<REAL>());
   return result;
 }
 

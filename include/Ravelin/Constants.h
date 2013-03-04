@@ -20,14 +20,6 @@ enum Transposition { eNoTranspose, eTranspose };
 // constants
 const double EPS_DOUBLE = std::sqrt(std::numeric_limits<double>::epsilon());
 const float EPS_FLOAT = std::sqrt(std::numeric_limits<float>::epsilon());
-const Vector3f ZEROS_3F = Vector3f::zero();
-//const Matrix3f ZEROS_3x3F = Matrix3f::zero();
-//const Matrix3f IDENTITY_3x3F = Matrix3f::identity();
-//const VectorNf EMPTY_VECF(0);
-const Vector3d ZEROS_3D = Vector3d::zero();
-//const Matrix3d ZEROS_3x3D = Matrix3d::zero();
-//const Matrix3d IDENTITY_3x3D = Matrix3d::identity();
-//const VectorNd EMPTY_VECD(0);
 
 }
 

@@ -7,21 +7,26 @@
 #ifndef _SVECTOR6F_H
 #define _SVECTOR6F_H
 
-#include <Moby/Vector3f.h>
+#include <boost/shared_ptr.hpp>
+#include <Ravelin/MissizeException.h>
+#include <Ravelin/Vector3f.h>
+#include <Ravelin/fIterator.h>
 
-namespace Moby {
+namespace Ravelin {
 
 #define REAL float
 #define SVECTOR6 SVector6f
-#define POSE Posef
 #define VECTOR3 Vector3f
+#define ITERATOR fIterator
+#define CONST_ITERATOR fIterator_const
 
 #include "SVector6.h"
 
 #undef REAL
 #undef SVECTOR6
-#undef POSE
 #undef VECTOR3
+#undef ITERATOR
+#undef CONST_ITERATOR
 
 } // end namespace
 

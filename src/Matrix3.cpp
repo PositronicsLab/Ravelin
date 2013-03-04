@@ -124,6 +124,29 @@ VECTOR3 MATRIX3::transpose_mult(const VECTOR3& v) const
   return result;
 }
 
+/// Multiplies the transpose of this matrix by a matrix and returns the result in a new matrix 
+MATRIX3 MATRIX3::transpose_mult(const MATRIX3& m) const
+{
+  MATRIX3 result;
+
+  // do first column
+  result.xx() = _data[0]*m.xx() + _data[1]*m.yx() + _data[2]*m.zx();
+  result.yx() = _data[3]*m.xx() + _data[4]*m.yx() + _data[5]*m.zx();  
+  result.zx() = _data[6]*m.xx() + _data[7]*m.yx() + _data[8]*m.zx();  
+
+  // do second column
+  result.xy() = _data[0]*m.xy() + _data[1]*m.yy() + _data[2]*m.zy();
+  result.yy() = _data[3]*m.xy() + _data[4]*m.yy() + _data[5]*m.zy();  
+  result.zy() = _data[6]*m.xy() + _data[7]*m.yy() + _data[8]*m.zy();  
+
+  // do third column
+  result.xz() = _data[0]*m.xz() + _data[1]*m.yz() + _data[2]*m.zz();
+  result.yz() = _data[3]*m.xz() + _data[4]*m.yz() + _data[5]*m.zz();  
+  result.zz() = _data[6]*m.xz() + _data[7]*m.yz() + _data[8]*m.zz();  
+
+  return result;
+}
+
 /// Multiplies this matrix by a vector and returns the result in a new vector
 VECTOR3 MATRIX3::mult(const VECTOR3& v) const
 {
@@ -539,19 +562,21 @@ MATRIX3& MATRIX3::operator-=(const MATRIX3& m)
 }
 
 /// Sets this matrix to identity
-void MATRIX3::set_identity()
+MATRIX3& MATRIX3::set_identity()
 {
   const unsigned XX = 0, YY = 4, ZZ = 8;
   xy() = xz() = yz() = yx() = zx() = zy() = (REAL) 0.0;
   _data[XX] = _data[YY] = _data[ZZ] = (REAL) 1.0;
+  return *this;
 }
 
 /// Sets this matrix to zero
-void MATRIX3::set_zero()
+MATRIX3& MATRIX3::set_zero()
 {
   const unsigned N = 3*3;
   for (unsigned i=0; i< N; i++)
     _data[i] = (REAL) 0.0;
+  return *this;
 }
 
 /// Checks whether this matrix is symmetric

@@ -106,7 +106,7 @@ static bool factor_LU(X& A, std::vector<int>& pivwork)
  * \note throws SingularException if matrix is singular
  */
 template <class X>
-static X& inverse_LU(X& M, const std::vector<int>& pivwork)
+X& inverse_LU(X& M, const std::vector<int>& pivwork)
 {
   if (M.rows() == 0 || M.columns() == 0)
     return M;
@@ -349,7 +349,7 @@ MATRIXN& nullspace(Y& A, MATRIXN& nullspace, REAL tol)
     return nullspace;
   else
   {
-    CONST_ITERATOR bi = nullspace.block_iterator(0, nullspace.rows(), nullspace.columns()-ns, nullspace.columns());
+    ITERATOR bi = nullspace.block_iterator(0, nullspace.rows(), nullspace.columns()-ns, nullspace.columns());
     std::copy(bi, bi+ns*nullspace.rows(), nullspace.begin());
     nullspace.resize(nullspace.rows(), ns, true);
     return nullspace;

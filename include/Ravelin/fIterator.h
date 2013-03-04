@@ -22,6 +22,9 @@ namespace Ravelin {
 #define MATRIX2 Matrix2f
 #define SHAREDVECTORN SharedVectorNf
 #define SHAREDMATRIXN SharedMatrixNf
+#define WRENCH Wrenchf
+#define TWIST Twistf
+#define SVECTOR6 SVector6f
 
 #include "rIterator.h"
 
@@ -35,6 +38,9 @@ namespace Ravelin {
 #undef MATRIX2
 #undef SHAREDVECTORN
 #undef SHAREDMATRIXN
+#undef WRENCH
+#undef TWIST
+#undef SVECTOR6
 
 } // end namespace
 

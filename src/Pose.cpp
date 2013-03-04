@@ -22,7 +22,7 @@ POSE::POSE(const QUAT& q, const VECTOR3& v)
 /// Constructs a 4x4 homogeneous transformation matrix from a unit quaternion (for rotation) and zero translation
 POSE::POSE(const QUAT& q)
 {
-  set(QUAT::normalize(q), ZEROS_3);
+  set(QUAT::normalize(q), VECTOR3::zero());
 }
 
 /// Constructs a 4x4 homogeneous transformation matrix from a rotation matrix and translation vector
@@ -34,7 +34,7 @@ POSE::POSE(const MATRIX3& r, const VECTOR3& v)
 /// Constructs a 4x4 homogeneous transformation matrix from a rotation matrix and zero translation
 POSE::POSE(const MATRIX3& r)
 {
-  set(r, ZEROS_3);
+  set(r, VECTOR3::zero());
 }
 
 /// Constructs a 4x4 homogeneous transformation matrix from a axis-angle representation and a translation vector
@@ -46,7 +46,7 @@ POSE::POSE(const AANGLE& a, const VECTOR3& v)
 /// Constructs a 4x4 homogeneous transformation matrix from a axis-angle representation (for rotation) and zero translation
 POSE::POSE(const AANGLE& a)
 {
-  set(a, ZEROS_3);
+  set(a, VECTOR3::zero());
 }
 
 /// Constructs a 4x4 homogeneous transformation matrix using identity orientation and a translation vector
@@ -115,7 +115,7 @@ POSE& POSE::set(const QUAT& q, const VECTOR3& v)
 POSE& POSE::set(const QUAT& q)
 {
   this->q = q;
-  this->x = ZEROS_3;
+  this->x = VECTOR3::zero();
   return *this;
 }
 
@@ -123,7 +123,7 @@ POSE& POSE::set(const QUAT& q)
 POSE& POSE::set(const AANGLE& a)
 {
   this->q = a;
-  this->x = ZEROS_3;
+  this->x = VECTOR3::zero();
   return *this;
 }
 
@@ -131,7 +131,7 @@ POSE& POSE::set(const AANGLE& a)
 POSE& POSE::set(const MATRIX3& m)
 {
   this->q = m;
-  this->x = ZEROS_3;
+  this->x = VECTOR3::zero();
   return *this;
 }
 
@@ -139,7 +139,7 @@ POSE& POSE::set(const MATRIX3& m)
 POSE& POSE::set_identity()
 {
   this->q = QUAT::identity();
-  this->x = ZEROS_3;
+  this->x = VECTOR3::zero();
   return *this;
 }
 

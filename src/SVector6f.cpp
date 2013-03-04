@@ -4,28 +4,26 @@
  * License (found in COPYING).
  ****************************************************************************/
 
-#ifndef _WRENCHF_H
-#define _WRENCHF_H
-
+#include <cstring>
+#include <functional>
+#include <algorithm>
+#include <Ravelin/cblas.h>
 #include <Ravelin/SVector6f.h>
 
-namespace Ravelin {
+using namespace Ravelin;
 
-#define REAL float
-#define TWIST Twistf
-#define WRENCH Wrenchf
 #define SVECTOR6 SVector6f
+#define REAL float
 #define VECTOR3 Vector3f
+#define ITERATOR fIterator
+#define CONST_ITERATOR fIterator_const
 
-#include "Wrench.h"
+#include "SVector6.cpp"
 
-#undef REAL
-#undef TWIST
-#undef WRENCH
 #undef SVECTOR6
+#undef REAL
 #undef VECTOR3
+#undef ITERATOR
+#undef CONST_ITERATOR
 
-} // end namespace
-
-#endif
 

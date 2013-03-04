@@ -19,6 +19,9 @@ class ITERATOR : public std::iterator<std::random_access_iterator_tag, REAL>
   friend class MATRIX2;
   friend class SHAREDVECTORN;
   friend class SHAREDMATRIXN;
+  friend class SVECTOR6;
+  friend class WRENCH;
+  friend class TWIST;
 
   public:
     ITERATOR()
@@ -207,6 +210,9 @@ class CONST_ITERATOR : public std::iterator<std::random_access_iterator_tag, REA
   friend class MATRIX2;
   friend class SHAREDVECTORN;
   friend class SHAREDMATRIXN;
+  friend class SVECTOR6;
+  friend class WRENCH;
+  friend class TWIST;
 
   public:
     CONST_ITERATOR()

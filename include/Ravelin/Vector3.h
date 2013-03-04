@@ -24,7 +24,7 @@ class VECTOR3
     void normalize_or_zero() { REAL nrm = norm(); if (nrm > std::numeric_limits<REAL>::epsilon()) operator/=(nrm); else _data[0] = _data[1] = _data[2] = (REAL) 0.0; }
     static VECTOR3 normalize(const VECTOR3& v) { VECTOR3 w = v; w.normalize(); return w; }
     unsigned size() const { return 3; }
-    VECTOR3& resize(unsigned N, bool keep = true) { if (N != 3) throw std::runtime_error("Can't resize a VECTOR3 to size other than 3!"); }
+    VECTOR3& resize(unsigned N, bool keep = true) { if (N != 3) throw std::runtime_error("Can't resize a VECTOR3 to size other than 3!"); return *this; }
     bool is_finite() const;
     REAL norm_inf() const { return std::max(std::fabs(_data[0]), std::max(std::fabs(_data[1]), std::fabs(_data[2]))); }
     REAL norm() const { return std::sqrt(norm_sq()); }

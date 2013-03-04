@@ -8,13 +8,13 @@
 #define _SPATIAL_AB_INERTIAD_H
 
 #include <boost/shared_ptr.hpp>
-#include <Moby/Wrenchd.h>
-#include <Moby/Twistd.h>
-#include <Moby/SpatialRBInertiad.h>
-#include <Moby/Matrix3d.h>
-#include <Moby/Pose.h>
+#include <Ravelin/Wrenchd.h>
+#include <Ravelin/Twistd.h>
+#include <Ravelin/SpatialRBInertiad.h>
+#include <Ravelin/Matrix3d.h>
+#include <Ravelin/Pose.h>
 
-namespace Moby {
+namespace Ravelin {
 
 #define REAL double 
 #define SPATIAL_AB_INERTIA SpatialABInertiad

@@ -1,34 +1,21 @@
 /****************************************************************************
- * Copyright 2011 Evan Drumwright
+ * Copyright 2013 Evan Drumwright
  * This library is distributed under the terms of the GNU Lesser General Public 
  * License (found in COPYING).
  ****************************************************************************/
 
-#include <Moby/Constants.h>
-#include <Moby/SMatrix6N.h>
-#include <Moby/MatrixN.h>
-#include <Moby/SpatialABInertia.h>
-
-using namespace Moby;
+using std::vector;
 
 /// Default constructor -- constructs a zero inertia matrix
-SpatialABInertia::SpatialABInertia()
+SPATIAL_AB_INERTIA::SPATIAL_AB_INERTIA()
 {
-  M = ZEROS_3x3;
-  H = ZEROS_3x3;
-  J = ZEROS_3x3;
-}
-
-/// Constructs a spatial AB inertia from the given MatrixN object
-SpatialABInertia::SpatialABInertia(const MatrixN& m)
-{
-  m.get_sub_mat(0, 3, 3, 6, M);
-  m.get_sub_mat(3, 6, 3, 6, H);
-  m.get_sub_mat(3, 6, 0, 3, J);
+  M.set_zero();
+  H.set_zero();
+  J.set_zero();
 }
 
 /// Constructs the spatial AB inertia from the given values 
-SpatialABInertia::SpatialABInertia(const Matrix3& M, const Matrix3& H, const Matrix3& J)
+SPATIAL_AB_INERTIA::SPATIAL_AB_INERTIA(const MATRIX3& M, const MATRIX3& H, const MATRIX3& J)
 {
   this->M = M;
   this->H = H;
@@ -36,7 +23,7 @@ SpatialABInertia::SpatialABInertia(const Matrix3& M, const Matrix3& H, const Mat
 }
 
 /// Copies a spatial AB inertia to this one 
-SpatialABInertia& SpatialABInertia::operator=(const SpatialABInertia& m)
+SPATIAL_AB_INERTIA& SPATIAL_AB_INERTIA::operator=(const SPATIAL_AB_INERTIA& m)
 {
   this->M = m.M;
   this->H = m.H;
@@ -45,39 +32,55 @@ SpatialABInertia& SpatialABInertia::operator=(const SpatialABInertia& m)
 }
 
 /// Copies a spatial RB inertia to this one 
-SpatialABInertia& SpatialABInertia::operator=(const SpatialRBInertia& m)
+SPATIAL_AB_INERTIA& SPATIAL_AB_INERTIA::operator=(const SPATIAL_RB_INERTIA& m)
 {
-  this->M = IDENTITY_3x3 * m.m;
-  this->H = Matrix3::skew_symmetric(m.h);
+  this->M.set_identity() *= m.m;
+  this->H = MATRIX3::skew_symmetric(m.h);
   this->J = m.J;
   return *this;
 }
 
 /// Creates a zero matrix
-void SpatialABInertia::set_zero()
+void SPATIAL_AB_INERTIA::set_zero()
 {
-  M = H = J = ZEROS_3x3;
+  M.set_zero();
+  H.set_zero();
+  J.set_zero();
 }
 
-/// Multiplies this matrix by a vector and returns the result in a new vector
-SVector6 SpatialABInertia::operator*(const SVector6& v) const
+/// Multiplies this matrix by a twist and returns the result in a wrench 
+WRENCH SPATIAL_AB_INERTIA::mult(const TWIST& t) const
 {
-  // get necessary components of v
-  Vector3 vtop = v.get_upper();
-  Vector3 vbot = v.get_lower();
-
-  // do some precomputation
-  Matrix3 HT = Matrix3::transpose(H);
+  // get necessary components of the twist 
+  VECTOR3 top = t.get_angular();
+  VECTOR3 bot = t.get_linear();
 
   // compute top part of result
-  Vector3 rtop = HT * vtop + (M * vbot);
-  Vector3 rbot = (J * vtop) + (H * vbot);
+  VECTOR3 rtop = H.transpose_mult(top) + (M * bot);
+  VECTOR3 rbot = (J * top) + (H * bot);
 
-  return SVector6(rtop, rbot); 
+  return WRENCH(rtop, rbot); 
+}
+
+/// Multiplies this matrix by a vector of twists and returns the result in a vector of wrenches 
+vector<WRENCH>& SPATIAL_AB_INERTIA::mult(const vector<TWIST>& t, vector<WRENCH>& result) const
+{
+  result.resize(t.size());
+
+  // get necessary components of the twist 
+  for (unsigned i=0; i< t.size(); i++)
+  { 
+    VECTOR3 top = t[i].get_angular();
+    VECTOR3 bot = t[i].get_linear();
+
+    result[i] = WRENCH(H.transpose_mult(top) + (M * bot), (J * top) + (H * bot)); 
+  }
+
+  return result;
 }
 
 /// Multiplies this matrix by a scalar in place
-SpatialABInertia& SpatialABInertia::operator*=(Real scalar)
+SPATIAL_AB_INERTIA& SPATIAL_AB_INERTIA::operator*=(REAL scalar)
 {
   M *= scalar;
   H *= scalar;
@@ -86,9 +89,9 @@ SpatialABInertia& SpatialABInertia::operator*=(Real scalar)
 }
 
 /// Returns the negation of this matrix
-SpatialABInertia SpatialABInertia::operator-() const
+SPATIAL_AB_INERTIA SPATIAL_AB_INERTIA::operator-() const
 {
-  SpatialABInertia result;
+  SPATIAL_AB_INERTIA result;
   result.M = -this->M;
   result.H = -this->H;
   result.J = -this->J;
@@ -96,12 +99,12 @@ SpatialABInertia SpatialABInertia::operator-() const
 }
 
 /// Adds a spatial articulated body inertia and a spatial rigid body inertia 
-SpatialABInertia SpatialABInertia::operator+(const SpatialRBInertia& m) const
+SPATIAL_AB_INERTIA SPATIAL_AB_INERTIA::operator+(const SPATIAL_RB_INERTIA& m) const
 {
   const unsigned X = 0, Y = 1, Z = 2;
 
   // do some preliminary calculations
-  SpatialABInertia result;
+  SPATIAL_AB_INERTIA result;
   result.M = M;
   result.H = H;
   result.J = m.J + J;
@@ -112,16 +115,16 @@ SpatialABInertia SpatialABInertia::operator+(const SpatialRBInertia& m) const
   result.M(Z,Z) += m.m;
 
   // update H
-  Matrix3 hx = Matrix3::skew_symmetric(m.h);
+  MATRIX3 hx = MATRIX3::skew_symmetric(m.h);
   result.H += hx;
 
   return result;
 }
 
 /// Adds two spatial matrices
-SpatialABInertia SpatialABInertia::operator+(const SpatialABInertia& m) const
+SPATIAL_AB_INERTIA SPATIAL_AB_INERTIA::operator+(const SPATIAL_AB_INERTIA& m) const
 {
-  SpatialABInertia result;
+  SPATIAL_AB_INERTIA result;
   result.M = this->M + m.M;
   result.H = this->H + m.H;
   result.J = this->J + m.J;
@@ -129,9 +132,9 @@ SpatialABInertia SpatialABInertia::operator+(const SpatialABInertia& m) const
 }
 
 /// Subtracts two spatial matrices
-SpatialABInertia SpatialABInertia::operator-(const SpatialABInertia& m) const
+SPATIAL_AB_INERTIA SPATIAL_AB_INERTIA::operator-(const SPATIAL_AB_INERTIA& m) const
 {
-  SpatialABInertia result;
+  SPATIAL_AB_INERTIA result;
   result.M = this->M - m.M;
   result.H = this->H - m.H;
   result.J = this->J - m.J;
@@ -139,7 +142,7 @@ SpatialABInertia SpatialABInertia::operator-(const SpatialABInertia& m) const
 }
 
 /// Adds m to this in place
-SpatialABInertia& SpatialABInertia::operator+=(const SpatialABInertia& m)
+SPATIAL_AB_INERTIA& SPATIAL_AB_INERTIA::operator+=(const SPATIAL_AB_INERTIA& m)
 {
   this->M += m.M;
   this->H += m.H;
@@ -148,7 +151,7 @@ SpatialABInertia& SpatialABInertia::operator+=(const SpatialABInertia& m)
 }
 
 /// Subtracts m from this in place
-SpatialABInertia& SpatialABInertia::operator-=(const SpatialABInertia& m)
+SPATIAL_AB_INERTIA& SPATIAL_AB_INERTIA::operator-=(const SPATIAL_AB_INERTIA& m)
 {
   this->M -= m.M;
   this->H -= m.H;
@@ -156,80 +159,51 @@ SpatialABInertia& SpatialABInertia::operator-=(const SpatialABInertia& m)
   return *this;
 }
 
-/// Multiplies the inverse of this spatial AB inertia by a vector
-SVector6 SpatialABInertia::inverse_mult(const SVector6& v) const
+/// Multiplies the inverse of this spatial AB inertia by a wrench to yield a twist
+TWIST SPATIAL_AB_INERTIA::inverse_mult(const WRENCH& w) const
 {
-  Matrix3 nMinv = -Matrix3::inverse(M);
-  Matrix3 HT = Matrix3::transpose(H);
-  Matrix3 UR = Matrix3::inverse((H * nMinv * HT) + J);
-  Matrix3 UL = UR * H * nMinv;
-  Matrix3 LR = Matrix3::transpose(UL);
-  Matrix3 LL = nMinv * ((HT * UL) - IDENTITY_3x3);
+  MATRIX3 nMinv = -MATRIX3::inverse(M);
+  MATRIX3 UR = MATRIX3::inverse((H * nMinv.mult_transpose(H)) + J);
+  MATRIX3 UL = UR * H * nMinv;
+  MATRIX3 LL = nMinv * (H.transpose_mult(UL) - MATRIX3::identity());
 
-  // get the components of v
-  Vector3 vtop = v.get_upper();
-  Vector3 vbot = v.get_lower();
+  // get the components of the wrench 
+  VECTOR3 top = w.get_force();
+  VECTOR3 bot = w.get_torque();
 
   // do the arithmetic
-  return SVector6(UL*vtop + UR*vbot, LL*vtop + LR*vbot);
+  return TWIST(UL*top + UR*bot, LL*top + UL.transpose_mult(bot));
 }
 
-/// Multiplies a spatial matrix by a spatial matrix and returns the result in a spatial matrix
-SMatrix6N& SpatialABInertia::mult(const SMatrix6N& m, SMatrix6N& result) const
+/// Multiplies the inverse of this spatial AB inertia by a wrench to yield a twist
+vector<TWIST>& SPATIAL_AB_INERTIA::inverse_mult(const std::vector<WRENCH>& w, vector<TWIST>& result) const
 {
-  const unsigned SPATIAL_DIM = 6;
-
-  // get number of columns of m
-  const unsigned NCOLS = m.columns();
-
-  // resize the result
-  result.resize(SPATIAL_DIM, NCOLS);
-
-  // look for empty result
-  if (NCOLS == 0)
-  {
-    result.set_zero();
+  result.resize(w.size());
+  if (result.empty())
     return result;
+
+  // do precomputation
+  MATRIX3 nMinv = -MATRIX3::inverse(M);
+  MATRIX3 UR = MATRIX3::inverse((H * nMinv.mult_transpose(H)) + J);
+  MATRIX3 UL = UR * H * nMinv;
+  MATRIX3 LL = nMinv * (H.transpose_mult(UL) - MATRIX3::identity());
+
+  // loop
+  for (unsigned i=0; i< w.size(); i++)
+  {
+    // get the components of the wrench 
+    VECTOR3 top = w[i].get_force();
+    VECTOR3 bot = w[i].get_torque();
+
+    // do the arithmetic
+    result[i] = TWIST(UL*top + UR*bot, LL*top + UL.transpose_mult(bot));
   }
 
-  // compute the transpose of H
-  Matrix3 HT = Matrix3::transpose(this->H);
-
-  // carry out multiplication one column at a time
-  for (unsigned i=0; i< NCOLS; i++)
-  {
-    SVector6 v = m.get_column(i);
-    Vector3 vtop = v.get_upper();
-    Vector3 vbot = v.get_lower();
-    v = SVector6((this->M * vbot)+(HT * vtop), (this->J * vtop)+(H * vbot));
-    result.set_column(i, v);
-  } 
-
-  return result;
-}
-
-/// Multiplies a 6x6 matrix by a Spatial AB inertia matrix
-SpatialABInertia SpatialABInertia::mult(const MatrixN& m, const SpatialABInertia& I)
-{
-  assert(m.rows() == 6 && m.columns() == 6);
-
-  // get the components of m
-  Matrix3 UL, UR, LL, LR;
-  m.get_sub_mat(0,3,0,3,UL);
-  m.get_sub_mat(0,3,3,6,UR);
-  m.get_sub_mat(3,6,0,3,LL);
-  m.get_sub_mat(3,6,3,6,LR);
- 
-  // multiply by components of I
-  SpatialABInertia result;
-  result.M = (UL*I.M) + (UR*I.H);
-  result.J = (LL*Matrix3::transpose(I.H)) + (LR*I.J);
-  result.H = (LL*I.M) + (LR*I.H);
   return result;
 }
 
 /// Outputs this matrix to the stream
-std::ostream& Moby::operator<<(std::ostream& out, const SpatialABInertia& m) 
+std::ostream& Ravelin::operator<<(std::ostream& out, const SPATIAL_AB_INERTIA& m) 
 {
   out << "spatial AB H:" << std::endl << m.H;
   out << "spatial AB M:" << std::endl << m.M;

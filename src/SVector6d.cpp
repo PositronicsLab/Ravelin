@@ -4,28 +4,26 @@
  * License (found in COPYING).
  ****************************************************************************/
 
-#ifndef _TWISTD_H
-#define _TWISTD_H
+#include <cstring>
+#include <functional>
+#include <algorithm>
+#include <Ravelin/cblas.h>
+#include <Ravelin/SVector6d.h>
 
-#include <Ravelin/SVector6f.h>
+using namespace Ravelin;
 
-namespace Ravelin {
-
-#define REAL double 
-#define TWIST Twistd
-#define WRENCH Wrenchd
 #define SVECTOR6 SVector6d
+#define REAL double
 #define VECTOR3 Vector3d
+#define ITERATOR dIterator
+#define CONST_ITERATOR dIterator_const
 
-#include "Twist.h"
+#include "SVector6.cpp"
 
-#undef REAL
-#undef TWIST
-#undef WRENCH
 #undef SVECTOR6
+#undef REAL
 #undef VECTOR3
+#undef ITERATOR
+#undef CONST_ITERATOR
 
-} // end namespace
-
-#endif
 

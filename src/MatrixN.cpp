@@ -84,6 +84,7 @@ MATRIXN& MATRIXN::set(const VECTORN& v, Transposition trans)
   else
     resize(1, v.columns(), false);
   std::copy(v.data(), v.data()+v.size(), _data.get());
+  return *this;
 }
 
 /*

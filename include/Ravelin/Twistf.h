@@ -7,12 +7,13 @@
 #ifndef _TWISTF_H
 #define _TWISTF_H
 
-#include <Moby/SVector6f.h>
+#include <Ravelin/SVector6f.h>
 
-namespace Moby {
+namespace Ravelin {
 
 #define REAL float
-#define TWIST Wrenchf
+#define TWIST Twistf
+#define WRENCH Wrenchf
 #define SVECTOR6 SVector6f
 #define VECTOR3 Vector3f
 
@@ -20,6 +21,7 @@ namespace Moby {
 
 #undef REAL
 #undef TWIST
+#undef WRENCH
 #undef SVECTOR6
 #undef VECTOR3
 

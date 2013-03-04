@@ -8,13 +8,13 @@
 #define _SPATIAL_AB_INERTIAF_H
 
 #include <boost/shared_ptr.hpp>
-#include <Moby/Wrenchf.h>
-#include <Moby/Twistf.h>
-#include <Moby/SpatialRBInertiaf.h>
-#include <Moby/Matrix3f.h>
-#include <Moby/Posef.h>
+#include <Ravelin/Wrenchf.h>
+#include <Ravelin/Twistf.h>
+#include <Ravelin/SpatialRBInertiaf.h>
+#include <Ravelin/Matrix3f.h>
+#include <Ravelin/Posef.h>
 
-namespace Moby {
+namespace Ravelin {
 
 #define REAL float
 #define SPATIAL_AB_INERTIA SpatialABInertiaf

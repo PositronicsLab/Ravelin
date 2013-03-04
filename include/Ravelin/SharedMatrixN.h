@@ -33,8 +33,8 @@ class SHAREDMATRIXN
     SHAREDMATRIXN& operator/=(REAL scalar);
     SHAREDMATRIXN& operator*=(REAL scalar);
     SHAREDMATRIXN& operator=(const MATRIX3& m);
-    const REAL& operator()(unsigned i, unsigned j) const;
-    REAL& operator()(const unsigned i, const unsigned j);
+    REAL& operator()(unsigned i, unsigned j);
+    REAL operator()(unsigned i, unsigned j) const;
     REAL* data() { return _data.get()+_start; }
     const REAL* data() const { return _data.get()+_start; }    
 

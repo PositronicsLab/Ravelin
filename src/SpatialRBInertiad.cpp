@@ -4,28 +4,23 @@
  * License (found in COPYING).
  ****************************************************************************/
 
-#ifndef _WRENCHF_H
-#define _WRENCHF_H
+#include <Ravelin/Constants.h>
+#include <Ravelin/SpatialRBInertiad.h>
 
-#include <Ravelin/SVector6f.h>
+using namespace Ravelin;
 
-namespace Ravelin {
+#define REAL double
+#define SPATIAL_RB_INERTIA SpatialRBInertiad
+#define TWIST Twistd
+#define WRENCH Wrenchd
+#define MATRIX3 Matrix3d
+#define VECTOR3 Vector3d 
 
-#define REAL float
-#define TWIST Twistf
-#define WRENCH Wrenchf
-#define SVECTOR6 SVector6f
-#define VECTOR3 Vector3f
-
-#include "Wrench.h"
+#include "SpatialRBInertia.cpp"
 
 #undef REAL
+#undef SPATIALRBINERTIA
 #undef TWIST
 #undef WRENCH
-#undef SVECTOR6
+#undef MATRIX3
 #undef VECTOR3
-
-} // end namespace
-
-#endif
-

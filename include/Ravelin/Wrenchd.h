@@ -7,11 +7,12 @@
 #ifndef _WRENCHD_H
 #define _WRENCHD_H
 
-#include <Moby/SVector6d.h>
+#include <Ravelin/SVector6d.h>
 
-namespace Moby {
+namespace Ravelin {
 
 #define REAL double 
+#define TWIST Twistd
 #define WRENCH Wrenchd
 #define SVECTOR6 SVector6d
 #define VECTOR3 Vector3d
@@ -19,6 +20,7 @@ namespace Moby {
 #include "Wrench.h"
 
 #undef REAL
+#undef TWIST
 #undef WRENCH
 #undef SVECTOR6
 #undef VECTOR3

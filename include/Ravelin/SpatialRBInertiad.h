@@ -8,11 +8,11 @@
 #define _SPATIAL_RB_INERTIAD_H
 
 #include <boost/shared_ptr.hpp>
-#include <Moby/Wrenchd.h>
-#include <Moby/Twistd.h>
-#include <Moby/Posed.h>
+#include <Ravelin/Wrenchd.h>
+#include <Ravelin/Twistd.h>
+#include <Ravelin/Posed.h>
 
-namespace Moby {
+namespace Ravelin {
 
 #define REAL double
 #define SPATIAL_RB_INERTIA SpatialRBInertiad

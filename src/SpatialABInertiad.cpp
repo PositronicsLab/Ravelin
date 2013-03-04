@@ -4,32 +4,27 @@
  * License (found in COPYING).
  ****************************************************************************/
 
-#include <Ravelin/cblas.h>
-#include <cstring>
-#include <cmath>
-#include <iomanip>
 #include <Ravelin/Constants.h>
-#include <Ravelin/Quatd.h>
-#include <Ravelin/AAngled.h>
-#include <Ravelin/Matrix3d.h>
-#include <Ravelin/Posed.h>
+#include <Ravelin/SpatialABInertiad.h>
 
 using namespace Ravelin;
 
-#define REAL double
-#define POSE Posed
+#define SPATIAL_AB_INERTIA SpatialABInertiad
+#define SPATIAL_RB_INERTIA SpatialRBInertiad
 #define MATRIX3 Matrix3d
 #define VECTOR3 Vector3d
-#define QUAT Quatd
-#define AANGLE AAngled
+#define TWIST Twistd
+#define WRENCH Wrenchd
+#define REAL double
 
-#include "Pose.cpp"
+#include "SpatialABInertia.cpp"
 
+#undef SPATIAL_AB_INERTIA 
+#undef SPATIAL_RB_INERTIA 
+#undef MATRIX3 
+#undef VECTOR3 
+#undef TWIST 
+#undef WRENCH
 #undef REAL
-#undef ZEROS_3
-#undef POSE
-#undef MATRIX3
-#undef VECTOR3
-#undef QUAT
-#undef AANGLE
+
 

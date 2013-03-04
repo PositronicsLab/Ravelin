@@ -64,8 +64,8 @@ class MATRIX3
     static bool valid_rotation_scale(const MATRIX3& R);
     static MATRIX3 identity() { MATRIX3 m; m.set_identity(); return m; }
     static MATRIX3 zero() { MATRIX3 m; m.set_zero(); return m; }
-    void set_identity();
-    void set_zero();
+    MATRIX3& set_identity();
+    MATRIX3& set_zero();
     VECTOR3 transpose_mult(const VECTOR3& v) const;
     VECTOR3 mult(const VECTOR3& v) const;
     MATRIX3 mult(const MATRIX3& m) const;
@@ -82,6 +82,8 @@ class MATRIX3
     MATRIX3 operator*(REAL scalar) const { MATRIX3 m = *this; m *= scalar; return m; }
     MATRIX3 operator/(REAL scalar) const { return operator*(1.0/scalar); }
     MATRIX3 operator-() const; 
+    MATRIX3 operator*(const MATRIX3& m) const { MATRIX3 result; mult(m, result); return result; }
+    VECTOR3 operator*(const VECTOR3& v) const { VECTOR3 result; mult(v, result); return result; }
     unsigned leading_dim() const { return 3; }
     unsigned inc() const { return 1; }
     VECTOR3 get_column(unsigned i) const;

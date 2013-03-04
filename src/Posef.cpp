@@ -19,7 +19,6 @@
 using namespace Ravelin;
 
 #define REAL float
-#define ZEROS_3 ZEROS_3F
 #define POSE Posef
 #define MATRIX3 Matrix3f
 #define VECTOR3 Vector3f
