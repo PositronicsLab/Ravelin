@@ -8,6 +8,9 @@
 #error This class is not to be included by the user directly. Use Posed.h or Posef.h instead. 
 #endif
 
+class AANGLE;
+class MATRIX3;
+
 /// A rigid body pose 
 class POSE
 {
@@ -27,6 +30,11 @@ class POSE
     VECTOR3 mult_vector(const VECTOR3& v) const;
     VECTOR3 inverse_mult_point(const VECTOR3& v) const;
     VECTOR3 inverse_mult_vector(const VECTOR3& v) const;
+    WRENCH transform(boost::shared_ptr<POSE> p, const WRENCH& w) const;
+    TWIST transform(boost::shared_ptr<POSE> p, const TWIST& t) const;
+    void set_relative_pose(boost::shared_ptr<POSE> p); 
+    SPATIAL_RB_INERTIA transform(boost::shared_ptr<POSE> p, const SPATIAL_RB_INERTIA& j) const;
+    SPATIAL_AB_INERTIA transform(boost::shared_ptr<POSE> p, const SPATIAL_AB_INERTIA& j) const;
     POSE& set_identity();
     POSE& invert();
     POSE inverse() const { return inverse(*this); }
@@ -48,6 +56,9 @@ class POSE
 
     /// the pose that *this* pose is relative to (if any)
     boost::shared_ptr<POSE> rpose; 
+
+  private:
+    std::pair<QUAT, VECTOR3> calc_transform(boost::shared_ptr<POSE> p) const;  
 }; // end class
 
 std::ostream& operator<<(std::ostream& out, const POSE& m);

@@ -7,10 +7,11 @@
 #ifndef _SPATIAL_RB_INERTIAD_H
 #define _SPATIAL_RB_INERTIAD_H
 
+#include <vector>
 #include <boost/shared_ptr.hpp>
 #include <Ravelin/Wrenchd.h>
 #include <Ravelin/Twistd.h>
-#include <Ravelin/Posed.h>
+#include <Ravelin/Matrix3d.h>
 
 namespace Ravelin {
 

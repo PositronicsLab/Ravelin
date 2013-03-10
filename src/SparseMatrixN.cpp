@@ -638,7 +638,11 @@ SPARSEMATRIXN& SPARSEMATRIXN::negate()
 /// Calculates the outer product of a vector with itself and stores the result in a sparse matrix
 SPARSEMATRIXN& SPARSEMATRIXN::outer_square(const SPARSEVECTORN& v, SPARSEMATRIXN& result)
 {
-  SAFESTATIC FastThreadable<VECTORN> tmp;
+  #ifdef REENTRANT
+  FastThreadable<VECTORN> tmp;
+  #else
+  static FastThreadable<VECTORN> tmp;
+  #endif
 
   // determine the size of the matrix
   unsigned n = v.size();

@@ -1049,7 +1049,6 @@ X& solve_fast(X& A, Y& XB)
   INTEGER LDA = A.leading_dim();
   INTEGER LDB = XB.leading_dim();
   INTEGER NRHS = XB.columns();
-  SAFESTATIC FastThreadable<std::vector<INTEGER> > pivwork;
   pivwork().resize(N);
   INTEGER INFO;
 

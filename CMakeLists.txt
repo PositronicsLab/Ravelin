@@ -19,10 +19,7 @@ option (ATLAS_BUGFIX "Use bugfix for Debian/Ubuntu ATLAS packages?" OFF)
 
 # modify C++ flags
 if (REENTRANT)
-  add_definitions (-DSAFESTATIC=)
   add_definitions (-DREENTRANT)
-else (REENTRANT)
-  add_definitions (-DSAFESTATIC=static)
 endif (REENTRANT)
 if (PROFILE)
   set (CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} "-pg -g")

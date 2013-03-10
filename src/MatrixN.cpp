@@ -1,4 +1,4 @@
-#ifndef THREADSAFE
+#ifndef REENTRANT 
 FastThreadable<MATRIXN> MATRIXN::_n;
 FastThreadable<VECTORN> MATRIXN::_workv;
 #endif
@@ -143,11 +143,17 @@ MATRIXN MATRIXN::construct_variable(unsigned rows, unsigned cols, ...)
  */
 MATRIXN& MATRIXN::remove_row(unsigned i)
 {
-  _workv().resize(_columns);
+  #ifdef REENTRANT
+  VECTORN workv;
+  #else
+  VECTORN& workv = _workv();
+  #endif
+
+  workv.resize(_columns);
   for (unsigned j=i+1; j< _rows; j++)
   {
-    get_row(j, _workv());
-    set_row(j-1, _workv());
+    get_row(j, workv);
+    set_row(j-1, workv);
   }
 
   // downsize the matrix
@@ -161,11 +167,16 @@ MATRIXN& MATRIXN::remove_row(unsigned i)
  */
 MATRIXN& MATRIXN::remove_column(unsigned i)
 {
-  _workv().resize(_rows);
+  #ifdef REENTRANT
+  VECTORN workv;
+  #else
+  VECTORN& workv = _workv();
+  #endif
+
   for (unsigned j=i+1; j< _columns; j++)
   {
-    get_column(j, _workv());
-    set_column(j-1, _workv());
+    get_column(j, workv);
+    set_column(j-1, workv);
   }
 
   // downsize the matrix
@@ -273,6 +284,12 @@ MATRIXN& MATRIXN::set_zero()
 /// Sets this matrix to its transpose
 MATRIXN& MATRIXN::transpose()
 {
+  #ifdef REENTRANT
+  MATRIXN n;
+  #else
+  MATRIXN& n = _n();
+  #endif
+
   // do fastest transpose first (if possible)
   if (_rows == 1 || _columns == 1)
   {
@@ -291,12 +308,12 @@ MATRIXN& MATRIXN::transpose()
   }
 
   // do slowest transpose operation
-  _n().resize(_columns, _rows);
-  REAL* ndata = _n().data();
+  n.resize(_columns, _rows);
+  REAL* ndata = n.data();
   for (unsigned i=0; i< _rows; i++)
     for (unsigned j=0; j< _columns; j++)
       ndata[i*_columns + j] = _data[j*_rows + i];
-  operator=(_n());
+  operator=(n);
 
   return *this;
 }

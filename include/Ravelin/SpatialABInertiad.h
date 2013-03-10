@@ -7,12 +7,12 @@
 #ifndef _SPATIAL_AB_INERTIAD_H
 #define _SPATIAL_AB_INERTIAD_H
 
+#include <vector>
 #include <boost/shared_ptr.hpp>
 #include <Ravelin/Wrenchd.h>
 #include <Ravelin/Twistd.h>
 #include <Ravelin/SpatialRBInertiad.h>
 #include <Ravelin/Matrix3d.h>
-#include <Ravelin/Pose.h>
 
 namespace Ravelin {
 

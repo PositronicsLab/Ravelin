@@ -189,7 +189,32 @@ POSE POSE::inverse(const POSE& p)
 /// Multiplies this pose by another
 POSE POSE::operator*(const POSE& p) const
 {
+  if (rpose != p.rpose)
+    throw FrameException();
   return POSE(q * p.q, q*p.x + x);
+}
+
+/// Computes the relative transformation from this pose to another
+std::pair<QUAT, VECTOR3> POSE::calc_transform(boost::shared_ptr<POSE> p) const
+{
+  std::pair<QUAT, VECTOR3> result;
+
+  // if both transforms are defined relative to the same frame, this is easy
+  if (rpose == p->rpose)
+  {
+    // compute the inverse pose of p 
+    QUAT p_q = QUAT::invert(p->q);
+    VECTOR3 p_x = p_q * (-p->x);
+
+    // multiply the inverse pose of p by this 
+    result.first = q * p_q;
+    result.second = q*p_x + x;
+  }
+  else
+  {
+  }
+
+  return result;
 }
 
 /// Outputs this matrix to the stream

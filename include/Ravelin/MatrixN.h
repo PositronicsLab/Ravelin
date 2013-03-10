@@ -77,8 +77,10 @@ class MATRIXN
     #undef XMATRIXN
 
   protected:
-    SAFESTATIC FastThreadable<MATRIXN> _n;
-    SAFESTATIC FastThreadable<VECTORN> _workv;
+    #ifndef REENTRANT
+    static FastThreadable<MATRIXN> _n;
+    static FastThreadable<VECTORN> _workv;
+    #endif
 
     boost::shared_array<REAL> _data;
     unsigned _rows;
