@@ -77,8 +77,10 @@ REAL SPARSEVECTORN::dot(const VECTORN& x) const
 {
   REAL result = 0;
 
+  #ifndef NEXCEPT
   if (x.size() != _size)
     throw MissizeException();
+  #endif
 
   for (unsigned i=0; i< _nelm; i++)
     result += x[_indices[i]] * _data[i];

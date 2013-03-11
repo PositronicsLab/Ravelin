@@ -4,8 +4,6 @@
  * License (found in COPYING).
  ****************************************************************************/
 
-using std::vector;
-
 /// Default constructor -- constructs a zero inertia matrix
 SPATIAL_RB_INERTIA::SPATIAL_RB_INERTIA()
 {
@@ -42,6 +40,11 @@ void SPATIAL_RB_INERTIA::set_zero()
 /// Multiplies the inverse of this spatial matrix by a wrench 
 TWIST SPATIAL_RB_INERTIA::inverse_mult(const WRENCH& w) const
 {
+  #ifndef NEXCEPT
+  if (pose != w.pose)
+    throw FrameException();
+  #endif
+
   // compute the skew symmetric version of h
   MATRIX3 hx = MATRIX3::skew_symmetric(h);
 
@@ -58,11 +61,13 @@ TWIST SPATIAL_RB_INERTIA::inverse_mult(const WRENCH& w) const
   VECTOR3 bot = w.get_torque();
 
   // do the arithmetic
-  return TWIST(UL*top + UR*bot, LL*top + UL.transpose_mult(bot));
+  TWIST t(UL*top + UR*bot, LL*top + UL.transpose_mult(bot));
+  t.pose = pose;
+  return t;
 }
 
 /// Multiplies the inverse of this spatial matrix by a wrench 
-vector<TWIST>& SPATIAL_RB_INERTIA::inverse_mult(const vector<WRENCH>& w, vector<TWIST>& result) const
+std::vector<TWIST>& SPATIAL_RB_INERTIA::inverse_mult(const std::vector<WRENCH>& w, std::vector<TWIST>& result) const
 {
   result.resize(w.size());
   if (result.empty())
@@ -82,11 +87,17 @@ vector<TWIST>& SPATIAL_RB_INERTIA::inverse_mult(const vector<WRENCH>& w, vector<
   // get the components of the wrench 
   for (unsigned i=0; i< w.size(); i++)
   {
+    #ifndef NEXCEPT
+    if (pose != w[i].pose)
+      throw FrameException();
+    #endif
+
     VECTOR3 top = w[i].get_force();
     VECTOR3 bot = w[i].get_torque();
 
     // do the arithmetic
     result[i] = TWIST(UL*top + UR*bot, LL*top + UL.transpose_mult(bot));
+    result[i].pose = pose;
   }
 
   return result;
@@ -95,6 +106,11 @@ vector<TWIST>& SPATIAL_RB_INERTIA::inverse_mult(const vector<WRENCH>& w, vector<
 /// Multiplies this matrix by a vector and returns the result in a new vector
 WRENCH SPATIAL_RB_INERTIA::operator*(const TWIST& t) const
 {
+  #ifndef NEXCEPT
+  if (pose != t.pose)
+    throw FrameException();
+  #endif
+
   // get necessary components of t
   VECTOR3 ttop = t.get_angular();
   VECTOR3 tbot = t.get_linear();
@@ -106,7 +122,9 @@ WRENCH SPATIAL_RB_INERTIA::operator*(const TWIST& t) const
   VECTOR3 rtop = (tbot * m) - (hX * ttop);
   VECTOR3 rbot = (J * ttop) + (hX * tbot);
 
-  return WRENCH(rtop, rbot); 
+  WRENCH w(rtop, rbot); 
+  w.pose = pose;
+  return w;
 }
 
 /// Multiplies this matrix by a scalar in place
@@ -125,12 +143,18 @@ SPATIAL_RB_INERTIA SPATIAL_RB_INERTIA::operator-() const
   result.m = -this->m;
   result.h = -this->h;
   result.J = -this->J;
+  result.pose = pose;
   return result;
 }
 
 /// Adds two spatial matrices
 SPATIAL_RB_INERTIA SPATIAL_RB_INERTIA::operator+(const SPATIAL_RB_INERTIA& m) const
 {
+  #ifndef NEXCEPT
+  if (pose != m.pose)
+    throw FrameException();
+  #endif
+
   SPATIAL_RB_INERTIA result;
   result.m = this->m + m.m;
   result.h = this->h + m.h;
@@ -141,16 +165,27 @@ SPATIAL_RB_INERTIA SPATIAL_RB_INERTIA::operator+(const SPATIAL_RB_INERTIA& m) co
 /// Subtracts two spatial matrices
 SPATIAL_RB_INERTIA SPATIAL_RB_INERTIA::operator-(const SPATIAL_RB_INERTIA& m) const
 {
+  #ifndef NEXCEPT
+  if (pose != m.pose)
+    throw FrameException();
+  #endif
+
   SPATIAL_RB_INERTIA result;
   result.m = this->m - m.m;
   result.h = this->h - m.h;
   result.J = this->J - m.J;
+  result.pose = pose;
   return result;
 }
 
 /// Adds m to this in place
 SPATIAL_RB_INERTIA& SPATIAL_RB_INERTIA::operator+=(const SPATIAL_RB_INERTIA& m)
 {
+  #ifndef NEXCEPT
+  if (pose != m.pose)
+    throw FrameException();
+  #endif
+
   this->m += m.m;
   this->h += m.h;
   this->J += m.J;
@@ -160,6 +195,11 @@ SPATIAL_RB_INERTIA& SPATIAL_RB_INERTIA::operator+=(const SPATIAL_RB_INERTIA& m)
 /// Subtracts m from this in place
 SPATIAL_RB_INERTIA& SPATIAL_RB_INERTIA::operator-=(const SPATIAL_RB_INERTIA& m)
 {
+  #ifndef NEXCEPT
+  if (pose != m.pose)
+    throw FrameException();
+  #endif
+
   this->m -= m.m;
   this->h -= m.h;
   this->J -= m.J;
@@ -167,7 +207,7 @@ SPATIAL_RB_INERTIA& SPATIAL_RB_INERTIA::operator-=(const SPATIAL_RB_INERTIA& m)
 }
 
 /// Multiplies a spatial matrix by a spatial matrix and returns the result in a spatial matrix
-vector<WRENCH>& SPATIAL_RB_INERTIA::mult(const vector<TWIST>& t, vector<WRENCH>& result) const
+std::vector<WRENCH>& SPATIAL_RB_INERTIA::mult(const std::vector<TWIST>& t, std::vector<WRENCH>& result) const
 {
   // get number of twists 
   const unsigned N = t.size(); 
@@ -186,10 +226,17 @@ vector<WRENCH>& SPATIAL_RB_INERTIA::mult(const vector<TWIST>& t, vector<WRENCH>&
   for (unsigned i=0; i< N; i++)
   {
     const TWIST& twist = t[i];
+
+    #ifndef NEXCEPT
+    if (pose != twist.pose)
+      throw FrameException();
+    #endif
+
     VECTOR3 top = twist.get_angular();
     VECTOR3 bot = twist.get_linear();
     WRENCH w((bot * this->m)-(hX * top), (this->J * top)+(hX * bot));
     result[i] = w;
+    result[i].pose = pose;
   } 
 
   return result;
@@ -200,6 +247,7 @@ std::ostream& Ravelin::operator<<(std::ostream& out, const SPATIAL_RB_INERTIA& m
 {
   out << "spatial rigid body mass=" << m.m << " h = " << m.h << " J = ";
   out << std::endl << m.J;
+  out << " pose: " << m.pose << std::endl;
    
   return out;
 }

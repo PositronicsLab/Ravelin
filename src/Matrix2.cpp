@@ -384,36 +384,46 @@ std::ostream& Ravelin::operator<<(std::ostream& out, const MATRIX2& m)
 
 REAL& MATRIX2::operator()(const unsigned i, unsigned j)
 {
+  #ifndef NEXCEPT
   if (i >= 2 || j >= 2)
     throw InvalidIndexException();
+  #endif
   return _data[j*2+i];
 }
 
 REAL MATRIX2::operator()(const unsigned i, unsigned j) const
 {
+  #ifndef NEXCEPT
   if (i >= 2 || j >= 2)
     throw InvalidIndexException();
+  #endif
   return _data[j*2+i];
 }
 
 REAL* MATRIX2::data(unsigned i)
 {
+  #ifndef NEXCEPT
   if (i >= 4)
     throw InvalidIndexException();
+  #endif
   return &_data[i];
 }
 
 const REAL* MATRIX2::data(unsigned i) const
 {
+  #ifndef NEXCEPT
   if (i >= 4)
     throw InvalidIndexException();
+  #endif
   return &_data[i];
 }
 
 MATRIX2& MATRIX2::resize(unsigned m, unsigned n, bool preserve)
 {
+  #ifndef NEXCEPT
   if (m != 2 || n != 2)
     throw std::runtime_error("Attempt to resize fixed-length matrix!");
+  #endif
 
   return *this;
 }

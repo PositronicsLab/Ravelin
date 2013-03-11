@@ -16,16 +16,20 @@ SHAREDMATRIXN::SHAREDMATRIXN(const SHAREDMATRIXN& source)
 /// Accesses the given element
 REAL& SHAREDMATRIXN::operator()(unsigned i, unsigned j)
 {
+  #ifndef NEXCEPT
   if (i >= _rows || j >= _columns)
     throw InvalidIndexException();
+  #endif
   return _data[_start + j*_ld + i];
 }
 
 /// Accesses the given element
 REAL SHAREDMATRIXN::operator()(unsigned i, unsigned j) const
 {
+  #ifndef NEXCEPT
   if (i >= _rows || j >= _columns)
     throw InvalidIndexException();
+  #endif
   return _data[_start + j*_ld + i];
 }
 
@@ -77,8 +81,10 @@ SHAREDMATRIXN& SHAREDMATRIXN::resize(unsigned rows, unsigned columns, bool prese
   // if the matrix is already the proper size, exit
   if (_rows == rows && _columns == columns)
     return *this;
+  #ifndef NEXCEPT
   else
     throw std::runtime_error("Attempt to resize shared matrix!");
+  #endif
 }
 
 /// Sets the matrix to the zero matrix
@@ -190,6 +196,27 @@ SHAREDMATRIXN& SHAREDMATRIXN::set_identity()
     _data[j] = (REAL) 1.0;
 
   return *this;
+}
+
+/// Outputs this matrix to the stream
+std::ostream& Ravelin::operator<<(std::ostream& out, const CONST_SHAREDMATRIXN& m)
+{
+  const unsigned OUTPUT_PRECISION = 8;
+
+  if (m.rows() == 0 || m.columns() == 0)
+  {
+    out << "(empty)" << std::endl;
+    return out;
+  }
+
+  for (unsigned i=0; i< m.rows(); i++)
+  {
+    for (unsigned j=0; j< m.columns()-1; j++)
+      out << std::setprecision(OUTPUT_PRECISION) << m(i,j) << " ";
+    out << std::setprecision(OUTPUT_PRECISION) << m(i,m.columns()-1) << std::endl;
+  }
+
+  return out;
 }
 
 // use common routines

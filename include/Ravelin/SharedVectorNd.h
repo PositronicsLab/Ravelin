@@ -18,6 +18,8 @@ namespace Ravelin {
 
 #define SHAREDVECTORN SharedVectorNd
 #define SHAREDMATRIXN SharedMatrixNd
+#define CONST_SHAREDVECTORN SharedConstVectorNd
+#define CONST_SHAREDMATRIXN SharedConstMatrixNd
 #define EPS EPS_DOUBLE
 #define VECTOR3 Vector3d
 #define VECTORN VectorNd
@@ -30,6 +32,8 @@ namespace Ravelin {
 
 #undef SHAREDVECTORN
 #undef SHAREDMATRIXN
+#undef CONST_SHAREDVECTORN
+#undef CONST_SHAREDMATRIXN
 #undef EPS
 #undef VECTOR3
 #undef VECTORN

@@ -19,6 +19,7 @@ namespace Ravelin {
 #define VECTOR3 Vector3f
 #define ITERATOR fIterator
 #define CONST_ITERATOR fIterator_const
+#define POSE Posef 
 
 #include "SVector6.h"
 
@@ -27,6 +28,7 @@ namespace Ravelin {
 #undef VECTOR3
 #undef ITERATOR
 #undef CONST_ITERATOR
+#undef POSE
 
 } // end namespace
 

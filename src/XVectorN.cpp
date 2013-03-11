@@ -39,3 +39,4 @@ std::ostream& Ravelin::operator<<(std::ostream& out, const XVECTORN& v)
   return out;
 }
 
+

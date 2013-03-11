@@ -5,6 +5,7 @@
  ****************************************************************************/
 
 #include <Ravelin/Constants.h>
+#include <Ravelin/FrameException.h>
 #include <Ravelin/SpatialABInertiaf.h>
 
 using namespace Ravelin;
@@ -15,6 +16,7 @@ using namespace Ravelin;
 #define VECTOR3 Vector3f
 #define TWIST Twistf
 #define WRENCH Wrenchf
+#define POSE Posef
 #define REAL float
 
 #include "SpatialABInertia.cpp"
@@ -25,6 +27,7 @@ using namespace Ravelin;
 #undef VECTOR3 
 #undef TWIST 
 #undef WRENCH
+#undef POSE
 #undef REAL
 
 

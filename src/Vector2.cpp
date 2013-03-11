@@ -25,36 +25,50 @@ VECTOR2::VECTOR2(const REAL* array)
 
 REAL& VECTOR2::operator[](const unsigned i)
 {
+  #ifndef NEXCEPT
   if (i >= 2)
     throw InvalidIndexException();
+  #endif
+
   return _data[i];
 }
 
 REAL VECTOR2::operator[](const unsigned i) const
 {
+  #ifndef NEXCEPT
   if (i >= 2)
     throw InvalidIndexException();
+  #endif
+
   return _data[i];
 }
 
 REAL* VECTOR2::data(unsigned i)
 {
+  #ifndef NEXCEPT
   if (i >= 2)
     throw InvalidIndexException();
+  #endif
+
   return &_data[i];
 }
 
 const REAL* VECTOR2::data(unsigned i) const
 {
+  #ifndef NEXCEPT
   if (i >= 2)
     throw InvalidIndexException();
+  #endif
+
   return &_data[i];
 }
 
 VECTOR2& VECTOR2::resize(unsigned m, unsigned n, bool preserve)
 {
+  #ifndef NEXCEPT
   if (m != 2 || n != 1)
     throw std::runtime_error("Attempt to resize fixed-length vector!");
+  #endif
 
   return *this;
 }

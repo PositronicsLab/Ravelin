@@ -189,8 +189,10 @@ POSE POSE::inverse(const POSE& p)
 /// Multiplies this pose by another
 POSE POSE::operator*(const POSE& p) const
 {
+  #ifndef NEXCEPT
   if (rpose != p.rpose)
     throw FrameException();
+  #endif
   return POSE(q * p.q, q*p.x + x);
 }
 

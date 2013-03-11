@@ -45,8 +45,10 @@ class SPATIAL_AB_INERTIA
     template <class Mat>
     SPATIAL_AB_INERTIA(const Mat& m)
     {
+      #ifndef NEXCEPT
       if (m.rows() != 6 || m.columns() != 6)
         throw MissizeException();
+      #endif
       m.get_sub_mat(0, 3, 3, 6, M);
       m.get_sub_mat(3, 6, 3, 6, H);
       m.get_sub_mat(3, 6, 0, 3, J);

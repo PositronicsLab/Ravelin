@@ -520,7 +520,7 @@ QUAT& QUAT::operator=(const MATRIX3& m)
   if (m.yx() - m.xy() < (REAL) 0.0)
     q.z = -q.z;
 
-  #ifndef NDEBUG
+  #ifndef NDEBUG 
   if (!q.unit())
     std::cerr << "QUAT::set() warning!  not a unit quaternion!" << std::endl;
   #endif

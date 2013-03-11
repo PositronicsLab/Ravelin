@@ -21,7 +21,9 @@ namespace Ravelin {
 #define MATRIX3 Matrix3d
 #define MATRIX2 Matrix2d
 #define SHAREDVECTORN SharedVectorNd
+#define CONST_SHAREDVECTORN SharedConstVectorNd
 #define SHAREDMATRIXN SharedMatrixNd
+#define CONST_SHAREDMATRIXN SharedConstMatrixNd
 #define VECTORN VectorNd
 #define POSE Posed
 #define CONST_ITERATOR dIterator_const
@@ -34,7 +36,9 @@ namespace Ravelin {
 #undef MATRIX3
 #undef MATRIX2
 #undef SHAREDVECTORN
+#undef CONST_SHAREDVECTORN
 #undef SHAREDMATRIXN
+#undef CONST_SHAREDMATRIXN
 #undef VECTORN 
 #undef POSE 
 #undef CONST_ITERATOR

@@ -415,24 +415,30 @@ MATRIXN& MATRIXN::set_identity(unsigned i)
 /// Gets the desired entry
 REAL MATRIXN::operator()(unsigned i, unsigned j) const
 {
+  #ifndef NEXCEPT
   if (i >= _rows || j >= _columns)
     throw InvalidIndexException();
+  #endif
   return _data[j*_rows+i];
 }
 
 /// Gets the desired entry
 REAL& MATRIXN::operator()(unsigned i, unsigned j) 
 {
+  #ifndef NEXCEPT
   if (i >= _rows || j >= _columns)
     throw InvalidIndexException();
+  #endif
   return _data[j*_rows+i];
 }
 
 /// Sets this matrix to the identity matrix
 MATRIXN& MATRIXN::set_identity()
 {
+  #ifndef NEXCEPT
   if (_rows != _columns)
     throw MissizeException();
+  #endif
 
   // set matrix to identity
   set_zero();
@@ -447,8 +453,10 @@ MATRIXN& MATRIXN::set_identity()
 /// Subtracts m from this 
 MATRIXN& MATRIXN::operator-=(const MATRIXN& m)
 {
+  #ifndef NEXCEPT
   if (_rows != m._rows || _columns != m._columns)
     throw MissizeException(); 
+  #endif
 
   const unsigned N = _rows*_columns;
   if (N > 0)
@@ -459,8 +467,10 @@ MATRIXN& MATRIXN::operator-=(const MATRIXN& m)
 /// Adds m to this 
 MATRIXN& MATRIXN::operator+=(const MATRIXN& m)
 {
+  #ifndef NEXCEPT
   if (_rows != m._rows || _columns != m._columns)
     throw MissizeException(); 
+  #endif
 
   const unsigned N = _rows*_columns;
   if (N > 0)

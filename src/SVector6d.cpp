@@ -8,6 +8,7 @@
 #include <functional>
 #include <algorithm>
 #include <Ravelin/cblas.h>
+#include <Ravelin/FrameException.h>
 #include <Ravelin/SVector6d.h>
 
 using namespace Ravelin;

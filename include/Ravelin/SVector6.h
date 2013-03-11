@@ -66,8 +66,10 @@ class SVECTOR6
     SVECTOR6(const V& v)
     {
       const unsigned SPATIAL_DIM = 6;
+      #ifndef NEXCEPT
       if (v.rows()*v.columns() != SPATIAL_DIM)
         throw MissizeException();
+      #endif
 
       std::copy(v.begin(), v.end(), begin());
     }

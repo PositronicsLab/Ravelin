@@ -88,7 +88,7 @@ Quatd to_Quat(const Matrix3d& m)
   if (m(Y,X) - m(X,Y) < 0.0)
     q.z = -q.z;
 
-  #ifndef NDEBUG
+  #ifndef NEXCEPT
   if (!q.unit())
     std::cerr << "Quatd::set() warning!  not a unit quaternion!" << std::endl;
   #endif
@@ -107,7 +107,7 @@ Quatd to_Quat(const AAngled& a)
   q.z = a.z * sina;
   q.w = std::cos(half);
 
-  #ifndef NDEBUG
+  #ifndef NEXCEPT
   if (!q.unit())
     std::cerr << "Quatd::set() warning!  not a unit quaternion!" << std::endl;
   #endif

@@ -23,7 +23,9 @@ using std::vector;
 #define MATRIXN MatrixNf
 #define MATRIX3 Matrix3f
 #define SHAREDVECTORN SharedVectorNf
+#define CONST_SHAREDVECTORN SharedConstVectorNf
 #define SHAREDMATRIXN SharedMatrixNf
+#define CONST_SHAREDMATRIXN SharedConstMatrixNf
 #define VECTORN VectorNf
 #define VECTOR3 Vector3f
 #define ITERATOR fIterator
@@ -36,6 +38,8 @@ using std::vector;
 #undef MATRIX3
 #undef SHAREDVECTORN
 #undef SHAREDMATRIXN
+#undef CONST_SHAREDVECTORN
+#undef CONST_SHAREDMATRIXN
 #undef VECTORN
 #undef VECTOR3
 #undef ITERATOR
