@@ -42,6 +42,30 @@ SHAREDMATRIXN& SHAREDMATRIXN::operator=(const MATRIX3& m)
   return *this;
 }
 
+/// Sets a matrix from a MATRIXN
+SHAREDMATRIXN& SHAREDMATRIXN::operator=(const MATRIXN& m)
+{
+  resize(m.rows(),m.columns());
+  set_sub_mat(0,0, m);
+  return *this;
+}
+
+/// Sets a matrix from a MATRIXN
+SHAREDMATRIXN& SHAREDMATRIXN::operator=(const SHAREDMATRIXN& m)
+{
+  resize(m.rows(),m.columns());
+  set_sub_mat(0,0, m);
+  return *this;
+}
+
+/// Sets a matrix from a MATRIXN
+SHAREDMATRIXN& SHAREDMATRIXN::operator=(const CONST_SHAREDMATRIXN& m)
+{
+  resize(m.rows(),m.columns());
+  set_sub_mat(0,0, m);
+  return *this;
+}
+
 /*
 /// Sets a matrix from a pose 
 MATRIXN& MATRIXN::set(const POSE& p)
@@ -198,6 +222,31 @@ SHAREDMATRIXN& SHAREDMATRIXN::set_identity()
   return *this;
 }
 
+CONST_SHAREDMATRIXN::CONST_SHAREDMATRIXN()
+{
+  _rows = _columns = _ld = _start = 0;
+}
+
+/// Copy constructor
+CONST_SHAREDMATRIXN::CONST_SHAREDMATRIXN(const SHAREDMATRIXN& source)
+{
+  _rows = source.rows();
+  _columns = source.columns();
+  _ld = source.rows();
+  _start = 0;
+  _data = source._data;
+}
+
+/// Copy constructor
+CONST_SHAREDMATRIXN::CONST_SHAREDMATRIXN(const CONST_SHAREDMATRIXN& source)
+{
+  _rows = source.rows();
+  _columns = source.columns();
+  _ld = source.rows();
+  _start = 0;
+  _data = source._data;
+}
+
 /// Outputs this matrix to the stream
 std::ostream& Ravelin::operator<<(std::ostream& out, const CONST_SHAREDMATRIXN& m)
 {
@@ -217,6 +266,16 @@ std::ostream& Ravelin::operator<<(std::ostream& out, const CONST_SHAREDMATRIXN& 
   }
 
   return out;
+}
+
+/// Accesses the given element
+REAL CONST_SHAREDMATRIXN::operator()(unsigned i, unsigned j) const
+{
+  #ifndef NEXCEPT
+  if (i >= _rows || j >= _columns)
+    throw InvalidIndexException();
+  #endif
+  return _data[_start + j*_ld + i];
 }
 
 // use common routines

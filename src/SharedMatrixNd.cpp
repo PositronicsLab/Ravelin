@@ -12,6 +12,7 @@
 #include <Ravelin/cblas.h>
 #include <Ravelin/Constants.h>
 #include <Ravelin/VectorNd.h>
+#include <Ravelin/MatrixNd.h>
 #include <Ravelin/SharedVectorNd.h>
 #include <Ravelin/SharedMatrixNd.h>
 
