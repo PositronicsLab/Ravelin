@@ -684,36 +684,46 @@ MATRIX3& MATRIX3::operator=(const AANGLE& a)
 
 REAL& MATRIX3::operator()(unsigned i, unsigned j)
 {
+  #ifndef NEXCEPT
   if (i >= 3 || j >= 3)
     throw InvalidIndexException();
+  #endif
   return _data[j*3+i];
 }
 
 REAL MATRIX3::operator()(unsigned i, unsigned j) const
 {
+  #ifndef NEXCEPT
   if (i >= 3 || j >= 3)
     throw InvalidIndexException();
+  #endif
   return _data[j*3+i];
 }
 
 REAL* MATRIX3::data(unsigned i)
 {
+  #ifndef NEXCEPT
   if (i >= 9)
     throw InvalidIndexException();
+  #endif
   return &_data[i];
 }
 
 const REAL* MATRIX3::data(unsigned i) const
 {
+  #ifndef NEXCEPT
   if (i >= 9)
     throw InvalidIndexException();
+  #endif
   return &_data[i];
 }
 
 MATRIX3& MATRIX3::resize(unsigned m, unsigned n, bool preserve)
 {
+  #ifndef NEXCEPT
   if (m != 3 || n != 3)
     throw std::runtime_error("Attempt to resize fixed-length vector!");
+  #endif
 
   return *this;
 }

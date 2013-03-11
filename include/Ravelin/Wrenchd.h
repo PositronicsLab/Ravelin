@@ -16,6 +16,7 @@ namespace Ravelin {
 #define WRENCH Wrenchd
 #define SVECTOR6 SVector6d
 #define VECTOR3 Vector3d
+#define POSE Posed 
 
 #include "Wrench.h"
 
@@ -24,6 +25,7 @@ namespace Ravelin {
 #undef WRENCH
 #undef SVECTOR6
 #undef VECTOR3
+#undef POSE
 
 } // end namespace
 

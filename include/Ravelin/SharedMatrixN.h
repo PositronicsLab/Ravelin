@@ -8,13 +8,49 @@
 #error This class is not to be included by the user directly. Use SharedMatrixNd.h or SharedMatrixNf.h instead.
 #endif
 
-/// A generic, possibly non-square matrix.  
+class CONST_SHAREDMATRIXN;
+class SHAREDMATRIXN;
+
+/// A generic, possibly non-square matrix using constant shared data 
+/**
+ * The underlying data is stored in column-major format (e.g., the element at row 1, column 0 is the second element in the flat array).
+ */
+class CONST_SHAREDMATRIXN
+{
+  friend class MATRIXN;
+  friend class SHAREDMATRIXN;
+
+  public:
+    CONST_SHAREDMATRIXN();
+    CONST_SHAREDMATRIXN(const SHAREDMATRIXN& source);
+    CONST_SHAREDMATRIXN(const CONST_SHAREDMATRIXN& source);
+    bool is_symmetric(REAL tolerance = (REAL) -1.0) const;
+    REAL norm_inf() const;
+    unsigned rows() const { return _rows; }
+    unsigned columns() const { return _columns; }
+    unsigned leading_dim() const { return _ld; }
+    CONST_SHAREDMATRIXN& resize(unsigned rows, unsigned columns, bool preserve = false);
+    REAL operator()(unsigned i, unsigned j) const;
+    const REAL* data() const { return _data.get()+_start; }    
+
+    #include "ConstSharedMatrixN.inl"
+
+  protected:
+    boost::shared_array<REAL> _data;
+    unsigned _rows;
+    unsigned _start;
+    unsigned _columns;
+    unsigned _ld;       // the leading dimension of the matrix
+}; // end class
+
+/// A generic, possibly non-square matrix using shared data 
 /**
  * The underlying data is stored in column-major format (e.g., the element at row 1, column 0 is the second element in the flat array).
  */
 class SHAREDMATRIXN
 {
   friend class MATRIXN;
+  friend class CONST_SHAREDMATRIXN;
 
   public:
     SHAREDMATRIXN();
@@ -53,6 +89,8 @@ class SHAREDMATRIXN
     unsigned _ld;       // the leading dimension of the matrix
 }; // end class
 
+
 std::ostream& operator<<(std::ostream& out, const SHAREDMATRIXN& m);
+std::ostream& operator<<(std::ostream& out, const CONST_SHAREDMATRIXN& m);
 std::istream& operator>>(std::istream& in, SHAREDMATRIXN& m);
 

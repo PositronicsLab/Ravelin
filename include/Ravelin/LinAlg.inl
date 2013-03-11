@@ -11,17 +11,21 @@ template <class X>
 static X& solve_tridiagonal_fast(VECTORN& dl, VECTORN& d, VECTORN& du, X& XB)
 {
   // make sure everything is the proper size
+  #ifndef NEXCEPT
   if (sizeof(dl.data()) != sizeof(XB.data()))
     throw DataMismatchException();
   if (sizeof(d.data()) != sizeof(XB.data()))
     throw DataMismatchException();
   if (sizeof(du.data()) != sizeof(XB.data()))
     throw DataMismatchException();
+  #endif
 
   // determine N
   INTEGER N = d.size();
+  #ifndef NEXCEPT
   if (XB.rows() != N)
     throw MissizeException();
+  #endif
 
   // call the tridiagonal solver
   INTEGER LDB = XB.leading_dim();
@@ -45,8 +49,10 @@ static X& solve_tridiagonal_fast(VECTORN& dl, VECTORN& d, VECTORN& du, X& XB)
 template <class X>
 static bool factor_chol(X& A)
 {
+  #ifndef NEXCEPT
   if (A.rows() != A.columns())
     throw NonsquareMatrixException();
+  #endif
 
   // verify that A is not zero sized
   if (A.rows() == 0 || A.columns() == 0)
@@ -111,8 +117,10 @@ X& inverse_LU(X& M, const std::vector<int>& pivwork)
   if (M.rows() == 0 || M.columns() == 0)
     return M;
 
+  #ifndef NEXCEPT
   if (M.rows() != M.columns())
     throw NonsquareMatrixException();
+  #endif
 
   // call lapack
   INTEGER INFO;
@@ -136,17 +144,21 @@ X& inverse_LU(X& M, const std::vector<int>& pivwork)
 template <class X, class Y>
 static X& solve_tri_fast(const Y& A, bool utri, bool transpose_A, X& XB)
 {
+  #ifndef NEXCEPT
   if (A.rows() != XB.rows())
     throw MissizeException();
 
   if (A.rows() != A.columns())
     throw NonsquareMatrixException();
+  #endif
 
   if (A.rows() == 0 || XB.columns() == 0)
     return XB.set_zero();
 
+  #ifndef NEXCEPT
   if (sizeof(A.data()) != sizeof(XB.data()))
     throw DataMismatchException();
+  #endif
 
   // setup parameters for LAPACK
   char TRANS = (transpose_A) ? 'T' : 'N';
@@ -169,18 +181,22 @@ static X& solve_tri_fast(const Y& A, bool utri, bool transpose_A, X& XB)
 template <class X>
 static X& solve_LDL_fast(const MATRIXN& M, const std::vector<int>& pivwork, X& XB)
 {
+  #ifndef NEXCEPT
   if (M.rows() != XB.rows())
     throw MissizeException();
 
   if (M.rows() != M.columns())
     throw NonsquareMatrixException();
+  #endif
 
   // check for empty matrix
   if (M.rows() == 0 || XB.columns() == 0)
     return XB.set_zero();
 
+  #ifndef NEXCEPT
   if (sizeof(M.data()) != sizeof(XB.data()))
     throw DataMismatchException();
+  #endif
 
   // setup parameters for LAPACK
   char UPLO = 'U';
@@ -204,18 +220,22 @@ static X& solve_LDL_fast(const MATRIXN& M, const std::vector<int>& pivwork, X& X
 template <class X, class Y>
 static X& solve_chol_fast(const Y& M, X& XB)
 {
+  #ifndef NEXCEPT
   if (M.rows() != XB.rows())
     throw MissizeException();
 
   if (M.rows() != M.columns())
     throw NonsquareMatrixException();
+  #endif
 
   // check for empty matrices
   if (M.rows() == 0 || XB.columns() == 0)
     return XB.set_zero();
 
+  #ifndef NEXCEPT
   if (sizeof(M.data()) != sizeof(XB.data()))
     throw DataMismatchException();
+  #endif
 
   // setup parameters for LAPACK
   char UPLO = 'U';
@@ -242,18 +262,22 @@ static X& solve_chol_fast(const Y& M, X& XB)
 template <class Y, class X>
 static X& solve_LU_fast(const Y& M, bool transpose, const std::vector<int>& pivwork, X& XB)
 {
+  #ifndef NEXCEPT
   if (M.rows() != XB.rows())
     throw MissizeException();
 
   if (M.rows() != M.columns())
     throw NonsquareMatrixException();
+  #endif
 
   // check for empty matrix
   if (M.rows() == 0 || XB.columns() == 0)
     return XB.set_zero();
 
+  #ifndef NEXCEPT
   if (sizeof(M.data()) != sizeof(XB.data()))
     throw DataMismatchException();
+  #endif
 
   // setup parameters to LAPACK
   INTEGER N = M.rows();
@@ -308,8 +332,10 @@ unsigned calc_rank(X& A, REAL tol)
 template <class Y>
 MATRIXN& nullspace(Y& A, MATRIXN& nullspace, REAL tol)
 {
+  #ifndef NEXCEPT
   if (sizeof(A.data()) != sizeof(nullspace.data()))
     throw DataMismatchException();
+  #endif
 
   // look for fast way out
   if (A.rows() == 0)
@@ -422,11 +448,13 @@ void eig_symm(X& A, VECTORN& evals)
   }
 
   // verify that A is square
+  #ifndef NEXCEPT
   if (A.rows() != A.columns())
     throw NonsquareMatrixException();
+  #endif
 
   // verify that the matrix is symmetric
-  #ifndef NDEBUG
+  #ifndef NEXCEPT
   if (!A.is_symmetric())
     std::cerr << "LinAlg::eig_symm() - matrix does not appear to be symmetric!" << std::endl;
   #endif
@@ -465,6 +493,7 @@ void eig_symm_plus(X& A_evecs, Y& evals)
     return;
   }
 
+  #ifndef NEXCEPT
   if (A_evecs.rows() != A_evecs.columns())
     throw NonsquareMatrixException();
 
@@ -472,7 +501,6 @@ void eig_symm_plus(X& A_evecs, Y& evals)
     throw DataMismatchException();
 
   // verify that the matrix is symmetric
-  #ifndef NDEBUG
   if (!A_evecs.is_symmetric())
     std::cerr << "LinAlg::eig_symm() - matrix does not appear to be symmetric!" << std::endl;
   #endif
@@ -500,12 +528,14 @@ void svd(X& A, MATRIXN& U, VECTORN& S, MATRIXN& V)
 {
   MATRIXN& A_backup = workM();
 
+  #ifndef NEXCEPT
   if (sizeof(A.data()) != sizeof(U.data()))
     throw DataMismatchException();
   if (sizeof(A.data()) != sizeof(S.data()))
     throw DataMismatchException();
   if (sizeof(A.data()) != sizeof(V.data()))
     throw DataMismatchException();
+  #endif
 
   // copy A
   A_backup = A;
@@ -544,12 +574,14 @@ void svd1(X& A, MATRIXN& U, VECTORN& S, MATRIXN& V)
     return;
   } 
 
+  #ifndef NEXCEPT
   if (sizeof(A.data()) != sizeof(U.data()))
     throw DataMismatchException();
   if (sizeof(A.data()) != sizeof(S.data()))
     throw DataMismatchException();
   if (sizeof(A.data()) != sizeof(V.data()))
     throw DataMismatchException();
+  #endif
 
   // setup U
   if (U.rows() != A.rows() || U.columns() != A.rows())
@@ -607,12 +639,14 @@ void svd2(X& A, MATRIXN& U, VECTORN& S, MATRIXN& V)
     return;
   } 
 
+  #ifndef NEXCEPT
   if (sizeof(A.data()) != sizeof(U.data()))
     throw DataMismatchException();
   if (sizeof(A.data()) != sizeof(S.data()))
     throw DataMismatchException();
   if (sizeof(A.data()) != sizeof(V.data()))
     throw DataMismatchException();
+  #endif
 
   // setup U
   if (U.rows() != A.rows() || U.columns() != A.rows())
@@ -655,19 +689,23 @@ void svd2(X& A, MATRIXN& U, VECTORN& S, MATRIXN& V)
 template <class X>
 X& solve_symmetric_fast(MATRIXN& A, X& XB)
 {
+  #ifndef NEXCEPT
   if (A.rows() != A.columns())
     throw NonsquareMatrixException();
 
   // verify A and b are compatible 
   if (A.columns() != XB.rows())
     throw MissizeException();
+  #endif
 
   // make sure that A is not zero sized
   if (A.rows() == 0 || XB.columns() == 0)
     return XB.set_zero();
 
+  #ifndef NEXCEPT
   if (sizeof(A.data()) != sizeof(XB.data()))
     throw DataMismatchException();
+  #endif
 
   // form inputs to LAPACK
   char UPLO = 'U';
@@ -697,8 +735,10 @@ X& solve_symmetric_fast(MATRIXN& A, X& XB)
 template <class X>
 X& inverse_symmetric(X& A)
 {
+  #ifndef NEXCEPT
   if (A.rows() != A.columns())
     throw NonsquareMatrixException();
+  #endif
 
   // verify that A is not zero size
   if (A.rows() == 0)
@@ -742,19 +782,23 @@ X& inverse_symmetric(X& A)
 template <class Y, class X>
 static X& solve_SPD_fast(Y& A, X& XB)
 {
+  #ifndef NEXCEPT
   if (A.rows() != A.columns())
     throw NonsquareMatrixException();
 
   // verify that A and b are proper size
   if (A.columns() != XB.rows())
     throw MissizeException();
+  #endif
 
   // verify that A is not zero size
   if (A.rows() == 0 || XB.columns() == 0)
     return XB.set_zero();
 
+  #ifndef NEXCEPT
   if (sizeof(A.data()) != sizeof(XB.data()))
     throw DataMismatchException();
+  #endif
 
   // form inputs to LAPACK
   char UPLO = 'U';
@@ -783,8 +827,10 @@ static X& solve_SPD_fast(Y& A, X& XB)
 template <class X>
 static X& inverse_chol(X& A)
 {
+  #ifndef NEXCEPT
   if (A.rows() != A.columns())
     throw NonsquareMatrixException();
+  #endif
 
   // verify that A is not zero sized
   if (A.rows() == 0)
@@ -819,8 +865,10 @@ static X& inverse_chol(X& A)
 template <class X>
 static X& inverse_SPD(X& A)
 {
+  #ifndef NEXCEPT
   if (A.rows() != A.columns())
     throw NonsquareMatrixException();
+  #endif
 
   // verify that A is not zero sized
   if (A.rows() == 0)
@@ -876,11 +924,13 @@ template <class X, class Y>
 X& solve_LS_fast(Y& A, X& XB, SVD svd_algo, REAL tol)
 {
   // verify that A and B are appropriate sizes
+  #ifndef NEXCEPT
   if (A.rows() != XB.rows())
     throw MissizeException();
 
   if (sizeof(A.data()) != sizeof(XB.data()))
     throw DataMismatchException();
+  #endif
 
   // get the dimensionality of A
   const unsigned m = A.rows();
@@ -1030,19 +1080,23 @@ X& solve_LS_fast(Y& A, X& XB, SVD svd_algo, REAL tol)
 template <class X, class Y>
 X& solve_fast(X& A, Y& XB)
 {  
+  #ifndef NEXCEPT
   if (A.rows() != A.columns())
     throw NonsquareMatrixException();
+  #endif
 
   // verify that A is not zero size
   if (A.rows() == 0)
     return XB;
 
   // verify that A and b are compatible
+  #ifndef NEXCEPT
   if (A.columns() != XB.rows())
     throw MissizeException();
 
   if (sizeof(A.data()) != sizeof(XB.data()))
     throw DataMismatchException();
+  #endif
 
   // setup LAPACK parameters
   INTEGER N = A.rows();

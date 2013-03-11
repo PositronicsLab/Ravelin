@@ -4,15 +4,17 @@
  */
 void LINALG::factor_LDL(MATRIXN& A, vector<int>& IPIV)
 {
+  #ifndef NEXCEPT
   if (A.rows() != A.columns())
     throw NonsquareMatrixException();
+  #endif
 
   // verify that A is not zero sized
   if (A.rows() == 0 || A.columns() == 0)
     return;
 
   // verify that A is symmetric
-  #ifndef NDEBUG
+  #ifndef NEXCEPT
   if (!A.is_symmetric())
     std::cerr << "LINALG::factor_LDL() warning: matrix is assymetrical!" << endl;
   #endif

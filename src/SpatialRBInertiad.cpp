@@ -5,6 +5,7 @@
  ****************************************************************************/
 
 #include <Ravelin/Constants.h>
+#include <Ravelin/FrameException.h>
 #include <Ravelin/SpatialRBInertiad.h>
 
 using namespace Ravelin;

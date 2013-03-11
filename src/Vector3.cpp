@@ -107,36 +107,46 @@ bool VECTOR3::operator<(const VECTOR3& v) const
 
 REAL& VECTOR3::operator[](const unsigned i)
 {
+  #ifndef NEXCEPT
   if (i >= 3)
     throw InvalidIndexException();
+  #endif
   return _data[i];
 }
 
 REAL VECTOR3::operator[](const unsigned i) const
 {
+  #ifndef NEXCEPT
   if (i >= 3)
     throw InvalidIndexException();
+  #endif
   return _data[i];
 }
 
 REAL* VECTOR3::data(unsigned i)
 {
+  #ifndef NEXCEPT
   if (i >= 3)
     throw InvalidIndexException();
+  #endif
   return &_data[i];
 }
 
 const REAL* VECTOR3::data(unsigned i) const
 {
+  #ifndef NEXCEPT
   if (i >= 3)
     throw InvalidIndexException();
+  #endif
   return &_data[i];
 }
 
 VECTOR3& VECTOR3::resize(unsigned m, unsigned n, bool preserve)
 {
+  #ifndef NEXCEPT
   if (m != 3 || n != 1)
     throw std::runtime_error("Attempt to resize fixed-length vector!");
+  #endif
 
   return *this;
 }

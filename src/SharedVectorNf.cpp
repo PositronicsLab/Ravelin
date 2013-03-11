@@ -20,11 +20,13 @@ using std::vector;
 
 #define REAL float
 #define SHAREDVECTORN SharedVectorNf
+#define CONST_SHAREDVECTORN SharedConstVectorNf
 #define VECTORN VectorNf
 #define VECTOR3 Vector3f
 #include "SharedVectorN.cpp"
 #undef REAL
 #undef SHAREDVECTORN
+#undef CONST_SHAREDVECTORN
 #undef VECTORN
 #undef VECTOR3
 

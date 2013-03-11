@@ -138,6 +138,7 @@ void CBLAS::gemv(enum CBLAS_ORDER order, CBLAS_TRANSPOSE transA, int M, int N, d
     const int Trans = (transA != CblasConjTrans) ? transA : CblasTrans;
 
     // do some error checking
+    #ifndef NEXCEPT
     if (order != CblasRowMajor && order != CblasColMajor)
       throw std::runtime_error("Invalid Cblas order");
     if (transA != CblasNoTrans && transA != CblasTrans && transA != CblasConjTrans)
@@ -147,6 +148,7 @@ void CBLAS::gemv(enum CBLAS_ORDER order, CBLAS_TRANSPOSE transA, int M, int N, d
     if ((order == CblasRowMajor && lda < std::max(1,N)) || 
         (order == CblasColMajor && lda < std::max(1,M)))
       throw std::runtime_error("Invalid stride");
+    #endif
 
     // check for fast returns
     if (M == 0 || N == 0)

@@ -10,8 +10,10 @@ inline VectorN operator*(Real scalar, const VectorN& v) { return v * scalar; }
 template <class V>
 V& VectorN::get_sub_vec(unsigned start, unsigned end, V& v) const
 {
+  #ifndef NEXCEPT
   if (start > end || end > _len)
     throw InvalidIndexException();
+  #endif
 
   // resize the vector
   const unsigned SZ = end - start;
@@ -35,8 +37,10 @@ VectorN& VectorN::set_sub_vec(unsigned start, const V& v)
   const unsigned SZ = v.size();
 
   // see whether index is valid
+  #ifndef NEXCEPT
   if (start + SZ > _len)
     throw InvalidIndexException();
+  #endif
 
   // check whether to exit now
   if (SZ == 0)
@@ -67,8 +71,10 @@ VectorN& VectorN::select(ForwardIterator idx_begin, ForwardIterator idx_end, Vec
 {
   // setup the vector
   unsigned len = std::distance(idx_begin, idx_end);
+  #ifndef NEXCEPT
   if (len > _len)
     throw MissizeException();
+  #endif
   v.resize(len);
 
   // copy
@@ -92,8 +98,10 @@ template <class ForwardIterator>
 VectorN& VectorN::set(ForwardIterator idx_begin, ForwardIterator idx_end, const VectorN& v)
 {
   unsigned len = std::distance(idx_begin, idx_end);
+  #ifndef NEXCEPT
   if (len != v.size() || len > _len)
     throw MissizeException();
+  #endif
 
   // copy
   unsigned vidx = 0;

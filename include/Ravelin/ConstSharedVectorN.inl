@@ -3,24 +3,27 @@
  * This library is distributed under the terms of the GNU Lesser General Public 
  * License (found in COPYING).
  *
- * This file contains inline code for VectorNf/VectorNd and 
- * SharedVectorNf/SharedVectorNd.
+ * This file contains inline code specific to SharedVectorNf/SharedVectorNd.
  ****************************************************************************/
 
-ITERATOR segment_iterator(unsigned start, unsigned end)
+/// Returns the desired component of this vector
+REAL operator[](unsigned i) const
 {
   #ifndef NEXCEPT
-  if (end < start || end > _len)
+  if (i > _len)
     throw InvalidIndexException();
   #endif
+  return _data[i+_start];
+}
 
-  ITERATOR i;
-  i._sz = end - start;
-  i._ld = _len;
-  i._rows = i._sz;
-  i._columns = 1;
-  i._data_start = i._current_data  = data() + start;
-  return i;
+/// Gets the appropriate data element
+const REAL* data(unsigned i) const
+{
+  #ifndef NEXCEPT
+  if (i >= _len)
+    throw InvalidIndexException();
+  #endif
+  return &_data[i+_start];
 }
 
 CONST_ITERATOR segment_iterator(unsigned start, unsigned end) const
@@ -62,43 +65,6 @@ CONST_ITERATOR end() const
   return i;
 }
 
-ITERATOR begin()
-{
-  ITERATOR i;
-  i._sz = _len;
-  i._ld = _len;
-  i._rows = i._sz;
-  i._columns = 1;
-  i._data_start = i._current_data  = data();
-  return i;
-}
-
-ITERATOR end()
-{
-  ITERATOR i;
-  i._sz = _len;
-  i._ld = _len;
-  i._rows = i._sz;
-  i._columns = 1;
-  i._data_start = data();
-  i._current_data  = data() + _len;
-  return i;
-}
-
-/// Sets the vector to the zero vector
-XVECTORN& set_zero()
-{
-  std::fill(begin(), end(), (REAL) 0.0);
-  return *this;
-}
-
-/// Sets the vector to the zero vector
-XVECTORN& set_one()
-{
-  std::fill(begin(), end(), (REAL) 1.0);
-  return *this;
-}
-
 /// Returns true if all components of this vector are not infinite and not NaN, and false otherwise
 bool is_finite() const
 {
@@ -111,119 +77,6 @@ bool is_finite() const
   }
 
   return true;
-}
-
-/// Negates the matrix in place
-XVECTORN& negate()
-{
-  ITERATOR i = begin();
-  while (i != i.end())
-  {
-    *i = -*i;
-    i++;
-  }
-
-  return *this;
-}
-
-/// Multiplies this vector in place by a scalar
-XVECTORN& operator*=(REAL scalar)
-{
-  if (_len > 0)
-    CBLAS::scal(_len, scalar, data(), inc());  
-
-  return *this;
-}
-
-/// Sets a sub-vector of this vector
-/**
- * \param start_idx the starting index (inclusive)
- * \param v a (end_idx - start_idx + 1)-dimensional vector
- */
-template <class V>
-XVECTORN& set_sub_vec(unsigned start, const V& v)
-{
-  #ifndef NEXCEPT
-  if (sizeof(data()) != sizeof(v.data()))
-    throw DataMismatchException();
-  #endif
-
-  // get size of v
-  const unsigned SZ = v.size();
-
-  // see whether index is valid
-  #ifndef NEXCEPT
-  if (start + SZ > _len)
-    throw InvalidIndexException();
-  #endif
-
-  // check whether to exit now
-  if (SZ == 0)
-    return *this;
-
-  // copy using BLAS
-  CBLAS::copy(SZ, v.data(), v.inc(), data(start), inc());
-
-  return *this;
-}
-
-/// Adds a vector from this one in place
-template <class V>
-XVECTORN& operator+=(const V& v)
-{  
-  #ifndef NEXCEPT
-  if (sizeof(data()) != sizeof(v.data()))
-    throw DataMismatchException();
-
-  if (v.size() != _len)
-    throw MissizeException();
-  #endif
-
-  // use the BLAS routine for subtraction
-  if (_len > 0)
-    CBLAS::axpy(_len, (REAL) 1.0, v.data(), v.inc(), data(), inc());
-
-  return *this;
-}
-
-/// Subtracts a vector from this one in place
-template <class V>
-XVECTORN& operator-=(const V& v)
-{  
-  #ifndef NEXCEPT
-  if (sizeof(data()) != sizeof(v.data()))
-    throw DataMismatchException();
-
-  if (v.size() != _len)
-    throw MissizeException();
-  #endif
-
-  // use the BLAS routine for subtraction
-  if (_len > 0)
-    CBLAS::axpy(_len, (REAL) -1.0, v.data(), v.inc(), data(), inc());
-
-  return *this;
-}
-
-/// Sets a subvector; other components are unchanged
-template <class ForwardIterator, class V>
-XVECTORN& set(ForwardIterator idx_begin, ForwardIterator idx_end, const V& v)
-{
-  unsigned len = std::distance(idx_begin, idx_end);
-  #ifndef NEXCEPT
-  if (len != v.size() || len > _len)
-    throw MissizeException();
-  if (sizeof(data()) != sizeof(v.data()))
-    throw DataMismatchException();
-  #endif
-
-  // use iterator
-  ITERATOR iter = begin();
-  CONST_ITERATOR viter = v.begin();
-  for (ForwardIterator i = idx_begin; i != idx_end; i++)
-    iter[*i] = *viter++;;
-
-  return *this;
 }
 
 /// Gets a sub-vector from this vector
@@ -380,7 +233,7 @@ V& select(ForwardIterator idx_begin, ForwardIterator idx_end, V& v) const
 }
 
 /// Computes the infinity norm of this vector
-static REAL norm_inf(const XVECTORN& v) 
+static REAL norm_inf(const CONST_SHAREDVECTORN& v) 
 {
   REAL nrm = (REAL) 0.0;
   CONST_ITERATOR i = v.begin();
@@ -390,7 +243,7 @@ static REAL norm_inf(const XVECTORN& v)
 }
 
 /// Computes the l1-norm of this vector
-static REAL norm1(const XVECTORN& v) 
+static REAL norm1(const CONST_SHAREDVECTORN& v) 
 {
   REAL nrm = (REAL) 0.0;
   CONST_ITERATOR i = v.begin();

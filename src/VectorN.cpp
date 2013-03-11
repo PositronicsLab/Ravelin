@@ -217,8 +217,10 @@ VECTORN& VECTORN::operator=(const SHAREDVECTORN& source)
 SHAREDVECTORN VECTORN::get_sub_vec(unsigned start_idx, unsigned end_idx) 
 {
   // verify that we cna get the subvector
+  #ifndef NEXCEPT
   if (start_idx > end_idx || end_idx > _len)
     throw InvalidIndexException();
+  #endif
 
   SHAREDVECTORN x;
   x._data = _data;

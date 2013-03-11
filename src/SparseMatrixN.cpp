@@ -96,8 +96,10 @@ void SPARSEMATRIXN::set(unsigned m, unsigned n, const map<pair<unsigned, unsigne
 /// Gets a column of the sparse matrix as a sparse vector
 SPARSEVECTORN& SPARSEMATRIXN::get_column(unsigned i, SPARSEVECTORN& column) const
 {
+  #ifndef NEXCEPT
   if (i >= _columns)
     throw InvalidIndexException();
+  #endif
 
   // determine the number of elements
   unsigned nelm = 0;
@@ -135,8 +137,10 @@ SPARSEVECTORN& SPARSEMATRIXN::get_column(unsigned i, SPARSEVECTORN& column) cons
 /// Gets a row of the sparse matrix as a sparse vector
 SPARSEVECTORN& SPARSEMATRIXN::get_row(unsigned i, SPARSEVECTORN& row) const
 {
+  #ifndef NEXCEPT
   if (i >= _rows)
     throw InvalidIndexException();
+  #endif
 
   // get the number of elements
   unsigned nelm = _ptr[i+1] - _ptr[i];
@@ -159,10 +163,12 @@ SPARSEMATRIXN SPARSEMATRIXN::get_sub_mat(unsigned rstart, unsigned rend, unsigne
 {
   SPARSEMATRIXN sub(rend - rstart, cend - cstart);
 
+  #ifndef NEXCEPT
   if (rend < rstart || cend < cstart)
     throw InvalidIndexException();
   if (rend > _rows || cend > _columns)
     throw InvalidIndexException();
+  #endif
 
   // determine how many values are in the sparse matrix
   unsigned nv = 0;
@@ -207,8 +213,10 @@ SPARSEMATRIXN SPARSEMATRIXN::get_sub_mat(unsigned rstart, unsigned rend, unsigne
 /// Multiplies this sparse matrix by a dense matrix
 MATRIXN& SPARSEMATRIXN::mult(const MATRIXN& m, MATRIXN& result) const
 {
+  #ifndef NEXCEPT
   if (_columns != m.rows())
     throw MissizeException();
+  #endif
 
   // setup the result matrix
   result.set_zero(_rows, m.columns());
@@ -231,8 +239,10 @@ MATRIXN& SPARSEMATRIXN::mult(const MATRIXN& m, MATRIXN& result) const
 /// Multiplies this sparse matrix by a dense vector
 VECTORN& SPARSEMATRIXN::mult(const VECTORN& x, VECTORN& result) const
 {
+  #ifndef NEXCEPT
   if (_columns != x.size())
     throw MissizeException();
+  #endif
 
   // setup the result matrix
   result.set_zero(_rows);
@@ -254,8 +264,10 @@ VECTORN& SPARSEMATRIXN::mult(const VECTORN& x, VECTORN& result) const
 /// Multiplies the transpose of this sparse matrix by a dense vector
 VECTORN& SPARSEMATRIXN::transpose_mult(const VECTORN& x, VECTORN& result) const
 {
+  #ifndef NEXCEPT
   if (_rows != x.size())
     throw MissizeException();
+  #endif
 
   // setup the result vector
   result.set_zero(_columns);
@@ -270,8 +282,10 @@ VECTORN& SPARSEMATRIXN::transpose_mult(const VECTORN& x, VECTORN& result) const
 /// Multiplies the transpose of this sparse matrix by a dense matrix
 MATRIXN& SPARSEMATRIXN::transpose_mult(const MATRIXN& m, MATRIXN& result) const
 {
+  #ifndef NEXCEPT
   if (_rows != m.rows())
     throw MissizeException();
+  #endif
 
   result.set_zero(_columns, m.columns());
 
@@ -286,8 +300,10 @@ MATRIXN& SPARSEMATRIXN::transpose_mult(const MATRIXN& m, MATRIXN& result) const
 /// Multiplies this matrix by the transpose of a dense matrix
 MATRIXN& SPARSEMATRIXN::mult_transpose(const MATRIXN& m, MATRIXN& result) const
 {
+  #ifndef NEXCEPT
   if (_columns != m.columns())
     throw MissizeException();
+  #endif
 
   // setup the result matrix
   result.set_zero(_rows, m.rows());
@@ -309,8 +325,10 @@ MATRIXN& SPARSEMATRIXN::mult_transpose(const MATRIXN& m, MATRIXN& result) const
 /// Multiplies the transpose of this sparse matrix by the transpose of a dense matrix
 MATRIXN& SPARSEMATRIXN::transpose_mult_transpose(const MATRIXN& m, MATRIXN& result) const
 {
+  #ifndef NEXCEPT
   if (_rows != m.columns())
     throw MissizeException();
+  #endif
 
   // setup the result matrix
   result.set_zero(_columns, m.rows());
@@ -340,8 +358,10 @@ MATRIXN& SPARSEMATRIXN::to_dense(MATRIXN& m) const
 SPARSEMATRIXN& SPARSEMATRIXN::operator-=(const SPARSEMATRIXN& m)
 {
   // check rows/columns match up
+  #ifndef NEXCEPT
   if (_rows != m._rows || _columns != m._columns)
     throw MissizeException();
+  #endif
 
   // iterate through both matrices and see how many non-zero elements we have
   unsigned nz = 0;
@@ -482,8 +502,10 @@ SPARSEMATRIXN& SPARSEMATRIXN::operator-=(const SPARSEMATRIXN& m)
 SPARSEMATRIXN& SPARSEMATRIXN::operator+=(const SPARSEMATRIXN& m)
 {
   // check rows/columns match up
+  #ifndef NEXCEPT
   if (_rows != m._rows || _columns != m._columns)
     throw MissizeException();
+  #endif
 
   // iterate through both matrices and see how many non-zero elements we have
   unsigned nz = 0;
