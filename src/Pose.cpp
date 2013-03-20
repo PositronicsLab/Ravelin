@@ -196,10 +196,148 @@ POSE POSE::operator*(const POSE& p) const
   return POSE(q * p.q, q*p.x + x);
 }
 
+/// Transforms a spatial articulated body inertia 
+SPATIAL_AB_INERTIA POSE::transform(boost::shared_ptr<POSE> p, const SPATIAL_AB_INERTIA& m) const
+{
+  #ifndef NEXCEPT
+  if (shared_from_this() != m.pose)
+    throw FrameException();
+  #endif
+
+  // compute the relative transform
+  std::pair<QUAT, VECTOR3> Tx = calc_transform(p);
+
+  // setup r and E
+  const VECTOR3& r = Tx.second;
+  const MATRIX3 E = Tx.first;
+  const MATRIX3 ET = MATRIX3::transpose(E);
+
+  // precompute some things we'll need
+  MATRIX3 rx = MATRIX3::skew_symmetric(r);
+  MATRIX3 HT = MATRIX3::transpose(m.H);
+  MATRIX3 EJET = E * m.J * ET;
+  MATRIX3 rx_E_HT_ET = rx*E*HT*ET;
+  MATRIX3 EHET = E * m.H * ET;
+  MATRIX3 EMET = E * m.M * ET;
+  MATRIX3 rxEMET = rx * EMET;
+
+  SPATIAL_AB_INERTIA result;
+  result.pose = p;
+  result.M = EMET;
+  result.H = EHET - rxEMET;
+  result.J = EJET - rx_E_HT_ET + ((EHET - rxEMET) * rx); 
+  return result;
+}
+
+/// Transforms the wrench 
+WRENCH POSE::transform(boost::shared_ptr<POSE> p, const WRENCH& v) const
+{
+  #ifndef NEXCEPT
+  if (shared_from_this() != v.pose)
+    throw FrameException();
+  #endif
+
+  // compute the relative transform
+  std::pair<QUAT, VECTOR3> Tx = calc_transform(p);
+
+  // setup r and E
+  const VECTOR3& r = Tx.second;
+  const MATRIX3 E = Tx.first;
+
+  // get the components of v
+  VECTOR3 top = v.get_force();
+  VECTOR3 bottom = v.get_torque();
+
+  // do the calculations
+  VECTOR3 Etop = E * top;
+  VECTOR3 cross = VECTOR3::cross(r, Etop);
+  WRENCH result(Etop, (E * bottom) - cross);
+  result.pose = p;
+  return result;
+}
+
+/// Transforms the twist 
+TWIST POSE::transform(boost::shared_ptr<POSE> p, const TWIST& t) const
+{
+  #ifndef NEXCEPT
+  if (shared_from_this() != t.pose)
+    throw FrameException();
+  #endif
+
+  // compute the relative transform
+  std::pair<QUAT, VECTOR3> Tx = calc_transform(p);
+
+  // setup r and E
+  const VECTOR3& r = Tx.second;
+  const MATRIX3 E = Tx.first;
+
+  // get the components of t 
+  VECTOR3 top = t.get_angular();
+  VECTOR3 bottom = t.get_linear();
+
+  // do the calculations
+  VECTOR3 Etop = E * top;
+  VECTOR3 cross = VECTOR3::cross(r, Etop);
+  TWIST result(Etop, (E * bottom) - cross);
+  result.pose = p;
+  return result;
+}
+
+/// Transforms a spatial RB inertia to the given pose
+SPATIAL_RB_INERTIA POSE::transform(boost::shared_ptr<POSE> p, const SPATIAL_RB_INERTIA& J) const
+{
+  #ifndef NEXCEPT
+  if (shared_from_this() != J.pose)
+    throw FrameException();
+  #endif
+
+  // compute the relative transform
+  std::pair<QUAT, VECTOR3> Tx = calc_transform(p);
+
+  // setup r and E
+  const VECTOR3& r = Tx.second;
+  const MATRIX3 E = Tx.first;
+  const MATRIX3 ET = MATRIX3::transpose(E);
+
+  // precompute some things
+  VECTOR3 mr = r * J.m;
+  MATRIX3 rx = MATRIX3::skew_symmetric(r);
+  MATRIX3 hx = MATRIX3::skew_symmetric(J.h);
+  MATRIX3 mrxrx = rx * MATRIX3::skew_symmetric(mr);  
+  MATRIX3 EhxETrx = E * hx * ET * rx;
+
+  // setup the new inertia
+  SPATIAL_RB_INERTIA Jx;
+  Jx.pose = p;
+  Jx.m = J.m;
+  Jx.J = EhxETrx + MATRIX3::transpose(EhxETrx) + (E*J.J*ET) - mrxrx; 
+  Jx.h = E * J.h - mr;
+  return Jx;
+}
+
+/// Determines whether pose p exists in the chain of relative poses (and, if so, how far down the chain)
+bool POSE::is_common(boost::shared_ptr<const POSE> p, unsigned& i) const
+{
+  // reset i
+  i = 0;
+
+  boost::shared_ptr<const POSE> r = shared_from_this(); 
+  while (r)
+  {
+    if (r == p)
+      return true;
+    r = r->rpose;
+    i++;
+  }
+
+  return false;
+}
+
 /// Computes the relative transformation from this pose to another
-std::pair<QUAT, VECTOR3> POSE::calc_transform(boost::shared_ptr<POSE> p) const
+std::pair<QUAT, VECTOR3> POSE::calc_transform(boost::shared_ptr<const POSE> p) const
 {
   std::pair<QUAT, VECTOR3> result;
+  boost::shared_ptr<const POSE> r, s; 
 
   // if both transforms are defined relative to the same frame, this is easy
   if (rpose == p->rpose)
@@ -209,11 +347,52 @@ std::pair<QUAT, VECTOR3> POSE::calc_transform(boost::shared_ptr<POSE> p) const
     VECTOR3 p_x = p_q * (-p->x);
 
     // multiply the inverse pose of p by this 
-    result.first = q * p_q;
-    result.second = q*p_x + x;
+    result.first = p_q * q;      
+    result.second = p_q * (p_x - x);
   }
   else
   {
+    // search for the common link
+    unsigned i = std::numeric_limits<unsigned>::max();
+    r = p;
+    while (true)
+    {
+      if (is_common(r, i))
+        break;
+      else
+      {
+        assert(r);
+        r = r->rpose;
+      } 
+    } 
+    
+     // combine transforms from this to i: this will give aTl
+    QUAT left_q = q;
+    VECTOR3 left_x = x;
+    s = shared_from_this();
+    for (unsigned j=0; j < i; j++)
+    {
+      s = s->rpose;
+      left_x = s->x + s->q * left_x;
+      left_q = s->q * left_q;
+    }
+
+    // combine transforms from p to q
+    QUAT right_q = p->q;
+    VECTOR3 right_x = p->x;
+    while (p != r)
+    {
+      right_x = r->x + r->q * right_x; 
+      right_q = r->q * right_q;
+    }
+
+    // compute the inverse pose of the right 
+    QUAT inv_right_q = QUAT::invert(right_q);
+    VECTOR3 inv_right_x = inv_right_q * (-right_x);
+
+    // multiply the inverse pose of p by this 
+    result.first = inv_right_q * left_q;      
+    result.second = inv_right_q * (inv_right_x - left_x);
   }
 
   return result;

@@ -24,6 +24,10 @@ using namespace Ravelin;
 #define VECTOR3 Vector3f
 #define QUAT Quatf
 #define AANGLE AAnglef
+#define WRENCH Wrenchf
+#define TWIST Twistf
+#define SPATIAL_RB_INERTIA SpatialRBInertiaf
+#define SPATIAL_AB_INERTIA SpatialABInertiaf 
 
 #include "Pose.cpp"
 
@@ -34,4 +38,8 @@ using namespace Ravelin;
 #undef VECTOR3
 #undef QUAT
 #undef AANGLE
+#undef WRENCH
+#undef TWIST
+#undef SPATIAL_RB_INERTIA
+#undef SPATIAL_AB_INERTIA
 

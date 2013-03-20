@@ -7,6 +7,7 @@
 #ifndef _POSED_H
 #define _POSED_H
 
+#include <boost/enable_shared_from_this.hpp>
 #include <boost/shared_ptr.hpp>
 #include <Ravelin/FrameException.h>
 #include <Ravelin/Vector3d.h>

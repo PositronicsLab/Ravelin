@@ -12,7 +12,7 @@ class AANGLE;
 class MATRIX3;
 
 /// A rigid body pose 
-class POSE
+class POSE : public boost::enable_shared_from_this<POSE>
 {
   public:
     POSE();
@@ -58,7 +58,8 @@ class POSE
     boost::shared_ptr<POSE> rpose; 
 
   private:
-    std::pair<QUAT, VECTOR3> calc_transform(boost::shared_ptr<POSE> p) const;  
+    std::pair<QUAT, VECTOR3> calc_transform(boost::shared_ptr<const POSE> p) const;
+    bool is_common(boost::shared_ptr<const POSE> p, unsigned& i) const;
 }; // end class
 
 std::ostream& operator<<(std::ostream& out, const POSE& m);
