@@ -920,6 +920,171 @@ X& inverse(X& A)
  * \param tol the tolerance for determining the rank of A; if tol < 0.0,
  *        tol is computed using machine epsilon
  */
+template <class X, class Y, class Vec, class Z>
+X& solve_LS_fast(const Y& U, const Vec& S, const Z& V, X& XB, REAL tol)
+{
+  // verify that U, S, V and B are appropriate sizes
+  #ifndef NEXCEPT
+  if (U.rows() != XB.rows())
+    throw MissizeException();
+  if (S.columns() > 1 || (S.size() != U.columns() && S.size() != V.rows()))
+    throw MissizeException();
+  if (sizeof(U.data()) != sizeof(XB.data()) || 
+      sizeof(U.data()) != sizeof(S.data()) ||
+      sizeof(U.data()) != sizeof(V.data()))
+    throw DataMismatchException();
+  #endif
+
+  // get the dimensionality of A
+  const unsigned m = U.rows();
+  const unsigned n = V.columns();
+  const unsigned k = XB.columns();
+  const unsigned minmn = std::min(m, n);
+
+  // check for easy out
+  if (m == 0 || n == 0)
+  {
+    XB.set_zero(n, XB.columns());
+    return XB;
+  }
+
+  // compute the svd
+  VECTORN& Sx = workv();
+  MATRIXN& workMx = workM();
+  MATRIXN& workM2x = workM2();
+
+  // determine new tolerance based on first std::singular value if necessary
+  Sx = S;
+  REAL* Sx_data = Sx.data();
+  if (tol < (REAL) 0.0)
+    tol = Sx_data[0] * std::max(m,n) * std::numeric_limits<REAL>::epsilon();
+
+  // compute 1/S
+  unsigned S_len = Sx.size();
+
+  // A is m x n, B is m x k
+  // (L -> R, scaling V)    n^2 + n*min(n,m)*m + nmk [n < m < k, n < k < m]
+  // (L -> R, scaling U')   m^2 + n*min(n,m)*m + nmk [m < n < k]
+  // (R -> L, scaling U')   m^2 + m^2k + nmk + n^2k  [k < n < m]
+  // (R -> L, scaling U'*B) m^2k + min(n,m)*k + n*min(m,n)*k [k < m < n, m < k < n]
+
+  // compute inv(s) 
+  for (unsigned i=0; i< S_len; i++)
+    Sx_data[i] = (std::fabs(Sx_data[i]) > tol) ? (REAL) 1.0/Sx_data[i] : (REAL) 0.0;
+
+  // check cases
+  // case 1: n is smallest
+  if (n < m && n < k)
+  {
+    // scale n columns of V
+    workM2x = V;
+    for (unsigned i=0; i< n; i++)
+      CBLAS::scal(n, Sx_data[i], workM2x.data()+workM2x.leading_dim()*i, 1);
+
+    // multiply scaled V by U' = workM
+    workMx.resize(n, m);
+    CBLAS::gemm(CblasColMajor, CblasNoTrans, CblasTrans, n, m, n, (REAL) 1.0, workM2x.data(), workM2x.leading_dim(), U.data(), U.leading_dim(), (REAL) 0.0, workMx.data(), workMx.leading_dim());
+
+    // multiply workM * XB
+    workM2x.resize(n,k);
+    CBLAS::gemm(CblasColMajor, CblasNoTrans, CblasNoTrans, n, k, m, (REAL) 1.0, workMx.data(), workMx.leading_dim(), XB.data(), XB.leading_dim(), (REAL) 0.0, workM2x.data(), workM2x.leading_dim());
+    XB = workM2x;
+  }
+  // case 2: m < n < k
+  else if (m < n && n < k)
+  {
+    // scale columns of U
+    workM2x = U;
+    for (unsigned i=0; i< m; i++)
+      CBLAS::scal(m, Sx_data[i], workM2x.data()+workM2x.leading_dim()*i, 1);
+
+    // multiply V by scaled U' = workM
+    workMx.resize(n,m);
+    CBLAS::gemm(CblasColMajor, CblasNoTrans, CblasTrans, n, m, m, (REAL) 1.0, V.data(), V.leading_dim(), workM2x.data(), workM2x.leading_dim(), (REAL) 0.0, workMx.data(), workMx.leading_dim());
+
+    // multiply workM * XB
+    workM2x.resize(n,k);
+    CBLAS::gemm(CblasColMajor, CblasNoTrans, CblasNoTrans, n, k, m, (REAL) 1.0, workMx.data(), workMx.leading_dim(), XB.data(), XB.leading_dim(), (REAL) 0.0, workM2x.data(), workM2x.leading_dim());
+    XB = workM2x;
+  }
+  // case 3: k < n < m
+  else if (k < n && n < m)
+  {
+    // scale columns of U
+    workM2x = U;
+    for (unsigned i=0; i< n; i++)
+      CBLAS::scal(n, Sx_data[i], workM2x.data()+workM2x.leading_dim()*i, 1);
+
+    // multiply U' * XB (resulting in n x k matrix)
+    workMx.resize(n,k);
+    CBLAS::gemm(CblasColMajor, CblasTrans, CblasNoTrans, n, k, m, (REAL) 1.0, workM2x.data(), workM2x.leading_dim(), XB.data(), XB.leading_dim(), (REAL) 0.0, workMx.data(), workMx.leading_dim());
+
+    // multiply V * workM
+    V.mult(workMx, XB);
+  }
+  // case 4: n is largest
+  else
+  {
+    assert(n >= m && n >= k);
+
+    // scale m columns of V
+    workM2x = V;
+    for (unsigned i=0; i< m; i++)
+      CBLAS::scal(n, Sx_data[i], workM2x.data()+workM2x.leading_dim()*i, 1);
+
+    // multiply U' * XB (resulting in m x k matrix)
+    U.transpose_mult(XB, workMx);
+
+    // multiply V * workM
+    XB.resize(n,k);
+    CBLAS::gemm(CblasColMajor, CblasNoTrans, CblasNoTrans, n, k, m, (REAL) 1.0, workM2x.data(), workM2x.leading_dim(), workMx.data(), workMx.leading_dim(), (REAL) 0.0, XB.data(), XB.leading_dim());
+  }
+
+  return XB;
+
+// NOTE: this is disabled b/c it does not work as well...
+
+/*
+  // setup LAPACK parameters
+  INTEGER M = A.rows();
+  INTEGER N = A.columns();
+  INTEGER NRHS = XB.columns();
+  INTEGER LDB = std::max(M,N);
+  INTEGER INFO;
+
+  // allocate storage for solving the RHS
+  const INTEGER XB_rows = std::max(M,NRHS);
+  const INTEGER XB_cols = std::max(N,NRHS);
+  REAL* rhs = new REAL[XB_rows*XB_cols];
+  std::copy(XB.data(), XB.end(), rhs);
+
+  // compute
+  gelsd_(&M, &N, &NRHS, A.data(), &M, rhs, &LDB, &stol, &INFO);
+
+  // don't check success - SVD algorithm is very stable.. 
+
+  // copy solution into XB
+  XB.resize(N, NRHS);
+  std::copy(rhs, rhs+(M*NRHS), XB.data());
+
+  // mark A as destroyed and free memory
+  A.resize(0,0);
+  delete [] rhs;
+
+  return XB;
+*/
+}
+
+
+/// Most robust system of linear equations solver (solves AX = B)
+/**
+ * Solves rank-deficient and underdetermined (minimum norm solution) systems.
+ * Computes least-squares solution to overdetermined systems.
+ * \param A the coefficient matrix (destroyed on return)
+ * \param XB the matrix B on input, the matrix X on return
+ * \param tol the tolerance for determining the rank of A; if tol < 0.0,
+ *        tol is computed using machine epsilon
+ */
 template <class X, class Y>
 X& solve_LS_fast(Y& A, X& XB, SVD svd_algo, REAL tol)
 {
@@ -1004,7 +1169,7 @@ X& solve_LS_fast(Y& A, X& XB, SVD svd_algo, REAL tol)
     // multiply workM * XB
     Vx.resize(n,k);
     CBLAS::gemm(CblasColMajor, CblasNoTrans, CblasNoTrans, n, k, m, (REAL) 1.0, workMx.data(), workMx.leading_dim(), XB.data(), XB.leading_dim(), (REAL) 0.0, Vx.data(), Vx.leading_dim());
-    XB.copy_from(Vx);
+    XB = Vx;
   }
   // case 3: k < n < m
   else if (k < n && n < m)
@@ -1078,7 +1243,7 @@ X& solve_LS_fast(Y& A, X& XB, SVD svd_algo, REAL tol)
  * \param XB the matrix B on input, the matrix X on return
  */
 template <class X, class Y>
-X& solve_fast(X& A, Y& XB)
+Y& solve_fast(X& A, Y& XB)
 {  
   #ifndef NEXCEPT
   if (A.rows() != A.columns())
