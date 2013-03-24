@@ -63,8 +63,8 @@ LDA, REAL* B, INTEGER* LDB, REAL* RCOND, INTEGER* INFO);
     void update_QR_delete_rows(MATRIXN& Q, MATRIXN& R, unsigned k, unsigned p);
 */
 
-    /// work matrix
-    FastThreadable<MATRIXN> workM;
+    /// work matrices
+    FastThreadable<MATRIXN> workM, workM2;
 
     /// work matrix (for SVD)
     FastThreadable<MATRIXN> U;

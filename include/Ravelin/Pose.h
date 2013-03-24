@@ -12,7 +12,7 @@ class AANGLE;
 class MATRIX3;
 
 /// A rigid body pose 
-class POSE
+class POSE : public boost::enable_shared_from_this<POSE>
 {
   public:
     POSE();
@@ -30,11 +30,15 @@ class POSE
     VECTOR3 mult_vector(const VECTOR3& v) const;
     VECTOR3 inverse_mult_point(const VECTOR3& v) const;
     VECTOR3 inverse_mult_vector(const VECTOR3& v) const;
-    WRENCH transform(boost::shared_ptr<POSE> p, const WRENCH& w) const;
-    TWIST transform(boost::shared_ptr<POSE> p, const TWIST& t) const;
-    void set_relative_pose(boost::shared_ptr<POSE> p); 
-    SPATIAL_RB_INERTIA transform(boost::shared_ptr<POSE> p, const SPATIAL_RB_INERTIA& j) const;
-    SPATIAL_AB_INERTIA transform(boost::shared_ptr<POSE> p, const SPATIAL_AB_INERTIA& j) const;
+    WRENCH transform(boost::shared_ptr<const POSE> p, const WRENCH& w) const;
+    static WRENCH transform(boost::shared_ptr<const POSE> source, boost::shared_ptr<const POSE> target, const WRENCH& w);
+    TWIST transform(boost::shared_ptr<const POSE> p, const TWIST& t) const;
+    static TWIST transform(boost::shared_ptr<const POSE> source, boost::shared_ptr<const POSE> target, const TWIST& t);
+    void set_relative_pose(boost::shared_ptr<const POSE> p); 
+    SPATIAL_RB_INERTIA transform(boost::shared_ptr<const POSE> p, const SPATIAL_RB_INERTIA& j) const;
+    static SPATIAL_RB_INERTIA transform(boost::shared_ptr<const POSE> source, boost::shared_ptr<const POSE> target, const SPATIAL_RB_INERTIA& j);
+    SPATIAL_AB_INERTIA transform(boost::shared_ptr<const POSE> p, const SPATIAL_AB_INERTIA& j) const;
+    static SPATIAL_AB_INERTIA transform(boost::shared_ptr<const POSE> source, boost::shared_ptr<const POSE> target, const SPATIAL_AB_INERTIA& j);
     POSE& set_identity();
     POSE& invert();
     POSE inverse() const { return inverse(*this); }
@@ -58,7 +62,9 @@ class POSE
     boost::shared_ptr<POSE> rpose; 
 
   private:
-    std::pair<QUAT, VECTOR3> calc_transform(boost::shared_ptr<POSE> p) const;  
+    std::pair<QUAT, VECTOR3> calc_transform(boost::shared_ptr<const POSE> p) const;
+    static std::pair<QUAT, VECTOR3> calc_transform(boost::shared_ptr<const POSE> source, boost::shared_ptr<const POSE> target);
+    static bool is_common(boost::shared_ptr<const POSE> source, boost::shared_ptr<const POSE> p, unsigned& i);
 }; // end class
 
 std::ostream& operator<<(std::ostream& out, const POSE& m);

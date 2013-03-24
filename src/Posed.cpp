@@ -22,6 +22,10 @@ using namespace Ravelin;
 #define VECTOR3 Vector3d
 #define QUAT Quatd
 #define AANGLE AAngled
+#define WRENCH Wrenchd
+#define TWIST Twistd
+#define SPATIAL_RB_INERTIA SpatialRBInertiad
+#define SPATIAL_AB_INERTIA SpatialABInertiad 
 
 #include "Pose.cpp"
 
@@ -32,4 +36,8 @@ using namespace Ravelin;
 #undef VECTOR3
 #undef QUAT
 #undef AANGLE
+#undef WRENCH
+#undef TWIST
+#undef SPATIAL_RB_INERTIA 
+#undef SPATIAL_AB_INERTIA 
 

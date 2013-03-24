@@ -7,6 +7,7 @@
 #ifndef _POSEF_H
 #define _POSEF_H
 
+#include <boost/enable_shared_from_this.hpp>
 #include <boost/shared_ptr.hpp>
 #include <iostream>
 #include <Ravelin/FrameException.h>

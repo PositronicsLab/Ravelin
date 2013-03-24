@@ -8,6 +8,7 @@
 #error This class is not to be included by the user directly. Use SharedMatrixNd.h or SharedMatrixNf.h instead.
 #endif
 
+class MATRIXN;
 class CONST_SHAREDMATRIXN;
 class SHAREDMATRIXN;
 
@@ -69,6 +70,9 @@ class SHAREDMATRIXN
     SHAREDMATRIXN& operator/=(REAL scalar);
     SHAREDMATRIXN& operator*=(REAL scalar);
     SHAREDMATRIXN& operator=(const MATRIX3& m);
+    SHAREDMATRIXN& operator=(const MATRIXN& source);
+    SHAREDMATRIXN& operator=(const SHAREDMATRIXN& source);
+    SHAREDMATRIXN& operator=(const CONST_SHAREDMATRIXN& source);
     REAL& operator()(unsigned i, unsigned j);
     REAL operator()(unsigned i, unsigned j) const;
     REAL* data() { return _data.get()+_start; }
