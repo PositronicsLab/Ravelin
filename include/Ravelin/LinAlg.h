@@ -53,6 +53,8 @@ LDA, REAL* B, INTEGER* LDB, REAL* RCOND, INTEGER* INFO);
     static void givens(REAL a, REAL b, REAL& c, REAL& s);
     static MATRIX2 givens(REAL c, REAL s);
     static void householder(REAL alpha, const VECTORN& x, REAL& tau, VECTORN& v);
+    static VECTORN& solve_sparse_direct(const SPARSEMATRIXN& A, const VECTORN& b, VECTORN& x);
+    static MATRIXN& solve_sparse_direct(const SPARSEMATRIXN& A, const MATRIXN& B, MATRIXN& X);
 /*
     void update_QR_rank1(MATRIXN& Q, MATRIXN& R, const VECTORN& u, const VECTORN& v);
     void update_QR_delete_cols(MATRIXN& Q, MATRIXN& R, unsigned k, unsigned p);

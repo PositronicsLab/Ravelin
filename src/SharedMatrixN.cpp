@@ -219,6 +219,16 @@ std::ostream& Ravelin::operator<<(std::ostream& out, const CONST_SHAREDMATRIXN& 
   return out;
 }
 
+/// Accesses the given element
+REAL CONST_SHAREDMATRIXN::operator()(unsigned i, unsigned j) const
+{
+  #ifndef NEXCEPT
+  if (i >= _rows || j >= _columns)
+    throw InvalidIndexException();
+  #endif
+  return _data[_start + j*_ld + i];
+}
+
 // use common routines
 #define XMATRIXN SHAREDMATRIXN
 #include "XMatrixN.cpp"

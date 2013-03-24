@@ -9,7 +9,7 @@ set (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_SOURCE_DIR}/CMakeModules)
 include_directories ("include")
 
 # setup library sources
-set (SOURCES AAnglef.cpp AAngled.cpp cblas.cpp LinAlgf.cpp LinAlgd.cpp Matrix2f.cpp Matrix2d.cpp Matrix3f.cpp Matrix3d.cpp MatrixNf.cpp MatrixNd.cpp Posef.cpp Posed.cpp Quatf.cpp Quatd.cpp SharedMatrixNf.cpp SharedMatrixNd.cpp SharedVectorNf.cpp SharedVectorNd.cpp SparseMatrixNf.cpp SparseMatrixNd.cpp SparseVectorNf.cpp SparseVectorNd.cpp SpatialABInertiaf.cpp SpatialRBInertiaf.cpp SpatialRBInertiad.cpp SVector6f.cpp SVector6d.cpp Vector2f.cpp Vector2d.cpp Vector3f.cpp Vector3d.cpp VectorNf.cpp VectorNd.cpp)
+set (SOURCES AAnglef.cpp AAngled.cpp cblas.cpp LinAlgf.cpp LinAlgd.cpp Matrix2f.cpp Matrix2d.cpp Matrix3f.cpp Matrix3d.cpp MatrixNf.cpp MatrixNd.cpp Posef.cpp Posed.cpp Quatf.cpp Quatd.cpp SharedMatrixNf.cpp SharedMatrixNd.cpp SharedVectorNf.cpp SharedVectorNd.cpp SparseMatrixNf.cpp SparseMatrixNd.cpp SparseVectorNf.cpp SparseVectorNd.cpp SpatialABInertiaf.cpp SpatialRBInertiaf.cpp SpatialRBInertiad.cpp SuperLU.cpp SVector6f.cpp SVector6d.cpp Vector2f.cpp Vector2d.cpp Vector3f.cpp Vector3d.cpp VectorNf.cpp VectorNd.cpp)
 
 # build options 
 option (BUILD_SHARED_LIBS "Build Ravelin as a shared library?" ON)
@@ -46,6 +46,14 @@ else (APPLE)
   set (ATLAS_BUGFIX ON)
 endif (APPLE)
 
+# look for superlu
+find_package (SuperLU)
+if (SUPERLU_FOUND)
+  add_definitions(-DUSE_SUPERLU)
+  include_directories (${SUPERLU_INCLUDES})
+  set (EXTRA_LIBRARIES ${EXTRA_LIBRARIES} ${SUPERLU_LIBRARIES})
+endif (SUPERLU_FOUND)
+
 # use ATLAS bugfix if necessary
 if (ATLAS_BUGFIX)
   add_definitions (-DATLAS_BUGFIX)
@@ -61,7 +69,7 @@ endforeach (i)
 
 # create the library
 add_library(Ravelin "" "" ${LIBSOURCES})
-target_link_libraries (Ravelin ${BLAS_LIBRARIES} ${LAPACK_LIBRARIES} ${QHULL_LIBRARIES} ${EXTRA_LIBS})
+target_link_libraries (Ravelin ${BLAS_LIBRARIES} ${LAPACK_LIBRARIES} ${EXTRA_LIBRARIES})
 
 # setup install locations
 install (TARGETS Ravelin DESTINATION lib)

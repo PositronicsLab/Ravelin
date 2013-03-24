@@ -17,6 +17,7 @@
 #include <Ravelin/MatrixNf.h>
 #include <Ravelin/Matrix2f.h>
 #include <Ravelin/FastThreadable.h>
+#include <Ravelin/SparseMatrixNf.h>
 #include <Ravelin/VectorNf.h>
 
 namespace Ravelin {
@@ -29,6 +30,7 @@ namespace Ravelin {
 #define MATRIX2 Matrix2f
 #define CONST_ITERATOR fIterator_const
 #define ITERATOR fIterator
+#define SPARSEMATRIXN SparseMatrixNf 
 
 #include "LinAlg.h"
 
@@ -40,6 +42,7 @@ namespace Ravelin {
 #undef MATRIX2
 #undef CONST_ITERATOR
 #undef ITERATOR
+#undef SPARSEMATRIXN
 
 } // end namespace
 

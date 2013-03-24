@@ -7,6 +7,7 @@
 SPARSEMATRIXN::SPARSEMATRIXN()
 {
   _rows = _columns = 0;
+  _nnz = 0;
 }
 
 SPARSEMATRIXN::SPARSEMATRIXN(unsigned m, unsigned n, const map<pair<unsigned, unsigned>, REAL>& values)
@@ -21,6 +22,7 @@ SPARSEMATRIXN::SPARSEMATRIXN(unsigned m, unsigned n, shared_array<unsigned> ptr,
   _data = data; 
   _ptr = ptr; 
   _indices = indices; 
+  _nnz = _ptr[_rows];
 }
 
 /// Creates a sparse matrix from a dense matrix
@@ -58,6 +60,9 @@ SPARSEMATRIXN SPARSEMATRIXN::identity(unsigned n)
   }
   m._ptr[n] = n;  
 
+  // set nnz
+  m._nnz = n;
+
   return m;
 }
 
@@ -91,6 +96,9 @@ void SPARSEMATRIXN::set(unsigned m, unsigned n, const map<pair<unsigned, unsigne
       }
     _ptr[r+1] = j;
   }
+
+  // set nnz
+  _nnz = nv;
 }
 
 /// Gets a column of the sparse matrix as a sparse vector
@@ -206,6 +214,7 @@ SPARSEMATRIXN SPARSEMATRIXN::get_sub_mat(unsigned rstart, unsigned rend, unsigne
   sub._ptr = ptr;
   sub._indices = indices;
   sub._data = data;
+  sub._nnz = nv;
 
   return sub;
 }
@@ -495,6 +504,7 @@ SPARSEMATRIXN& SPARSEMATRIXN::operator-=(const SPARSEMATRIXN& m)
   this->_ptr = nptr;
   this->_indices = nindices;
   this->_data = ndata;
+  this->_nnz = nz;
   return *this;
 }
 
@@ -638,6 +648,7 @@ SPARSEMATRIXN& SPARSEMATRIXN::operator+=(const SPARSEMATRIXN& m)
   this->_ptr = nptr;
   this->_indices = nindices;
   this->_data = ndata;
+  this->_nnz = nz;
   return *this;
 }
 
@@ -721,6 +732,7 @@ SPARSEMATRIXN& SPARSEMATRIXN::outer_square(const SPARSEVECTORN& v, SPARSEMATRIXN
   result._ptr = ptr;
   result._indices = indices;
   result._data = data;
+  result._nnz = nz*nz;
 
   return result;
 }
@@ -783,6 +795,7 @@ SPARSEMATRIXN& SPARSEMATRIXN::outer_square(const VECTORN& x, SPARSEMATRIXN& resu
   result._ptr = ptr;
   result._indices = indices;
   result._data = data;
+  result._nnz = nz*nz;
 
   return result;
 }
@@ -794,6 +807,7 @@ std::ostream& Ravelin::operator<<(std::ostream& out, const SPARSEMATRIXN& s)
   const REAL* data = s.get_data();
   vector<REAL> present(s.columns());
 
+  out << "nnz: " << s.get_nnz() << std::endl;
   out << "ptr:";
   for (unsigned i=0; i<= s.rows(); i++)
     out << " " << ptr[i];
