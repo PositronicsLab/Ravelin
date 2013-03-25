@@ -12,21 +12,9 @@
 
 namespace Ravelin {
 
-#define REAL double
-#define EPS EPS_DOUBLE
-#define AANGLE AAngled
-#define VECTOR3 Vector3d
-#define QUAT Quatd
-#define MATRIX3 Matrix3d 
-
+#include "ddefs.h"
 #include "AAngle.h"
-
-#undef REAL 
-#undef EPS 
-#undef AANGLE 
-#undef VECTOR3 
-#undef QUAT
-#undef MATRIX3
+#include "undefs.h"
 
 } // end namespace
 

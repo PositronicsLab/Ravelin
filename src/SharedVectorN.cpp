@@ -24,7 +24,7 @@ SHAREDVECTORN::SHAREDVECTORN(const SHAREDVECTORN& v)
 }
 
 /// Gets a shared subvector of this subvector
-SHAREDVECTORN SHAREDVECTORN::get_sub_vec(unsigned start, unsigned end)
+SHAREDVECTORN SHAREDVECTORN::segment(unsigned start, unsigned end)
 {
   #ifndef NEXCEPT
   if (start > end || end > _len)
@@ -32,6 +32,22 @@ SHAREDVECTORN SHAREDVECTORN::get_sub_vec(unsigned start, unsigned end)
   #endif
 
   SHAREDVECTORN x;
+  x._data = _data;
+  x._start = _start + start;
+  x._len = end - start;
+  x._inc = 1;
+  return x;
+}
+
+/// Gets a shared subvector of this subvector
+CONST_SHAREDVECTORN SHAREDVECTORN::segment(unsigned start, unsigned end) const
+{
+  #ifndef NEXCEPT
+  if (start > end || end > _len)
+    throw InvalidIndexException();
+  #endif
+
+  CONST_SHAREDVECTORN x;
   x._data = _data;
   x._start = _start + start;
   x._len = end - start;
@@ -140,7 +156,7 @@ CONST_SHAREDVECTORN::CONST_SHAREDVECTORN(const SHAREDVECTORN& v)
 }
 
 /// Gets a shared subvector of this subvector
-CONST_SHAREDVECTORN CONST_SHAREDVECTORN::get_sub_vec(unsigned start, unsigned end)
+CONST_SHAREDVECTORN CONST_SHAREDVECTORN::segment(unsigned start, unsigned end) const
 {
   #ifndef NEXCEPT
   if (start > end || end > _len)

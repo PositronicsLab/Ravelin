@@ -31,7 +31,7 @@ class CONST_SHAREDMATRIXN
     unsigned columns() const { return _columns; }
     unsigned leading_dim() const { return _ld; }
     CONST_SHAREDMATRIXN& resize(unsigned rows, unsigned columns, bool preserve = false);
-    REAL operator()(unsigned i, unsigned j) const;
+    const REAL& operator()(unsigned i, unsigned j) const;
     const REAL* data() const { return _data.get()+_start; }    
 
     #include "ConstSharedMatrixN.inl"
@@ -74,7 +74,7 @@ class SHAREDMATRIXN
     SHAREDMATRIXN& operator=(const SHAREDMATRIXN& source);
     SHAREDMATRIXN& operator=(const CONST_SHAREDMATRIXN& source);
     REAL& operator()(unsigned i, unsigned j);
-    REAL operator()(unsigned i, unsigned j) const;
+    const REAL& operator()(unsigned i, unsigned j) const;
     REAL* data() { return _data.get()+_start; }
     const REAL* data() const { return _data.get()+_start; }    
 

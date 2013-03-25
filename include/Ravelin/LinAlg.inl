@@ -246,7 +246,7 @@ static X& solve_chol_fast(const Y& M, X& XB)
   INTEGER INFO;
 
   // call the solver routine
-  potrs_(&UPLO, &N, &NRHS, M.data(), &LDA, XB.data(), &LDB, &INFO);
+  potrs_(&UPLO, &N, &NRHS, (REAL*) M.data(), &LDA, XB.data(), &LDB, &INFO);
   assert(INFO == 0);
 
   return XB;
@@ -295,7 +295,7 @@ static X& solve_LU_fast(const Y& M, bool transpose, const std::vector<int>& pivw
 
 /// Calculates the rank of a matrix
 template <class X>
-unsigned calc_rank(X& A, REAL tol)
+unsigned calc_rank(X& A, REAL tol = (REAL) -1.0)
 {
   // look for easy out
   if (A.rows() == 0 || A.columns() == 0)
@@ -921,7 +921,7 @@ X& inverse(X& A)
  *        tol is computed using machine epsilon
  */
 template <class X, class Y, class Vec, class Z>
-X& solve_LS_fast(const Y& U, const Vec& S, const Z& V, X& XB, REAL tol)
+X& solve_LS_fast(const Y& U, const Vec& S, const Z& V, X& XB, REAL tol = (REAL) -1.0)
 {
   // verify that U, S, V and B are appropriate sizes
   #ifndef NEXCEPT

@@ -310,6 +310,48 @@ MATRIX2& MATRIX2::operator=(const MATRIX2& m)
   return *this;
 }
 
+/// Copies a matrix to this one
+MATRIX2& MATRIX2::operator=(const MATRIXN& m)
+{
+  #ifndef NEXCEPT
+  if (m.rows() != 2 || m.columns() != 2)
+    throw MissizeException();
+  #endif
+  const REAL* data = m.data();
+  const unsigned SZ = 4;
+  for (unsigned i=0; i< SZ; i++)
+    _data[i] = data[i];
+  return *this;
+}
+
+/// Copies a matrix to this one
+MATRIX2& MATRIX2::operator=(const SHAREDMATRIXN& m)
+{
+  #ifndef NEXCEPT
+  if (m.rows() != 2 || m.columns() != 2)
+    throw MissizeException();
+  #endif
+  const unsigned SZ = 4;
+  CONST_ITERATOR miter = m.begin();
+  for (unsigned i=0; i< SZ; i++)
+    _data[i] = *miter++;
+  return *this;
+}
+
+/// Copies a matrix to this one
+MATRIX2& MATRIX2::operator=(const CONST_SHAREDMATRIXN& m)
+{
+  #ifndef NEXCEPT
+  if (m.rows() != 2 || m.columns() != 2)
+    throw MissizeException();
+  #endif
+  const unsigned SZ = 4;
+  CONST_ITERATOR miter = m.begin();
+  for (unsigned i=0; i< SZ; i++)
+    _data[i] = *miter++;
+  return *this;
+}
+
 /// Multiplies this matrix by a scalar in place
 MATRIX2& MATRIX2::operator*=(REAL scalar)
 {
@@ -391,7 +433,7 @@ REAL& MATRIX2::operator()(const unsigned i, unsigned j)
   return _data[j*2+i];
 }
 
-REAL MATRIX2::operator()(const unsigned i, unsigned j) const
+const REAL& MATRIX2::operator()(const unsigned i, unsigned j) const
 {
   #ifndef NEXCEPT
   if (i >= 2 || j >= 2)

@@ -31,7 +31,8 @@ class SHAREDVECTORN
     REAL norm1() const { return norm1(*this); }
     REAL norm() const { return norm(*this); }
     REAL norm_sq() const { return norm_sq(*this); }
-    SHAREDVECTORN get_sub_vec(unsigned start, unsigned end);
+    SHAREDVECTORN segment(unsigned start, unsigned end);
+    CONST_SHAREDVECTORN segment(unsigned start, unsigned end) const;
     SHAREDVECTORN& resize(unsigned N, bool preserve = false);
     SHAREDVECTORN& operator=(const VECTOR3& source);
     SHAREDVECTORN& operator=(const SHAREDVECTORN& source);
@@ -83,7 +84,7 @@ class CONST_SHAREDVECTORN
     REAL norm1() const { return norm1(*this); }
     REAL norm() const { return norm(*this); }
     REAL norm_sq() const { return norm_sq(*this); }
-    CONST_SHAREDVECTORN get_sub_vec(unsigned start, unsigned end);
+    CONST_SHAREDVECTORN segment(unsigned start, unsigned end) const;
     CONST_SHAREDVECTORN& resize(unsigned N, bool preserve = false);
     const REAL* data() const { assert(_data); return _data.get() + _start; }
     CONST_SHAREDVECTORN& resize(unsigned m, unsigned n, bool preserve = false) 

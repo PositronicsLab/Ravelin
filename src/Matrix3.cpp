@@ -531,6 +531,48 @@ MATRIX3& MATRIX3::operator=(const MATRIX3& m)
   return *this;
 }
 
+/// Copies a matrix to this one
+MATRIX3& MATRIX3::operator=(const MATRIXN& m)
+{
+  #ifndef NEXCEPT
+  if (m.rows() != 3 || m.columns() != 3)
+    throw MissizeException();
+  #endif
+  const REAL* data = m.data();
+  const unsigned SZ = 9;
+  for (unsigned i=0; i< SZ; i++)
+    _data[i] = data[i];
+  return *this;
+}
+
+/// Copies a matrix to this one
+MATRIX3& MATRIX3::operator=(const SHAREDMATRIXN& m)
+{
+  #ifndef NEXCEPT
+  if (m.rows() != 3 || m.columns() != 3)
+    throw MissizeException();
+  #endif
+  const unsigned SZ = 9;
+  CONST_ITERATOR miter = m.begin();
+  for (unsigned i=0; i< SZ; i++)
+    _data[i] = *miter++;
+  return *this;
+}
+
+/// Copies a matrix to this one
+MATRIX3& MATRIX3::operator=(const CONST_SHAREDMATRIXN& m)
+{
+  #ifndef NEXCEPT
+  if (m.rows() != 3 || m.columns() != 3)
+    throw MissizeException();
+  #endif
+  const unsigned SZ = 9;
+  CONST_ITERATOR miter = m.begin();
+  for (unsigned i=0; i< SZ; i++)
+    _data[i] = *miter++;
+  return *this;
+}
+
 /// Multiplies this matrix by a scalar in place
 MATRIX3& MATRIX3::operator*=(REAL scalar)
 {
@@ -691,7 +733,7 @@ REAL& MATRIX3::operator()(unsigned i, unsigned j)
   return _data[j*3+i];
 }
 
-REAL MATRIX3::operator()(unsigned i, unsigned j) const
+const REAL& MATRIX3::operator()(unsigned i, unsigned j) const
 {
   #ifndef NEXCEPT
   if (i >= 3 || j >= 3)

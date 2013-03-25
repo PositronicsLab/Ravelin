@@ -14,19 +14,9 @@
 
 using namespace Ravelin;
 
-#define QUAT Quatd
-#define REAL double
-#define EPS EPS_DOUBLE
-#define MATRIX3 Matrix3d
-#define AANGLE AAngled
-#define VECTOR3 Vector3d 
 
+#include <Ravelin/ddefs.h>
 #include "Quat.cpp"
+#include <Ravelin/undefs.h>
 
-#undef QUAT
-#undef REAL
-#undef EPS
-#undef MATRIX3
-#undef AANGLE
-#undef VECTOR3
 

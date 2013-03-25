@@ -10,18 +10,7 @@
 
 using namespace Ravelin;
 
-#define REAL double
-#define SPATIAL_RB_INERTIA SpatialRBInertiad
-#define TWIST Twistd
-#define WRENCH Wrenchd
-#define MATRIX3 Matrix3d
-#define VECTOR3 Vector3d 
-
+#include <Ravelin/ddefs.h>
 #include "SpatialRBInertia.cpp"
+#include <Ravelin/undefs.h>
 
-#undef REAL
-#undef SPATIALRBINERTIA
-#undef TWIST
-#undef WRENCH
-#undef MATRIX3
-#undef VECTOR3

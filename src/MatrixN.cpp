@@ -31,6 +31,28 @@ MATRIXN::MATRIXN(const VECTORN& v, Transposition trans)
   set(v, trans);
 }
 
+/// Constructs a matrix from a vector
+/**
+ * \param v the vector
+ * \param determines whether the vector will be transposed
+ */
+MATRIXN::MATRIXN(const CONST_SHAREDVECTORN& v, Transposition trans)
+{
+  _rows = _columns = _capacity = 0;
+  set(v, trans);
+}
+
+/// Constructs a matrix from a vector
+/**
+ * \param v the vector
+ * \param determines whether the vector will be transposed
+ */
+MATRIXN::MATRIXN(const SHAREDVECTORN& v, Transposition trans)
+{
+  _rows = _columns = _capacity = 0;
+  set(v, trans);
+}
+
 /// Constructs a matrix from an array
 /**
  * \param rows the number of rows of the matrix
@@ -67,6 +89,29 @@ MATRIXN::MATRIXN(const MATRIXN& source)
   MATRIXN::operator=(source);
 }
 
+/// Copy constructor
+MATRIXN::MATRIXN(const SHAREDMATRIXN& source)
+{
+  _rows = _columns = _capacity = 0;
+  MATRIXN::operator=(source);
+}
+
+/// Copy constructor
+MATRIXN::MATRIXN(const CONST_SHAREDMATRIXN& source)
+{
+  _rows = _columns = _capacity = 0;
+  MATRIXN::operator=(source);
+}
+
+/// Sets a matrix from a MATRIX2
+MATRIXN& MATRIXN::operator=(const MATRIX2& m)
+{
+  const unsigned SZ = 2;
+  resize(SZ,SZ);
+  CBLAS::copy(SZ*SZ, m.data(), 1, _data.get(), 1);
+  return *this;
+}
+
 /// Sets a matrix from a MATRIX3
 MATRIXN& MATRIXN::operator=(const MATRIX3& m)
 {
@@ -84,6 +129,28 @@ MATRIXN& MATRIXN::set(const VECTORN& v, Transposition trans)
   else
     resize(1, v.columns(), false);
   std::copy(v.data(), v.data()+v.size(), _data.get());
+  return *this;
+}
+
+/// Sets this matrix from a vector
+MATRIXN& MATRIXN::set(const SHAREDVECTORN& v, Transposition trans)
+{
+  if (trans == eNoTranspose)
+    resize(v.rows(), 1, false);
+  else
+    resize(1, v.columns(), false);
+  std::copy(v.begin(), v.end(), begin());
+  return *this;
+}
+
+/// Sets this matrix from a vector
+MATRIXN& MATRIXN::set(const CONST_SHAREDVECTORN& v, Transposition trans)
+{
+  if (trans == eNoTranspose)
+    resize(v.rows(), 1, false);
+  else
+    resize(1, v.columns(), false);
+  std::copy(v.begin(), v.end(), begin());
   return *this;
 }
 
@@ -413,7 +480,7 @@ MATRIXN& MATRIXN::set_identity(unsigned i)
 }
 
 /// Gets the desired entry
-REAL MATRIXN::operator()(unsigned i, unsigned j) const
+const REAL& MATRIXN::operator()(unsigned i, unsigned j) const
 {
   #ifndef NEXCEPT
   if (i >= _rows || j >= _columns)
@@ -487,6 +554,28 @@ MATRIXN& MATRIXN::operator=(const MATRIXN& m)
   const unsigned N = _rows*_columns;
   if (N > 0)
     std::copy(m._data.get(), m._data.get()+N, _data.get());
+  return *this;
+}
+
+/// Sets this to m 
+MATRIXN& MATRIXN::operator=(const SHAREDMATRIXN& m)
+{
+  // resize this (don't preserve)
+  resize(m.rows(), m.columns(), false);
+
+  if (_rows > 0 && _columns > 0)
+    std::copy(m.begin(), m.end(), begin());
+  return *this;
+}
+
+/// Sets this to m 
+MATRIXN& MATRIXN::operator=(const CONST_SHAREDMATRIXN& m)
+{
+  // resize this (don't preserve)
+  resize(m.rows(), m.columns(), false);
+
+  if (_rows > 0 && _columns > 0)
+    std::copy(m.begin(), m.end(), begin());
   return *this;
 }
 

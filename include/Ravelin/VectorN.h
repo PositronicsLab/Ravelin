@@ -8,6 +8,10 @@
 #error This class is not to be included by the user directly. Use VectorNf.h or VectorNd.h instead. 
 #endif
 
+class MATRIXN;
+class SHAREDMATRIXN;
+class CONST_SHAREDMATRIXN;
+
 /// A generic N-dimensional floating point vector
 class VECTORN 
 {
@@ -21,6 +25,9 @@ class VECTORN
     VECTORN(const SHAREDVECTORN& source);
     VECTORN(const VECTOR2& v);
     VECTORN(const VECTOR3& v);
+    VECTORN(const MATRIXN& v);
+    VECTORN(const SHAREDMATRIXN& v);
+    VECTORN(const CONST_SHAREDMATRIXN& v);
     VECTORN(unsigned N, const REAL* array);
     static VECTORN construct_variable(unsigned N, ...);
     virtual ~VECTORN() {}
@@ -36,13 +43,17 @@ class VECTORN
     static VECTORN& concat(const VECTORN& v1, const VECTORN& v2, VECTORN& result);
     VECTORN& augment(const VECTORN& v);
     VECTORN& resize(unsigned N, bool preserve = false);
-    SHAREDVECTORN get_sub_vec(unsigned start_idx, unsigned end_idx);
+    SHAREDVECTORN segment(unsigned start_idx, unsigned end_idx);
+    CONST_SHAREDVECTORN segment(unsigned start_idx, unsigned end_idx) const;
     static VECTORN zero(unsigned n);
     VECTORN& operator=(REAL r);
     VECTORN& operator=(const VECTOR2& source);
     VECTORN& operator=(const VECTOR3& source);
     VECTORN& operator=(const VECTORN& source);
     VECTORN& operator=(const SHAREDVECTORN& source);
+    VECTORN& operator=(const MATRIXN& source);
+    VECTORN& operator=(const SHAREDMATRIXN& source);
+    VECTORN& operator=(const CONST_SHAREDMATRIXN& source);
     VECTORN& operator/=(REAL scalar) { return operator*=((REAL) 1.0/scalar); }
     REAL* data() { return _data.get(); }
     const REAL* data() const { return _data.get(); }
@@ -51,6 +62,9 @@ class VECTORN
 
     /// Sets this to a n-length zero vector
     VECTORN& set_zero(unsigned n) { return resize(n).set_zero(); } 
+
+    /// Sets this to a n-length zero vector
+    VECTORN& set_zero(unsigned n, unsigned m) { return resize(n, m).set_zero(); } 
 
     /// Sets this to a n-length ones vector
     VECTORN& set_one(unsigned n) { return resize(n).set_one(); }

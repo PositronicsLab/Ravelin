@@ -12,15 +12,9 @@ using std::map;
 using boost::shared_array;
 using namespace Ravelin;
 
-#define EPS EPS_FLOAT
-#define REAL float
-#define SPARSEVECTORN SparseVectorNf
-#define VECTORN VectorNf
 
+#include <Ravelin/fdefs.h>
 #include "SparseVectorN.cpp"
+#include <Ravelin/undefs.h>
 
-#undef EPS
-#undef REAL
-#undef SPARSEVECTORN
-#undef VECTORN
 

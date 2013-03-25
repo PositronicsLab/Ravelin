@@ -16,31 +16,9 @@
 
 namespace Ravelin {
 
-#define SHAREDVECTORN SharedVectorNf
-#define SHAREDMATRIXN SharedMatrixNf
-#define CONST_SHAREDVECTORN SharedConstVectorNf
-#define CONST_SHAREDMATRIXN SharedConstMatrixNf
-#define EPS EPS_FLOAT
-#define VECTOR3 Vector3f
-#define VECTORN VectorNf
-#define MATRIXN MatrixNf
-#define CONST_ITERATOR fIterator_const
-#define ITERATOR fIterator
-#define REAL float
-
+#include "fdefs.h"
 #include "SharedVectorN.h"
-
-#undef SHAREDVECTORN
-#undef SHAREDMATRIXN
-#undef CONST_SHAREDVECTORN
-#undef CONST_SHAREDMATRIXN
-#undef EPS
-#undef VECTOR3
-#undef VECTORN
-#undef MATRIXN
-#undef CONST_ITERATOR
-#undef ITERATOR
-#undef REAL
+#include "undefs.h"
 
 } // end namespace
 

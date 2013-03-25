@@ -22,24 +22,10 @@
 namespace Ravelin {
 
 #define INTEGER int
-#define LINALG LinAlgd
-#define REAL double
-#define MATRIXN MatrixNd
-#define VECTORN VectorNd
-#define MATRIX2 Matrix2d
-#define ITERATOR dIterator
-#define CONST_ITERATOR dIterator_const
-#define SPARSEMATRIXN SparseMatrixNd 
+#include "ddefs.h"
 #include "LinAlg.h"
 #undef INTEGER
-#undef LINALG
-#undef REAL
-#undef MATRIXN
-#undef VECTORN
-#undef MATRIX2
-#undef ITERATOR
-#undef CONST_ITERATOR
-#undef SPARSEMATRIXN
+#include "undefs.h"
 
 } // end namespace
 

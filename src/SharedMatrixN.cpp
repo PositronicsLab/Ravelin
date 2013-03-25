@@ -24,7 +24,7 @@ REAL& SHAREDMATRIXN::operator()(unsigned i, unsigned j)
 }
 
 /// Accesses the given element
-REAL SHAREDMATRIXN::operator()(unsigned i, unsigned j) const
+const REAL& SHAREDMATRIXN::operator()(unsigned i, unsigned j) const
 {
   #ifndef NEXCEPT
   if (i >= _rows || j >= _columns)
@@ -269,7 +269,7 @@ std::ostream& Ravelin::operator<<(std::ostream& out, const CONST_SHAREDMATRIXN& 
 }
 
 /// Accesses the given element
-REAL CONST_SHAREDMATRIXN::operator()(unsigned i, unsigned j) const
+const REAL& CONST_SHAREDMATRIXN::operator()(unsigned i, unsigned j) const
 {
   #ifndef NEXCEPT
   if (i >= _rows || j >= _columns)

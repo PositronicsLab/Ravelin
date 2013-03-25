@@ -17,25 +17,9 @@ class Matrix3f;
 class Posef;
 class AAnglef;
 
-#define REAL float 
-#define QUAT Quatf
-#define POSE Posef
-#define AANGLE AAnglef
-#define VECTOR3 Vector3f
-#define MATRIX3 Matrix3f
-#define VECTORN VectorNf
-#define MATRIXN MatrixNf
-
+#include "fdefs.h"
 #include "Quat.h"
-
-#undef REAL
-#undef QUAT
-#undef POSE
-#undef AANGLE
-#undef VECTOR3
-#undef MATRIX3
-#undef VECTORN
-#undef MATRIXN
+#include "undefs.h"
 
 } // end namespace
 

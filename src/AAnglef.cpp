@@ -13,19 +13,8 @@
 
 using namespace Ravelin;
 
-#define REAL float
-#define EPS EPS_FLOAT
-#define AANGLE AAnglef
-#define QUAT Quatf
-#define VECTOR3 Vector3f
-#define MATRIX3 Matrix3f
-
+#include <Ravelin/fdefs.h>
 #include "AAngle.cpp"
+#include <Ravelin/undefs.h>
 
-#undef REAL
-#undef EPS
-#undef AANGLE
-#undef QUAT
-#undef VECTOR3
-#undef MATRIX3
 

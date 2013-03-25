@@ -22,29 +22,9 @@
 
 namespace Ravelin {
 
-#define POSE Posef
-#define REAL float
-#define VECTOR3 Vector3f
-#define QUAT Quatf
-#define AANGLE AAnglef
-#define MATRIX3 Matrix3f
-#define WRENCH Wrenchf
-#define TWIST Twistf
-#define SPATIAL_RB_INERTIA SpatialRBInertiaf
-#define SPATIAL_AB_INERTIA SpatialABInertiaf
-
+#include "fdefs.h"
 #include "Pose.h"
-
-#undef POSE
-#undef REAL 
-#undef VECTOR3
-#undef QUAT 
-#undef AANGLE 
-#undef MATRIX3 
-#undef WRENCH
-#undef TWIST
-#undef SPATIAL_RB_INERTIA
-#undef SPATIAL_AB_INERTIA
+#include "undefs.h"
 
 } // end namespace
 

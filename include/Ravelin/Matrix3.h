@@ -10,6 +10,9 @@
 
 class QUAT;
 class AANGLE;
+class MATRIXN;
+class SHAREDMATRIXN;
+class CONST_SHAREDMATRIXN;
 
 /// A 3x3 matrix that may be used for orientation, inertia tensors, etc.
 class MATRIX3
@@ -22,6 +25,9 @@ class MATRIX3
     MATRIX3(REAL, REAL, REAL, REAL, REAL, REAL, REAL, REAL, REAL);
     MATRIX3& operator=(const QUAT& q);
     MATRIX3& operator=(const AANGLE& a);
+    MATRIX3(const MATRIXN& m) { operator=(m); }
+    MATRIX3(const SHAREDMATRIXN& m) { operator=(m); }
+    MATRIX3(const CONST_SHAREDMATRIXN& m) { operator=(m); }
     REAL norm_inf() const;
     unsigned rows() const { return 3; }
     unsigned columns() const { return 3; }
@@ -74,6 +80,9 @@ class MATRIX3
     MATRIX3 mult_transpose(const MATRIX3& m) const;
     MATRIX3 transpose_mult_transpose(const MATRIX3& m) const;
     MATRIX3& operator=(const MATRIX3& source);
+    MATRIX3& operator=(const MATRIXN& source);
+    MATRIX3& operator=(const SHAREDMATRIXN& source);
+    MATRIX3& operator=(const CONST_SHAREDMATRIXN& source);
     MATRIX3& operator+=(const MATRIX3& m);
     MATRIX3& operator-=(const MATRIX3& m);
     MATRIX3& operator*=(REAL scalar);
@@ -90,7 +99,7 @@ class MATRIX3
     VECTOR3 get_column(unsigned i) const;
     VECTOR3 get_row(unsigned i) const;
     REAL& operator()(unsigned i, unsigned j);
-    REAL operator()(unsigned i, unsigned j) const;
+    const REAL& operator()(unsigned i, unsigned j) const;
     MATRIX3& resize(unsigned rows, unsigned columns, bool preserve = false);
     const REAL* data(unsigned i) const;
     REAL* data(unsigned i);

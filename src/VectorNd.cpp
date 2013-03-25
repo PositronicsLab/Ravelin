@@ -8,19 +8,13 @@
 #include <list>
 #include <Ravelin/Vector2d.h>
 #include <Ravelin/Vector3d.h>
+#include <Ravelin/MatrixNd.h>
 #include <Ravelin/VectorNd.h>
 
 using namespace Ravelin;
 
-#define REAL double 
-#define VECTORN VectorNd
-#define VECTOR2 Vector2d
-#define VECTOR3 Vector3d
-#define SHAREDVECTORN SharedVectorNd
+#include <Ravelin/ddefs.h>
 #include "VectorN.cpp"
-#undef REAL
-#undef VECTORN
-#undef VECTOR2
-#undef VECTOR3
-#undef SHAREDVECTORN
+#include <Ravelin/undefs.h>
+
 
