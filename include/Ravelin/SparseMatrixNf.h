@@ -15,19 +15,9 @@
 
 namespace Ravelin {
 
-#define SPARSEMATRIXN SparseMatrixNf
-#define SPARSEVECTORN SparseVectorNf
-#define MATRIXN MatrixNf
-#define VECTORN VectorNf
-#define REAL float
-
+#include "fdefs.h"
 #include "SparseMatrixN.h"
-
-#undef SPARSEMATRIXN
-#undef SPARSEVECTORN
-#undef MATRIXN
-#undef VECTORN
-#undef REAL
+#include "undefs.h"
 
 } // end namespace
 

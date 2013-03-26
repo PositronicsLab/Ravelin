@@ -11,17 +11,21 @@ template <class X>
 static X& solve_tridiagonal_fast(VECTORN& dl, VECTORN& d, VECTORN& du, X& XB)
 {
   // make sure everything is the proper size
+  #ifndef NEXCEPT
   if (sizeof(dl.data()) != sizeof(XB.data()))
     throw DataMismatchException();
   if (sizeof(d.data()) != sizeof(XB.data()))
     throw DataMismatchException();
   if (sizeof(du.data()) != sizeof(XB.data()))
     throw DataMismatchException();
+  #endif
 
   // determine N
   INTEGER N = d.size();
+  #ifndef NEXCEPT
   if (XB.rows() != N)
     throw MissizeException();
+  #endif
 
   // call the tridiagonal solver
   INTEGER LDB = XB.leading_dim();
@@ -45,8 +49,10 @@ static X& solve_tridiagonal_fast(VECTORN& dl, VECTORN& d, VECTORN& du, X& XB)
 template <class X>
 static bool factor_chol(X& A)
 {
+  #ifndef NEXCEPT
   if (A.rows() != A.columns())
     throw NonsquareMatrixException();
+  #endif
 
   // verify that A is not zero sized
   if (A.rows() == 0 || A.columns() == 0)
@@ -111,8 +117,10 @@ X& inverse_LU(X& M, const std::vector<int>& pivwork)
   if (M.rows() == 0 || M.columns() == 0)
     return M;
 
+  #ifndef NEXCEPT
   if (M.rows() != M.columns())
     throw NonsquareMatrixException();
+  #endif
 
   // call lapack
   INTEGER INFO;
@@ -136,17 +144,21 @@ X& inverse_LU(X& M, const std::vector<int>& pivwork)
 template <class X, class Y>
 static X& solve_tri_fast(const Y& A, bool utri, bool transpose_A, X& XB)
 {
+  #ifndef NEXCEPT
   if (A.rows() != XB.rows())
     throw MissizeException();
 
   if (A.rows() != A.columns())
     throw NonsquareMatrixException();
+  #endif
 
   if (A.rows() == 0 || XB.columns() == 0)
     return XB.set_zero();
 
+  #ifndef NEXCEPT
   if (sizeof(A.data()) != sizeof(XB.data()))
     throw DataMismatchException();
+  #endif
 
   // setup parameters for LAPACK
   char TRANS = (transpose_A) ? 'T' : 'N';
@@ -169,18 +181,22 @@ static X& solve_tri_fast(const Y& A, bool utri, bool transpose_A, X& XB)
 template <class X>
 static X& solve_LDL_fast(const MATRIXN& M, const std::vector<int>& pivwork, X& XB)
 {
+  #ifndef NEXCEPT
   if (M.rows() != XB.rows())
     throw MissizeException();
 
   if (M.rows() != M.columns())
     throw NonsquareMatrixException();
+  #endif
 
   // check for empty matrix
   if (M.rows() == 0 || XB.columns() == 0)
     return XB.set_zero();
 
+  #ifndef NEXCEPT
   if (sizeof(M.data()) != sizeof(XB.data()))
     throw DataMismatchException();
+  #endif
 
   // setup parameters for LAPACK
   char UPLO = 'U';
@@ -204,18 +220,22 @@ static X& solve_LDL_fast(const MATRIXN& M, const std::vector<int>& pivwork, X& X
 template <class X, class Y>
 static X& solve_chol_fast(const Y& M, X& XB)
 {
+  #ifndef NEXCEPT
   if (M.rows() != XB.rows())
     throw MissizeException();
 
   if (M.rows() != M.columns())
     throw NonsquareMatrixException();
+  #endif
 
   // check for empty matrices
   if (M.rows() == 0 || XB.columns() == 0)
     return XB.set_zero();
 
+  #ifndef NEXCEPT
   if (sizeof(M.data()) != sizeof(XB.data()))
     throw DataMismatchException();
+  #endif
 
   // setup parameters for LAPACK
   char UPLO = 'U';
@@ -226,7 +246,7 @@ static X& solve_chol_fast(const Y& M, X& XB)
   INTEGER INFO;
 
   // call the solver routine
-  potrs_(&UPLO, &N, &NRHS, M.data(), &LDA, XB.data(), &LDB, &INFO);
+  potrs_(&UPLO, &N, &NRHS, (REAL*) M.data(), &LDA, XB.data(), &LDB, &INFO);
   assert(INFO == 0);
 
   return XB;
@@ -242,18 +262,22 @@ static X& solve_chol_fast(const Y& M, X& XB)
 template <class Y, class X>
 static X& solve_LU_fast(const Y& M, bool transpose, const std::vector<int>& pivwork, X& XB)
 {
+  #ifndef NEXCEPT
   if (M.rows() != XB.rows())
     throw MissizeException();
 
   if (M.rows() != M.columns())
     throw NonsquareMatrixException();
+  #endif
 
   // check for empty matrix
   if (M.rows() == 0 || XB.columns() == 0)
     return XB.set_zero();
 
+  #ifndef NEXCEPT
   if (sizeof(M.data()) != sizeof(XB.data()))
     throw DataMismatchException();
+  #endif
 
   // setup parameters to LAPACK
   INTEGER N = M.rows();
@@ -271,7 +295,7 @@ static X& solve_LU_fast(const Y& M, bool transpose, const std::vector<int>& pivw
 
 /// Calculates the rank of a matrix
 template <class X>
-unsigned calc_rank(X& A, REAL tol)
+unsigned calc_rank(X& A, REAL tol = (REAL) -1.0)
 {
   // look for easy out
   if (A.rows() == 0 || A.columns() == 0)
@@ -308,8 +332,10 @@ unsigned calc_rank(X& A, REAL tol)
 template <class Y>
 MATRIXN& nullspace(Y& A, MATRIXN& nullspace, REAL tol)
 {
+  #ifndef NEXCEPT
   if (sizeof(A.data()) != sizeof(nullspace.data()))
     throw DataMismatchException();
+  #endif
 
   // look for fast way out
   if (A.rows() == 0)
@@ -422,11 +448,13 @@ void eig_symm(X& A, VECTORN& evals)
   }
 
   // verify that A is square
+  #ifndef NEXCEPT
   if (A.rows() != A.columns())
     throw NonsquareMatrixException();
+  #endif
 
   // verify that the matrix is symmetric
-  #ifndef NDEBUG
+  #ifndef NEXCEPT
   if (!A.is_symmetric())
     std::cerr << "LinAlg::eig_symm() - matrix does not appear to be symmetric!" << std::endl;
   #endif
@@ -465,6 +493,7 @@ void eig_symm_plus(X& A_evecs, Y& evals)
     return;
   }
 
+  #ifndef NEXCEPT
   if (A_evecs.rows() != A_evecs.columns())
     throw NonsquareMatrixException();
 
@@ -472,7 +501,6 @@ void eig_symm_plus(X& A_evecs, Y& evals)
     throw DataMismatchException();
 
   // verify that the matrix is symmetric
-  #ifndef NDEBUG
   if (!A_evecs.is_symmetric())
     std::cerr << "LinAlg::eig_symm() - matrix does not appear to be symmetric!" << std::endl;
   #endif
@@ -500,12 +528,14 @@ void svd(X& A, MATRIXN& U, VECTORN& S, MATRIXN& V)
 {
   MATRIXN& A_backup = workM();
 
+  #ifndef NEXCEPT
   if (sizeof(A.data()) != sizeof(U.data()))
     throw DataMismatchException();
   if (sizeof(A.data()) != sizeof(S.data()))
     throw DataMismatchException();
   if (sizeof(A.data()) != sizeof(V.data()))
     throw DataMismatchException();
+  #endif
 
   // copy A
   A_backup = A;
@@ -544,12 +574,14 @@ void svd1(X& A, MATRIXN& U, VECTORN& S, MATRIXN& V)
     return;
   } 
 
+  #ifndef NEXCEPT
   if (sizeof(A.data()) != sizeof(U.data()))
     throw DataMismatchException();
   if (sizeof(A.data()) != sizeof(S.data()))
     throw DataMismatchException();
   if (sizeof(A.data()) != sizeof(V.data()))
     throw DataMismatchException();
+  #endif
 
   // setup U
   if (U.rows() != A.rows() || U.columns() != A.rows())
@@ -607,12 +639,14 @@ void svd2(X& A, MATRIXN& U, VECTORN& S, MATRIXN& V)
     return;
   } 
 
+  #ifndef NEXCEPT
   if (sizeof(A.data()) != sizeof(U.data()))
     throw DataMismatchException();
   if (sizeof(A.data()) != sizeof(S.data()))
     throw DataMismatchException();
   if (sizeof(A.data()) != sizeof(V.data()))
     throw DataMismatchException();
+  #endif
 
   // setup U
   if (U.rows() != A.rows() || U.columns() != A.rows())
@@ -655,19 +689,23 @@ void svd2(X& A, MATRIXN& U, VECTORN& S, MATRIXN& V)
 template <class X>
 X& solve_symmetric_fast(MATRIXN& A, X& XB)
 {
+  #ifndef NEXCEPT
   if (A.rows() != A.columns())
     throw NonsquareMatrixException();
 
   // verify A and b are compatible 
   if (A.columns() != XB.rows())
     throw MissizeException();
+  #endif
 
   // make sure that A is not zero sized
   if (A.rows() == 0 || XB.columns() == 0)
     return XB.set_zero();
 
+  #ifndef NEXCEPT
   if (sizeof(A.data()) != sizeof(XB.data()))
     throw DataMismatchException();
+  #endif
 
   // form inputs to LAPACK
   char UPLO = 'U';
@@ -697,8 +735,10 @@ X& solve_symmetric_fast(MATRIXN& A, X& XB)
 template <class X>
 X& inverse_symmetric(X& A)
 {
+  #ifndef NEXCEPT
   if (A.rows() != A.columns())
     throw NonsquareMatrixException();
+  #endif
 
   // verify that A is not zero size
   if (A.rows() == 0)
@@ -742,19 +782,23 @@ X& inverse_symmetric(X& A)
 template <class Y, class X>
 static X& solve_SPD_fast(Y& A, X& XB)
 {
+  #ifndef NEXCEPT
   if (A.rows() != A.columns())
     throw NonsquareMatrixException();
 
   // verify that A and b are proper size
   if (A.columns() != XB.rows())
     throw MissizeException();
+  #endif
 
   // verify that A is not zero size
   if (A.rows() == 0 || XB.columns() == 0)
     return XB.set_zero();
 
+  #ifndef NEXCEPT
   if (sizeof(A.data()) != sizeof(XB.data()))
     throw DataMismatchException();
+  #endif
 
   // form inputs to LAPACK
   char UPLO = 'U';
@@ -783,8 +827,10 @@ static X& solve_SPD_fast(Y& A, X& XB)
 template <class X>
 static X& inverse_chol(X& A)
 {
+  #ifndef NEXCEPT
   if (A.rows() != A.columns())
     throw NonsquareMatrixException();
+  #endif
 
   // verify that A is not zero sized
   if (A.rows() == 0)
@@ -819,8 +865,10 @@ static X& inverse_chol(X& A)
 template <class X>
 static X& inverse_SPD(X& A)
 {
+  #ifndef NEXCEPT
   if (A.rows() != A.columns())
     throw NonsquareMatrixException();
+  #endif
 
   // verify that A is not zero sized
   if (A.rows() == 0)
@@ -872,15 +920,182 @@ X& inverse(X& A)
  * \param tol the tolerance for determining the rank of A; if tol < 0.0,
  *        tol is computed using machine epsilon
  */
+template <class X, class Y, class Vec, class Z>
+X& solve_LS_fast(const Y& U, const Vec& S, const Z& V, X& XB, REAL tol = (REAL) -1.0)
+{
+  // verify that U, S, V and B are appropriate sizes
+  #ifndef NEXCEPT
+  if (U.rows() != XB.rows())
+    throw MissizeException();
+  if (S.columns() > 1 || (S.size() != U.columns() && S.size() != V.rows()))
+    throw MissizeException();
+  if (sizeof(U.data()) != sizeof(XB.data()) || 
+      sizeof(U.data()) != sizeof(S.data()) ||
+      sizeof(U.data()) != sizeof(V.data()))
+    throw DataMismatchException();
+  #endif
+
+  // get the dimensionality of A
+  const unsigned m = U.rows();
+  const unsigned n = V.columns();
+  const unsigned k = XB.columns();
+  const unsigned minmn = std::min(m, n);
+
+  // check for easy out
+  if (m == 0 || n == 0)
+  {
+    XB.set_zero(n, XB.columns());
+    return XB;
+  }
+
+  // compute the svd
+  VECTORN& Sx = workv();
+  MATRIXN& workMx = workM();
+  MATRIXN& workM2x = workM2();
+
+  // determine new tolerance based on first std::singular value if necessary
+  Sx = S;
+  REAL* Sx_data = Sx.data();
+  if (tol < (REAL) 0.0)
+    tol = Sx_data[0] * std::max(m,n) * std::numeric_limits<REAL>::epsilon();
+
+  // compute 1/S
+  unsigned S_len = Sx.size();
+
+  // A is m x n, B is m x k
+  // (L -> R, scaling V)    n^2 + n*min(n,m)*m + nmk [n < m < k, n < k < m]
+  // (L -> R, scaling U')   m^2 + n*min(n,m)*m + nmk [m < n < k]
+  // (R -> L, scaling U')   m^2 + m^2k + nmk + n^2k  [k < n < m]
+  // (R -> L, scaling U'*B) m^2k + min(n,m)*k + n*min(m,n)*k [k < m < n, m < k < n]
+
+  // compute inv(s) 
+  for (unsigned i=0; i< S_len; i++)
+    Sx_data[i] = (std::fabs(Sx_data[i]) > tol) ? (REAL) 1.0/Sx_data[i] : (REAL) 0.0;
+
+  // check cases
+  // case 1: n is smallest
+  if (n < m && n < k)
+  {
+    // scale n columns of V
+    workM2x = V;
+    for (unsigned i=0; i< n; i++)
+      CBLAS::scal(n, Sx_data[i], workM2x.data()+workM2x.leading_dim()*i, 1);
+
+    // multiply scaled V by U' = workM
+    workMx.resize(n, m);
+    CBLAS::gemm(CblasColMajor, CblasNoTrans, CblasTrans, n, m, n, (REAL) 1.0, workM2x.data(), workM2x.leading_dim(), U.data(), U.leading_dim(), (REAL) 0.0, workMx.data(), workMx.leading_dim());
+
+    // multiply workM * XB
+    workM2x.resize(n,k);
+    CBLAS::gemm(CblasColMajor, CblasNoTrans, CblasNoTrans, n, k, m, (REAL) 1.0, workMx.data(), workMx.leading_dim(), XB.data(), XB.leading_dim(), (REAL) 0.0, workM2x.data(), workM2x.leading_dim());
+    XB = workM2x;
+  }
+  // case 2: m < n < k
+  else if (m < n && n < k)
+  {
+    // scale columns of U
+    workM2x = U;
+    for (unsigned i=0; i< m; i++)
+      CBLAS::scal(m, Sx_data[i], workM2x.data()+workM2x.leading_dim()*i, 1);
+
+    // multiply V by scaled U' = workM
+    workMx.resize(n,m);
+    CBLAS::gemm(CblasColMajor, CblasNoTrans, CblasTrans, n, m, m, (REAL) 1.0, V.data(), V.leading_dim(), workM2x.data(), workM2x.leading_dim(), (REAL) 0.0, workMx.data(), workMx.leading_dim());
+
+    // multiply workM * XB
+    workM2x.resize(n,k);
+    CBLAS::gemm(CblasColMajor, CblasNoTrans, CblasNoTrans, n, k, m, (REAL) 1.0, workMx.data(), workMx.leading_dim(), XB.data(), XB.leading_dim(), (REAL) 0.0, workM2x.data(), workM2x.leading_dim());
+    XB = workM2x;
+  }
+  // case 3: k < n < m
+  else if (k < n && n < m)
+  {
+    // scale columns of U
+    workM2x = U;
+    for (unsigned i=0; i< n; i++)
+      CBLAS::scal(n, Sx_data[i], workM2x.data()+workM2x.leading_dim()*i, 1);
+
+    // multiply U' * XB (resulting in n x k matrix)
+    workMx.resize(n,k);
+    CBLAS::gemm(CblasColMajor, CblasTrans, CblasNoTrans, n, k, m, (REAL) 1.0, workM2x.data(), workM2x.leading_dim(), XB.data(), XB.leading_dim(), (REAL) 0.0, workMx.data(), workMx.leading_dim());
+
+    // multiply V * workM
+    V.mult(workMx, XB);
+  }
+  // case 4: n is largest
+  else
+  {
+    assert(n >= m && n >= k);
+
+    // scale m columns of V
+    workM2x = V;
+    for (unsigned i=0; i< m; i++)
+      CBLAS::scal(n, Sx_data[i], workM2x.data()+workM2x.leading_dim()*i, 1);
+
+    // multiply U' * XB (resulting in m x k matrix)
+    U.transpose_mult(XB, workMx);
+
+    // multiply V * workM
+    XB.resize(n,k);
+    CBLAS::gemm(CblasColMajor, CblasNoTrans, CblasNoTrans, n, k, m, (REAL) 1.0, workM2x.data(), workM2x.leading_dim(), workMx.data(), workMx.leading_dim(), (REAL) 0.0, XB.data(), XB.leading_dim());
+  }
+
+  return XB;
+
+// NOTE: this is disabled b/c it does not work as well...
+
+/*
+  // setup LAPACK parameters
+  INTEGER M = A.rows();
+  INTEGER N = A.columns();
+  INTEGER NRHS = XB.columns();
+  INTEGER LDB = std::max(M,N);
+  INTEGER INFO;
+
+  // allocate storage for solving the RHS
+  const INTEGER XB_rows = std::max(M,NRHS);
+  const INTEGER XB_cols = std::max(N,NRHS);
+  REAL* rhs = new REAL[XB_rows*XB_cols];
+  std::copy(XB.data(), XB.end(), rhs);
+
+  // compute
+  gelsd_(&M, &N, &NRHS, A.data(), &M, rhs, &LDB, &stol, &INFO);
+
+  // don't check success - SVD algorithm is very stable.. 
+
+  // copy solution into XB
+  XB.resize(N, NRHS);
+  std::copy(rhs, rhs+(M*NRHS), XB.data());
+
+  // mark A as destroyed and free memory
+  A.resize(0,0);
+  delete [] rhs;
+
+  return XB;
+*/
+}
+
+
+/// Most robust system of linear equations solver (solves AX = B)
+/**
+ * Solves rank-deficient and underdetermined (minimum norm solution) systems.
+ * Computes least-squares solution to overdetermined systems.
+ * \param A the coefficient matrix (destroyed on return)
+ * \param XB the matrix B on input, the matrix X on return
+ * \param tol the tolerance for determining the rank of A; if tol < 0.0,
+ *        tol is computed using machine epsilon
+ */
 template <class X, class Y>
 X& solve_LS_fast(Y& A, X& XB, SVD svd_algo, REAL tol)
 {
   // verify that A and B are appropriate sizes
+  #ifndef NEXCEPT
   if (A.rows() != XB.rows())
     throw MissizeException();
 
   if (sizeof(A.data()) != sizeof(XB.data()))
     throw DataMismatchException();
+  #endif
 
   // get the dimensionality of A
   const unsigned m = A.rows();
@@ -954,7 +1169,7 @@ X& solve_LS_fast(Y& A, X& XB, SVD svd_algo, REAL tol)
     // multiply workM * XB
     Vx.resize(n,k);
     CBLAS::gemm(CblasColMajor, CblasNoTrans, CblasNoTrans, n, k, m, (REAL) 1.0, workMx.data(), workMx.leading_dim(), XB.data(), XB.leading_dim(), (REAL) 0.0, Vx.data(), Vx.leading_dim());
-    XB.copy_from(Vx);
+    XB = Vx;
   }
   // case 3: k < n < m
   else if (k < n && n < m)
@@ -1028,28 +1243,31 @@ X& solve_LS_fast(Y& A, X& XB, SVD svd_algo, REAL tol)
  * \param XB the matrix B on input, the matrix X on return
  */
 template <class X, class Y>
-X& solve_fast(X& A, Y& XB)
+Y& solve_fast(X& A, Y& XB)
 {  
+  #ifndef NEXCEPT
   if (A.rows() != A.columns())
     throw NonsquareMatrixException();
+  #endif
 
   // verify that A is not zero size
   if (A.rows() == 0)
     return XB;
 
   // verify that A and b are compatible
+  #ifndef NEXCEPT
   if (A.columns() != XB.rows())
     throw MissizeException();
 
   if (sizeof(A.data()) != sizeof(XB.data()))
     throw DataMismatchException();
+  #endif
 
   // setup LAPACK parameters
   INTEGER N = A.rows();
   INTEGER LDA = A.leading_dim();
   INTEGER LDB = XB.leading_dim();
   INTEGER NRHS = XB.columns();
-  SAFESTATIC FastThreadable<std::vector<INTEGER> > pivwork;
   pivwork().resize(N);
   INTEGER INFO;
 

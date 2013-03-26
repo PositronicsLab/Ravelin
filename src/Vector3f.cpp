@@ -11,15 +11,9 @@
 
 using namespace Ravelin;
 
-#define VECTOR3 Vector3f
-#define REAL float
-#define ITERATOR fIterator
-#define CONST_ITERATOR fIterator_const
 
+#include <Ravelin/fdefs.h>
 #include "Vector3.cpp"
+#include <Ravelin/undefs.h>
 
-#undef VECTOR3
-#undef REAL
-#undef ITERATOR
-#undef CONST_ITERATOR
 

@@ -9,25 +9,17 @@
 #include <iomanip>
 #include <Ravelin/FastThreadable.h>
 #include <Ravelin/MissizeException.h>
+#include <Ravelin/Matrix2d.h>
+#include <Ravelin/Matrix3d.h>
 #include <Ravelin/MatrixNd.h>
 
 using std::vector;
 using namespace Ravelin;
 using boost::shared_array;
 
-#define MATRIXN MatrixNd
-#define REAL double
-#define VECTORN VectorNd
-#define MATRIX3 Matrix3d
-#define ITERATOR dIterator 
-#define CONST_ITERATOR dIterator_const 
 
+#include <Ravelin/ddefs.h>
 #include "MatrixN.cpp"
+#include <Ravelin/undefs.h>
 
-#undef MATRIXN
-#undef REAL
-#undef VECTORN
-#undef MATRIX3
-#undef ITERATOR
-#undef CONST_ITERATOR
 

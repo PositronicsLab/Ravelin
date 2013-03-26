@@ -5,23 +5,6 @@
  ****************************************************************************/
 
 /// Gets an iterator to a block
-ITERATOR block_iterator(unsigned row_start, unsigned row_end, unsigned col_start, unsigned col_end)
-{
-  #ifndef NEXCEPT
-  if (row_end < row_start || row_end > rows() || col_end < col_start || col_end > columns())
-    throw InvalidIndexException();
-  #endif
-
-  ITERATOR i;
-  i._sz = (row_end - row_start)*(col_end - col_start);
-  i._ld = leading_dim();
-  i._rows = row_end - row_start;
-  i._columns = col_end - col_start;
-  i._data_start = i._current_data = data() + i._ld*col_start + row_start;
-  return i;
-}
-
-/// Gets an iterator to a block
 CONST_ITERATOR block_iterator(unsigned row_start, unsigned row_end, unsigned col_start, unsigned col_end) const
 {
   #ifndef NEXCEPT
@@ -84,52 +67,6 @@ V& get_column(unsigned column, V& v) const
     *target++ = *source++;
 
   return v;
-}
-
-template <class V>
-MATRIXX& set_row(unsigned row, const V& v)
-{
-  #ifndef NEXCEPT
-  if (row > rows())
-    throw InvalidIndexException();
-
-  if (sizeof(data()) != sizeof(v.data()))
-    throw DataMismatchException();
-  #endif
-
-  // setup the iterators 
-  ITERATOR target = block_iterator(row, row+1, 0, columns());
-  ITERATOR target_end = target.end();  
-  CONST_ITERATOR source = v.begin();
-
-  // iterate
-  while (target != target_end)
-    *target++ = *source++;
-
-  return *this;
-}
-
-template <class V>
-MATRIXX& set_column(unsigned column, const V& v)
-{
-  #ifndef NEXCEPT
-  if (column > columns())
-    throw InvalidIndexException();
-
-  if (sizeof(data()) != sizeof(v.data()))
-    throw DataMismatchException();
-  #endif
-
-  // setup the iterators 
-  ITERATOR target = block_iterator(0, rows(), column, column+1);
-  ITERATOR target_end = target.end();  
-  CONST_ITERATOR source = v.begin();
-
-  // iterate
-  while (target != target_end)
-    *target++ = *source++;
-
-  return *this;
 }
 
 template <class T, class U>
@@ -283,45 +220,6 @@ M& get_sub_mat(unsigned row_start, unsigned row_end, unsigned col_start, unsigne
       CBLAS::copy(m.columns(), data()+row_start+(col_start+i) * rows(), 1, m.data()+i, m.rows());
   
   return m;
-}
-
-/// Sets the specified sub matrix
-/**
- * \param row_start the row to start (inclusive)
- * \param col_start the column to start (inclusive)
- * \param m the source matrix
- * \param transpose determines whether the m is to be transposed 
- * \note fails assertion if m is too large to insert into this
- */
-template <class M>
-MATRIXX& set_sub_mat(unsigned row_start, unsigned col_start, const M& m, Transposition trans = eNoTranspose)
-{
-  #ifndef NEXCEPT
-  if (sizeof(data()) != sizeof(m.data()))
-    throw DataMismatchException();
-
-  if (trans == eNoTranspose)
-  {
-    if (row_start + m.rows() > rows() || col_start + m.columns() > columns())
-      throw MissizeException();
-  }
-  else if (row_start + m.columns() > rows() || col_start + m.rows() > columns())
-    throw MissizeException();
-  #endif
-
-  // make sure there is data to copy
-  if (m.rows() == 0 || m.columns() == 0)
-    return *this;
-
-  // copy each column of m using BLAS
-  if (trans == eNoTranspose)
-    for (unsigned i=0; i< m.columns(); i++)
-      CBLAS::copy(m.rows(), m.data()+i*m.rows(), 1, data()+row_start+(col_start+i) * rows(), 1);
-  else
-    for (unsigned i=0; i< m.columns(); i++)
-      CBLAS::copy(m.rows(), m.data()+i*m.rows(), 1, data()+row_start+col_start*rows() + i, rows());
-
-  return *this;
 }
 
 /// Gets a submatrix of columns (not necessarily a block)
@@ -497,5 +395,156 @@ template <class ForwardIterator, class M>
 M& select_square(ForwardIterator start, ForwardIterator end, M& m) const
 {
   return select(start, end, start, end, m);
+}
+
+/// Gets a constant shared vector for a row
+CONST_SHAREDVECTORN row(unsigned i) const
+{
+  // get the starting offset
+  const unsigned OFFSET = data() - _data.get();
+
+  CONST_SHAREDVECTORN v;
+  v._data = _data;
+  v._start = OFFSET + i;
+  v._inc = leading_dim();
+  v._len = _columns;
+  return v;
+}
+
+/// Gets a shared vector for a column 
+CONST_SHAREDVECTORN column(unsigned i) const
+{
+  // get the starting offset
+  const unsigned OFFSET = data() - _data.get();
+
+  CONST_SHAREDVECTORN v;
+  v._data = _data;
+  v._start = OFFSET + leading_dim() * i;
+  v._inc = 1;
+  v._len = _rows;
+  return v;
+}
+
+/// Gets a block as a constant shared matrix
+CONST_SHAREDMATRIXN block(unsigned row_start, unsigned row_end, unsigned col_start, unsigned col_end) const
+{
+  #ifndef NEXCEPT
+  if (row_end < row_start || row_end > _rows || col_end < col_start || col_end > _columns)
+    throw InvalidIndexException();
+  #endif
+
+  // determine the offset
+  const unsigned OFFSET = data() - _data.get();
+
+  CONST_SHAREDMATRIXN m;
+  m._data = _data;
+  m._rows = row_end - row_start;
+  m._columns = col_end - col_start;
+  m._ld = leading_dim();
+  m._start = OFFSET + m._ld * col_start + row_start;
+  return m;  
+}
+
+/// Get an iterator to the beginning 
+CONST_ITERATOR begin() const
+{
+  CONST_ITERATOR i;
+  i._sz = _rows*_columns;
+  i._ld = leading_dim();
+  i._rows = _rows;
+  i._columns = _columns;
+  i._data_start = i._current_data = data();
+  return i;
+}
+
+/// Get an iterator to the end
+CONST_ITERATOR end() const
+{
+  CONST_ITERATOR i;
+  i._sz = _rows*_columns;
+  i._ld = leading_dim();
+  i._rows = _rows;
+  i._columns = _columns;
+  i._data_start = data();
+  i._current_data = data() + i._ld*i._columns;
+  return i;
+}
+
+/// Determines the transpose of a matrix and stores the result in a given matrix
+template <class M>
+static M& transpose(const CONST_SHAREDMATRIXN& m, M& result)
+{
+  #ifndef NEXCEPT
+  if (sizeof(m.data()) != sizeof(result.data()))
+    throw DataMismatchException();
+  #endif
+
+  // resize the result
+  result.resize(m.columns(), m.rows());
+
+  const REAL* mdata = m.data();
+  REAL* rdata = result.data();
+  for  (unsigned i=0; i< m.rows(); i++)
+    for (unsigned j=0; j< m.columns(); j++)
+      rdata[i*result.leading_dim()+j] = mdata[j*m.leading_dim()+i];
+  
+  return result;
+}
+
+/// Multiplies the diagonal matrix formed from d by the matrix m
+template <class V, class W>
+static W& diag_mult(const V& d, const CONST_SHAREDMATRIXN& m, W& result)
+{
+  #ifndef NEXCEPT
+  if (d.size() != m.rows())
+    throw MissizeException();
+  if (sizeof(d.data()) != sizeof(m.data()))
+    throw DataMismatchException();
+  #endif
+
+  result.resize(d.size(), m.columns());
+  for (unsigned i=0; i< m.columns(); i++)
+    std::transform(d.begin(), d.end(), m.begin()+m.rows()*i, result.begin()+result.rows()*i, std::multiplies<REAL>());
+
+  return result;
+}
+
+/// Multiplies the diagonal matrix formed from d by the matrix transpose(m)
+template <class V, class W>
+static W& diag_mult_transpose(const V& d, const CONST_SHAREDMATRIXN& m, W& result)
+{
+  #ifndef NEXCEPT
+  if (d.size() != m.columns())
+    throw MissizeException();
+  if (sizeof(d.data()) != sizeof(m.data()))
+    throw DataMismatchException();
+  #endif
+
+  // copy the transpose of m to the result
+  CONST_SHAREDMATRIXN::transpose(m, result);
+
+  // do the specified number of times
+  for (unsigned i=0; i< m.rows(); i++)
+    CBLAS::scal(d.size(), d[i], result.begin()+i, result.rows());
+
+  return result;
+}
+
+/// Multiplies the diagonal matrix formed from d by the vector v
+template <class V, class U, class W>
+static W& diag_mult(const V& d, const U& v, W& result)
+{
+  #ifndef NEXCEPT
+  if (d.size() != v.size())
+    throw MissizeException();
+  if (sizeof(d.data()) != sizeof(v.data()))
+    throw DataMismatchException();
+  if (sizeof(d.data()) != sizeof(result.data()))
+    throw DataMismatchException();
+  #endif
+
+  result.resize(d.size());
+  std::transform(d.begin(), d.end(), v.begin(), result.begin(), std::multiplies<REAL>());
+  return result;
 }
 

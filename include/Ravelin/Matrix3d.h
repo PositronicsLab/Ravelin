@@ -19,23 +19,9 @@
 
 namespace Ravelin {
 
-#define REAL double 
-#define QUAT Quatd
-#define AANGLE AAngled
-#define MATRIX3 Matrix3d
-#define VECTOR3 Vector3d
-#define ITERATOR dIterator 
-#define CONST_ITERATOR dIterator_const
-
+#include "ddefs.h"
 #include "Matrix3.h"
-
-#undef REAL
-#undef QUAT
-#undef AANGLE
-#undef MATRIX3
-#undef VECTOR3
-#undef ITERATOR
-#undef CONST_ITERATOR
+#include "undefs.h"
 
 } // end namespace
 

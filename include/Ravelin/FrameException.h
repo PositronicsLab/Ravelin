@@ -4,23 +4,20 @@
  * License (found in COPYING).
  ****************************************************************************/
 
-#ifndef _MATRIX2F_H
-#define _MATRIX2F_H
+#ifndef _FRAME_EXCEPTION_H_
+#define _FRAME_EXCEPTION_H_
 
-#include <vector>
-#include <algorithm>
-#include <Ravelin/cblas.h>
-#include <Ravelin/Constants.h>
-#include <Ravelin/MissizeException.h>
-#include <Ravelin/InvalidIndexException.h>
-#include <Ravelin/DataMismatchException.h>
-#include <Ravelin/Vector2f.h>
+#include <stdexcept>
 
 namespace Ravelin {
 
-#include "fdefs.h"
-#include "Matrix2.h"
-#include "undefs.h"
+/// Exception thrown when trying to mix types from two different frames 
+class FrameException : public std::runtime_error
+{
+  public:
+    FrameException() : std::runtime_error("Frame mismatch") {}
+}; // end class
+
 
 } // end namespace
 

@@ -18,19 +18,9 @@
 
 namespace Ravelin {
 
-#define REAL double
-#define MATRIX2 Matrix2d
-#define VECTOR2 Vector2d
-#define ITERATOR dIterator
-#define CONST_ITERATOR dIterator_const
-
+#include "ddefs.h"
 #include "Matrix2.h"
-
-#undef REAL
-#undef MATRIX2
-#undef VECTOR2
-#undef ITERATOR
-#undef CONST_ITERATOR
+#include "undefs.h"
 
 } // end namespace
 

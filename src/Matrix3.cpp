@@ -531,6 +531,48 @@ MATRIX3& MATRIX3::operator=(const MATRIX3& m)
   return *this;
 }
 
+/// Copies a matrix to this one
+MATRIX3& MATRIX3::operator=(const MATRIXN& m)
+{
+  #ifndef NEXCEPT
+  if (m.rows() != 3 || m.columns() != 3)
+    throw MissizeException();
+  #endif
+  const REAL* data = m.data();
+  const unsigned SZ = 9;
+  for (unsigned i=0; i< SZ; i++)
+    _data[i] = data[i];
+  return *this;
+}
+
+/// Copies a matrix to this one
+MATRIX3& MATRIX3::operator=(const SHAREDMATRIXN& m)
+{
+  #ifndef NEXCEPT
+  if (m.rows() != 3 || m.columns() != 3)
+    throw MissizeException();
+  #endif
+  const unsigned SZ = 9;
+  CONST_ITERATOR miter = m.begin();
+  for (unsigned i=0; i< SZ; i++)
+    _data[i] = *miter++;
+  return *this;
+}
+
+/// Copies a matrix to this one
+MATRIX3& MATRIX3::operator=(const CONST_SHAREDMATRIXN& m)
+{
+  #ifndef NEXCEPT
+  if (m.rows() != 3 || m.columns() != 3)
+    throw MissizeException();
+  #endif
+  const unsigned SZ = 9;
+  CONST_ITERATOR miter = m.begin();
+  for (unsigned i=0; i< SZ; i++)
+    _data[i] = *miter++;
+  return *this;
+}
+
 /// Multiplies this matrix by a scalar in place
 MATRIX3& MATRIX3::operator*=(REAL scalar)
 {
@@ -684,36 +726,46 @@ MATRIX3& MATRIX3::operator=(const AANGLE& a)
 
 REAL& MATRIX3::operator()(unsigned i, unsigned j)
 {
+  #ifndef NEXCEPT
   if (i >= 3 || j >= 3)
     throw InvalidIndexException();
+  #endif
   return _data[j*3+i];
 }
 
-REAL MATRIX3::operator()(unsigned i, unsigned j) const
+const REAL& MATRIX3::operator()(unsigned i, unsigned j) const
 {
+  #ifndef NEXCEPT
   if (i >= 3 || j >= 3)
     throw InvalidIndexException();
+  #endif
   return _data[j*3+i];
 }
 
 REAL* MATRIX3::data(unsigned i)
 {
+  #ifndef NEXCEPT
   if (i >= 9)
     throw InvalidIndexException();
+  #endif
   return &_data[i];
 }
 
 const REAL* MATRIX3::data(unsigned i) const
 {
+  #ifndef NEXCEPT
   if (i >= 9)
     throw InvalidIndexException();
+  #endif
   return &_data[i];
 }
 
 MATRIX3& MATRIX3::resize(unsigned m, unsigned n, bool preserve)
 {
+  #ifndef NEXCEPT
   if (m != 3 || n != 3)
     throw std::runtime_error("Attempt to resize fixed-length vector!");
+  #endif
 
   return *this;
 }

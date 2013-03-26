@@ -18,26 +18,9 @@
 
 namespace Ravelin {
 
-#define REAL double 
-#define EPS EPS_DOUBLE
-#define VECTORN VectorNd
-#define VECTOR2 Vector2d
-#define VECTOR3 Vector3d
-#define SHAREDVECTORN SharedVectorNd
-#define CONST_ITERATOR dIterator_const 
-#define ITERATOR dIterator
-
-// include main vector functionality
+#include "ddefs.h"
 #include "VectorN.h"
-
-#undef REAL
-#undef EPS
-#undef VECTORN
-#undef VECTOR2
-#undef VECTOR3
-#undef SHAREDVECTORN
-#undef CONST_ITERATOR
-#undef ITERATOR
+#include "undefs.h"
 
 } // end namespace
 

@@ -7,6 +7,7 @@
 SPARSEMATRIXN::SPARSEMATRIXN()
 {
   _rows = _columns = 0;
+  _nnz = 0;
 }
 
 SPARSEMATRIXN::SPARSEMATRIXN(unsigned m, unsigned n, const map<pair<unsigned, unsigned>, REAL>& values)
@@ -21,6 +22,7 @@ SPARSEMATRIXN::SPARSEMATRIXN(unsigned m, unsigned n, shared_array<unsigned> ptr,
   _data = data; 
   _ptr = ptr; 
   _indices = indices; 
+  _nnz = _ptr[_rows];
 }
 
 /// Creates a sparse matrix from a dense matrix
@@ -58,6 +60,9 @@ SPARSEMATRIXN SPARSEMATRIXN::identity(unsigned n)
   }
   m._ptr[n] = n;  
 
+  // set nnz
+  m._nnz = n;
+
   return m;
 }
 
@@ -91,13 +96,18 @@ void SPARSEMATRIXN::set(unsigned m, unsigned n, const map<pair<unsigned, unsigne
       }
     _ptr[r+1] = j;
   }
+
+  // set nnz
+  _nnz = nv;
 }
 
 /// Gets a column of the sparse matrix as a sparse vector
 SPARSEVECTORN& SPARSEMATRIXN::get_column(unsigned i, SPARSEVECTORN& column) const
 {
+  #ifndef NEXCEPT
   if (i >= _columns)
     throw InvalidIndexException();
+  #endif
 
   // determine the number of elements
   unsigned nelm = 0;
@@ -135,8 +145,10 @@ SPARSEVECTORN& SPARSEMATRIXN::get_column(unsigned i, SPARSEVECTORN& column) cons
 /// Gets a row of the sparse matrix as a sparse vector
 SPARSEVECTORN& SPARSEMATRIXN::get_row(unsigned i, SPARSEVECTORN& row) const
 {
+  #ifndef NEXCEPT
   if (i >= _rows)
     throw InvalidIndexException();
+  #endif
 
   // get the number of elements
   unsigned nelm = _ptr[i+1] - _ptr[i];
@@ -159,10 +171,12 @@ SPARSEMATRIXN SPARSEMATRIXN::get_sub_mat(unsigned rstart, unsigned rend, unsigne
 {
   SPARSEMATRIXN sub(rend - rstart, cend - cstart);
 
+  #ifndef NEXCEPT
   if (rend < rstart || cend < cstart)
     throw InvalidIndexException();
   if (rend > _rows || cend > _columns)
     throw InvalidIndexException();
+  #endif
 
   // determine how many values are in the sparse matrix
   unsigned nv = 0;
@@ -200,6 +214,7 @@ SPARSEMATRIXN SPARSEMATRIXN::get_sub_mat(unsigned rstart, unsigned rend, unsigne
   sub._ptr = ptr;
   sub._indices = indices;
   sub._data = data;
+  sub._nnz = nv;
 
   return sub;
 }
@@ -207,8 +222,10 @@ SPARSEMATRIXN SPARSEMATRIXN::get_sub_mat(unsigned rstart, unsigned rend, unsigne
 /// Multiplies this sparse matrix by a dense matrix
 MATRIXN& SPARSEMATRIXN::mult(const MATRIXN& m, MATRIXN& result) const
 {
+  #ifndef NEXCEPT
   if (_columns != m.rows())
     throw MissizeException();
+  #endif
 
   // setup the result matrix
   result.set_zero(_rows, m.columns());
@@ -231,8 +248,10 @@ MATRIXN& SPARSEMATRIXN::mult(const MATRIXN& m, MATRIXN& result) const
 /// Multiplies this sparse matrix by a dense vector
 VECTORN& SPARSEMATRIXN::mult(const VECTORN& x, VECTORN& result) const
 {
+  #ifndef NEXCEPT
   if (_columns != x.size())
     throw MissizeException();
+  #endif
 
   // setup the result matrix
   result.set_zero(_rows);
@@ -254,8 +273,10 @@ VECTORN& SPARSEMATRIXN::mult(const VECTORN& x, VECTORN& result) const
 /// Multiplies the transpose of this sparse matrix by a dense vector
 VECTORN& SPARSEMATRIXN::transpose_mult(const VECTORN& x, VECTORN& result) const
 {
+  #ifndef NEXCEPT
   if (_rows != x.size())
     throw MissizeException();
+  #endif
 
   // setup the result vector
   result.set_zero(_columns);
@@ -270,8 +291,10 @@ VECTORN& SPARSEMATRIXN::transpose_mult(const VECTORN& x, VECTORN& result) const
 /// Multiplies the transpose of this sparse matrix by a dense matrix
 MATRIXN& SPARSEMATRIXN::transpose_mult(const MATRIXN& m, MATRIXN& result) const
 {
+  #ifndef NEXCEPT
   if (_rows != m.rows())
     throw MissizeException();
+  #endif
 
   result.set_zero(_columns, m.columns());
 
@@ -286,8 +309,10 @@ MATRIXN& SPARSEMATRIXN::transpose_mult(const MATRIXN& m, MATRIXN& result) const
 /// Multiplies this matrix by the transpose of a dense matrix
 MATRIXN& SPARSEMATRIXN::mult_transpose(const MATRIXN& m, MATRIXN& result) const
 {
+  #ifndef NEXCEPT
   if (_columns != m.columns())
     throw MissizeException();
+  #endif
 
   // setup the result matrix
   result.set_zero(_rows, m.rows());
@@ -309,8 +334,10 @@ MATRIXN& SPARSEMATRIXN::mult_transpose(const MATRIXN& m, MATRIXN& result) const
 /// Multiplies the transpose of this sparse matrix by the transpose of a dense matrix
 MATRIXN& SPARSEMATRIXN::transpose_mult_transpose(const MATRIXN& m, MATRIXN& result) const
 {
+  #ifndef NEXCEPT
   if (_rows != m.columns())
     throw MissizeException();
+  #endif
 
   // setup the result matrix
   result.set_zero(_columns, m.rows());
@@ -340,8 +367,10 @@ MATRIXN& SPARSEMATRIXN::to_dense(MATRIXN& m) const
 SPARSEMATRIXN& SPARSEMATRIXN::operator-=(const SPARSEMATRIXN& m)
 {
   // check rows/columns match up
+  #ifndef NEXCEPT
   if (_rows != m._rows || _columns != m._columns)
     throw MissizeException();
+  #endif
 
   // iterate through both matrices and see how many non-zero elements we have
   unsigned nz = 0;
@@ -475,6 +504,7 @@ SPARSEMATRIXN& SPARSEMATRIXN::operator-=(const SPARSEMATRIXN& m)
   this->_ptr = nptr;
   this->_indices = nindices;
   this->_data = ndata;
+  this->_nnz = nz;
   return *this;
 }
 
@@ -482,8 +512,10 @@ SPARSEMATRIXN& SPARSEMATRIXN::operator-=(const SPARSEMATRIXN& m)
 SPARSEMATRIXN& SPARSEMATRIXN::operator+=(const SPARSEMATRIXN& m)
 {
   // check rows/columns match up
+  #ifndef NEXCEPT
   if (_rows != m._rows || _columns != m._columns)
     throw MissizeException();
+  #endif
 
   // iterate through both matrices and see how many non-zero elements we have
   unsigned nz = 0;
@@ -616,6 +648,7 @@ SPARSEMATRIXN& SPARSEMATRIXN::operator+=(const SPARSEMATRIXN& m)
   this->_ptr = nptr;
   this->_indices = nindices;
   this->_data = ndata;
+  this->_nnz = nz;
   return *this;
 }
 
@@ -638,7 +671,11 @@ SPARSEMATRIXN& SPARSEMATRIXN::negate()
 /// Calculates the outer product of a vector with itself and stores the result in a sparse matrix
 SPARSEMATRIXN& SPARSEMATRIXN::outer_square(const SPARSEVECTORN& v, SPARSEMATRIXN& result)
 {
-  SAFESTATIC FastThreadable<VECTORN> tmp;
+  #ifdef REENTRANT
+  FastThreadable<VECTORN> tmp;
+  #else
+  static FastThreadable<VECTORN> tmp;
+  #endif
 
   // determine the size of the matrix
   unsigned n = v.size();
@@ -695,6 +732,7 @@ SPARSEMATRIXN& SPARSEMATRIXN::outer_square(const SPARSEVECTORN& v, SPARSEMATRIXN
   result._ptr = ptr;
   result._indices = indices;
   result._data = data;
+  result._nnz = nz*nz;
 
   return result;
 }
@@ -757,6 +795,7 @@ SPARSEMATRIXN& SPARSEMATRIXN::outer_square(const VECTORN& x, SPARSEMATRIXN& resu
   result._ptr = ptr;
   result._indices = indices;
   result._data = data;
+  result._nnz = nz*nz;
 
   return result;
 }
@@ -768,6 +807,7 @@ std::ostream& Ravelin::operator<<(std::ostream& out, const SPARSEMATRIXN& s)
   const REAL* data = s.get_data();
   vector<REAL> present(s.columns());
 
+  out << "nnz: " << s.get_nnz() << std::endl;
   out << "ptr:";
   for (unsigned i=0; i<= s.rows(); i++)
     out << " " << ptr[i];

@@ -12,6 +12,20 @@ SHAREDVECTORN row(unsigned i)
   return v;
 }
 
+/// Gets a constant shared vector for a row
+CONST_SHAREDVECTORN row(unsigned i) const
+{
+  // get the starting offset
+  const unsigned OFFSET = data() - _data.get();
+
+  CONST_SHAREDVECTORN v;
+  v._data = _data;
+  v._start = OFFSET + i;
+  v._inc = leading_dim();
+  v._len = _columns;
+  return v;
+}
+
 /// Gets a shared vector for a column 
 SHAREDVECTORN column(unsigned i)
 {
@@ -26,11 +40,27 @@ SHAREDVECTORN column(unsigned i)
   return v;
 }
 
+/// Gets a shared vector for a column 
+CONST_SHAREDVECTORN column(unsigned i) const
+{
+  // get the starting offset
+  const unsigned OFFSET = data() - _data.get();
+
+  CONST_SHAREDVECTORN v;
+  v._data = _data;
+  v._start = OFFSET + leading_dim() * i;
+  v._inc = 1;
+  v._len = _rows;
+  return v;
+}
+
 /// Gets a block as a shared matrix
 SHAREDMATRIXN block(unsigned row_start, unsigned row_end, unsigned col_start, unsigned col_end)
 {
+  #ifndef NEXCEPT
   if (row_end < row_start || row_end > _rows || col_end < col_start || col_end > _columns)
     throw InvalidIndexException();
+  #endif
 
   // determine the offset
   const unsigned OFFSET = data() - _data.get();
@@ -43,6 +73,27 @@ SHAREDMATRIXN block(unsigned row_start, unsigned row_end, unsigned col_start, un
   m._start = OFFSET + m._ld * col_start + row_start;
   return m;  
 }
+
+/// Gets a block as a constant shared matrix
+CONST_SHAREDMATRIXN block(unsigned row_start, unsigned row_end, unsigned col_start, unsigned col_end) const
+{
+  #ifndef NEXCEPT
+  if (row_end < row_start || row_end > _rows || col_end < col_start || col_end > _columns)
+    throw InvalidIndexException();
+  #endif
+
+  // determine the offset
+  const unsigned OFFSET = data() - _data.get();
+
+  CONST_SHAREDMATRIXN m;
+  m._data = _data;
+  m._rows = row_end - row_start;
+  m._columns = col_end - col_start;
+  m._ld = leading_dim();
+  m._start = OFFSET + m._ld * col_start + row_start;
+  return m;  
+}
+
 
 /// Get an iterator to the beginning 
 ITERATOR begin()
@@ -98,8 +149,10 @@ CONST_ITERATOR end() const
 template <class V>
 XMATRIXN& set(const V& v, Transposition trans)
 {
+  #ifndef NEXCEPT
   if (sizeof(data()) != sizeof(v.data()))
     throw DataMismatchException();
+  #endif
 
   // resize the matrix
   if (trans == eNoTranspose)
@@ -117,8 +170,10 @@ XMATRIXN& set(const V& v, Transposition trans)
 template <class M>
 static M& transpose(const XMATRIXN& m, M& result)
 {
+  #ifndef NEXCEPT
   if (sizeof(m.data()) != sizeof(result.data()))
     throw DataMismatchException();
+  #endif
 
   // resize the result
   result.resize(m.columns(), m.rows());
@@ -136,10 +191,12 @@ static M& transpose(const XMATRIXN& m, M& result)
 template <class M>
 XMATRIXN& operator+=(const M& m)
 {
+  #ifndef NEXCEPT
   if (_rows != m.rows() || _columns != m.columns())
     throw MissizeException(); 
   if (sizeof(data()) != sizeof(m.data()))
     throw DataMismatchException();
+  #endif
 
   if (_rows > 0 && _columns > 0) 
     std::transform(begin(), end(), m.begin(), begin(), std::plus<REAL>());
@@ -150,10 +207,12 @@ XMATRIXN& operator+=(const M& m)
 template <class M>
 XMATRIXN& operator-=(const M& m)
 {
+  #ifndef NEXCEPT
   if (_rows != m.rows() || _columns != m.columns())
     throw MissizeException(); 
   if (sizeof(data()) != sizeof(m.data()))
     throw DataMismatchException();
+  #endif
   
   if (_rows > 0 && _columns > 0) 
     std::transform(begin(), end(), m.begin(), begin(), std::minus<REAL>());
@@ -161,13 +220,15 @@ XMATRIXN& operator-=(const M& m)
 }
 
 /// Multiplies the diagonal matrix formed from d by the matrix m
-template <class V>
-static XMATRIXN& diag_mult(const V& d, const XMATRIXN& m, XMATRIXN& result)
+template <class V, class W>
+static W& diag_mult(const V& d, const XMATRIXN& m, W& result)
 {
+  #ifndef NEXCEPT
   if (d.size() != m.rows())
     throw MissizeException();
   if (sizeof(d.data()) != sizeof(m.data()))
     throw DataMismatchException();
+  #endif
 
   result.resize(d.size(), m.columns());
   for (unsigned i=0; i< m.columns(); i++)
@@ -177,13 +238,15 @@ static XMATRIXN& diag_mult(const V& d, const XMATRIXN& m, XMATRIXN& result)
 }
 
 /// Multiplies the diagonal matrix formed from d by the matrix transpose(m)
-template <class V>
-static XMATRIXN& diag_mult_transpose(const V& d, const XMATRIXN& m, XMATRIXN& result)
+template <class V, class W>
+static W& diag_mult_transpose(const V& d, const XMATRIXN& m, W& result)
 {
+  #ifndef NEXCEPT
   if (d.size() != m.columns())
     throw MissizeException();
   if (sizeof(d.data()) != sizeof(m.data()))
     throw DataMismatchException();
+  #endif
 
   // copy the transpose of m to the result
   XMATRIXN::transpose(m, result);
@@ -199,12 +262,14 @@ static XMATRIXN& diag_mult_transpose(const V& d, const XMATRIXN& m, XMATRIXN& re
 template <class V, class U, class W>
 static W& diag_mult(const V& d, const U& v, W& result)
 {
+  #ifndef NEXCEPT
   if (d.size() != v.size())
     throw MissizeException();
   if (sizeof(d.data()) != sizeof(v.data()))
     throw DataMismatchException();
   if (sizeof(d.data()) != sizeof(result.data()))
     throw DataMismatchException();
+  #endif
 
   result.resize(d.size());
   std::transform(d.begin(), d.end(), v.begin(), result.begin(), std::multiplies<REAL>());

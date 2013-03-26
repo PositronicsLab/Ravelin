@@ -11,15 +11,8 @@
 
 using namespace Ravelin;
 
-#define VECTOR3 Vector3d
-#define REAL double
-#define ITERATOR dIterator
-#define CONST_ITERATOR dIterator_const
-
+#include <Ravelin/ddefs.h>
 #include "Vector3.cpp"
+#include <Ravelin/undefs.h>
 
-#undef VECTOR3
-#undef REAL
-#undef ITERATOR
-#undef CONST_ITERATOR
 

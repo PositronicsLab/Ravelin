@@ -8,6 +8,10 @@
 #error This class is not to be included by the user directly. Use Matrix2d.h or Matrix2f.h instead.
 #endif
 
+class MATRIXN;
+class SHAREDMATRIXN;
+class CONST_SHAREDMATRIXN;
+
 /// A general 2x2 matrix
 class MATRIX2
 {
@@ -16,6 +20,9 @@ class MATRIX2
     MATRIX2(const REAL* array);
     MATRIX2(REAL m00, REAL m01, REAL m10, REAL m11);
     MATRIX2(const MATRIX2& source) { operator=(source); }
+    MATRIX2(const MATRIXN& m) { operator=(m); }
+    MATRIX2(const SHAREDMATRIXN& m) { operator=(m); }
+    MATRIX2(const CONST_SHAREDMATRIXN& m) { operator=(m); }
     unsigned size() const { return 2; }
     unsigned rows() const { return 2; }
     unsigned columns() const { return 2; }
@@ -43,6 +50,9 @@ class MATRIX2
     MATRIX2 transpose_mult_transpose(const MATRIX2& m) const;
     MATRIX2 mult_transpose(const MATRIX2& m) const;
     MATRIX2& operator=(const MATRIX2& source);
+    MATRIX2& operator=(const MATRIXN& source);
+    MATRIX2& operator=(const SHAREDMATRIXN& source);
+    MATRIX2& operator=(const CONST_SHAREDMATRIXN& source);
     MATRIX2& operator+=(const MATRIX2& m);
     MATRIX2& operator-=(const MATRIX2& m);
     MATRIX2& operator*=(const MATRIX2& m) { return *this = *this * m; }
@@ -66,7 +76,7 @@ class MATRIX2
     REAL& xy() { return _data[2]; }
     REAL& yy() { return _data[3]; }
     REAL& operator()(unsigned i, unsigned j);
-    REAL operator()(unsigned i, unsigned j) const;
+    const REAL& operator()(unsigned i, unsigned j) const;
     MATRIX2& resize(unsigned rows, unsigned columns, bool preserve = false);
     ITERATOR begin();
     CONST_ITERATOR begin() const;

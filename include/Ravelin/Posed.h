@@ -7,29 +7,23 @@
 #ifndef _POSED_H
 #define _POSED_H
 
+#include <boost/enable_shared_from_this.hpp>
 #include <boost/shared_ptr.hpp>
+#include <Ravelin/FrameException.h>
 #include <Ravelin/Vector3d.h>
 #include <Ravelin/Quatd.h>
 #include <Ravelin/AAngled.h>
 #include <Ravelin/Matrix3d.h>
+#include <Ravelin/Wrenchd.h>
+#include <Ravelin/Twistd.h>
+#include <Ravelin/SpatialRBInertiad.h>
+#include <Ravelin/SpatialABInertiad.h>
 
 namespace Ravelin {
 
-#define REAL double
-#define VECTOR3 Vector3d
-#define QUAT Quatd
-#define AANGLE AAngled
-#define MATRIX3 Matrix3d
-#define POSE Posed
-
+#include "ddefs.h"
 #include "Pose.h"
-
-#undef REAL
-#undef VECTOR3
-#undef QUAT 
-#undef AANGLE 
-#undef MATRIX3 
-#undef POSE
+#include "undefs.h"
 
 } // end namespace
 

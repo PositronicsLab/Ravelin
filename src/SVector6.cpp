@@ -85,6 +85,12 @@ ITERATOR SVECTOR6::end()
 /// Computes the spatial cross product between two vectors
 SVECTOR6 SVECTOR6::spatial_cross(const SVECTOR6& v1, const SVECTOR6& v2)
 {
+  // verify that both vectors are defined in the same frame
+  #ifndef NEXCEPT
+  if (v1.pose != v2.pose)
+    throw FrameException();
+  #endif
+
   VECTOR3 ax = v1.get_upper();
   VECTOR3 bx = v1.get_lower();
 
@@ -127,12 +133,18 @@ void SVECTOR6::set_upper(const VECTOR3& upper)
 /// Performs the dot product
 REAL SVECTOR6::dot(const SVECTOR6& v1, const SVECTOR6& v2)
 {
+  #ifndef NEXCEPT
+  if (v1.pose != v2.pose)
+    throw FrameException();
+  #endif
+
   return v1[3]*v2[0] + v1[4]*v2[1] + v1[5]*v2[2] + v1[0]*v2[3] + v1[1]*v2[4] + v1[2]*v2[5];
 }
 
 /// Copies this vector from another SVECTOR6
 SVECTOR6& SVECTOR6::operator=(const SVECTOR6& v)
 {
+  pose = v.pose;
   _data[0] = v._data[0];
   _data[1] = v._data[1];
   _data[2] = v._data[2];
@@ -152,6 +164,7 @@ SVECTOR6 SVECTOR6::operator-() const
   v._data[3] = -_data[3]; 
   v._data[4] = -_data[4]; 
   v._data[5] = -_data[5]; 
+  v.pose = pose;
 
   return v;
 }
@@ -172,6 +185,11 @@ SVECTOR6& SVECTOR6::operator*=(REAL scalar)
 /// Adds another vector to this one in place
 SVECTOR6& SVECTOR6::operator+=(const SVECTOR6& v)
 {
+  #ifndef NEXCEPT
+  if (pose != v.pose)
+    throw FrameException();
+  #endif
+
   _data[0] += v._data[0];
   _data[1] += v._data[1];
   _data[2] += v._data[2];
@@ -185,6 +203,11 @@ SVECTOR6& SVECTOR6::operator+=(const SVECTOR6& v)
 /// Subtracts another vector from this one in place
 SVECTOR6& SVECTOR6::operator-=(const SVECTOR6& v)
 {
+  #ifndef NEXCEPT
+  if (pose != v.pose)
+    throw FrameException();
+  #endif
+
   _data[0] -= v._data[0];
   _data[1] -= v._data[1];
   _data[2] -= v._data[2];
@@ -198,16 +221,28 @@ SVECTOR6& SVECTOR6::operator-=(const SVECTOR6& v)
 /// Adds this vector to another and returns the result in a new vector
 SVECTOR6 SVECTOR6::operator+(const SVECTOR6& v) const
 {
+  #ifndef NEXCEPT
+  if (pose != v.pose)
+    throw FrameException();
+  #endif
+
   SVECTOR6 result;
   std::transform(begin(), end(), v.begin(), result.begin(), std::plus<REAL>());
+  result.pose = pose;
   return result;
 }
 
 /// Subtracts another vector from this vector and returns the result in a new vector
 SVECTOR6 SVECTOR6::operator-(const SVECTOR6& v) const
 {
+  #ifndef NEXCEPT
+  if (pose != v.pose)
+    throw FrameException();
+  #endif
+
   SVECTOR6 result;
   std::transform(begin(), end(), v.begin(), result.begin(), std::minus<REAL>());
+  result.pose = pose;
   return result;
 }
 

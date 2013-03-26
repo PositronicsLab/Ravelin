@@ -16,29 +16,9 @@
 
 namespace Ravelin {
 
-#define REAL float 
-#define MATRIXN MatrixNf
-#define MATRIX3 Matrix3f
-#define MATRIX2 Matrix2f
-#define SHAREDVECTORN SharedVectorNf
-#define SHAREDMATRIXN SharedMatrixNf
-#define VECTORN VectorNf
-#define POSE Posef
-#define CONST_ITERATOR fIterator_const
-#define ITERATOR fIterator
-
+#include "fdefs.h"
 #include "SharedMatrixN.h"
-
-#undef REAL 
-#undef MATRIXN 
-#undef MATRIX3
-#undef MATRIX2
-#undef SHAREDVECTORN
-#undef SHAREDMATRIXN
-#undef VECTORN 
-#undef POSE 
-#undef CONST_ITERATOR
-#undef ITERATOR
+#include "undefs.h"
 
 } // end namespace
 

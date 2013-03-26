@@ -16,20 +16,8 @@
 
 using namespace Ravelin;
 
-#define REAL double
-#define POSE Posed
-#define MATRIX3 Matrix3d
-#define VECTOR3 Vector3d
-#define QUAT Quatd
-#define AANGLE AAngled
-
+#include <Ravelin/ddefs.h>
 #include "Pose.cpp"
+#include <Ravelin/undefs.h>
 
-#undef REAL
-#undef ZEROS_3
-#undef POSE
-#undef MATRIX3
-#undef VECTOR3
-#undef QUAT
-#undef AANGLE
 

@@ -15,25 +15,12 @@
 #include <Ravelin/MissizeException.h>
 #include <Ravelin/InvalidIndexException.h>
 #include <Ravelin/AAnglef.h>
+#include <Ravelin/MatrixNf.h>
 #include <Ravelin/Matrix3f.h>
 
 using namespace Ravelin;
 
-#define MATRIX3 Matrix3f
-#define REAL float
-#define AANGLE AAnglef
-#define QUAT Quatf 
-#define VECTOR3 Vector3f 
-#define ITERATOR fIterator 
-#define CONST_ITERATOR fIterator_const 
-
+#include <Ravelin/fdefs.h>
 #include "Matrix3.cpp"
-
-#undef MATRIX3
-#undef REAL
-#undef AANGLE
-#undef QUAT
-#undef VECTOR3
-#undef ITERATOR
-#undef CONST_ITERATOR
+#include <Ravelin/undefs.h>
 

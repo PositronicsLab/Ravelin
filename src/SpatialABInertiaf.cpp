@@ -5,26 +5,15 @@
  ****************************************************************************/
 
 #include <Ravelin/Constants.h>
+#include <Ravelin/FrameException.h>
 #include <Ravelin/SpatialABInertiaf.h>
 
 using namespace Ravelin;
 
-#define SPATIAL_AB_INERTIA SpatialABInertiaf
-#define SPATIAL_RB_INERTIA SpatialRBInertiaf
-#define MATRIX3 Matrix3f
-#define VECTOR3 Vector3f
-#define TWIST Twistf
-#define WRENCH Wrenchf
-#define REAL float
 
+#include <Ravelin/fdefs.h>
 #include "SpatialABInertia.cpp"
+#include <Ravelin/undefs.h>
 
-#undef SPATIAL_AB_INERTIA 
-#undef SPATIAL_RB_INERTIA 
-#undef MATRIX3 
-#undef VECTOR3 
-#undef TWIST 
-#undef WRENCH
-#undef REAL
 
 

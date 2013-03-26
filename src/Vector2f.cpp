@@ -9,15 +9,9 @@
 
 using namespace Ravelin;
 
-#define VECTOR2 Vector2f
-#define REAL float
-#define ITERATOR fIterator
-#define CONST_ITERATOR fIterator_const
 
+#include <Ravelin/fdefs.h>
 #include "Vector2.cpp"
+#include <Ravelin/undefs.h>
 
-#undef VECTOR2
-#undef REAL
-#undef ITERATOR
-#undef CONST_ITERATOR
 

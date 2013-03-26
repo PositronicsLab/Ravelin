@@ -13,23 +13,9 @@
 
 namespace Ravelin {
 
-#define REAL double 
-#define QUAT Quatd 
-#define VECTOR3 Vector3d
-#define VECTORN VectorNd
-#define MATRIXN MatrixNd
-#define MATRIX3 Matrix3d
-#define AANGLE AAngled 
-
+#include "ddefs.h"
 #include "Quat.h"
-
-#undef REAL
-#undef QUAT
-#undef VECTOR3
-#undef VECTORN
-#undef MATRIXN
-#undef MATRIX3 
-#undef AANGLE 
+#include "undefs.h"
 
 } // end namespace
 

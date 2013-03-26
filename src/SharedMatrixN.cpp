@@ -16,16 +16,20 @@ SHAREDMATRIXN::SHAREDMATRIXN(const SHAREDMATRIXN& source)
 /// Accesses the given element
 REAL& SHAREDMATRIXN::operator()(unsigned i, unsigned j)
 {
+  #ifndef NEXCEPT
   if (i >= _rows || j >= _columns)
     throw InvalidIndexException();
+  #endif
   return _data[_start + j*_ld + i];
 }
 
 /// Accesses the given element
-REAL SHAREDMATRIXN::operator()(unsigned i, unsigned j) const
+const REAL& SHAREDMATRIXN::operator()(unsigned i, unsigned j) const
 {
+  #ifndef NEXCEPT
   if (i >= _rows || j >= _columns)
     throw InvalidIndexException();
+  #endif
   return _data[_start + j*_ld + i];
 }
 
@@ -34,6 +38,30 @@ SHAREDMATRIXN& SHAREDMATRIXN::operator=(const MATRIX3& m)
 {
   const unsigned SZ = 3;
   resize(SZ,SZ);
+  set_sub_mat(0,0, m);
+  return *this;
+}
+
+/// Sets a matrix from a MATRIXN
+SHAREDMATRIXN& SHAREDMATRIXN::operator=(const MATRIXN& m)
+{
+  resize(m.rows(),m.columns());
+  set_sub_mat(0,0, m);
+  return *this;
+}
+
+/// Sets a matrix from a MATRIXN
+SHAREDMATRIXN& SHAREDMATRIXN::operator=(const SHAREDMATRIXN& m)
+{
+  resize(m.rows(),m.columns());
+  set_sub_mat(0,0, m);
+  return *this;
+}
+
+/// Sets a matrix from a MATRIXN
+SHAREDMATRIXN& SHAREDMATRIXN::operator=(const CONST_SHAREDMATRIXN& m)
+{
+  resize(m.rows(),m.columns());
   set_sub_mat(0,0, m);
   return *this;
 }
@@ -77,8 +105,10 @@ SHAREDMATRIXN& SHAREDMATRIXN::resize(unsigned rows, unsigned columns, bool prese
   // if the matrix is already the proper size, exit
   if (_rows == rows && _columns == columns)
     return *this;
+  #ifndef NEXCEPT
   else
     throw std::runtime_error("Attempt to resize shared matrix!");
+  #endif
 }
 
 /// Sets the matrix to the zero matrix
@@ -190,6 +220,62 @@ SHAREDMATRIXN& SHAREDMATRIXN::set_identity()
     _data[j] = (REAL) 1.0;
 
   return *this;
+}
+
+CONST_SHAREDMATRIXN::CONST_SHAREDMATRIXN()
+{
+  _rows = _columns = _ld = _start = 0;
+}
+
+/// Copy constructor
+CONST_SHAREDMATRIXN::CONST_SHAREDMATRIXN(const SHAREDMATRIXN& source)
+{
+  _rows = source.rows();
+  _columns = source.columns();
+  _ld = source.rows();
+  _start = 0;
+  _data = source._data;
+}
+
+/// Copy constructor
+CONST_SHAREDMATRIXN::CONST_SHAREDMATRIXN(const CONST_SHAREDMATRIXN& source)
+{
+  _rows = source.rows();
+  _columns = source.columns();
+  _ld = source.rows();
+  _start = 0;
+  _data = source._data;
+}
+
+/// Outputs this matrix to the stream
+std::ostream& Ravelin::operator<<(std::ostream& out, const CONST_SHAREDMATRIXN& m)
+{
+  const unsigned OUTPUT_PRECISION = 8;
+
+  if (m.rows() == 0 || m.columns() == 0)
+  {
+    out << "(empty)" << std::endl;
+    return out;
+  }
+
+  for (unsigned i=0; i< m.rows(); i++)
+  {
+    for (unsigned j=0; j< m.columns()-1; j++)
+      out << std::setprecision(OUTPUT_PRECISION) << m(i,j) << " ";
+    out << std::setprecision(OUTPUT_PRECISION) << m(i,m.columns()-1) << std::endl;
+  }
+
+  return out;
+}
+
+/// Accesses the given element
+const REAL& CONST_SHAREDMATRIXN::operator()(unsigned i, unsigned j) const
+{
+  #ifndef NEXCEPT
+  if (i >= _rows || j >= _columns)
+    throw InvalidIndexException();
+  #endif
+  return _data[_start + j*_ld + i];
 }
 
 // use common routines

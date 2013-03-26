@@ -19,19 +19,9 @@ using std::vector;
 
 using namespace Ravelin;
 
-#define REAL float
-#define SPARSEMATRIXN SparseMatrixNf
-#define SPARSEVECTORN SparseVectorNf
-#define EPS EPS_FLOAT
-#define MATRIXN MatrixNf
-#define VECTORN VectorNf
 
+#include <Ravelin/fdefs.h>
 #include "SparseMatrixN.cpp"
+#include <Ravelin/undefs.h>
 
-#undef REAL 
-#undef SPARSEMATRIXN 
-#undef SPARSEVECTORN 
-#undef EPS
-#undef MATRIXN 
-#undef VECTORN 
 

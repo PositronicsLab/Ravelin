@@ -14,19 +14,9 @@
 
 namespace Ravelin {
 
-#define REAL double
-#define SVECTOR6 SVector6d
-#define VECTOR3 Vector3d
-#define ITERATOR dIterator
-#define CONST_ITERATOR dIterator_const
-
+#include "ddefs.h"
 #include "SVector6.h"
-
-#undef REAL
-#undef SVECTOR6
-#undef VECTOR3
-#undef ITERATOR
-#undef CONST_ITERATOR
+#include "undefs.h"
 
 } // end namespace
 

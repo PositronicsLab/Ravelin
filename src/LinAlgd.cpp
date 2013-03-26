@@ -11,6 +11,7 @@
 #include <cmath>
 #include <limits>
 #include <cstdlib>
+#include <stdexcept>
 #include <boost/algorithm/minmax.hpp>
 #include <Ravelin/cblas.h>
 #include "clapack.h"
@@ -18,6 +19,7 @@
 #include <Ravelin/NonsquareMatrixException.h>
 #include <Ravelin/NumericalException.h>
 #include <Ravelin/SingularException.h>
+#include <Ravelin/SparseMatrixNd.h>
 #include <Ravelin/LinAlgd.h>
 
 using namespace Ravelin;
@@ -326,18 +328,76 @@ void LinAlgd::orgqr_(INTEGER* M, INTEGER* N, INTEGER* K, DOUBLE* A, INTEGER* LDA
   dorgqr_(M, N, K, A, LDA, TAU, workv().data(), &LWORK, INFO);
 }
 
-#define REAL double
-#define MATRIXN MatrixNd
-#define MATRIX2 Matrix2d
-#define VECTORN VectorNd
-#define LINALG LinAlgd
-#define CONST_ITERATOR dIterator_const
-#define ITERATOR dIterator
+#include <Ravelin/ddefs.h>
 #include "LinAlg.cpp"
-#undef REAL
-#undef MATRIXN
-#undef VECTORN
-#undef LINALG
-#undef CONST_ITERATOR
-#undef ITERATOR
+#include <Ravelin/undefs.h>
+
+// external methods
+extern int solve_superlu(int m, int n, int nrhs, int nnz, int* col_indices, int* row_ptr, double* A_nz, double* x, double* b);
+
+/// Does a LU factorization of a sparse matrix
+VectorNd& LinAlgd::solve_sparse_direct(const SparseMatrixNd& A, const VectorNd& b, VectorNd& x)
+{
+  #ifdef USE_SUPERLU
+  // verify sizes
+  if (A.rows() != A.columns() || A.rows() != b.rows())
+    throw MissizeException();  
+
+  // resize x
+  x.resize(b.size());
+
+  // setup constants
+  const int nrhs = b.columns();
+  int m = (int) A.rows();
+  int n = (int) A.columns();
+
+  // setup A 
+  int nnz = (int) A.get_nnz();
+  double* nz_val = (double*) A.get_data();
+  int* col_indices = (int*) A.get_indices();
+  int* row_ptr = (int*) A.get_ptr();
+
+  // check info
+  int info = solve_superlu(m, n, nrhs, nnz, col_indices, row_ptr, nz_val, x.data(), (double*) b.data());
+  if (info > 0)
+    throw SingularException();
+  #else
+  throw std::runtime_error("Ravelin not built with SuperLU support!");
+  #endif
+
+  return x;
+}
+
+/// Does a LU factorization of a sparse matrix
+MatrixNd& LinAlgd::solve_sparse_direct(const SparseMatrixNd& A, const MatrixNd& B, MatrixNd& X)
+{
+  #ifdef USE_SUPERLU
+  // verify sizes
+  if (A.rows() != A.columns() || A.rows() != B.rows())
+    throw MissizeException();  
+
+  // resize x
+  X.resize(A.columns(), B.columns());
+
+  // setup constants
+  const int nrhs = B.columns();
+  int m = (int) A.rows();
+  int n = (int) A.columns();
+
+  // setup A 
+  int nnz = (int) A.get_nnz();
+  double* nz_val = (double*) A.get_data();
+  int* col_indices = (int*) A.get_indices();
+  int* row_ptr = (int*) A.get_ptr();
+
+  // check info
+  int info = solve_superlu(m, n, nrhs, nnz, col_indices, row_ptr, nz_val, X.data(), (double*) X.data());
+  if (info > 0)
+    throw SingularException();
+  #else
+  throw std::runtime_error("Ravelin not built with SuperLU support!");
+  #endif
+
+  return X;
+}
 

@@ -8,19 +8,13 @@
 #include <list>
 #include <Ravelin/Vector2f.h>
 #include <Ravelin/Vector3f.h>
+#include <Ravelin/MatrixNf.h>
 #include <Ravelin/VectorNf.h>
 
 using namespace Ravelin;
 
-#define REAL float
-#define VECTORN VectorNf
-#define VECTOR2 Vector2f
-#define VECTOR3 Vector3f
-#define SHAREDVECTORN SharedVectorNf
+#include <Ravelin/fdefs.h>
 #include "VectorN.cpp"
-#undef REAL
-#undef VECTORN
-#undef VECTOR2
-#undef VECTOR3
-#undef SHAREDVECTORN
+#include <Ravelin/undefs.h>
+
 

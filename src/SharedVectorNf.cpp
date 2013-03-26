@@ -18,13 +18,7 @@ using namespace Ravelin;
 using boost::shared_array;
 using std::vector;
 
-#define REAL float
-#define SHAREDVECTORN SharedVectorNf
-#define VECTORN VectorNf
-#define VECTOR3 Vector3f
+#include <Ravelin/fdefs.h>
 #include "SharedVectorN.cpp"
-#undef REAL
-#undef SHAREDVECTORN
-#undef VECTORN
-#undef VECTOR3
+#include <Ravelin/undefs.h>
 

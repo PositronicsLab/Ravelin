@@ -1,4 +1,4 @@
-#ifndef THREADSAFE
+#ifndef REENTRANT 
 FastThreadable<MATRIXN> MATRIXN::_n;
 FastThreadable<VECTORN> MATRIXN::_workv;
 #endif
@@ -26,6 +26,28 @@ MATRIXN::MATRIXN(unsigned rows, unsigned columns)
  * \param determines whether the vector will be transposed
  */
 MATRIXN::MATRIXN(const VECTORN& v, Transposition trans)
+{
+  _rows = _columns = _capacity = 0;
+  set(v, trans);
+}
+
+/// Constructs a matrix from a vector
+/**
+ * \param v the vector
+ * \param determines whether the vector will be transposed
+ */
+MATRIXN::MATRIXN(const CONST_SHAREDVECTORN& v, Transposition trans)
+{
+  _rows = _columns = _capacity = 0;
+  set(v, trans);
+}
+
+/// Constructs a matrix from a vector
+/**
+ * \param v the vector
+ * \param determines whether the vector will be transposed
+ */
+MATRIXN::MATRIXN(const SHAREDVECTORN& v, Transposition trans)
 {
   _rows = _columns = _capacity = 0;
   set(v, trans);
@@ -67,6 +89,29 @@ MATRIXN::MATRIXN(const MATRIXN& source)
   MATRIXN::operator=(source);
 }
 
+/// Copy constructor
+MATRIXN::MATRIXN(const SHAREDMATRIXN& source)
+{
+  _rows = _columns = _capacity = 0;
+  MATRIXN::operator=(source);
+}
+
+/// Copy constructor
+MATRIXN::MATRIXN(const CONST_SHAREDMATRIXN& source)
+{
+  _rows = _columns = _capacity = 0;
+  MATRIXN::operator=(source);
+}
+
+/// Sets a matrix from a MATRIX2
+MATRIXN& MATRIXN::operator=(const MATRIX2& m)
+{
+  const unsigned SZ = 2;
+  resize(SZ,SZ);
+  CBLAS::copy(SZ*SZ, m.data(), 1, _data.get(), 1);
+  return *this;
+}
+
 /// Sets a matrix from a MATRIX3
 MATRIXN& MATRIXN::operator=(const MATRIX3& m)
 {
@@ -84,6 +129,28 @@ MATRIXN& MATRIXN::set(const VECTORN& v, Transposition trans)
   else
     resize(1, v.columns(), false);
   std::copy(v.data(), v.data()+v.size(), _data.get());
+  return *this;
+}
+
+/// Sets this matrix from a vector
+MATRIXN& MATRIXN::set(const SHAREDVECTORN& v, Transposition trans)
+{
+  if (trans == eNoTranspose)
+    resize(v.rows(), 1, false);
+  else
+    resize(1, v.columns(), false);
+  std::copy(v.begin(), v.end(), begin());
+  return *this;
+}
+
+/// Sets this matrix from a vector
+MATRIXN& MATRIXN::set(const CONST_SHAREDVECTORN& v, Transposition trans)
+{
+  if (trans == eNoTranspose)
+    resize(v.rows(), 1, false);
+  else
+    resize(1, v.columns(), false);
+  std::copy(v.begin(), v.end(), begin());
   return *this;
 }
 
@@ -143,11 +210,17 @@ MATRIXN MATRIXN::construct_variable(unsigned rows, unsigned cols, ...)
  */
 MATRIXN& MATRIXN::remove_row(unsigned i)
 {
-  _workv().resize(_columns);
+  #ifdef REENTRANT
+  VECTORN workv;
+  #else
+  VECTORN& workv = _workv();
+  #endif
+
+  workv.resize(_columns);
   for (unsigned j=i+1; j< _rows; j++)
   {
-    get_row(j, _workv());
-    set_row(j-1, _workv());
+    get_row(j, workv);
+    set_row(j-1, workv);
   }
 
   // downsize the matrix
@@ -161,11 +234,16 @@ MATRIXN& MATRIXN::remove_row(unsigned i)
  */
 MATRIXN& MATRIXN::remove_column(unsigned i)
 {
-  _workv().resize(_rows);
+  #ifdef REENTRANT
+  VECTORN workv;
+  #else
+  VECTORN& workv = _workv();
+  #endif
+
   for (unsigned j=i+1; j< _columns; j++)
   {
-    get_column(j, _workv());
-    set_column(j-1, _workv());
+    get_column(j, workv);
+    set_column(j-1, workv);
   }
 
   // downsize the matrix
@@ -273,6 +351,12 @@ MATRIXN& MATRIXN::set_zero()
 /// Sets this matrix to its transpose
 MATRIXN& MATRIXN::transpose()
 {
+  #ifdef REENTRANT
+  MATRIXN n;
+  #else
+  MATRIXN& n = _n();
+  #endif
+
   // do fastest transpose first (if possible)
   if (_rows == 1 || _columns == 1)
   {
@@ -291,12 +375,12 @@ MATRIXN& MATRIXN::transpose()
   }
 
   // do slowest transpose operation
-  _n().resize(_columns, _rows);
-  REAL* ndata = _n().data();
+  n.resize(_columns, _rows);
+  REAL* ndata = n.data();
   for (unsigned i=0; i< _rows; i++)
     for (unsigned j=0; j< _columns; j++)
       ndata[i*_columns + j] = _data[j*_rows + i];
-  operator=(_n());
+  operator=(n);
 
   return *this;
 }
@@ -396,26 +480,32 @@ MATRIXN& MATRIXN::set_identity(unsigned i)
 }
 
 /// Gets the desired entry
-REAL MATRIXN::operator()(unsigned i, unsigned j) const
+const REAL& MATRIXN::operator()(unsigned i, unsigned j) const
 {
+  #ifndef NEXCEPT
   if (i >= _rows || j >= _columns)
     throw InvalidIndexException();
+  #endif
   return _data[j*_rows+i];
 }
 
 /// Gets the desired entry
 REAL& MATRIXN::operator()(unsigned i, unsigned j) 
 {
+  #ifndef NEXCEPT
   if (i >= _rows || j >= _columns)
     throw InvalidIndexException();
+  #endif
   return _data[j*_rows+i];
 }
 
 /// Sets this matrix to the identity matrix
 MATRIXN& MATRIXN::set_identity()
 {
+  #ifndef NEXCEPT
   if (_rows != _columns)
     throw MissizeException();
+  #endif
 
   // set matrix to identity
   set_zero();
@@ -430,8 +520,10 @@ MATRIXN& MATRIXN::set_identity()
 /// Subtracts m from this 
 MATRIXN& MATRIXN::operator-=(const MATRIXN& m)
 {
+  #ifndef NEXCEPT
   if (_rows != m._rows || _columns != m._columns)
     throw MissizeException(); 
+  #endif
 
   const unsigned N = _rows*_columns;
   if (N > 0)
@@ -442,8 +534,10 @@ MATRIXN& MATRIXN::operator-=(const MATRIXN& m)
 /// Adds m to this 
 MATRIXN& MATRIXN::operator+=(const MATRIXN& m)
 {
+  #ifndef NEXCEPT
   if (_rows != m._rows || _columns != m._columns)
     throw MissizeException(); 
+  #endif
 
   const unsigned N = _rows*_columns;
   if (N > 0)
@@ -460,6 +554,28 @@ MATRIXN& MATRIXN::operator=(const MATRIXN& m)
   const unsigned N = _rows*_columns;
   if (N > 0)
     std::copy(m._data.get(), m._data.get()+N, _data.get());
+  return *this;
+}
+
+/// Sets this to m 
+MATRIXN& MATRIXN::operator=(const SHAREDMATRIXN& m)
+{
+  // resize this (don't preserve)
+  resize(m.rows(), m.columns(), false);
+
+  if (_rows > 0 && _columns > 0)
+    std::copy(m.begin(), m.end(), begin());
+  return *this;
+}
+
+/// Sets this to m 
+MATRIXN& MATRIXN::operator=(const CONST_SHAREDMATRIXN& m)
+{
+  // resize this (don't preserve)
+  resize(m.rows(), m.columns(), false);
+
+  if (_rows > 0 && _columns > 0)
+    std::copy(m.begin(), m.end(), begin());
   return *this;
 }
 

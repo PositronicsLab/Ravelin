@@ -11,19 +11,9 @@
 
 namespace Ravelin {
 
-#define REAL double 
-#define TWIST Twistd
-#define WRENCH Wrenchd
-#define SVECTOR6 SVector6d
-#define VECTOR3 Vector3d
-
+#include "ddefs.h"
 #include "Wrench.h"
-
-#undef REAL
-#undef TWIST
-#undef WRENCH
-#undef SVECTOR6
-#undef VECTOR3
+#include "undefs.h"
 
 } // end namespace
 

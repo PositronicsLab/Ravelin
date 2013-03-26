@@ -9,32 +9,40 @@
 /// Returns the desired component of this vector
 REAL& operator[](unsigned i)
 {
+  #ifndef NEXCEPT
   if (i > _len)
     throw InvalidIndexException();
+  #endif
   return _data[i];
 }
 
 /// Returns the desired component of this vector
 REAL operator[](unsigned i) const
 {
+  #ifndef NEXCEPT
   if (i > _len)
     throw InvalidIndexException();
+  #endif
   return _data[i];
 }
 
 /// Gets the appropriate data element
 REAL* data(unsigned i)
 {
+  #ifndef NEXCEPT
   if (i >= _len)
     throw InvalidIndexException();
+  #endif
   return &_data[i];
 }
 
 /// Gets the appropriate data element
 const REAL* data(unsigned i) const
 {
+  #ifndef NEXCEPT
   if (i >= _len)
     throw InvalidIndexException();
+  #endif
   return &_data[i];
 }
 

@@ -12,6 +12,7 @@
 #include <Ravelin/cblas.h>
 #include <Ravelin/Constants.h>
 #include <Ravelin/VectorNf.h>
+#include <Ravelin/MatrixNf.h>
 #include <Ravelin/SharedVectorNf.h>
 #include <Ravelin/SharedMatrixNf.h>
 
@@ -19,25 +20,9 @@ using namespace Ravelin;
 using boost::shared_array;
 using std::vector;
 
-#define REAL float
-#define MATRIXN MatrixNf
-#define MATRIX3 Matrix3f
-#define SHAREDVECTORN SharedVectorNf
-#define SHAREDMATRIXN SharedMatrixNf
-#define VECTORN VectorNf
-#define VECTOR3 Vector3f
-#define ITERATOR fIterator
-#define CONST_ITERATOR fIterator_const
 
+#include <Ravelin/fdefs.h>
 #include "SharedMatrixN.cpp"
+#include <Ravelin/undefs.h>
 
-#undef REAL
-#undef MATRIXN
-#undef MATRIX3
-#undef SHAREDVECTORN
-#undef SHAREDMATRIXN
-#undef VECTORN
-#undef VECTOR3
-#undef ITERATOR
-#undef CONST_ITERATOR
 

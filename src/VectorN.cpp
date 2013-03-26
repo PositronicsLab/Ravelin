@@ -65,6 +65,30 @@ VECTORN::VECTORN(const VECTORN& source)
   operator=(source);
 }
 
+/// Copy constructor
+VECTORN::VECTORN(const MATRIXN& source)
+{
+  _len = 0;
+  _capacity = 0;
+  operator=(source);
+}
+
+/// Copy constructor
+VECTORN::VECTORN(const SHAREDMATRIXN& source)
+{
+  _len = 0;
+  _capacity = 0;
+  operator=(source);
+}
+
+/// Copy constructor
+VECTORN::VECTORN(const CONST_SHAREDMATRIXN& source)
+{
+  _len = 0;
+  _capacity = 0;
+  operator=(source);
+}
+
 /// Constructs a N-dimension vector from the list of double values
 /**
  * \note There is no means in C++ to check the types of a list of variable
@@ -213,14 +237,72 @@ VECTORN& VECTORN::operator=(const SHAREDVECTORN& source)
   return *this;
 }
 
+/// Sets this vector to a matrix 
+VECTORN& VECTORN::operator=(const MATRIXN& source)
+{  
+  // resize this vector if necessary
+  resize(source.rows(), source.columns());
+
+  // use the BLAS routine for copying
+  if (_len > 0)
+    CBLAS::copy(source.rows(),source.data(),1,_data.get(),1);
+
+  return *this;
+}
+
+/// Sets this vector to a matrix 
+VECTORN& VECTORN::operator=(const SHAREDMATRIXN& source)
+{  
+  // resize this vector if necessary
+  resize(source.rows(), source.columns());
+
+  // use the C++ routine for copying
+  if (_len > 0)
+    std::copy(source.begin(),source.end(),begin());
+
+  return *this;
+}
+
+/// Sets this vector to a matrix 
+VECTORN& VECTORN::operator=(const CONST_SHAREDMATRIXN& source)
+{  
+  // resize this vector if necessary
+  resize(source.rows(), source.columns());
+
+  // use the C++ routine for copying
+  if (_len > 0)
+    std::copy(source.begin(),source.end(),begin());
+
+  return *this;
+}
+
 /// Gets a subvector of this vector as a shared vector
-SHAREDVECTORN VECTORN::get_sub_vec(unsigned start_idx, unsigned end_idx) 
+SHAREDVECTORN VECTORN::segment(unsigned start_idx, unsigned end_idx) 
 {
   // verify that we cna get the subvector
+  #ifndef NEXCEPT
   if (start_idx > end_idx || end_idx > _len)
     throw InvalidIndexException();
+  #endif
 
   SHAREDVECTORN x;
+  x._data = _data;
+  x._start = start_idx;
+  x._len = end_idx - start_idx;
+  x._inc = 1;
+  return x; 
+}
+
+/// Gets a subvector of this vector as a shared vector
+CONST_SHAREDVECTORN VECTORN::segment(unsigned start_idx, unsigned end_idx) const 
+{
+  // verify that we cna get the subvector
+  #ifndef NEXCEPT
+  if (start_idx > end_idx || end_idx > _len)
+    throw InvalidIndexException();
+  #endif
+
+  CONST_SHAREDVECTORN x;
   x._data = _data;
   x._start = start_idx;
   x._len = end_idx - start_idx;

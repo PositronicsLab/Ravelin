@@ -11,21 +11,12 @@
 #include <algorithm>
 #include <Ravelin/Constants.h>
 #include <Ravelin/Operators.h>
+#include <Ravelin/MatrixNf.h>
 #include <Ravelin/Matrix2f.h>
 
 using namespace Ravelin;
 
-#define MATRIX2 Matrix2f
-#define VECTOR2 Vector2f
-#define REAL float
-#define EPS EPS_FLOAT
-#define CONST_ITERATOR fIterator_const
-#define ITERATOR fIterator
+#include <Ravelin/fdefs.h>
 #include "Matrix2.cpp"
-#undef MATRIX2
-#undef VECTOR2
-#undef REAL
-#undef EPS
-#undef CONST_ITERATOR
-#undef ITERATOR
+#include <Ravelin/undefs.h>
 

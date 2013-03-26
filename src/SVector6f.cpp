@@ -8,22 +8,14 @@
 #include <functional>
 #include <algorithm>
 #include <Ravelin/cblas.h>
+#include <Ravelin/FrameException.h>
 #include <Ravelin/SVector6f.h>
 
 using namespace Ravelin;
 
-#define SVECTOR6 SVector6f
-#define REAL float
-#define VECTOR3 Vector3f
-#define ITERATOR fIterator
-#define CONST_ITERATOR fIterator_const
-
+#include <Ravelin/fdefs.h>
 #include "SVector6.cpp"
+#include <Ravelin/undefs.h>
 
-#undef SVECTOR6
-#undef REAL
-#undef VECTOR3
-#undef ITERATOR
-#undef CONST_ITERATOR
 
 

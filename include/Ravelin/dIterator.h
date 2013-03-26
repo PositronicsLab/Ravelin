@@ -22,6 +22,8 @@ namespace Ravelin {
 #define MATRIX2 Matrix2d
 #define SHAREDMATRIXN SharedMatrixNd
 #define SHAREDVECTORN SharedVectorNd
+#define CONST_SHAREDMATRIXN SharedConstMatrixNd
+#define CONST_SHAREDVECTORN SharedConstVectorNd
 #define WRENCH Wrenchd
 #define TWIST Twistd
 #define SVECTOR6 SVector6d
@@ -38,6 +40,8 @@ namespace Ravelin {
 #undef MATRIX2
 #undef SHAREDMATRIXN
 #undef SHAREDVECTORN
+#undef CONST_SHAREDMATRIXN
+#undef CONST_SHAREDVECTORN
 #undef WRENCH
 #undef TWIST
 #undef SVECTOR6

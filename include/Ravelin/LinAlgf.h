@@ -17,29 +17,16 @@
 #include <Ravelin/MatrixNf.h>
 #include <Ravelin/Matrix2f.h>
 #include <Ravelin/FastThreadable.h>
+#include <Ravelin/SparseMatrixNf.h>
 #include <Ravelin/VectorNf.h>
 
 namespace Ravelin {
 
 #define INTEGER int
-#define LINALG LinAlgf
-#define REAL float
-#define MATRIXN MatrixNf
-#define VECTORN VectorNf
-#define MATRIX2 Matrix2f
-#define CONST_ITERATOR fIterator_const
-#define ITERATOR fIterator
-
+#include "fdefs.h"
 #include "LinAlg.h"
-
+#include "undefs.h"
 #undef INTEGER
-#undef LINALG
-#undef REAL
-#undef MATRIXN
-#undef VECTORN
-#undef MATRIX2
-#undef CONST_ITERATOR
-#undef ITERATOR
 
 } // end namespace
 

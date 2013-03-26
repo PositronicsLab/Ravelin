@@ -18,9 +18,6 @@ class SPARSEMATRIXN
     SPARSEMATRIXN get_sub_mat(unsigned rstart, unsigned rend, unsigned cstart, unsigned cend) const;
     SPARSEVECTORN& get_row(unsigned i, SPARSEVECTORN& row) const;
     SPARSEVECTORN& get_column(unsigned i, SPARSEVECTORN& column) const;
-    unsigned* get_indices() { return _indices.get(); }
-    unsigned* get_ptr() { return _ptr.get(); }
-    REAL* get_data() { return _data.get(); }
     const unsigned* get_indices() const { return _indices.get(); }
     const unsigned* get_ptr() const { return _ptr.get(); }
     const REAL* get_data() const { return _data.get(); }
@@ -32,11 +29,29 @@ class SPARSEMATRIXN
     static SPARSEMATRIXN& outer_square(const SPARSEVECTORN& v, SPARSEMATRIXN& result);
     MATRIXN& to_dense(MATRIXN& m) const;
 
+    /// Gets the column indices of the nonzeros
+    unsigned* get_indices() { return _indices.get(); }
+
+    /// Gets the row pointers
+    /*
+     * Element j denotes the location in the nonzero data and column indices
+       that starts row j. This array has rows()+1 entries and the final
+       element (index rows()) = get_nnz()
+     */
+    unsigned* get_ptr() { return _ptr.get(); }
+
+    /// Gets the array of nonzeros
+    REAL* get_data() { return _data.get(); }
+
+    /// Gets the number of nonzeros
+    unsigned get_nnz() const { return _nnz; }
+
   protected:
     SPARSEMATRIXN(unsigned m, unsigned n) { _rows = m; _columns = n; }
-    boost::shared_array<unsigned> _indices;  // column indices
+    boost::shared_array<unsigned> _indices;  // column indices of the nonzeros
     boost::shared_array<unsigned> _ptr;      // starting indices for row i 
-    boost::shared_array<REAL> _data;         // actual data
+    boost::shared_array<REAL> _data;         // actual data (nonzeros)
+    unsigned _nnz;                           // the number of nonzeros
     unsigned _rows;
     unsigned _columns;
 

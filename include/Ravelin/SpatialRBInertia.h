@@ -8,6 +8,8 @@
 #error This class is not to be included by the user directly. Use SpatialRBInertiad.h or SpatialRBInertiaf.h instead.
 #endif
 
+class POSE;
+
 /// A 6x6 spatial algebra matrix used for dynamics calculations
 /** 
  * The matrix is represented by:
