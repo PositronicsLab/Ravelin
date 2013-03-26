@@ -21,6 +21,8 @@ class SPARSEMATRIXN
     const unsigned* get_indices() const { return _indices.get(); }
     const unsigned* get_ptr() const { return _ptr.get(); }
     const REAL* get_data() const { return _data.get(); }
+    void set_row(unsigned i, const VECTORN& v);
+    void set_column(unsigned i, const VECTORN& v);
     SPARSEMATRIXN& operator-=(const SPARSEMATRIXN& m);
     SPARSEMATRIXN& operator+=(const SPARSEMATRIXN& m);
     SPARSEMATRIXN& operator*=(REAL scalar);
@@ -28,8 +30,10 @@ class SPARSEMATRIXN
     static SPARSEMATRIXN& outer_square(const VECTORN& g, SPARSEMATRIXN& result);
     static SPARSEMATRIXN& outer_square(const SPARSEVECTORN& v, SPARSEMATRIXN& result);
     MATRIXN& to_dense(MATRIXN& m) const;
+    void set_capacities(unsigned nnz_capacity, unsigned row_capacity, bool preserve);
+    void get_values(std::map<std::pair<unsigned, unsigned>, REAL>& values) const;
 
-    /// Gets the column indices of the nonzeros
+    /// Gets the column indices of the nonzeros (sized get_nnz()
     unsigned* get_indices() { return _indices.get(); }
 
     /// Gets the row pointers
@@ -40,7 +44,7 @@ class SPARSEMATRIXN
      */
     unsigned* get_ptr() { return _ptr.get(); }
 
-    /// Gets the array of nonzeros
+    /// Gets the array of nonzeros (sized get_nnz())
     REAL* get_data() { return _data.get(); }
 
     /// Gets the number of nonzeros
@@ -54,6 +58,8 @@ class SPARSEMATRIXN
     unsigned _nnz;                           // the number of nonzeros
     unsigned _rows;
     unsigned _columns;
+    unsigned _nnz_capacity;                  // the nnz capacity
+    unsigned _row_capacity;              // the row capacity 
 
   private:
     void set(unsigned rows, unsigned columns, const std::map<std::pair<unsigned, unsigned>, REAL>& values);

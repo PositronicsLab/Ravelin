@@ -333,10 +333,10 @@ void LinAlgd::orgqr_(INTEGER* M, INTEGER* N, INTEGER* K, DOUBLE* A, INTEGER* LDA
 #include <Ravelin/undefs.h>
 
 // external methods
-extern int solve_superlu(int m, int n, int nrhs, int nnz, int* col_indices, int* row_ptr, double* A_nz, double* x, double* b);
+extern int solve_superlu(bool notrans, int m, int n, int nrhs, int nnz, int* col_indices, int* row_ptr, double* A_nz, double* x, double* b);
 
 /// Does a LU factorization of a sparse matrix
-VectorNd& LinAlgd::solve_sparse_direct(const SparseMatrixNd& A, const VectorNd& b, VectorNd& x)
+VectorNd& LinAlgd::solve_sparse_direct(const SparseMatrixNd& A, const VectorNd& b, Transposition trans, VectorNd& x)
 {
   #ifdef USE_SUPERLU
   // verify sizes
@@ -358,7 +358,7 @@ VectorNd& LinAlgd::solve_sparse_direct(const SparseMatrixNd& A, const VectorNd& 
   int* row_ptr = (int*) A.get_ptr();
 
   // check info
-  int info = solve_superlu(m, n, nrhs, nnz, col_indices, row_ptr, nz_val, x.data(), (double*) b.data());
+  int info = solve_superlu(trans == eNoTranspose, m, n, nrhs, nnz, col_indices, row_ptr, nz_val, x.data(), (double*) b.data());
   if (info > 0)
     throw SingularException();
   #else
@@ -369,7 +369,7 @@ VectorNd& LinAlgd::solve_sparse_direct(const SparseMatrixNd& A, const VectorNd& 
 }
 
 /// Does a LU factorization of a sparse matrix
-MatrixNd& LinAlgd::solve_sparse_direct(const SparseMatrixNd& A, const MatrixNd& B, MatrixNd& X)
+MatrixNd& LinAlgd::solve_sparse_direct(const SparseMatrixNd& A, const MatrixNd& B, Transposition trans, MatrixNd& X)
 {
   #ifdef USE_SUPERLU
   // verify sizes
@@ -391,7 +391,7 @@ MatrixNd& LinAlgd::solve_sparse_direct(const SparseMatrixNd& A, const MatrixNd& 
   int* row_ptr = (int*) A.get_ptr();
 
   // check info
-  int info = solve_superlu(m, n, nrhs, nnz, col_indices, row_ptr, nz_val, X.data(), (double*) X.data());
+  int info = solve_superlu(trans == eNoTranspose, m, n, nrhs, nnz, col_indices, row_ptr, nz_val, X.data(), (double*) X.data());
   if (info > 0)
     throw SingularException();
   #else

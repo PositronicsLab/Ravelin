@@ -32,7 +32,7 @@ struct SuperMatrices
 };
 
 // creates a CRS matrix
-void create_CompRow_Matrix(SuperMatrix *A, int m, int n, int nnz,
+static void create_CompRow_Matrix(SuperMatrix *A, int m, int n, int nnz,
                        double *nzval, int *colind, int *rowptr,
                        Stype_t stype, Dtype_t dtype, Mtype_t mtype)
 {
@@ -51,7 +51,7 @@ void create_CompRow_Matrix(SuperMatrix *A, int m, int n, int nnz,
 }
 
 // creates a CRS matrix
-void create_CompRow_Matrix(SuperMatrix *A, int m, int n, int nnz,
+static void create_CompRow_Matrix(SuperMatrix *A, int m, int n, int nnz,
                        float* nzval, int *colind, int *rowptr,
                        Stype_t stype, Dtype_t dtype, Mtype_t mtype)
 {
@@ -70,7 +70,7 @@ void create_CompRow_Matrix(SuperMatrix *A, int m, int n, int nnz,
 }
 
 // creates a dense matrix
-void create_Dense_Matrix(SuperMatrix *X, int m, int n, double *x, int ldx,
+static void create_Dense_Matrix(SuperMatrix *X, int m, int n, double *x, int ldx,
                     Stype_t stype, Dtype_t dtype, Mtype_t mtype)
 {
     DNformat    *Xstore;
@@ -86,7 +86,7 @@ void create_Dense_Matrix(SuperMatrix *X, int m, int n, double *x, int ldx,
 }
 
 // creates a dense matrix
-void create_Dense_Matrix(SuperMatrix *X, int m, int n, float *x, int ldx,
+static void create_Dense_Matrix(SuperMatrix *X, int m, int n, float *x, int ldx,
                     Stype_t stype, Dtype_t dtype, Mtype_t mtype)
 {
     DNformat    *Xstore;
@@ -102,7 +102,7 @@ void create_Dense_Matrix(SuperMatrix *X, int m, int n, float *x, int ldx,
 }
 
 /// Does a LU factorization of a sparse matrix
-int solve_superlu(int m, int n, int nrhs, int nnz, int* col_indices, int* row_ptr, double* A_nz, double* x, double* b)
+int solve_superlu(bool trans, int m, int n, int nrhs, int nnz, int* col_indices, int* row_ptr, double* A_nz, double* x, double* b)
 {
   #ifdef USE_SUPERLU
   static SuperMatrices SM;
@@ -121,7 +121,7 @@ int solve_superlu(int m, int n, int nrhs, int nnz, int* col_indices, int* row_pt
   o.SymmetricMode = NO;
   o.ConditionNumber = NO;
   o.ColPerm = NATURAL;
-  o.Trans = NOTRANS;
+  o.Trans = (notrans) ? NOTRANS : TRANS;
 
   // setup B and X
   create_Dense_Matrix(&SM.B, m, nrhs, b, m, SLU_DN, SLU_D, SLU_GE);
@@ -176,7 +176,7 @@ int solve_superlu(int m, int n, int nrhs, int nnz, int* col_indices, int* row_pt
 }
 
 /// Does a LU factorization of a sparse matrix
-int solve_superlu(int m, int n, int nrhs, int nnz, int* col_indices, int* row_ptr, float* A_nz, float* x, float* b)
+int solve_superlu(bool notrans, int m, int n, int nrhs, int nnz, int* col_indices, int* row_ptr, float* A_nz, float* x, float* b)
 {
   #ifdef USE_SUPERLU
   static SuperMatrices SM;
@@ -195,7 +195,7 @@ int solve_superlu(int m, int n, int nrhs, int nnz, int* col_indices, int* row_pt
   o.SymmetricMode = NO;
   o.ConditionNumber = NO;
   o.ColPerm = NATURAL;
-  o.Trans = NOTRANS;
+  o.Trans = (notrans) ? NOTRANS : TRANS;
 
   // setup B and X
   create_Dense_Matrix(&SM.B, m, nrhs, b, m, SLU_DN, SLU_S, SLU_GE);
