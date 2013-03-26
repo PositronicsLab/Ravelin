@@ -8,10 +8,16 @@ SPARSEMATRIXN::SPARSEMATRIXN()
 {
   _rows = _columns = 0;
   _nnz = 0;
+  _nnz_capacity = 0;
+  _row_capacity = 0;
 }
 
 SPARSEMATRIXN::SPARSEMATRIXN(unsigned m, unsigned n, const map<pair<unsigned, unsigned>, REAL>& values)
 {
+  _rows = _columns = 0;
+  _nnz = 0;
+  _nnz_capacity = 0;
+  _row_capacity = 0;
   set(m, n, values);
 }
 
@@ -19,15 +25,24 @@ SPARSEMATRIXN::SPARSEMATRIXN(unsigned m, unsigned n, shared_array<unsigned> ptr,
 {
   _rows = m;
   _columns = n;
+  _nnz = _ptr[_rows];
+  _nnz_capacity = _nnz;
+  _row_capacity = _rows+1;
   _data = data; 
   _ptr = ptr; 
   _indices = indices; 
-  _nnz = _ptr[_rows];
 }
 
 /// Creates a sparse matrix from a dense matrix
 SPARSEMATRIXN::SPARSEMATRIXN(const MATRIXN& m)
 {
+  _rows = m.rows();
+  _columns = m.columns();
+  _nnz = 0;
+  _nnz_capacity = 0;
+  _row_capacity = 0;
+
+  // find non-zero values
   map<pair<unsigned, unsigned>, REAL> values;
   for (unsigned i=0; i< m.rows(); i++)
     for (unsigned j=0; j< m.columns(); j++)
@@ -45,6 +60,10 @@ SPARSEMATRIXN SPARSEMATRIXN::identity(unsigned n)
 
   // init matrix dimensions
   m._rows = m._columns = n;
+
+  // init capacities
+  m._nnz_capacity = n;
+  m._row_capacity = n+1;
 
   // initialize arrays
   m._data = shared_array<REAL>(new REAL[n]);
@@ -66,12 +85,120 @@ SPARSEMATRIXN SPARSEMATRIXN::identity(unsigned n)
   return m;
 }
 
+/// Gets all values from the matrix
+void SPARSEMATRIXN::get_values(map<pair<unsigned, unsigned>, REAL>& values) const
+{
+  values.clear();
+
+  // iterate through each row
+  for (unsigned i=0; i< _rows; i++)
+  {
+    const REAL* data = _data.get() + _ptr[i];
+    const unsigned* indices = _indices.get() + _ptr[i];
+    const unsigned N = _ptr[i+1] - _ptr[i];
+    for (unsigned j=0; j< N; j++)
+      values[make_pair(i, indices[j])] = data[j];
+  }
+}
+
+/// Sets the column with the particular index
+void SPARSEMATRIXN::set_column(unsigned col, const VECTORN& v)
+{
+  // get the values
+  map<pair<unsigned, unsigned>, REAL> values; 
+  get_values(values);
+
+  // remove all values from column
+  for (unsigned i=0; i< _rows; i++)
+    values.erase(make_pair(i, col));
+
+  // update the map
+  for (unsigned i=0; i< v.size(); i++)
+    if (v[i] > EPS || v[i] < -EPS)
+      values[make_pair(i,col)] = v[i];
+
+  // update the matrix
+  set(_rows, _columns, values); 
+}
+
+/// Sets the row with the particular index
+void SPARSEMATRIXN::set_row(unsigned row, const VECTORN& v)
+{
+  #ifndef NEXCEPT
+  if (row >= _rows)
+    throw InvalidIndexException();
+  #endif 
+
+  // calculate the number of nonzeros in the vector
+  unsigned nnz_v = std::count_if(v.begin(), v.end(), _1 > EPS || _1 < -EPS);
+
+  // get the number of nonzeros in the matrix
+  unsigned nnz_row = _ptr[row+1] - _ptr[row];
+
+  // three cases: number of zeros =, >, <
+  if (nnz_v > nnz_row)
+  {
+    // determine how many more data entries we need
+    unsigned nextra = nnz_v - nnz_row;
+
+    // expand the capacity if necessary, preserving data
+    if (_nnz_capacity < _nnz + nextra)
+      set_capacities(_nnz + nextra, _row_capacity, true);
+    
+    // shift arrays
+    REAL* data = _data.get();
+    unsigned* indices = _indices.get();
+    std::copy_backward(data+_ptr[row+1], data+_nnz, data+_ptr[row+1]+nextra);
+    std::copy_backward(indices+_ptr[row+1], indices+_nnz, indices+_ptr[row+1]+nextra);
+    
+    // update ptr
+    unsigned* ptr = _ptr.get();
+    std::transform(ptr+row+1, ptr+_nnz+1, ptr+row+1, _1 + nextra);
+
+    // update the number of nonzero entries
+    _nnz += nextra;
+  } 
+  else if (nnz_v < nnz_row)
+  {
+    // determine how many fewer data entries there are
+    unsigned nfewer = nnz_row - nnz_v;
+
+    // shift arrays
+    REAL* data = _data.get();
+    unsigned* indices = _indices.get();
+    std::copy(data+_ptr[row+1], data+_nnz, data+_ptr[row+1]-nfewer);
+    std::copy(indices+_ptr[row+1], indices+_nnz, indices+_ptr[row+1]-nfewer);
+    
+    // update ptr
+    unsigned* ptr = _ptr.get();
+    std::transform(ptr+row+1, ptr+_nnz+1, ptr+row+1, _1 - nfewer);
+
+    // update the number of nonzero entries
+    _nnz -= nfewer;
+  }
+
+  // replace the non-zero values
+  for (unsigned i=0, j=_ptr[row]; i< v.size(); i++)
+    if (v[i] > EPS || v[i] < -EPS)
+    {
+      _data[j] = v[i];
+      _indices[j] = i;
+      j++;
+    }
+}
+
 /// Sets up a sparse matrix from a map 
 void SPARSEMATRIXN::set(unsigned m, unsigned n, const map<pair<unsigned, unsigned>, REAL>& values)
 {
   const unsigned nv = values.size();
+
+  // setup rows and columns
   _rows = m;
   _columns = n;
+
+  // setup arrays
+  _nnz_capacity = nv;
+  _row_capacity = m+1;
   _data = shared_array<REAL>(new REAL[nv]);
   _ptr = shared_array<unsigned>(new unsigned[m+1]);
   _indices = shared_array<unsigned>(new unsigned[nv]);
@@ -217,6 +344,47 @@ SPARSEMATRIXN SPARSEMATRIXN::get_sub_mat(unsigned rstart, unsigned rend, unsigne
   sub._nnz = nv;
 
   return sub;
+}
+
+/// Sets the capacities of the arrays
+void SPARSEMATRIXN::set_capacities(unsigned nnz_capacity, unsigned row_capacity, bool preserve = false)
+{
+  // increase row_capacity, just in case
+  row_capacity++;
+
+  // increase capacities, as necessary, if preserve is selected
+  if (preserve)
+  {
+    row_capacity = std::max(row_capacity, _row_capacity);
+    nnz_capacity = std::max(nnz_capacity, _nnz_capacity);
+  }
+
+  // create arrays
+  shared_array<REAL> new_data(new REAL[nnz_capacity]);
+  shared_array<unsigned> new_ptr(new unsigned[row_capacity]);
+  shared_array<unsigned> new_indices(new unsigned[nnz_capacity]);
+
+  // if there is no preservation, just setup the data
+  if (!preserve)
+  {
+    _nnz_capacity = nnz_capacity;
+    _row_capacity = row_capacity;
+    _data = new_data;
+    _ptr = new_ptr;
+    _indices = new_indices;
+    _nnz = 0;
+  }
+  else
+  {
+    std::copy(_data.get(), _data.get()+_nnz, new_data.get());
+    std::copy(_ptr.get(), _ptr.get()+_rows+1, new_ptr.get());
+    std::copy(_indices.get(), _indices.get()+_nnz, new_indices.get());
+    _nnz_capacity = nnz_capacity;
+    _row_capacity = row_capacity;
+    _data = new_data;
+    _ptr = new_ptr;
+    _indices = new_indices;
+  }
 }
 
 /// Multiplies this sparse matrix by a dense matrix

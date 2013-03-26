@@ -4,6 +4,7 @@
  * License (found in COPYING).
  ****************************************************************************/
 
+#include <boost/lambda/lambda.hpp>
 #include <Ravelin/FastThreadable.h>
 #include <Ravelin/Constants.h>
 #include <Ravelin/MissizeException.h>
@@ -16,7 +17,7 @@ using boost::shared_array;
 using std::map;
 using std::make_pair;
 using std::vector;
-
+using namespace boost::lambda;
 using namespace Ravelin;
 
 

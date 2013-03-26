@@ -335,10 +335,10 @@ void LinAlgf::orgqr_(INTEGER* M, INTEGER* N, INTEGER* K, SINGLE* A, INTEGER* LDA
 #include <Ravelin/undefs.h>
 
 // external methods
-extern int solve_superlu(int m, int n, int nrhs, int nnz, int* col_indices, int* row_ptr, float* A_nz, float* x, float* b);
+extern int solve_superlu(bool notrans, int m, int n, int nrhs, int nnz, int* col_indices, int* row_ptr, float* A_nz, float* x, float* b);
 
 /// Does a LU factorization of a sparse matrix
-VectorNf& LinAlgf::solve_sparse_direct(const SparseMatrixNf& A, const VectorNf& b, VectorNf& x)
+VectorNf& LinAlgf::solve_sparse_direct(const SparseMatrixNf& A, const VectorNf& b, Transposition trans, VectorNf& x)
 {
   #ifdef USE_SUPERLU
   // verify sizes
@@ -360,7 +360,7 @@ VectorNf& LinAlgf::solve_sparse_direct(const SparseMatrixNf& A, const VectorNf& 
   int* row_ptr = (int*) A.get_ptr();
 
   // check info
-  int info = solve_superlu(m, n, nrhs, nnz, col_indices, row_ptr, nz_val, x.data(), (float*) b.data());
+  int info = solve_superlu(trans == eNoTranspose, m, n, nrhs, nnz, col_indices, row_ptr, nz_val, x.data(), (float*) b.data());
   if (info > 0)
     throw SingularException();
   #else
@@ -371,7 +371,7 @@ VectorNf& LinAlgf::solve_sparse_direct(const SparseMatrixNf& A, const VectorNf& 
 }
 
 /// Does a LU factorization of a sparse matrix
-MatrixNf& LinAlgf::solve_sparse_direct(const SparseMatrixNf& A, const MatrixNf& B, MatrixNf& X)
+MatrixNf& LinAlgf::solve_sparse_direct(const SparseMatrixNf& A, const MatrixNf& B, Transposition trans, MatrixNf& X)
 {
   #ifdef USE_SUPERLU
   // verify sizes
@@ -393,7 +393,7 @@ MatrixNf& LinAlgf::solve_sparse_direct(const SparseMatrixNf& A, const MatrixNf& 
   int* row_ptr = (int*) A.get_ptr();
 
   // check info
-  int info = solve_superlu(m, n, nrhs, nnz, col_indices, row_ptr, nz_val, X.data(), (float*) X.data());
+  int info = solve_superlu(trans == eNoTranspose, m, n, nrhs, nnz, col_indices, row_ptr, nz_val, X.data(), (float*) X.data());
   if (info > 0)
     throw SingularException();
   #else
