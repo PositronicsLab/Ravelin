@@ -15,4 +15,4 @@ include_directories(/usr/local/include include ${Boost_INCLUDE_DIR} /usr/include
 link_directories(/usr/local/Cellar/octave/3.6.2/lib/octave/3.6.2 /usr/local/lib /usr/include/eigen3 ../)
 
 add_executable(${PROJECT_NAME} Arithmetic.cpp )
-target_link_libraries(${PROJECT_NAME} Ravelin octave)
+target_link_libraries(${PROJECT_NAME} Ravelin)
