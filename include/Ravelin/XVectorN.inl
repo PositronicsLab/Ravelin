@@ -117,6 +117,7 @@ ITERATOR begin()
 ITERATOR end()
 {
   ITERATOR i;
+  i._count = 0;
   i._sz = _len;
   i._ld = _len;
   i._rows = i._sz;
