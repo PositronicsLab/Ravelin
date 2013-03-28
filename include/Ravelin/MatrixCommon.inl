@@ -5,7 +5,7 @@
  ****************************************************************************/
 
 /// Gets an iterator to a block
-ITERATOR block_iterator(unsigned row_start, unsigned row_end, unsigned col_start, unsigned col_end)
+ITERATOR block_iterator_begin(unsigned row_start, unsigned row_end, unsigned col_start, unsigned col_end)
 {
   #ifndef NEXCEPT
   if (row_end < row_start || row_end > rows() || col_end < col_start || col_end > columns())
@@ -13,6 +13,7 @@ ITERATOR block_iterator(unsigned row_start, unsigned row_end, unsigned col_start
   #endif
 
   ITERATOR i;
+  i._count = 0;
   i._sz = (row_end - row_start)*(col_end - col_start);
   i._ld = leading_dim();
   i._rows = row_end - row_start;
@@ -22,7 +23,44 @@ ITERATOR block_iterator(unsigned row_start, unsigned row_end, unsigned col_start
 }
 
 /// Gets an iterator to a block
-CONST_ITERATOR block_iterator(unsigned row_start, unsigned row_end, unsigned col_start, unsigned col_end) const
+CONST_ITERATOR block_iterator_begin(unsigned row_start, unsigned row_end, unsigned col_start, unsigned col_end) const
+{
+  #ifndef NEXCEPT
+  if (row_end < row_start || row_end > rows() || col_end < col_start || col_end > columns())
+    throw InvalidIndexException();
+  #endif
+
+  CONST_ITERATOR i;
+  i._count = 0;
+  i._sz = (row_end - row_start)*(col_end - col_start);
+  i._ld = leading_dim();
+  i._rows = row_end - row_start;
+  i._columns = col_end - col_start;
+  i._data_start = i._current_data = data() + i._ld*col_start + row_start;
+  return i;
+}
+
+/// Gets an iterator to a block
+ITERATOR block_iterator_end(unsigned row_start, unsigned row_end, unsigned col_start, unsigned col_end)
+{
+  #ifndef NEXCEPT
+  if (row_end < row_start || row_end > rows() || col_end < col_start || col_end > columns())
+    throw InvalidIndexException();
+  #endif
+
+  ITERATOR i;
+  i._sz = (row_end - row_start)*(col_end - col_start);
+  i._count = i._sz;
+  i._ld = leading_dim();
+  i._rows = row_end - row_start;
+  i._columns = col_end - col_start;
+  i._data_start = data() + i._ld*col_start + row_start;
+  i._current_data = i._data_start + i._sz;
+  return i;
+}
+
+/// Gets an iterator to a block
+CONST_ITERATOR block_iterator_end(unsigned row_start, unsigned row_end, unsigned col_start, unsigned col_end) const
 {
   #ifndef NEXCEPT
   if (row_end < row_start || row_end > rows() || col_end < col_start || col_end > columns())
@@ -31,10 +69,12 @@ CONST_ITERATOR block_iterator(unsigned row_start, unsigned row_end, unsigned col
 
   CONST_ITERATOR i;
   i._sz = (row_end - row_start)*(col_end - col_start);
+  i._count = i._sz;
   i._ld = leading_dim();
   i._rows = row_end - row_start;
   i._columns = col_end - col_start;
-  i._data_start = i._current_data = data() + i._ld*col_start + row_start;
+  i._data_start = data() + i._ld*col_start + row_start;
+  i._current_data = i._data_start + i._sz;
   return i;
 }
 
@@ -50,7 +90,7 @@ V& get_row(unsigned row, V& v) const
   #endif
 
   // setup the iterators 
-  CONST_ITERATOR source = block_iterator(row, row+1, 0, columns());
+  CONST_ITERATOR source = block_iterator_begin(row, row+1, 0, columns());
   CONST_ITERATOR source_end = source.end();  
   v.resize(source._sz);
   ITERATOR target = v.begin();
@@ -74,7 +114,7 @@ V& get_column(unsigned column, V& v) const
   #endif
 
   // setup the iterators 
-  CONST_ITERATOR source = block_iterator(0, rows(), column, column+1);
+  CONST_ITERATOR source = block_iterator_begin(0, rows(), column, column+1);
   CONST_ITERATOR source_end = source.end();  
   v.resize(source._sz);
   ITERATOR target = v.begin();
@@ -98,7 +138,7 @@ MATRIXX& set_row(unsigned row, const V& v)
   #endif
 
   // setup the iterators 
-  ITERATOR target = block_iterator(row, row+1, 0, columns());
+  ITERATOR target = block_iterator_begin(row, row+1, 0, columns());
   ITERATOR target_end = target.end();  
   CONST_ITERATOR source = v.begin();
 
@@ -121,7 +161,7 @@ MATRIXX& set_column(unsigned column, const V& v)
   #endif
 
   // setup the iterators 
-  ITERATOR target = block_iterator(0, rows(), column, column+1);
+  ITERATOR target = block_iterator_begin(0, rows(), column, column+1);
   ITERATOR target_end = target.end();  
   CONST_ITERATOR source = v.begin();
 

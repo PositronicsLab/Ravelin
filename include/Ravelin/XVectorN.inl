@@ -7,7 +7,41 @@
  * SharedVectorNf/SharedVectorNd.
  ****************************************************************************/
 
-ITERATOR segment_iterator(unsigned start, unsigned end)
+ITERATOR segment_iterator_begin(unsigned start, unsigned end)
+{
+  #ifndef NEXCEPT
+  if (end < start || end > _len)
+    throw InvalidIndexException();
+  #endif
+
+  ITERATOR i;
+  i._count = 0;
+  i._sz = end - start;
+  i._ld = _len;
+  i._rows = i._sz;
+  i._columns = 1;
+  i._data_start = i._current_data = data() + start;
+  return i;
+}
+
+CONST_ITERATOR segment_iterator_begin(unsigned start, unsigned end) const
+{
+  #ifndef NEXCEPT
+  if (end < start || end > _len)
+    throw InvalidIndexException();
+  #endif
+
+  CONST_ITERATOR i;
+  i._count = 0;
+  i._sz = end - start;
+  i._ld = _len;
+  i._rows = i._sz;
+  i._columns = 1;
+  i._data_start = i._current_data  = data() + start;
+  return i;
+}
+
+ITERATOR segment_iterator_end(unsigned start, unsigned end)
 {
   #ifndef NEXCEPT
   if (end < start || end > _len)
@@ -16,14 +50,16 @@ ITERATOR segment_iterator(unsigned start, unsigned end)
 
   ITERATOR i;
   i._sz = end - start;
+  i._count = i._sz;
   i._ld = _len;
   i._rows = i._sz;
   i._columns = 1;
-  i._data_start = i._current_data  = data() + start;
+  i._data_start = data() + start;
+  i._current_data  = data() + start + i._sz;
   return i;
 }
 
-CONST_ITERATOR segment_iterator(unsigned start, unsigned end) const
+CONST_ITERATOR segment_iterator_end(unsigned start, unsigned end) const
 {
   #ifndef NEXCEPT
   if (end < start || end > _len)
@@ -32,16 +68,19 @@ CONST_ITERATOR segment_iterator(unsigned start, unsigned end) const
 
   CONST_ITERATOR i;
   i._sz = end - start;
+  i._count = i._sz;
   i._ld = _len;
   i._rows = i._sz;
   i._columns = 1;
-  i._data_start = i._current_data  = data() + start;
+  i._data_start = data() + start;
+  i._current_data  = data() + start + i._sz;
   return i;
 }
 
 CONST_ITERATOR begin() const
 {
   CONST_ITERATOR i;
+  i._count = 0;
   i._sz = _len;
   i._ld = _len;
   i._rows = i._sz;
@@ -53,6 +92,7 @@ CONST_ITERATOR begin() const
 CONST_ITERATOR end() const
 {
   CONST_ITERATOR i;
+  i._count = _len;
   i._sz = _len;
   i._ld = _len;
   i._rows = i._sz;
@@ -65,6 +105,7 @@ CONST_ITERATOR end() const
 ITERATOR begin()
 {
   ITERATOR i;
+  i._count = 0;
   i._sz = _len;
   i._ld = _len;
   i._rows = i._sz;
