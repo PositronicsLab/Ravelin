@@ -114,7 +114,7 @@ REAL& VECTOR3::operator[](const unsigned i)
   return _data[i];
 }
 
-REAL VECTOR3::operator[](const unsigned i) const
+const REAL& VECTOR3::operator[](const unsigned i) const
 {
   #ifndef NEXCEPT
   if (i >= 3)

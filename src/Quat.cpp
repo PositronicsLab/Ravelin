@@ -79,7 +79,7 @@ REAL& QUAT::operator[](unsigned i)
  *        returns the third component of the vector (z), for i=3, returns
  *        the scalar (w).
  */
-REAL QUAT::operator[](unsigned i) const
+const REAL& QUAT::operator[](unsigned i) const
 {
   switch (i)
   {

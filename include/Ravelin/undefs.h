@@ -29,4 +29,8 @@
 #undef LINALG 
 #undef SPARSEMATRIXN
 #undef SPARSEVECTORN
+#undef POSE2
+#undef POINT2
+#undef ROT2
+#undef ORIGIN2
 

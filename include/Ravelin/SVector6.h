@@ -33,7 +33,7 @@ class SVECTOR6
     VECTOR3 get_upper() const;
     SVECTOR6& operator=(const SVECTOR6& source);
     REAL& operator[](const unsigned i) { assert(i < 6); return _data[i]; }
-    REAL operator[](const unsigned i) const { assert(i < 6); return _data[i]; }
+    const REAL& operator[](const unsigned i) const { assert(i < 6); return _data[i]; }
     REAL* data() { return _data; }
     const REAL* data() const { return _data; }
     SVECTOR6 operator-() const;

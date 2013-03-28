@@ -29,4 +29,8 @@
 #define LINALG LinAlgf
 #define SPARSEMATRIXN SparseMatrixNf
 #define SPARSEVECTORN SparseVectorNf
+#define ROT2 Rot2f
+#define POINT2 Point2f
+#define POSE2 Pose2f
+#define ORIGIN2 Origin2f
 

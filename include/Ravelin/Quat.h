@@ -49,7 +49,7 @@ class QUAT
     void calc_generalized_force(const VECTOR3& t, REAL gt[4]) const;
     unsigned size() const { return 4; }
     REAL& operator[](unsigned i);
-    REAL operator[](unsigned i) const;
+    const REAL& operator[](unsigned i) const;
     QUAT operator-() const;
     QUAT operator-(const QUAT& q) const;
     QUAT& operator-=(const QUAT& q);

@@ -63,7 +63,7 @@ class VECTOR3
     REAL z() const { return _data[2]; } 
 
     REAL& operator[](const unsigned i);
-    REAL operator[](const unsigned i) const;
+    const REAL& operator[](const unsigned i) const;
     const REAL* data(unsigned i) const;
     REAL* data(unsigned i);
     ITERATOR begin();

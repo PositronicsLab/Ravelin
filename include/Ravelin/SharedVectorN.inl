@@ -17,7 +17,7 @@ REAL& operator[](unsigned i)
 }
 
 /// Returns the desired component of this vector
-REAL operator[](unsigned i) const
+const REAL& operator[](unsigned i) const
 {
   #ifndef NEXCEPT
   if (i > _len)
