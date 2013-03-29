@@ -257,7 +257,7 @@ static W& diag_mult_transpose(const V& d, const XMATRIXN& m, W& result)
 
   // do the specified number of times
   for (unsigned i=0; i< m.rows(); i++)
-    CBLAS::scal(d.size(), d[i], result.data()+i, result.lda());
+    CBLAS::scal(d.size(), d[i], result.data()+i, result.leading_dim());
 
   return result;
 }
