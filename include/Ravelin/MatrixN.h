@@ -38,9 +38,6 @@ class MATRIXN
     virtual ~MATRIXN() { }
     MATRIXN& zero_upper_triangle();
     MATRIXN& zero_lower_triangle();
-    static VECTORN& diag_mult(const VECTORN& d, const VECTORN& v, VECTORN& result);
-    static MATRIXN& diag_mult(const VECTORN& d, const MATRIXN& m, MATRIXN& result);
-    static MATRIXN& diag_mult_transpose(const VECTORN& d, const MATRIXN& m, MATRIXN& result);
     MATRIXN& select_square(const std::vector<bool>& indices, MATRIXN& result) const;
     MATRIXN& set(const VECTORN& v, Transposition trans = eNoTranspose);
     MATRIXN& set(const SHAREDVECTORN& v, Transposition trans = eNoTranspose);

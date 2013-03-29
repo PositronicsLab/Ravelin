@@ -102,7 +102,7 @@ static void create_Dense_Matrix(SuperMatrix *X, int m, int n, float *x, int ldx,
 }
 
 /// Does a LU factorization of a sparse matrix
-int solve_superlu(bool trans, int m, int n, int nrhs, int nnz, int* col_indices, int* row_ptr, double* A_nz, double* x, double* b)
+int solve_superlu(bool notrans, int m, int n, int nrhs, int nnz, int* col_indices, int* row_ptr, double* A_nz, double* x, double* b)
 {
   #ifdef USE_SUPERLU
   static SuperMatrices SM;
