@@ -348,6 +348,17 @@ MATRIXN& MATRIXN::set_zero()
   return *this;
 }
 
+/// Transposes a matrix
+MATRIXN& MATRIXN::transpose(const MATRIXN& m, MATRIXN& result)
+{
+  result.resize(m.columns(), m.rows());
+  for (unsigned i=0; i< m._rows; i++)
+    for (unsigned j=0; j< m._columns; j++)
+      result._data[i*m._columns + j] = m._data[j*m._rows + i];
+
+  return result;
+}
+
 /// Sets this matrix to its transpose
 MATRIXN& MATRIXN::transpose()
 {
