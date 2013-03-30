@@ -36,6 +36,7 @@ SVECTOR6::SVECTOR6(const VECTOR3& upper, const VECTOR3& lower)
 CONST_ITERATOR SVECTOR6::begin() const
 {
   CONST_ITERATOR i;
+  i._count = 0;
   i._sz = 6;
   i._ld = 6;
   i._rows = i._sz;
@@ -48,6 +49,7 @@ CONST_ITERATOR SVECTOR6::begin() const
 CONST_ITERATOR SVECTOR6::end() const
 {
   CONST_ITERATOR i;
+  i._count = 6;
   i._sz = 6;
   i._ld = 6;
   i._rows = i._sz;
@@ -61,6 +63,7 @@ CONST_ITERATOR SVECTOR6::end() const
 ITERATOR SVECTOR6::begin()
 {
   ITERATOR i;
+  i._count = 0;
   i._sz = 6;
   i._ld = 6;
   i._rows = i._sz;
@@ -73,6 +76,7 @@ ITERATOR SVECTOR6::begin()
 ITERATOR SVECTOR6::end()
 {
   ITERATOR i;
+  i._count = 6;
   i._sz = 6;
   i._ld = 6;
   i._rows = i._sz;

@@ -99,6 +99,7 @@ CONST_SHAREDMATRIXN block(unsigned row_start, unsigned row_end, unsigned col_sta
 ITERATOR begin()
 {
   ITERATOR i;
+  i._count = 0;
   i._sz = _rows*_columns;
   i._ld = leading_dim();
   i._rows = _rows;
@@ -112,6 +113,7 @@ ITERATOR end()
 {
   ITERATOR i;
   i._sz = _rows*_columns;
+  i._count = i._sz;
   i._ld = leading_dim();
   i._rows = _rows;
   i._columns = _columns;
@@ -124,6 +126,7 @@ ITERATOR end()
 CONST_ITERATOR begin() const
 {
   CONST_ITERATOR i;
+  i._count = 0;
   i._sz = _rows*_columns;
   i._ld = leading_dim();
   i._rows = _rows;
@@ -137,6 +140,7 @@ CONST_ITERATOR end() const
 {
   CONST_ITERATOR i;
   i._sz = _rows*_columns;
+  i._count = i._sz;
   i._ld = leading_dim();
   i._rows = _rows;
   i._columns = _columns;
@@ -253,7 +257,7 @@ static W& diag_mult_transpose(const V& d, const XMATRIXN& m, W& result)
 
   // do the specified number of times
   for (unsigned i=0; i< m.rows(); i++)
-    CBLAS::scal(d.size(), d[i], result.begin()+i, result.rows());
+    CBLAS::scal(d.size(), d[i], result.data()+i, result.leading_dim());
 
   return result;
 }
