@@ -18,7 +18,7 @@
 #define VECTOR2 Vector2f
 #define VECTOR3 Vector3f
 #define VECTORN VectorNf
-#define POSE Posef
+#define POSE3 Pose3f
 #define CONST_ITERATOR fIterator_const
 #define ITERATOR fIterator
 #define SVECTOR6 SVector6f 
@@ -31,6 +31,8 @@
 #define SPARSEVECTORN SparseVectorNf
 #define ROT2 Rot2f
 #define POINT2 Point2f
+#define POINT3 Point3f
 #define POSE2 Pose2f
 #define ORIGIN2 Origin2f
+#define ORIGIN3 Origin3f
 

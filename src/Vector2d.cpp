@@ -5,10 +5,10 @@
  ****************************************************************************/
 
 #include <Ravelin/Vector2d.h>
+#include <Ravelin/FrameException.h>
 #include <Ravelin/InvalidIndexException.h>
 
 using namespace Ravelin;
-
 
 #include <Ravelin/ddefs.h>
 #include "Vector2.cpp"

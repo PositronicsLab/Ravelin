@@ -18,7 +18,7 @@
 #undef VECTORN 
 #undef VECTOR2
 #undef VECTOR3
-#undef POSE 
+#undef POSE3 
 #undef CONST_ITERATOR
 #undef ITERATOR
 #undef SVECTOR6 
@@ -31,6 +31,8 @@
 #undef SPARSEVECTORN
 #undef POSE2
 #undef POINT2
+#undef POINT3
 #undef ROT2
 #undef ORIGIN2
+#undef ORIGIN3
 

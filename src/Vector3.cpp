@@ -13,6 +13,16 @@ VECTOR3::VECTOR3(REAL x, REAL y, REAL z)
   _data[Z] = z;
 }
 
+/// Constructs this vector with the given values
+VECTOR3::VECTOR3(REAL x, REAL y, REAL z, boost::shared_ptr<POSE3> rpose)
+{
+  const unsigned X = 0, Y = 1, Z = 2;
+  _data[X] = x;
+  _data[Y] = y;
+  _data[Z] = z;
+  pose = rpose;
+}
+
 /// Constructs this vector from the given array
 /**
  * \param array a 3-dimensional (or larger) array
@@ -34,10 +44,15 @@ bool VECTOR3::is_finite() const
 /// Computes the cross-product of two vectors
 VECTOR3 VECTOR3::cross(const VECTOR3& v1, const VECTOR3& v2)
 {
+  #ifndef NEXCEPT
+  if (v1.pose != v2.pose)
+    throw FrameException();
+  #endif
   VECTOR3 w;
   w[0] = v1[1] * v2[2] - v1[2] * v2[1];
   w[1] = v1[2] * v2[0] - v1[0] * v2[2];
   w[2] = v1[0] * v2[1] - v1[1] * v2[0];
+  w.pose = v1.pose;
   return w;
 }
 
@@ -50,7 +65,7 @@ VECTOR3 VECTOR3::determine_orthogonal_vec(const VECTOR3& v)
   const unsigned X = 0, Y = 1, Z = 2;
   
   // make a vector of all ones
-  VECTOR3 ones(1,1,1);
+  VECTOR3 ones(1,1,1,v.pose);
       
   // get the absolute values of the three components
   REAL x = std::fabs(v[X]);
@@ -148,6 +163,44 @@ VECTOR3& VECTOR3::resize(unsigned m, unsigned n, bool preserve)
     throw std::runtime_error("Attempt to resize fixed-length vector!");
   #endif
 
+  return *this;
+}
+
+/// Computes the dot product between two vectors
+REAL VECTOR3::dot(const VECTOR3& v1, const VECTOR3& v2)
+{
+  #ifndef NEXCEPT
+  if (v1.pose != v2.pose)
+    throw FrameException();
+  #endif
+  return v1.x()*v2.x() + v1.y()*v2.y() + v1.z()*v2.z();
+}
+
+/// Adds two vectors in the same frame
+VECTOR3& VECTOR3::operator+=(const VECTOR3& v)
+{
+  #ifndef NEXCEPT
+  if (pose != v.pose)
+    throw FrameException();
+  #endif
+
+  x() += v.x();
+  y() += v.y();
+  z() += v.z();
+  return *this;
+}
+ 
+/// Subtracts a vector from this (in the same frame)
+VECTOR3& VECTOR3::operator-=(const VECTOR3& v)
+{
+  #ifndef NEXCEPT
+  if (pose != v.pose)
+    throw FrameException();
+  #endif
+
+  x() -= v.x();
+  y() -= v.y();
+  z() -= v.z();
   return *this;
 }
  

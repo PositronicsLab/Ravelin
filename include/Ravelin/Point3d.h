@@ -4,21 +4,16 @@
  * License (found in COPYING).
  ****************************************************************************/
 
-#ifndef _VECTOR2D_H
-#define _VECTOR2D_H
+#ifndef _POINT3D_H
+#define _POINT3D_H
 
-#include <assert.h>
-#include <iostream>
-#include <limits>
-#include <cmath>
+#include <boost/enable_shared_from_this.hpp>
 #include <boost/shared_ptr.hpp>
-#include <Ravelin/InvalidIndexException.h>
-#include <Ravelin/dIterator.h>
 
 namespace Ravelin {
 
 #include "ddefs.h"
-#include "Vector2.h"
+#include "Point3.h"
 #include "undefs.h"
 
 } // end namespace

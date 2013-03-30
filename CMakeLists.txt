@@ -9,7 +9,7 @@ set (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_SOURCE_DIR}/CMakeModules)
 include_directories ("include")
 
 # setup library sources
-set (SOURCES AAnglef.cpp AAngled.cpp cblas.cpp LinAlgf.cpp LinAlgd.cpp Matrix2f.cpp Matrix2d.cpp Matrix3f.cpp Matrix3d.cpp MatrixNf.cpp MatrixNd.cpp Origin2d.cpp Origin2f.cpp Point2d.cpp Point2f.cpp Pose2d.cpp Pose2f.cpp Posef.cpp Posed.cpp Quatf.cpp Quatd.cpp SharedMatrixNf.cpp SharedMatrixNd.cpp SharedVectorNf.cpp SharedVectorNd.cpp SparseMatrixNf.cpp SparseMatrixNd.cpp SparseVectorNf.cpp SparseVectorNd.cpp SpatialABInertiad.cpp SpatialABInertiaf.cpp SpatialRBInertiaf.cpp SpatialRBInertiad.cpp SVector6f.cpp SVector6d.cpp Vector2f.cpp Vector2d.cpp Vector3f.cpp Vector3d.cpp VectorNf.cpp VectorNd.cpp)
+set (SOURCES AAnglef.cpp AAngled.cpp cblas.cpp LinAlgf.cpp LinAlgd.cpp Matrix2d.cpp Matrix2f.cpp Matrix3d.cpp Matrix3f.cpp MatrixNf.cpp MatrixNd.cpp Origin2d.cpp Origin2f.cpp Origin3d.cpp Origin3f.cpp Point2d.cpp Point2f.cpp Point3d.cpp Point3f.cpp Pose2d.cpp Pose2f.cpp Pose3f.cpp Pose3d.cpp Quatf.cpp Quatd.cpp SharedMatrixNf.cpp SharedMatrixNd.cpp SharedVectorNf.cpp SharedVectorNd.cpp SparseMatrixNf.cpp SparseMatrixNd.cpp SparseVectorNf.cpp SparseVectorNd.cpp SpatialABInertiad.cpp SpatialABInertiaf.cpp SpatialRBInertiaf.cpp SpatialRBInertiad.cpp SVector6f.cpp SVector6d.cpp Vector2f.cpp Vector2d.cpp Vector3f.cpp Vector3d.cpp VectorNf.cpp VectorNd.cpp)
 
 # build options 
 option (BUILD_SHARED_LIBS "Build Ravelin as a shared library?" ON)

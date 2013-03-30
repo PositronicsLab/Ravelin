@@ -4,24 +4,15 @@
  * License (found in COPYING).
  ****************************************************************************/
 
-#ifndef _VECTOR2D_H
-#define _VECTOR2D_H
-
-#include <assert.h>
-#include <iostream>
-#include <limits>
 #include <cmath>
-#include <boost/shared_ptr.hpp>
-#include <Ravelin/InvalidIndexException.h>
-#include <Ravelin/dIterator.h>
+#include <Ravelin/Operators.h>
+#include <Ravelin/Constants.h>
+#include <Ravelin/Point3f.h>
+#include <Ravelin/Origin3f.h>
 
-namespace Ravelin {
+using namespace Ravelin;
 
-#include "ddefs.h"
-#include "Vector2.h"
-#include "undefs.h"
-
-} // end namespace
-
-#endif
+#include <Ravelin/fdefs.h>
+#include "Origin3.cpp"
+#include <Ravelin/undefs.h>
 

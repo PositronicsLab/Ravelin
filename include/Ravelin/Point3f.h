@@ -4,25 +4,16 @@
  * License (found in COPYING).
  ****************************************************************************/
 
-#ifndef _POSED_H
-#define _POSED_H
+#ifndef _POINT3F_H
+#define _POINT3F_H
 
 #include <boost/enable_shared_from_this.hpp>
 #include <boost/shared_ptr.hpp>
-#include <Ravelin/FrameException.h>
-#include <Ravelin/Vector3d.h>
-#include <Ravelin/Quatd.h>
-#include <Ravelin/AAngled.h>
-#include <Ravelin/Matrix3d.h>
-#include <Ravelin/Wrenchd.h>
-#include <Ravelin/Twistd.h>
-#include <Ravelin/SpatialRBInertiad.h>
-#include <Ravelin/SpatialABInertiad.h>
 
 namespace Ravelin {
 
-#include "ddefs.h"
-#include "Pose.h"
+#include "fdefs.h"
+#include "Point3.h"
 #include "undefs.h"
 
 } // end namespace

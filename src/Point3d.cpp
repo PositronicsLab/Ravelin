@@ -4,21 +4,14 @@
  * License (found in COPYING).
  ****************************************************************************/
 
-#include <cstring>
 #include <cmath>
-#include <iomanip>
-#include <iostream>
-#include <stdexcept>
-#include <Ravelin/cblas.h>
+#include <Ravelin/Operators.h>
 #include <Ravelin/Constants.h>
-#include <Ravelin/Quatf.h>
-#include <Ravelin/AAnglef.h>
-#include <Ravelin/Matrix3f.h>
-#include <Ravelin/Posef.h>
+#include <Ravelin/Point3d.h>
 
 using namespace Ravelin;
 
-#include <Ravelin/fdefs.h>
-#include "Pose.cpp"
+#include <Ravelin/ddefs.h>
+#include "Point3.cpp"
 #include <Ravelin/undefs.h>
 

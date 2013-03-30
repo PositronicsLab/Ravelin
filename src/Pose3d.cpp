@@ -4,24 +4,20 @@
  * License (found in COPYING).
  ****************************************************************************/
 
-#ifndef _VECTOR2D_H
-#define _VECTOR2D_H
-
-#include <assert.h>
-#include <iostream>
-#include <limits>
+#include <Ravelin/cblas.h>
+#include <cstring>
 #include <cmath>
-#include <boost/shared_ptr.hpp>
-#include <Ravelin/InvalidIndexException.h>
-#include <Ravelin/dIterator.h>
+#include <iomanip>
+#include <Ravelin/Constants.h>
+#include <Ravelin/Quatd.h>
+#include <Ravelin/AAngled.h>
+#include <Ravelin/Matrix3d.h>
+#include <Ravelin/Pose3d.h>
 
-namespace Ravelin {
+using namespace Ravelin;
 
-#include "ddefs.h"
-#include "Vector2.h"
-#include "undefs.h"
+#include <Ravelin/ddefs.h>
+#include "Pose3.cpp"
+#include <Ravelin/undefs.h>
 
-} // end namespace
-
-#endif
 

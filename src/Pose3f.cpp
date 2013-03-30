@@ -4,26 +4,21 @@
  * License (found in COPYING).
  ****************************************************************************/
 
-#ifndef _VECTOR3D_H
-#define _VECTOR3D_H
-
-#include <assert.h>
+#include <cstring>
 #include <cmath>
-#include <stdexcept>
-#include <limits>
+#include <iomanip>
 #include <iostream>
-#include <boost/shared_ptr.hpp>
-#include <Ravelin/FrameException.h>
-#include <Ravelin/Origin3d.h>
-#include <Ravelin/dIterator.h>
+#include <stdexcept>
+#include <Ravelin/cblas.h>
+#include <Ravelin/Constants.h>
+#include <Ravelin/Quatf.h>
+#include <Ravelin/AAnglef.h>
+#include <Ravelin/Matrix3f.h>
+#include <Ravelin/Pose3f.h>
 
-namespace Ravelin {
+using namespace Ravelin;
 
-#include "ddefs.h"
-#include "Vector3.h"
-#include "undefs.h"
-
-} // end namespace
-
-#endif
+#include <Ravelin/fdefs.h>
+#include "Pose3.cpp"
+#include <Ravelin/undefs.h>
 

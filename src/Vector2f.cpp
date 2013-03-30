@@ -4,11 +4,10 @@
  * License (found in COPYING).
  ****************************************************************************/
 
-#include <Ravelin/Matrix2f.h>
+#include <Ravelin/FrameException.h>
 #include <Ravelin/Vector2f.h>
 
 using namespace Ravelin;
-
 
 #include <Ravelin/fdefs.h>
 #include "Vector2.cpp"

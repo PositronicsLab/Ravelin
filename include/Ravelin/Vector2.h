@@ -8,7 +8,7 @@
 #error This class is not to be included by the user directly. Use VECTOR2.h or Vector2f.h instead.
 #endif
 
-class MATRIX2;
+class POSE2;
 
 /// A two-dimensional floating point vector used for computational geometry calculations
 class VECTOR2
@@ -16,6 +16,7 @@ class VECTOR2
   public:
     VECTOR2() {}
     VECTOR2(REAL x, REAL y);
+    VECTOR2(REAL x, REAL y, boost::shared_ptr<POSE2> pose);
     VECTOR2(const REAL* array);
     REAL dot(const VECTOR2& v) const { return v[0]*_data[0] + v[1]*_data[1]; }
     static REAL dot(const VECTOR2& v1, const VECTOR2& v2) { return v1[0]*v2[0] + v1[1]*v2[1]; }
@@ -30,11 +31,11 @@ class VECTOR2
     void set_zero() { _data[0] = _data[1] = 0.0; }
     void set_one() { _data[0] = _data[1] = 1.0; }
     static VECTOR2 zero() { return VECTOR2(0.0, 0.0); }
-    VECTOR2& operator=(const VECTOR2& v) { _data[0] = v[0]; _data[1] = v[1]; return *this; }
-    VECTOR2 operator+(const VECTOR2& v) const { return VECTOR2(_data[0] + v[0], _data[1] + v[1]); }
-    VECTOR2 operator-(const VECTOR2& v) const { return VECTOR2(_data[0] - v[0], _data[1] - v[1]); }
-    VECTOR2& operator+=(const VECTOR2& v) { _data[0] += v[0]; _data[1] += v[1];  return *this; }
-    VECTOR2& operator-=(const VECTOR2& v) { _data[0] -= v[0]; _data[1] -= v[1];  return *this; }
+    VECTOR2& operator=(const VECTOR2& v) { _data[0] = v[0]; _data[1] = v[1]; pose = v.pose; return *this; }
+    VECTOR2 operator+(const VECTOR2& v) const;
+    VECTOR2 operator-(const VECTOR2& v) const;
+    VECTOR2& operator+=(const VECTOR2& v);
+    VECTOR2& operator-=(const VECTOR2& v);
     VECTOR2& operator*=(REAL scalar) { _data[0] *= scalar; _data[1] *= scalar; return *this; }
     VECTOR2& operator/=(REAL scalar) { _data[0] /= scalar; _data[1] /= scalar; return *this; }
     VECTOR2 operator*(REAL scalar) const { VECTOR2 v = *this; v *= scalar; return v; }
@@ -47,7 +48,7 @@ class VECTOR2
     unsigned inc() const { return 1; }
     unsigned leading_dim() const { return 2; }
     REAL& operator[](const unsigned i);
-    REAL operator[](const unsigned i) const;
+    const REAL& operator[](const unsigned i) const;
     VECTOR2& resize(unsigned m, unsigned n, bool preserve = false);
     ITERATOR begin();
     CONST_ITERATOR begin() const;
@@ -55,8 +56,8 @@ class VECTOR2
     CONST_ITERATOR end() const;
     REAL* data(unsigned i);
     const REAL* data(unsigned i) const;
-    REAL x() const { return _data[0]; }
-    REAL y() const { return _data[1]; }
+    const REAL& x() const { return _data[0]; }
+    const REAL& y() const { return _data[1]; }
     REAL& x() { return _data[0]; }
     REAL& y() { return _data[1]; }
 
@@ -65,6 +66,9 @@ class VECTOR2
 
     /// Computes the dot "perp" product
     REAL dot_perp(const VECTOR2& v) const { return dot(v.perp()); }
+
+    /// The pose that this vector is defined in
+    boost::shared_ptr<POSE2> pose;
 
   private:
     REAL _data[2];

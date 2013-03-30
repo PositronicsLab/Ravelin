@@ -11,6 +11,8 @@
 #include <cmath>
 #include <iostream>
 #include <limits>
+#include <boost/shared_ptr.hpp>
+#include <Ravelin/InvalidIndexException.h>
 #include <Ravelin/fIterator.h>
 
 namespace Ravelin {

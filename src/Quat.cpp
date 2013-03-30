@@ -462,6 +462,22 @@ VECTOR3 QUAT::operator*(const VECTOR3& v) const
   return VECTOR3((-1.0+2.0*(w2+x2))*v.x() + 2.0*((xy-zw)*v.y() + (yw+xz)*v.z()), 2.0*((xy+zw)*v.x() + (-xw+yz)*v.z()) + (-1.0+2.0*(w2+y2))*v.y(), 2.0*((-yw+xz)*v.x() + (xw+yz)*v.y()) + (-1.0+2.0*(w2+z2))*v.z());
 }
 
+/// Multiplies the 3x3 matrix corresponding to this quaternion by a 3D origin and returns the result in a new 3D origin 
+ORIGIN3 QUAT::operator*(const ORIGIN3& o) const
+{
+  const REAL w2 = w*w;
+  const REAL x2 = x*x;
+  const REAL y2 = y*y;
+  const REAL z2 = z*z;
+  const REAL xy = x*y;
+  const REAL xz = x*z;
+  const REAL yz = y*z;
+  const REAL xw = x*w;
+  const REAL yw = y*w;
+  const REAL zw = z*w;
+  return ORIGIN3((-1.0+2.0*(w2+x2))*o.x() + 2.0*((xy-zw)*o.y() + (yw+xz)*o.z()), 2.0*((xy+zw)*o.x() + (-xw+yz)*o.z()) + (-1.0+2.0*(w2+y2))*o.y(), 2.0*((-yw+xz)*o.x() + (xw+yz)*o.y()) + (-1.0+2.0*(w2+z2))*o.z());
+}
+
 /// Multiplies <b>this</b> by q and stores the result in <b>this</b>
 QUAT& QUAT::operator*=(const QUAT& q)
 {

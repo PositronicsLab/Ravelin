@@ -8,6 +8,9 @@
 #error This class is not to be included by the user directly. Use MatrixNd.h or MatrixNf.h instead.
 #endif
 
+class MATRIX2;
+class MATRIX3;
+
 /// A generic, possibly non-square matrix.  
 /**
  * The underlying data is stored in column-major format (e.g., the element at row 1, column 0 is the second element in the flat array).

@@ -81,29 +81,45 @@ POSE2& POSE2::set_identity()
   return *this;
 }
 
+/// Transforms a vector from one pose to another 
+VECTOR2 POSE2::transform(boost::shared_ptr<const POSE2> p, const VECTOR2& v) const
+{
+  return transform(shared_from_this(), p, v);
+}
+
 /// Applies this pose to a vector 
-VECTOR2 POSE2::mult(const VECTOR2& v) const
+VECTOR2 POSE2::transform(boost::shared_ptr<const POSE2> source, boost::shared_ptr<const POSE2> target, const VECTOR2& v) 
 {
-  return r*v;
+  #ifndef NEXCEPT
+  if (source != v.pose)
+    throw FrameException();
+  #endif
+
+  // compute the relative transform
+  std::pair<ROT2, ORIGIN2> Tx = calc_transform(source, target);
+
+  return Tx.first * v;
 }
 
-/// Applies the inverse of this pose to a vector 
-VECTOR2 POSE2::inverse_mult(const VECTOR2& v) const
+/// Transforms a point from one pose to another 
+POINT2 POSE2::transform(boost::shared_ptr<const POSE2> p, const POINT2& point) const
 {
-  return ROT2::invert(r) * v;
+  return transform(shared_from_this(), p, point);
 }
 
-/// Transforms a point 
-POINT2 POSE2::mult(const POINT2& p) const
+/// Transforms a point from one pose to another 
+POINT2 POSE2::transform(boost::shared_ptr<const POSE2> source, boost::shared_ptr<const POSE2> target, const POINT2& point)
 {
-  return r*p + x;
-}
+  #ifndef NEXCEPT
+  if (source != point.pose)
+    throw FrameException();
+  #endif
 
-/// Applies the inverse of this pose to a point 
-POINT2 POSE2::inverse_mult(const POINT2& p) const
-{
-  ROT2 ir = ROT2::invert(r);
-  return ir*p - ir*x;
+  // compute the relative transform
+  std::pair<ROT2, ORIGIN2> Tx = calc_transform(source, target);
+
+  // do the transform
+  return Tx.first * point + Tx.second;
 }
 
 /// Special method for inverting a 2D pose in place

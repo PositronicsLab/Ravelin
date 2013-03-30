@@ -44,8 +44,8 @@ class ORIGIN2
     const REAL& operator[](const unsigned i) const;
     REAL* data(unsigned i);
     const REAL* data(unsigned i) const;
-    REAL x() const { return _data[0]; }
-    REAL y() const { return _data[1]; }
+    const REAL& x() const { return _data[0]; }
+    const REAL& y() const { return _data[1]; }
     REAL& x() { return _data[0]; }
     REAL& y() { return _data[1]; }
 

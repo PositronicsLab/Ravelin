@@ -67,10 +67,10 @@ class MATRIX2
     MATRIX2 operator-() const; 
     unsigned leading_dim() const { return 2; }
     unsigned inc() const { return 1; }
-    REAL xx() const { return _data[0]; }
-    REAL yx() const { return _data[1]; }
-    REAL xy() const { return _data[2]; }
-    REAL yy() const { return _data[3]; }
+    const REAL& xx() const { return _data[0]; }
+    const REAL& yx() const { return _data[1]; }
+    const REAL& xy() const { return _data[2]; }
+    const REAL& yy() const { return _data[3]; }
     REAL& xx() { return _data[0]; }
     REAL& yx() { return _data[1]; }
     REAL& xy() { return _data[2]; }

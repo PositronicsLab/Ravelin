@@ -8,7 +8,7 @@
 #error This class is not to be included by the user directly. Use SPATIAL_AB_INERTIAd.h or SPATIAL_AB_INERTIAf.h instead.
 #endif
 
-class POSE;
+class POSE3;
 
 /// A 6x6 spatial algebra matrix typically used for dynamics calculations
 class SPATIAL_AB_INERTIA 
@@ -75,7 +75,7 @@ class SPATIAL_AB_INERTIA
     MATRIX3 M;
 
     /// The pose that this inertia is defined in
-    boost::shared_ptr<POSE> pose;
+    boost::shared_ptr<POSE3> pose;
 }; // end class
 
 std::ostream& operator<<(std::ostream& out, const SPATIAL_AB_INERTIA& m);

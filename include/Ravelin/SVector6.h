@@ -8,7 +8,7 @@
 #error This class is not to be included by the user directly. Use Wrenchd.h, Wrenchf.h, Twistd.h, or Twistf.h instead.
 #endif
 
-class POSE;
+class POSE3;
 
 /// A 6-dimensional floating-point vector for use with spatial algebra
 /**
@@ -55,7 +55,7 @@ class SVECTOR6
     CONST_ITERATOR end() const;
 
     /// The frame that this vector is defined in
-    boost::shared_ptr<POSE> pose;
+    boost::shared_ptr<POSE3> pose;
 
   private:
     REAL _data[6];

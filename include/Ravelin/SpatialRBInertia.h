@@ -8,7 +8,7 @@
 #error This class is not to be included by the user directly. Use SpatialRBInertiad.h or SpatialRBInertiaf.h instead.
 #endif
 
-class POSE;
+class POSE3;
 
 /// A 6x6 spatial algebra matrix used for dynamics calculations
 /** 
@@ -53,7 +53,7 @@ class SPATIAL_RB_INERTIA
     MATRIX3 J;
 
     /// The pose that this inertia is defined in
-    boost::shared_ptr<POSE> pose;
+    boost::shared_ptr<POSE3> pose;
 
     /// Converts this to a matrix
     template <class M>

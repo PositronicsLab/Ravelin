@@ -36,23 +36,23 @@ class MATRIX3
     bool is_orthonormal() const;    
     REAL det() const;
     void inverse();
-    REAL xx() const { return _data[0]; }
+    const REAL& xx() const { return _data[0]; }
     REAL& xx() { return _data[0]; }
-    REAL xy() const { return _data[3]; }
+    const REAL& xy() const { return _data[3]; }
     REAL& xy() { return _data[3]; }
-    REAL xz() const { return _data[6]; }
+    const REAL& xz() const { return _data[6]; }
     REAL& xz() { return _data[6]; }
-    REAL yx() const { return _data[1]; }
+    const REAL& yx() const { return _data[1]; }
     REAL& yx() { return _data[1]; }
-    REAL yy() const { return _data[4]; }
+    const REAL& yy() const { return _data[4]; }
     REAL& yy() { return _data[4]; }
-    REAL yz() const { return _data[7]; }
+    const REAL& yz() const { return _data[7]; }
     REAL& yz() { return _data[7]; }
-    REAL zx() const { return _data[2]; }
+    const REAL& zx() const { return _data[2]; }
     REAL& zx() { return _data[2]; }
-    REAL zy() const { return _data[5]; }
+    const REAL& zy() const { return _data[5]; }
     REAL& zy() { return _data[5]; }
-    REAL zz() const { return _data[8]; }
+    const REAL& zz() const { return _data[8]; }
     REAL& zz() { return _data[8]; }
     static VECTOR3 calc_differential(const MATRIX3& R1, const MATRIX3& R2);
     static MATRIX3 inverse(const MATRIX3& m);
