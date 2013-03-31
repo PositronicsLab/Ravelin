@@ -1,12 +1,17 @@
-/// A sparse matrix represented in 'CSR' format
+/// A sparse matrix
 class SPARSEMATRIXN
 {
   public:
+    enum StorageType { eCSR, eCSC };
+
     SPARSEMATRIXN();
-    SPARSEMATRIXN(unsigned m, unsigned n, const std::map<std::pair<unsigned, unsigned>, REAL>& values);
-    SPARSEMATRIXN(unsigned m, unsigned n, boost::shared_array<unsigned> ptr, boost::shared_array<unsigned> indices, boost::shared_array<REAL> data);
+    SPARSEMATRIXN(StorageType s);
+    SPARSEMATRIXN(StorageType s, unsigned m, unsigned n, const std::map<std::pair<unsigned, unsigned>, REAL>& values);
+    SPARSEMATRIXN(StorageType s, unsigned m, unsigned n, boost::shared_array<unsigned> ptr, boost::shared_array<unsigned> indices, boost::shared_array<REAL> data);
     SPARSEMATRIXN(const MATRIXN& m);
+    SPARSEMATRIXN(StorageType s, const MATRIXN& m);
     static SPARSEMATRIXN identity(unsigned n);
+    static SPARSEMATRIXN identity(StorageType stype, unsigned n);
     VECTORN& mult(const VECTORN& x, VECTORN& result) const;
     VECTORN& transpose_mult(const VECTORN& x, VECTORN& result) const;
     MATRIXN& mult(const MATRIXN& m, MATRIXN& result) const;
@@ -30,17 +35,21 @@ class SPARSEMATRIXN
     static SPARSEMATRIXN& outer_square(const VECTORN& g, SPARSEMATRIXN& result);
     static SPARSEMATRIXN& outer_square(const SPARSEVECTORN& v, SPARSEMATRIXN& result);
     MATRIXN& to_dense(MATRIXN& m) const;
-    void set_capacities(unsigned nnz_capacity, unsigned row_capacity, bool preserve);
+    void set_capacities(unsigned nnz_capacity, unsigned ptr_capacity, bool preserve);
     void get_values(std::map<std::pair<unsigned, unsigned>, REAL>& values) const;
 
-    /// Gets the column indices of the nonzeros (sized get_nnz()
+    /// Gets the storage type
+    StorageType get_storage_type() const { return _stype; }
+
+    /// Gets the column (row, if CSC) indices of the nonzeros (sized get_nnz()
     unsigned* get_indices() { return _indices.get(); }
 
-    /// Gets the row pointers
+    /// Gets the row (column, if CSC) pointers
     /*
-     * Element j denotes the location in the nonzero data and column indices
-       that starts row j. This array has rows()+1 entries and the final
-       element (index rows()) = get_nnz()
+     * Element j denotes the location in the nonzero data and column (row, if
+       CSC) indices that starts row (column, if CSC) j. This array has rows()+1 
+       (columns()+1, if CSC) entries and the final element in the array is
+       equal to get_nnz().
      */
     unsigned* get_ptr() { return _ptr.get(); }
 
@@ -51,15 +60,17 @@ class SPARSEMATRIXN
     unsigned get_nnz() const { return _nnz; }
 
   protected:
-    SPARSEMATRIXN(unsigned m, unsigned n) { _rows = m; _columns = n; }
-    boost::shared_array<unsigned> _indices;  // column indices of the nonzeros
-    boost::shared_array<unsigned> _ptr;      // starting indices for row i 
+    SPARSEMATRIXN(StorageType stype, unsigned m, unsigned n);
+
+    boost::shared_array<unsigned> _indices;  // column (row) indices of nonzeros
+    boost::shared_array<unsigned> _ptr;      // starting indices for row (col) i 
     boost::shared_array<REAL> _data;         // actual data (nonzeros)
     unsigned _nnz;                           // the number of nonzeros
     unsigned _rows;
     unsigned _columns;
     unsigned _nnz_capacity;                  // the nnz capacity
-    unsigned _row_capacity;              // the row capacity 
+    unsigned _ptr_capacity;                  // the row capacity 
+    StorageType _stype;                      // the storage capacity
 
   private:
     void set(unsigned rows, unsigned columns, const std::map<std::pair<unsigned, unsigned>, REAL>& values);
