@@ -23,6 +23,7 @@ class VECTORN
     VECTORN(unsigned N);
     VECTORN(const VECTORN& source);
     VECTORN(const SHAREDVECTORN& source);
+    VECTORN(const CONST_SHAREDVECTORN& source);
     VECTORN(const VECTOR2& v);
     VECTORN(const VECTOR3& v);
     VECTORN(const MATRIXN& v);
@@ -51,6 +52,7 @@ class VECTORN
     VECTORN& operator=(const VECTOR3& source);
     VECTORN& operator=(const VECTORN& source);
     VECTORN& operator=(const SHAREDVECTORN& source);
+    VECTORN& operator=(const CONST_SHAREDVECTORN& source);
     VECTORN& operator=(const MATRIXN& source);
     VECTORN& operator=(const SHAREDMATRIXN& source);
     VECTORN& operator=(const CONST_SHAREDMATRIXN& source);

@@ -4,6 +4,7 @@
  * License (found in COPYING).
  ****************************************************************************/
 
+#include <numeric>
 #include <boost/lambda/lambda.hpp>
 #include <Ravelin/FastThreadable.h>
 #include <Ravelin/Constants.h>

@@ -10,6 +10,7 @@ class SPARSEMATRIXN
     SPARSEMATRIXN(StorageType s, unsigned m, unsigned n, boost::shared_array<unsigned> ptr, boost::shared_array<unsigned> indices, boost::shared_array<REAL> data);
     SPARSEMATRIXN(const MATRIXN& m);
     SPARSEMATRIXN(StorageType s, const MATRIXN& m);
+    REAL norm_inf() const;
     static SPARSEMATRIXN identity(unsigned n);
     static SPARSEMATRIXN identity(StorageType stype, unsigned n);
     VECTORN& mult(const VECTORN& x, VECTORN& result) const;
@@ -23,6 +24,8 @@ class SPARSEMATRIXN
     SPARSEMATRIXN get_sub_mat(unsigned rstart, unsigned rend, unsigned cstart, unsigned cend) const;
     SPARSEVECTORN& get_row(unsigned i, SPARSEVECTORN& row) const;
     SPARSEVECTORN& get_column(unsigned i, SPARSEVECTORN& column) const;
+    VECTORN& get_row(unsigned i, VECTORN& row) const;
+    VECTORN& get_column(unsigned i, VECTORN& column) const;
     const unsigned* get_indices() const { return _indices.get(); }
     const unsigned* get_ptr() const { return _ptr.get(); }
     const REAL* get_data() const { return _data.get(); }

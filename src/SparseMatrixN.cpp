@@ -93,6 +93,15 @@ SPARSEMATRIXN::SPARSEMATRIXN(StorageType stype, const MATRIXN& m)
   set(m.rows(), m.columns(), values);
 }
 
+/// Computes the infinity norm of this sparse matrix
+REAL SPARSEMATRIXN::norm_inf() const
+{
+  if (_nnz == 0)
+    return (REAL) 0.0;
+  else
+    return std::accumulate(_data.get(), _data.get()+_nnz, (REAL) 0.0);
+}
+
 /// Sets up an identity matrix from a sparse matrix
 SPARSEMATRIXN SPARSEMATRIXN::identity(unsigned n)
 {
@@ -407,6 +416,11 @@ void SPARSEMATRIXN::set(unsigned m, unsigned n, const map<pair<unsigned, unsigne
   {
     assert(_stype == eCSC);
 
+    // setup a new values map
+    map<pair<unsigned, unsigned>, REAL> values2;
+    for (map<pair<unsigned, unsigned>, REAL>::const_iterator i = values.begin(); i != values.end(); i++)
+      values2[make_pair(i->first.second, i->first.first)] = i->second;
+
     // setup arrays
     _nnz_capacity = nv;
     _ptr_capacity = n+1;
@@ -415,7 +429,7 @@ void SPARSEMATRIXN::set(unsigned m, unsigned n, const map<pair<unsigned, unsigne
     _indices = shared_array<unsigned>(new unsigned[nv]);
 
     // populate the matrix data
-    map<pair<unsigned, unsigned>, REAL>::const_iterator i = values.begin();
+    map<pair<unsigned, unsigned>, REAL>::const_iterator i = values2.begin();
     unsigned j;
     for (j=0; j< nv; j++, i++)
       _data[j] = i->second;
@@ -424,15 +438,15 @@ void SPARSEMATRIXN::set(unsigned m, unsigned n, const map<pair<unsigned, unsigne
     j = 0;
     unsigned k=0;
     _ptr[0] = j;
-    for (unsigned r=0; r< n; r++)
+    for (unsigned col=0; col< n; col++)
     {
-      for (unsigned s=0; s< m; s++)
-        if (values.find(make_pair(r, s)) != values.end())
+      for (unsigned row=0; row< m; row++)
+        if (values.find(make_pair(row, col)) != values.end())
         {
           j++;
-          _indices[k++] = s;
+          _indices[k++] = row;
         }
-      _ptr[r+1] = j;
+      _ptr[col+1] = j;
     }
 
     // set nnz
@@ -509,6 +523,50 @@ SPARSEVECTORN& SPARSEMATRIXN::get_column(unsigned i, SPARSEVECTORN& result) cons
   return result;
 }
 
+/// Gets a column of the sparse matrix as a sparse vector
+VECTORN& SPARSEMATRIXN::get_column(unsigned i, VECTORN& result) const
+{
+  // resize the resulting vector
+  result.set_zero(_rows);
+
+  // get the data
+  REAL* rdata = result.data();
+
+  #ifndef NEXCEPT
+  if (i >= _columns)
+    throw InvalidIndexException();
+  #endif
+
+  // separate code depending on storage scheme
+  if (_stype == eCSR)
+  {
+    // get the data
+    for (unsigned row=0; row< _rows; row++)
+      for (unsigned k=_ptr[row]; k< _ptr[row+1]; k++)
+      {
+        unsigned col = _indices[k];
+  
+        // look for early exit
+        if (col > i)
+          break; 
+
+        // look for match
+        if (col == i)
+          rdata[row] = _data[k];
+      }
+  }
+  else
+  {
+    assert(_stype == eCSC);
+
+    // setup the data
+    for (unsigned j=_ptr[i]; j< _ptr[i+1]; j++)
+      rdata[_indices[j]] = _data[j];
+  }
+
+  return result;
+}
+
 /// Gets a row of the sparse matrix as a sparse vector
 SPARSEVECTORN& SPARSEMATRIXN::get_row(unsigned i, SPARSEVECTORN& result) const
 {
@@ -574,6 +632,50 @@ SPARSEVECTORN& SPARSEMATRIXN::get_row(unsigned i, SPARSEVECTORN& result) const
   }
 
   result = SPARSEVECTORN(_columns, nelm, indices, data);
+  return result;
+}
+
+/// Gets a row of the sparse matrix as a sparse vector
+VECTORN& SPARSEMATRIXN::get_row(unsigned i, VECTORN& result) const
+{
+  // resize the resulting vector
+  result.set_zero(_columns);
+
+  // get the data
+  REAL* rdata = result.data();
+
+  #ifndef NEXCEPT
+  if (i >= _rows)
+    throw InvalidIndexException();
+  #endif
+
+  // separate code depending on storage scheme
+  if (_stype == eCSR)
+  {
+    // setup the data
+    for (unsigned j=_ptr[i]; j< _ptr[i+1]; j++)
+      rdata[_indices[j]] = _data[j];
+  }
+  else
+  {
+    assert(_stype == eCSC);
+
+    // get the data
+    for (unsigned col=0; col< _columns; col++)
+      for (unsigned k=_ptr[col]; k< _ptr[col+1]; k++)
+      {
+        unsigned row = _indices[k];
+  
+        // look for early exit
+        if (row > i)
+          break; 
+
+        // look for match
+        if (row == i)
+          rdata[col] = _data[k];
+      }
+  }
+
   return result;
 }
 
@@ -733,12 +835,12 @@ MATRIXN& SPARSEMATRIXN::mult(const MATRIXN& m, MATRIXN& result) const
   {
     // do the calculation
     for (unsigned col=0, idx=0, minc = 0; col < m.columns(); col++, minc += m.leading_dim())
-      for (unsigned row=0; row < _rows; row++, idx++)
+      for (unsigned row=0; row < _rows; row++)
       {
         REAL dot = (REAL) 0.0;
-        unsigned row_start = _ptr[row];
-        unsigned row_end = _ptr[row+1];
-        for (unsigned jj= row_start; jj< row_end; jj++)
+        unsigned col_start = _ptr[row];
+        unsigned col_end = _ptr[row+1];
+        for (unsigned jj= col_start; jj< col_end; jj++)
           dot += _data[jj] * mdata[minc+_indices[jj]];
         rdata[idx++] += dot;
       }
@@ -893,10 +995,10 @@ MATRIXN& SPARSEMATRIXN::mult_transpose(const MATRIXN& m, MATRIXN& result) const
   {
     assert(_stype == eCSC);
 
-    for (unsigned idx=0; idx< m.rows(); idx++)
+    for (unsigned idx=0, rinc=0; idx< m.rows(); idx++, rinc+= result.leading_dim())
       for (unsigned col=0, minc=0; col< _columns; col++, minc += m.leading_dim())
         for (unsigned jj= _ptr[col]; jj < _ptr[col+1]; jj++)
-          rdata[_indices[jj]] += _data[jj] * mdata[idx + minc]; 
+          rdata[rinc+_indices[jj]] += _data[jj] * mdata[idx + minc]; 
   }
 
   return result;
@@ -919,10 +1021,13 @@ MATRIXN& SPARSEMATRIXN::transpose_mult_transpose(const MATRIXN& m, MATRIXN& resu
 
   if (_stype == eCSR)
   {
-    for (unsigned col=0, idx=0, incr=0; col< m.rows(); col++, incr+=result.leading_dim())
-      for (unsigned row=0; row< _rows; row++, idx++)
+    for (unsigned rowm=0, rinc=0; rowm< m.rows(); rowm++, rinc += result.leading_dim())
+      for (unsigned row=0, minc=0; row< _rows; row++, minc += m.leading_dim())
         for (unsigned k=_ptr[row]; k< _ptr[row+1]; k++)
-          rdata[incr + _indices[k]] += _data[k] * mdata[idx];
+        {
+          unsigned col = _indices[k];
+          rdata[col+rinc] += _data[k] * mdata[rowm+minc];
+        }
   }
   else
   {
@@ -953,7 +1058,7 @@ MATRIXN& SPARSEMATRIXN::to_dense(MATRIXN& m) const
   {
     for (unsigned col=0; col< _columns; col++)
       for (unsigned k=_ptr[col]; k< _ptr[col+1]; k++)
-        m(col, _indices[k]) = _data[k];
+        m(_indices[k], col) = _data[k];
   }
 
   return m;

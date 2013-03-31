@@ -213,7 +213,7 @@ U& mult_transpose(const T& x, U& y) const
   if (xcols != this->columns())
     throw MissizeException();
   #endif
-  y.resize(this->rows(), rows);
+  y.resize(this->rows(), xrows);
   if (rows() == 0 || columns() == 0 || xrows == 0)
   {
     y.set_zero();

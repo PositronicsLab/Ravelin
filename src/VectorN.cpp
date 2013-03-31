@@ -89,6 +89,22 @@ VECTORN::VECTORN(const CONST_SHAREDMATRIXN& source)
   operator=(source);
 }
 
+/// Copy constructor
+VECTORN::VECTORN(const SHAREDVECTORN& source)
+{
+  _len = 0;
+  _capacity = 0;
+  operator=(source);
+}
+
+/// Copy constructor
+VECTORN::VECTORN(const CONST_SHAREDVECTORN& source)
+{
+  _len = 0;
+  _capacity = 0;
+  operator=(source);
+}
+
 /// Constructs a N-dimension vector from the list of double values
 /**
  * \note There is no means in C++ to check the types of a list of variable
@@ -225,6 +241,20 @@ VECTORN& VECTORN::operator=(const VECTORN& source)
 
 /// Copies another vector 
 VECTORN& VECTORN::operator=(const SHAREDVECTORN& source)
+{  
+  // resize this vector if necessary
+  if (_len != source.size())
+    resize(source.size());
+
+  // use the BLAS routine for copying
+  if (_len > 0)
+    CBLAS::copy(source.size(),source.data(),source.inc(),_data.get(),1);
+
+  return *this;
+}
+
+/// Copies another vector 
+VECTORN& VECTORN::operator=(const CONST_SHAREDVECTORN& source)
 {  
   // resize this vector if necessary
   if (_len != source.size())
