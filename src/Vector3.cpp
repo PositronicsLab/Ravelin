@@ -120,6 +120,16 @@ bool VECTOR3::operator<(const VECTOR3& v) const
   return false;
 }
 
+/// Constructs a vector from a point
+VECTOR3& VECTOR3::operator=(const POINT3& p)
+{
+  pose = p.pose;
+  x() = p.x();
+  y() = p.y();
+  z() = p.z();
+  return *this;
+}
+
 REAL& VECTOR3::operator[](const unsigned i)
 {
   #ifndef NEXCEPT

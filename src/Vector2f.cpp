@@ -5,6 +5,7 @@
  ****************************************************************************/
 
 #include <Ravelin/FrameException.h>
+#include <Ravelin/Point2f.h>
 #include <Ravelin/Vector2f.h>
 
 using namespace Ravelin;

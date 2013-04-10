@@ -9,6 +9,7 @@
 #include <Ravelin/Constants.h>
 #include <Ravelin/FrameException.h>
 #include <Ravelin/Origin2d.h>
+#include <Ravelin/Vector2d.h>
 #include <Ravelin/Point2d.h>
 
 using namespace Ravelin;

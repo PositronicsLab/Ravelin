@@ -455,7 +455,8 @@ void eig_symm(X& A, VECTORN& evals)
 
   // verify that the matrix is symmetric
   #ifndef NEXCEPT
-  if (!A.is_symmetric())
+  REAL tol = std::numeric_limits<REAL>::epsilon() * A.rows() * A.norm_inf();
+  if (!A.is_symmetric(tol))
     std::cerr << "LinAlg::eig_symm() - matrix does not appear to be symmetric!" << std::endl;
   #endif
 
@@ -501,7 +502,8 @@ void eig_symm_plus(X& A_evecs, Y& evals)
     throw DataMismatchException();
 
   // verify that the matrix is symmetric
-  if (!A_evecs.is_symmetric())
+  const REAL tol = std::numeric_limits<REAL>::epsilon() * A_evecs.norm_inf() * A_evecs.rows();
+  if (!A_evecs.is_symmetric(tol))
     std::cerr << "LinAlg::eig_symm() - matrix does not appear to be symmetric!" << std::endl;
   #endif
 

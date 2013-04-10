@@ -9,6 +9,7 @@
 #endif
 
 class POSE2;
+class POINT2;
 
 /// A two-dimensional floating point vector used for computational geometry calculations
 class VECTOR2
@@ -18,6 +19,7 @@ class VECTOR2
     VECTOR2(REAL x, REAL y);
     VECTOR2(REAL x, REAL y, boost::shared_ptr<POSE2> pose);
     VECTOR2(const REAL* array);
+    VECTOR2(const POINT2& p) { operator=(p); }
     REAL dot(const VECTOR2& v) const { return v[0]*_data[0] + v[1]*_data[1]; }
     static REAL dot(const VECTOR2& v1, const VECTOR2& v2) { return v1[0]*v2[0] + v1[1]*v2[1]; }
     REAL norm_inf() const { return std::max(std::fabs(_data[0]), std::fabs(_data[1])); }
@@ -32,6 +34,7 @@ class VECTOR2
     void set_one() { _data[0] = _data[1] = 1.0; }
     static VECTOR2 zero() { return VECTOR2(0.0, 0.0); }
     VECTOR2& operator=(const VECTOR2& v) { _data[0] = v[0]; _data[1] = v[1]; pose = v.pose; return *this; }
+    VECTOR2& operator=(const POINT2& p);
     VECTOR2 operator+(const VECTOR2& v) const;
     VECTOR2 operator-(const VECTOR2& v) const;
     VECTOR2& operator+=(const VECTOR2& v);

@@ -11,40 +11,9 @@
 
 namespace Ravelin {
 
-#define REAL double 
-#define CONST_ITERATOR dIterator_const
-#define ITERATOR dIterator
-#define MATRIXN MatrixNd
-#define VECTORN VectorNd
-#define VECTOR3 Vector3d
-#define VECTOR2 Vector2d
-#define MATRIX3 Matrix3d
-#define MATRIX2 Matrix2d
-#define SHAREDMATRIXN SharedMatrixNd
-#define SHAREDVECTORN SharedVectorNd
-#define CONST_SHAREDMATRIXN SharedConstMatrixNd
-#define CONST_SHAREDVECTORN SharedConstVectorNd
-#define WRENCH Wrenchd
-#define TWIST Twistd
-#define SVECTOR6 SVector6d
-
+#include "ddefs.h"
 #include "rIterator.h"
-
-#undef REAL
-#undef ITERATOR 
-#undef MATRIXN
-#undef VECTORN
-#undef VECTOR3
-#undef VECTOR2
-#undef MATRIX3
-#undef MATRIX2
-#undef SHAREDMATRIXN
-#undef SHAREDVECTORN
-#undef CONST_SHAREDMATRIXN
-#undef CONST_SHAREDVECTORN
-#undef WRENCH
-#undef TWIST
-#undef SVECTOR6
+#include "undefs.h"
 
 } // end namespace
 

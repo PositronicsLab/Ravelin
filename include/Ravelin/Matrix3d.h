@@ -11,6 +11,7 @@
 #include <algorithm>
 #include <vector>
 #include <Ravelin/cblas.h>
+#include <Ravelin/Constants.h>
 #include <Ravelin/MissizeException.h>
 #include <Ravelin/InvalidIndexException.h>
 #include <Ravelin/DataMismatchException.h>

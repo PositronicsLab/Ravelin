@@ -32,6 +32,15 @@ VECTOR2::VECTOR2(const REAL* array)
   _data[Y] = array[Y];
 }
 
+/// Constructs a vector from a point
+VECTOR2& VECTOR2::operator=(const POINT2& p)
+{
+  pose = p.pose;
+  x() = p.x();
+  y() = p.y();
+  return *this;
+}
+
 REAL& VECTOR2::operator[](const unsigned i)
 {
   #ifndef NEXCEPT

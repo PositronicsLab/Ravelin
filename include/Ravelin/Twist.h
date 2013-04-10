@@ -25,6 +25,9 @@ class TWIST : public SVECTOR6
     /// Constructs a twist from linear and angular components
     TWIST(const VECTOR3& linear, const VECTOR3& angular) : SVECTOR6(angular, linear) {}
 
+    /// Returns a zero twist
+    static TWIST zero() { TWIST t; t.set_zero(); return t; }
+
     /// Computes the dot product with a wrench
     REAL dot(const WRENCH& w) const { return SVECTOR6::dot(*this, w); }
     void set_linear(const VECTOR3& lin) { set_lower(lin); }

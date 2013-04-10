@@ -152,4 +152,53 @@ const REAL* ORIGIN3::data(unsigned i) const
   return &_data[i];
 }
 
+ITERATOR ORIGIN3::begin()
+{
+  ITERATOR i;
+  i._data_start = i._current_data = _data;
+  i._count = 0;
+  i._sz = 3;
+  i._rows = 3;
+  i._columns = 1;
+  i._ld = 3;
+  return i;
+}
+
+CONST_ITERATOR ORIGIN3::begin() const
+{
+  CONST_ITERATOR i;
+  i._data_start = i._current_data = _data;
+  i._count = 0;
+  i._sz = 3;
+  i._rows = 3;
+  i._columns = 1;
+  i._ld = 3;
+  return i;
+}
+
+ITERATOR ORIGIN3::end()
+{
+  ITERATOR i;
+  i._data_start = _data;
+  i._current_data = _data+3;
+  i._count = 3;
+  i._sz = 3;
+  i._rows = 3;
+  i._columns = 1;
+  i._ld = 3;
+  return i;
+}
+
+CONST_ITERATOR ORIGIN3::end() const
+{
+  CONST_ITERATOR i;
+  i._data_start = _data;
+  i._current_data = _data+3;
+  i._count = 3;
+  i._sz = 3;
+  i._rows = 3;
+  i._columns = 1;
+  i._ld = 3;
+  return i;
+}
 

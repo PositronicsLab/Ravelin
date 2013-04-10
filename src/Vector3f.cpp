@@ -7,6 +7,7 @@
 #include <cmath>
 #include <Ravelin/Operators.h>
 #include <Ravelin/Constants.h>
+#include <Ravelin/Point3f.h>
 #include <Ravelin/Vector3f.h>
 
 using namespace Ravelin;

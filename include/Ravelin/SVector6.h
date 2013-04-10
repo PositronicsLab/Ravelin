@@ -27,6 +27,7 @@ class SVECTOR6
     static SVECTOR6 zero() { return SVECTOR6(0,0,0,0,0,0); }
     REAL dot(const SVECTOR6& v) const { return dot(*this, v); }
     static REAL dot(const SVECTOR6& v1, const SVECTOR6& v2);
+    void set_zero() { std::fill_n(_data, 6, (REAL) 0.0); }
     void set_lower(const VECTOR3& lower);
     void set_upper(const VECTOR3& upper);
     VECTOR3 get_lower() const;

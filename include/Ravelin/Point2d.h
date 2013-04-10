@@ -7,8 +7,10 @@
 #ifndef _POINT2D_H
 #define _POINT2D_H
 
+#include <cmath>
 #include <boost/enable_shared_from_this.hpp>
 #include <boost/shared_ptr.hpp>
+#include <Ravelin/dIterator.h>
 
 namespace Ravelin {
 

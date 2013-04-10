@@ -48,6 +48,15 @@ POINT2& POINT2::operator=(const ORIGIN2& o)
   return *this;
 }
 
+/// Constructs this point from the given vector 
+POINT2& POINT2::operator=(const VECTOR2& v)
+{
+  pose = v.pose;
+  x() = v.x();
+  y() = v.y();
+  return *this;
+}
+
 REAL& POINT2::operator[](const unsigned i)
 {
   #ifndef NEXCEPT
@@ -116,59 +125,36 @@ POINT2 POINT2::operator-(const ORIGIN2& o) const
   return result;
 }
 
-POINT2 POINT2::operator+(const POINT2& p) const
+VECTOR2 POINT2::operator+(const POINT2& p) const
 {
   #ifndef NEXCEPT
   if (pose != p.pose)
     throw FrameException();
   #endif
-  POINT2 result;
+  VECTOR2 result;
   result.x() = x() + p.x();
   result.y() = y() + p.y();
   result.pose = p.pose;
   return result;
 }
 
-POINT2 POINT2::operator-(const POINT2& p) const
+VECTOR2 POINT2::operator-(const POINT2& p) const
 {
   #ifndef NEXCEPT
   if (pose != p.pose)
     throw FrameException();
   #endif
-  POINT2 result;
+  VECTOR2 result;
   result.x() = x() - p.x();
   result.y() = y() - p.y();
   result.pose = p.pose;
   return result;
 }
 
-POINT2& POINT2::operator+=(const POINT2& p) 
-{
-  #ifndef NEXCEPT
-  if (pose != p.pose)
-    throw FrameException();
-  #endif
-  x() += p.x();
-  y() += p.y();
-  return *this;
-}
-
-/// Adds an origin to this
 POINT2& POINT2::operator+=(const ORIGIN2& o) 
 {
   x() += o.x();
   y() += o.y();
-  return *this;
-}
-
-POINT2& POINT2::operator-=(const POINT2& p) 
-{
-  #ifndef NEXCEPT
-  if (pose != p.pose)
-    throw FrameException();
-  #endif
-  x() -= p.x();
-  y() -= p.y();
   return *this;
 }
 

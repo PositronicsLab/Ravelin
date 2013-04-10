@@ -70,9 +70,10 @@ class MATRIX3
     static bool valid_rotation(const MATRIX3& R);
     static bool valid_rotation_scale(const MATRIX3& R);
     static MATRIX3 identity() { MATRIX3 m; m.set_identity(); return m; }
+    MATRIX3& set_zero(unsigned m, unsigned n) { resize(m,n); set_zero(); return *this; }
     static MATRIX3 zero() { MATRIX3 m; m.set_zero(); return m; }
     MATRIX3& set_identity();
-    MATRIX3& set_zero();
+    MATRIX3& set_zero() { std::fill_n(_data, 9, (REAL) 0.0); return *this; }
     VECTOR3 transpose_mult(const VECTOR3& v) const;
     VECTOR3 mult(const VECTOR3& v) const;
     MATRIX3 mult(const MATRIX3& m) const;

@@ -94,6 +94,16 @@ POINT3& POINT3::operator=(const ORIGIN3& o)
   return *this;
 }
 
+/// Constructs this point from the given vector 
+POINT3& POINT3::operator=(const VECTOR3& v)
+{
+  pose = v.pose;
+  x() = v.x();
+  y() = v.y();
+  z() = v.z();
+  return *this;
+}
+
 POINT3& POINT3::operator=(const POINT3& p)
 {
   x() = p.x();
@@ -103,13 +113,13 @@ POINT3& POINT3::operator=(const POINT3& p)
   return *this;
 }
 
-POINT3 POINT3::operator+(const POINT3& p) const
+VECTOR3 POINT3::operator+(const POINT3& p) const
 {
   #ifndef NEXCEPT
   if (pose != p.pose)
     throw FrameException();
   #endif
-  POINT3 result;
+  VECTOR3 result;
   result.x() = x() + p.x();
   result.y() = y() + p.y();
   result.z() = z() + p.z();
@@ -117,13 +127,13 @@ POINT3 POINT3::operator+(const POINT3& p) const
   return result;
 }
 
-POINT3 POINT3::operator-(const POINT3& p) const
+VECTOR3 POINT3::operator-(const POINT3& p) const
 {
   #ifndef NEXCEPT
   if (pose != p.pose)
     throw FrameException();
   #endif
-  POINT3 result;
+  VECTOR3 result;
   result.x() = x() - p.x();
   result.y() = y() - p.y();
   result.z() = z() - p.z();
@@ -131,27 +141,69 @@ POINT3 POINT3::operator-(const POINT3& p) const
   return result;
 }
 
-POINT3& POINT3::operator+=(const POINT3& p) 
+POINT3& POINT3::operator+=(const ORIGIN3& o) 
 {
-  #ifndef NEXCEPT
-  if (pose != p.pose)
-    throw FrameException();
-  #endif
-  x() += p.x();
-  y() += p.y();
-  z() += p.z();
+  x() += o.x();
+  y() += o.y();
+  z() += o.z();
   return *this;
 }
 
-POINT3& POINT3::operator-=(const POINT3& p) 
+POINT3& POINT3::operator-=(const ORIGIN3& o) 
 {
-  #ifndef NEXCEPT
-  if (pose != p.pose)
-    throw FrameException();
-  #endif
-  x() -= p.x();
-  y() -= p.y();
-  z() -= p.z();
+  x() -= o.x();
+  y() -= o.y();
+  z() -= o.z();
   return *this;
+}
+
+ITERATOR POINT3::begin()
+{
+  ITERATOR i;
+  i._data_start = i._current_data = _data;
+  i._count = 0;
+  i._sz = 3;
+  i._rows = 3;
+  i._columns = 1;
+  i._ld = 3;
+  return i;
+}
+
+CONST_ITERATOR POINT3::begin() const
+{
+  CONST_ITERATOR i;
+  i._data_start = i._current_data = _data;
+  i._count = 0;
+  i._sz = 3;
+  i._rows = 3;
+  i._columns = 1;
+  i._ld = 3;
+  return i;
+}
+
+ITERATOR POINT3::end()
+{
+  ITERATOR i;
+  i._data_start = _data;
+  i._current_data = _data+3;
+  i._count = 3;
+  i._sz = 3;
+  i._rows = 3;
+  i._columns = 1;
+  i._ld = 3;
+  return i;
+}
+
+CONST_ITERATOR POINT3::end() const
+{
+  CONST_ITERATOR i;
+  i._data_start = _data;
+  i._current_data = _data+3;
+  i._count = 3;
+  i._sz = 3;
+  i._rows = 3;
+  i._columns = 1;
+  i._ld = 3;
+  return i;
 }
 

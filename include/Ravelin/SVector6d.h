@@ -7,6 +7,7 @@
 #ifndef _SVECTOR6D_H
 #define _SVECTOR6D_H
 
+#include <algorithm>
 #include <boost/shared_ptr.hpp>
 #include <Ravelin/MissizeException.h>
 #include <Ravelin/Vector3d.h>

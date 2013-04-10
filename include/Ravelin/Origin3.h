@@ -50,6 +50,10 @@ class ORIGIN3
     REAL& x() { return _data[0]; }
     REAL& y() { return _data[1]; }
     REAL& z() { return _data[2]; }
+    ITERATOR begin();
+    CONST_ITERATOR begin() const;
+    ITERATOR end();
+    CONST_ITERATOR end() const;
 
   private:
     REAL _data[3];

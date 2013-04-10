@@ -7,8 +7,10 @@
 #ifndef _ORIGIN3F_H
 #define _ORIGIN3F_H
 
+#include <cmath>
 #include <boost/enable_shared_from_this.hpp>
 #include <boost/shared_ptr.hpp>
+#include <Ravelin/fIterator.h>
 
 namespace Ravelin {
 

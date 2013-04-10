@@ -82,6 +82,96 @@ POSE2& POSE2::set_identity()
 }
 
 /// Transforms a vector from one pose to another 
+VECTOR2 POSE2::transform(const VECTOR2& v) const
+{
+  #ifndef NEXCEPT
+  boost::shared_ptr<const POSE2> pose;
+  try
+  {
+    pose = shared_from_this();
+  }
+  catch (boost::bad_weak_ptr e)
+  {
+    std::cerr << "Pose2 can't check frames when allocated on the stack! Allocate on heap or disable debugging exceptions." << std::endl;
+  }
+  if (v.pose != pose)
+    throw FrameException();
+  #endif
+
+  VECTOR2 result = r * v;
+  result.pose = rpose;
+  return result;
+}
+
+/// Transforms a vector from one pose to another 
+VECTOR2 POSE2::inverse_transform(const VECTOR2& v) const
+{
+  VECTOR2 result = ROT2::invert(r) * v;
+
+  #ifndef NEXCEPT
+  boost::shared_ptr<const POSE2> pose;
+  try
+  {
+    pose = shared_from_this();
+  }
+  catch (boost::bad_weak_ptr e)
+  {
+    std::cerr << "Pose2 can't check frames when allocated on the stack! Allocate on heap or disable debugging exceptions." << std::endl;
+  }
+  if (v.pose != rpose)
+    throw FrameException();
+  result.pose = boost::const_pointer_cast<POSE2>(pose);
+  #endif
+
+  return result;
+}
+
+/// Transforms a point from one pose to another 
+POINT2 POSE2::transform(const POINT2& p) const
+{
+  #ifndef NEXCEPT
+  boost::shared_ptr<const POSE2> pose;
+  try
+  {
+    pose = shared_from_this();
+  }
+  catch (boost::bad_weak_ptr e)
+  {
+    std::cerr << "Pose2 can't check frames when allocated on the stack! Allocate on heap or disable debugging exceptions." << std::endl;
+  }
+  if (p.pose != pose)
+    throw FrameException();
+  #endif
+
+  POINT2 result = r * p + x;
+  result.pose = rpose;
+  return result;
+}
+
+/// Transforms a point from one pose to another 
+POINT2 POSE2::inverse_transform(const POINT2& p) const
+{
+  POINT2 result = ROT2::invert(r) * (p - x);
+
+  #ifndef NEXCEPT
+  boost::shared_ptr<const POSE2> pose;
+  try
+  {
+    pose = shared_from_this();
+  }
+  catch (boost::bad_weak_ptr e)
+  {
+    std::cerr << "Pose2 can't check frames when allocated on the stack! Allocate on heap or disable debugging exceptions." << std::endl;
+  }
+  if (p.pose != rpose)
+    throw FrameException();
+  result.pose = boost::const_pointer_cast<POSE2>(pose);
+  #endif
+
+  return result;
+}
+
+/// Transforms a vector from one pose to another 
 VECTOR2 POSE2::transform(boost::shared_ptr<const POSE2> p, const VECTOR2& v) const
 {
   return transform(shared_from_this(), p, v);

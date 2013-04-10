@@ -4,9 +4,10 @@
  * License (found in COPYING).
  ****************************************************************************/
 
-#include <Ravelin/Vector2d.h>
 #include <Ravelin/FrameException.h>
 #include <Ravelin/InvalidIndexException.h>
+#include <Ravelin/Point2d.h>
+#include <Ravelin/Vector2d.h>
 
 using namespace Ravelin;
 

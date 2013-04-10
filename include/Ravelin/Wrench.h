@@ -22,6 +22,9 @@ class WRENCH : public SVECTOR6
     /// Constructs a wrench using six values: first three force, second three torque
     WRENCH(const REAL* array) : SVECTOR6(array[0], array[1], array[2], array[3], array[4], array[5]) {}
 
+    /// Constructs a zero wrench
+    static WRENCH zero() { WRENCH w; w.set_zero(); return w; }
+
     /// Constructs a wrench using given force and torque
     WRENCH(const VECTOR3& f, const VECTOR3& t) : SVECTOR6(f, t) {}
 

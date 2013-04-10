@@ -10,6 +10,7 @@
 
 class POSE2;
 class ORIGIN2;
+class VECTOR2;
 
 /// A point defined with respect to a two-dimensional frame 
 class POINT2
@@ -20,6 +21,7 @@ class POINT2
     POINT2(REAL x, REAL y, boost::shared_ptr<POSE2> pose);
     POINT2(const REAL* array);
     POINT2(const ORIGIN2& o);
+    POINT2(const VECTOR2& v) { operator=(v); } 
     REAL norm_inf() const { return std::max(std::fabs(_data[0]), std::fabs(_data[1])); }
     REAL norm() const { return std::sqrt(norm_sq()); }
     REAL norm_sq() const { return sqr(_data[0]) + sqr(_data[1]); }
@@ -29,14 +31,15 @@ class POINT2
     static POINT2 zero() { return POINT2(0.0, 0.0); }
     POINT2& operator=(const ORIGIN2& o);
     POINT2& operator=(const POINT2& v);
+    POINT2& operator=(const VECTOR2& v);
     POINT2 operator+(const ORIGIN2& o) const;
     POINT2 operator-(const ORIGIN2& o) const;
-    POINT2 operator+(const POINT2& v) const;
-    POINT2 operator-(const POINT2& v) const;
-    POINT2& operator+=(const POINT2& v);
-    POINT2& operator-=(const POINT2& v);
+    VECTOR2 operator+(const POINT2& v) const;
+    VECTOR2 operator-(const POINT2& v) const;
     POINT2& operator+=(const ORIGIN2& v);
     POINT2& operator-=(const ORIGIN2& v);
+    POINT2& operator+=(const VECTOR2& v);
+    POINT2& operator-=(const VECTOR2& v);
     POINT2& operator*=(REAL scalar) { _data[0] *= scalar; _data[1] *= scalar; return *this; }
     POINT2& operator/=(REAL scalar) { _data[0] /= scalar; _data[1] /= scalar; return *this; }
     POINT2 operator*(REAL scalar) const { POINT2 v = *this; v *= scalar; return v; }

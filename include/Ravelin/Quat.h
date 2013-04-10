@@ -32,6 +32,7 @@ class QUAT
     void conjugate();
     static QUAT conjugate(const QUAT& q);
     static QUAT identity() { return QUAT((REAL) 0.0, (REAL) 0.0, (REAL) 0.0, (REAL) 1.0); }
+    void set_identity() { w = (REAL) 1.0; x = y = z = (REAL) 0.0; }
     void slerp(const QUAT& q, REAL alpha);
     void lerp(const QUAT& q, REAL alpha);
     static QUAT slerp(const QUAT& q1, const QUAT& q2, REAL alpha);
@@ -60,6 +61,7 @@ class QUAT
     QUAT operator/(const QUAT& q) const;
     VECTOR3 operator*(const VECTOR3& v) const;
     ORIGIN3 operator*(const ORIGIN3& v) const;
+    POINT3 operator*(const POINT3& p) const;
     QUAT operator*(REAL scalar) const;
     QUAT operator/(REAL scalar) const { return operator*(1.0/scalar); }
     QUAT& operator*=(const QUAT& q);

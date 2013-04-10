@@ -446,6 +446,23 @@ QUAT& QUAT::operator*=(REAL scalar)
   return *this;
 }
 
+/// Multiplies the 3x3 matrix corresponding to this quaternion by a 3D point and returns the result in a new 3D point 
+POINT3 QUAT::operator*(const POINT3& p) const
+{
+  const REAL w2 = w*w;
+  const REAL x2 = x*x;
+  const REAL y2 = y*y;
+  const REAL z2 = z*z;
+  const REAL xy = x*y;
+  const REAL xz = x*z;
+  const REAL yz = y*z;
+  const REAL xw = x*w;
+  const REAL yw = y*w;
+  const REAL zw = z*w;
+  return VECTOR3((-1.0+2.0*(w2+x2))*p.x() + 2.0*((xy-zw)*p.y() + (yw+xz)*p.z()), 2.0*((xy+zw)*p.x() + (-xw+yz)*p.z()) + (-1.0+2.0*(w2+y2))*p.y(), 2.0*((-yw+xz)*p.x() + (xw+yz)*p.y()) + (-1.0+2.0*(w2+z2))*p.z());
+}
+
+
 /// Multiplies the 3x3 matrix corresponding to this quaternion by a 3D vector and returns the result in a new 3D vector
 VECTOR3 QUAT::operator*(const VECTOR3& v) const
 {

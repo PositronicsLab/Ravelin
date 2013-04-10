@@ -19,6 +19,10 @@ class POSE2 : public boost::enable_shared_from_this<POSE2>
     POSE2(const ROT2& r);
     static POSE2 identity() { POSE2 T; T.set_identity(); return T; }
     static POSE2 interpolate(const POSE2& m1, const POSE2& m2, REAL t);
+    POINT2 transform(const POINT2& v) const;
+    VECTOR2 transform(const VECTOR2& v) const;
+    POINT2 inverse_transform(const POINT2& v) const;
+    VECTOR2 inverse_transform(const VECTOR2& v) const;
     POINT2 transform(boost::shared_ptr<const POSE2> p, const POINT2& v) const;
     VECTOR2 transform(boost::shared_ptr<const POSE2> p, const VECTOR2& v) const;
     static POINT2 transform(boost::shared_ptr<const POSE2> source, boost::shared_ptr<const POSE2> target, const POINT2& v);
