@@ -612,15 +612,6 @@ MATRIX3& MATRIX3::set_identity()
   return *this;
 }
 
-/// Sets this matrix to zero
-MATRIX3& MATRIX3::set_zero()
-{
-  const unsigned N = 3*3;
-  for (unsigned i=0; i< N; i++)
-    _data[i] = (REAL) 0.0;
-  return *this;
-}
-
 /// Checks whether this matrix is symmetric
 bool MATRIX3::is_symmetric(REAL tolerance) const
 {

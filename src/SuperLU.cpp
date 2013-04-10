@@ -67,8 +67,8 @@ static void create_CompCol_Matrix(SuperMatrix *A, int m, int n, int nnz,
     Astore = (NCformat*) A->Store;
     Astore->nnz = nnz;
     Astore->nzval = nzval;
-    Astore->colind = colind;
-    Astore->rowptr = rowptr;
+    Astore->rowind = colind;
+    Astore->colptr = rowptr;
 }
 
 // creates a CSR matrix
@@ -102,7 +102,7 @@ static void create_CompCol_Matrix(SuperMatrix *A, int m, int n, int nnz,
     A->Mtype = mtype;
     A->nrow = m;
     A->ncol = n;
-    Astore = (NCformat*) A->Store;
+    Astore = (NRformat*) A->Store;
     Astore->nnz = nnz;
     Astore->nzval = nzval;
     Astore->colind = colind;
