@@ -287,6 +287,40 @@ QUAT QUAT::lerp(const QUAT& q1, const QUAT& q2, REAL alpha)
   }
 }
 
+/// Calculates the angle between two orientations
+REAL QUAT::calc_angle(const QUAT& q1, const QUAT& q2)
+{
+  // compute q1'q2
+  REAL dot = q1.x*q2.x + q1.y*q2.y + q1.z*q2.z + q1.w*q2.w;
+
+  // find the angle between the two
+  return std::acos(std::fabs(dot));
+}
+
+/// Sets up the quaternion from roll-pitch-yaw 
+QUAT QUAT::rpy(REAL roll, REAL pitch, REAL yaw)
+{
+  const REAL PHI = roll * (REAL) 0.5;
+  const REAL THE = pitch * (REAL) 0.5;
+  const REAL PSI = yaw * (REAL) 0.5;
+
+  // precompute trig fns
+  const REAL CPHI = std::cos(PHI);
+  const REAL SPHI = std::sin(PHI);
+  const REAL CPSI = std::cos(PSI);
+  const REAL SPSI = std::sin(PSI);
+  const REAL CTHE = std::cos(THE);
+  const REAL STHE = std::sin(THE);
+
+  // construct Quaternion
+  QUAT q;
+  q.w = CPHI * CTHE * CPSI + SPHI * STHE * SPSI;
+  q.x = SPHI * CTHE * CPSI - CPHI * STHE * SPSI;
+  q.y = CPHI * STHE * CPSI + SPHI * CTHE * SPSI;
+  q.z = CPHI * CTHE * SPSI - SPHI * STHE * CPSI;
+  return q;
+}
+
 /// Performs spherical linear interpolation between this and q
 /**
  * Calculates the orientation of determined by linear interpolation between
