@@ -5,7 +5,6 @@ static const unsigned MIN_SIZE = 0, MAX_SIZE = 9;
     // MatrixNd*MatrixNd
     void MM_Mult()
     {
-        std::cout << ">> MatrixNd*MatrixNd" << std::endl;
         // Loop Through all column and vector sizes
         for(int i=0;i<MAX_SIZE;i++){
              for(int j=0;j<MAX_SIZE;j++){
@@ -28,20 +27,16 @@ static const unsigned MIN_SIZE = 0, MAX_SIZE = 9;
                         MatR::mult(R1,R2, resultR);
 
                         // Check if the error between the matricies is small
-                        if(!checkError(resultE,  resultR)){
-                            std::cout << "<< [FAIL] MatrixNd*MatrixNd" << std::endl;
-                            return;
-                        }
+                        assert(checkError(resultE,  resultR));
                 }
             }
         }
-        std::cout << "<< [PASS] MatrixNd*MatrixNd" << std::endl;
+        std::cout << "[PASS] MatrixNd*MatrixNd" << std::endl;
     }
 
     // MatrixNd'*MatrixNd
     void MM_TMult()
     {
-        std::cout << ">> MatrixNd*MatrixNd\' ..." << std::endl;
         // Loop Through all column and vector sizes
         for(int i=0;i<MAX_SIZE;i++){
              for(int j=0;j<MAX_SIZE;j++){
@@ -63,16 +58,11 @@ static const unsigned MIN_SIZE = 0, MAX_SIZE = 9;
                      R1.transpose_mult(R2, resultR);
 
                      // Check if the error between the matricies is small
-                     std::cout << r << "x" << c << "\' *" << r << "x" << ck << std::endl;
-                     if(!checkError(resultE,  resultR)){
-                         std::cout << r << "x" << c << "\'*" << r << "x" << ck << std::endl;
-                         std::cout << "<< [FAIL] MatrixNd\'*MatrixNd" << std::endl;
-                         return;
-                     }
+                     assert(checkError(resultE,  resultR));
                  }
             }
         }
-        std::cout << "<< [PASS] MatrixNd\'*MatrixNd" << std::endl;
+        std::cout << "[PASS] MatrixNd\'*MatrixNd" << std::endl;
     }
 
     // MatrixNd*VectorNd
@@ -96,13 +86,10 @@ static const unsigned MIN_SIZE = 0, MAX_SIZE = 9;
 
                  // Check if the error between the matricies is small
                  assert(checkError(resultE,  resultR));
-                 if(!checkError(resultE,  resultR)){
-                     std::cout << "<< [FAIL] MatrixNd*VectorNd" << std::endl;
-                     return;
-                 }
+                 assert(checkError(resultE,  resultR));
             }
         }
-        std::cout << "<< [PASS] MatrixNd*VectorNd" << std::endl;
+        std::cout << "[PASS] MatrixNd*VectorNd" << std::endl;
     }
 
     // VectorNd'*VectorNd
@@ -121,12 +108,9 @@ static const unsigned MIN_SIZE = 0, MAX_SIZE = 9;
             VecR resultR(1);
             resultR = R1.dot(R2);
             // Check if the error between the matricies is small
-            if(!checkError(resultE,  resultR)){
-                std::cout << "<< [FAIL] VectorNd\'*VectorNd" << std::endl;
-                return;
-            }
+            assert(checkError(resultE,  resultR));
         }
-        std::cout << "<< [PASS] VectorNd\'*VectorNd" << std::endl;
+        std::cout << "[PASS] VectorNd\'*VectorNd" << std::endl;
     }
 
     // MatrixNd*VectorNd
@@ -149,13 +133,10 @@ static const unsigned MIN_SIZE = 0, MAX_SIZE = 9;
                  R1.transpose_mult(R2, resultR);
 
                  // Check if the error between the matricies is small
-                 if(!checkError(resultE,  resultR)){
-                     std::cout << "<< [FAIL]  MatrixNd*VectorNd" << std::endl;
-                     return;
-                 }
+                 assert(checkError(resultE,  resultR));
              }
         }
-        std::cout << "<< [PASS]  MatrixNd*VectorNd" << std::endl;
+        std::cout << "[PASS]  MatrixNd*VectorNd" << std::endl;
     }
 
     // Addition Subtraction
@@ -172,13 +153,10 @@ static const unsigned MIN_SIZE = 0, MAX_SIZE = 9;
 
                 MatE resultE = E1 + E2;
                 resultR += R1;
-                if(!checkError(resultE,  resultR)){
-                    std::cout << "<< [FAIL]  MatrixNd+MatrixNd" << std::endl;
-                    return;
-                }
+                assert(checkError(resultE,  resultR));
             }
         }
-        std::cout << "<< [PASS]  MatrixNd+MatrixNd" << std::endl;
+        std::cout << "[PASS]  MatrixNd+MatrixNd" << std::endl;
     }
 
     // VectorNd+VectorNd
@@ -196,12 +174,9 @@ static const unsigned MIN_SIZE = 0, MAX_SIZE = 9;
                 VecE resultE = E1 + E2;
                 resultR += R1;
                 // Check if the error between the matricies is small
-                if(!checkError(resultE,  resultR)){
-                    std::cout << "<< [FAIL]  VectorNd+VectorNd" << std::endl;
-                    return;
-                }
+                assert(checkError(resultE,  resultR));
         }
-        std::cout << "<< [PASS]  VectorNd+VectorNd" << std::endl;
+        std::cout << "[PASS]  VectorNd+VectorNd" << std::endl;
     }
 
      // VectorNd-VectorNd
@@ -219,12 +194,9 @@ static const unsigned MIN_SIZE = 0, MAX_SIZE = 9;
             VecE resultE = E1 - E2;
             resultR -= R2;
             // Check if the error between the matricies is small
-            if(!checkError(resultE,  resultR)){
-                std::cout << "<< [FAIL]  VectorNd-VectorNd" << std::endl;
-                return;
-            }
+            assert(checkError(resultE,  resultR));
         }
-        std::cout << "<< [PASS]  VectorNd-VectorNd" << std::endl;
+        std::cout << "[PASS]  VectorNd-VectorNd" << std::endl;
     }
     
 
@@ -243,15 +215,46 @@ static const unsigned MIN_SIZE = 0, MAX_SIZE = 9;
 
                         MatE resultE = E2 - E1;
                         resultR -= R1;
-                        if(!checkError(resultE,  resultR)){
-                            std::cout << "<< [FAIL]  MatrixNd-MatrixNd" << std::endl;
-                            return;
-                        }
+                        assert(checkError(resultE,  resultR));
+
                 }
         }
-        std::cout << "<< [PASS]  MatrixNd-MatrixNd" << std::endl;
+        std::cout << "[PASS]  MatrixNd-MatrixNd" << std::endl;
     }
 
+    // Diag(VectorNd)*MatrixNd
+    void Diag_Mult()
+    {
+        for(int i=0;i<MAX_SIZE;i++){
+             int r = std::pow(2,i);
+             // Determine matrix size
+//                 MatE E1;
+             VecE e1(r);
+             e1.setRandom();
+//                 E1 = e1.asDiagonal();
+             VecR r1 = asRavelin(e1);
+
+             MatE E2(r,r);
+             E2.setRandom();
+             MatR R2 = asRavelin(E2);
+
+             // Perform multiplication on matricies
+             MatE resultE = e1.asDiagonal() * E2;
+             MatR resultR(r,r);
+             MatR::diag_mult(r1, R2, resultR);
+
+             // Check if the error between the matricies is small
+             assert(checkError(resultE,  resultR));
+
+             // Perform multiplication on matricies
+             resultE = e1.asDiagonal() * E2.transpose();
+             MatR::diag_mult_transpose(r1,R2, resultR);
+
+             // Check if the error between the matricies is small
+             assert(checkError(resultE,  resultR));
+        }
+        std::cout << "[PASS]  diag_mult() & diag_mult_transpose()" << std::endl;
+    }
     /// Run Unit Tests
 void TestArithmetic() {
     MM_Mult();
@@ -263,9 +266,5 @@ void TestArithmetic() {
     MM_Add();
     VV_Sub();
     MM_Sub();
-}
-
-int main(){
-//    TestArithmetic();
-    TestLinearAlgebra();
+    Diag_Mult();
 }

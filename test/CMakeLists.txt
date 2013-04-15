@@ -14,5 +14,5 @@ add_definitions(-DUSE_GLPK)
 include_directories(/usr/local/include ./ ${Boost_INCLUDE_DIR} /usr/include/eigen3 ../include /usr/local/Cellar/octave/3.6.2/include/octave-3.6.2)
 link_directories(/usr/local/Cellar/octave/3.6.2/lib/octave/3.6.2 /usr/local/lib /usr/include/eigen3 ../debug/)
 
-add_executable(${PROJECT_NAME} Arithmetic.cpp TestUtils.cpp BlockOperations.cpp LinearAlgebra.cpp)
+add_executable(${PROJECT_NAME} Test.cpp Arithmetic.cpp TestUtils.cpp BlockOperations.cpp LinearAlgebra.cpp)
 target_link_libraries(${PROJECT_NAME} Ravelin)

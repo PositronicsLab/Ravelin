@@ -9,7 +9,7 @@
 
 #ifdef SINGLE_PRECISION
 
-   static double ZERO_TOL = std::numeric_limits<float>::epsilon();
+   const static double ZERO_TOL = std::numeric_limits<float>::epsilon();
 
     #include <Ravelin/MatrixNf.h>
     #include <Ravelin/VectorNf.h>
@@ -22,7 +22,7 @@
     typedef Ravelin::VectorNf VecR;
     const double TOL = 2e-6;
 #else
-    static double ZERO_TOL = std::numeric_limits<double>::epsilon();
+    const static double ZERO_TOL = std::numeric_limits<double>::epsilon();
 
     #include <Ravelin/MatrixNd.h>
     #include <Ravelin/Vector3d.h>
@@ -36,6 +36,8 @@
     const double TOL = 2e-16;
 #endif
 
+    const static double NEAR_ZERO = sqrt(ZERO_TOL);
+
     /// Test Utils
     bool checkError(MatE E, MatR R);
     bool checkError(VecE E, VecR R);
@@ -45,11 +47,5 @@
     VecR randV(unsigned r);
     MatR asRavelin(MatE E);
     VecR asRavelin(VecE E);
-
-
-    // Test Functions
-    void TestArithmetic();
-    void TestBlockOperations();
-    void TestLinearAlgebra();
 
 #endif //_UNITTESTING_HPP_

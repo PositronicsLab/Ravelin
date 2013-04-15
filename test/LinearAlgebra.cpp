@@ -11,31 +11,7 @@ static const unsigned MIN_SIZE = 0, MAX_SIZE = 7;
 #endif
 
 LinAlg * LA;
-/*
-// VectorNd*VectorNd'
-void VV_OuterProd()
-{
-    for(int i=0;i<MAX_SIZE;i++){
-        // Determine matrix size
-        VecE E1(std::pow(2,i));
-        E1.setRandom();
-        VecR R1 = asRavelin(E1);
-        VecE E2(std::pow(2,i));
-        E2.setRandom();
-        VecR R2 = asRavelin(E2);
-        // Perform multiplication on matricies
-        MatE resultE = E1*E2.transpose();
-        MatR resultR(std::pow(2,i),std::pow(2,i));
-//        LA->outer_prod(,R2,resultR);
-        // Check if the error between the matricies is small
-        if(!checkError(resultE,  resultR)){
-            std::cout << "<< [FAIL] VectorNd*VectorNd\'" << std::endl;
-            return;
-        }
-    }
-    std::cout << "<< [PASS] VectorNd*VectorNd\'" << std::endl;
-}
-*/
+
 void testSVD(){
     std::cout << ">> testSVD: " << std::endl;
 
@@ -89,16 +65,15 @@ void testSVD(){
         //(A^-1)b = x2
         LA->solve_LS_fast(U,s,V,xb);
         // x1 == x2 ?
-        std::cout << x << std::endl;
-        std::cout << xb << std::endl;
         assert(checkError(x,xb));
         std::cout << "[PASS] solve_LS_fast(U,S,V): " << std::endl;
     }
     std::cout << "<< [PASS] testSVD: " << std::endl;
 }
 
-/*
 void testLU(){
+    std::cout << ">> testLU: " << std::endl;
+
     for(int i=1;i<MAX_SIZE;i++){
         unsigned s = std::pow(2,i),c = 2;
         MatR A,B,AB(s,s);
@@ -109,30 +84,68 @@ void testLU(){
         B.transpose();
         A.mult(B,AB);
         A = AB;
-        MatR U,V;
-        VecR S;
+        std::vector<int> P;
 
-        LA->factor_LU(AB);
+        MatR LU = A;
+        LA->factor_LU(LU,P);
 
-
+        MatR L(s,s), U(s,s);
+        L.set_zero();
+        U.set_zero();
         /// Test the SVD Decomp
-        MatR SVT(S.rows(),V.rows());
-        MatR::diag_mult_transpose(S,V,SVT);
-        SVT.mult(U,AB);
-        assert(checkError(A,AB));
+        for(unsigned ii=0;ii<s;ii++){
+            L(ii,ii) = 1;
+            for(unsigned jj=0;jj<s;jj++){
+                if(jj<ii){
+                    L(ii,jj) = LU(ii,jj);
+                } else {
+                    U(ii,jj) = LU(ii,jj);
+                }
+            }
+        }
+        MatR LU2(s,s);
+        L.mult(U,LU2);
+
+        // Permutation is confusing... needs to be done back to front
+        MatR A2(s,s);
+        A2 = LU2;
+        for(int ii = A2.rows()-1;ii>=0;ii--){
+            VecR row1(A2.columns()), row2(A2.columns());
+            A2.get_row(ii,row1);
+            A2.get_row(P[ii]-1,row2);
+
+            A2.set_row(ii,row2);
+            A2.set_row(P[ii]-1,row1);
+        }
+
+        assert(checkError(A,A2));
+        std::cout << "[PASS] factor_LU " << std::endl;
+
+
+
 
         /// Test SVD Solve
         MatR x = randM(s,1),b(s,1);
         //Ax1 = b
         A.mult(x,b);
+
         MatR xb = b;
+//        for(int ii = A2.rows()-1;ii>=0;ii--)
+//            std::cout << P[ii] << std::endl;
+//            std::swap(xb(ii,0),xb(P[ii]-1,0));
+//        for(int ii = A2.rows()-1;ii>=0;ii--)
+//            std::swap(x(ii,0),x(P[ii]-1,0));
         //(A^-1)b = x2
-        LA->solve_LS_fast(U,S,V,xb);
+
+        LA->solve_LU_fast(LU,false,P,xb);
+
         // x1 == x2 ?
         assert(checkError(x,xb));
+        std::cout << "[PASS] solve_LU_fast " << std::endl;
+
     }
+    std::cout << "<< [PASS] testLU: " << std::endl;
 }
-*/
 
 void testChol(){
     std::cout << ">> testChol: " << std::endl;
@@ -345,9 +358,10 @@ void testLA(){
 
 void TestLinearAlgebra(){
     LA = new LinAlg();
-    testSVD();
-    testChol();
-    testLA();
+//    testSVD();
+//    testChol();
+//    testLA();
+    testLU();
 }
 
 
