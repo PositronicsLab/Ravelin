@@ -1,6 +1,6 @@
 #include <UnitTesting.hpp>
 
-const unsigned MIN_SIZE = 0, MAX_SIZE = 9;
+static const unsigned MIN_SIZE = 0, MAX_SIZE = 9;
 
     // MatrixNd*MatrixNd
     void MM_Mult()
@@ -28,14 +28,14 @@ const unsigned MIN_SIZE = 0, MAX_SIZE = 9;
                         MatR::mult(R1,R2, resultR);
 
                         // Check if the error between the matricies is small
-                        std::cout << r << "x" << c << "*" << c << "x" << ck << std::endl;
                         if(!checkError(resultE,  resultR)){
-                            assert(false);
+                            std::cout << "<< [FAIL] MatrixNd*MatrixNd" << std::endl;
+                            return;
                         }
                 }
             }
         }
-        std::cout << "<< MatrixNd*MatrixNd has passed unit testing..." << std::endl;
+        std::cout << "<< [PASS] MatrixNd*MatrixNd" << std::endl;
     }
 
     // MatrixNd'*MatrixNd
@@ -65,12 +65,14 @@ const unsigned MIN_SIZE = 0, MAX_SIZE = 9;
                      // Check if the error between the matricies is small
                      std::cout << r << "x" << c << "\' *" << r << "x" << ck << std::endl;
                      if(!checkError(resultE,  resultR)){
-                         assert(false);
+                         std::cout << r << "x" << c << "\'*" << r << "x" << ck << std::endl;
+                         std::cout << "<< [FAIL] MatrixNd\'*MatrixNd" << std::endl;
+                         return;
                      }
                  }
             }
         }
-        std::cout << "<< MatrixNd*MatrixNd\' has passed unit testing..." << std::endl;
+        std::cout << "<< [PASS] MatrixNd\'*MatrixNd" << std::endl;
     }
 
     // MatrixNd*VectorNd
@@ -94,12 +96,16 @@ const unsigned MIN_SIZE = 0, MAX_SIZE = 9;
 
                  // Check if the error between the matricies is small
                  assert(checkError(resultE,  resultR));
+                 if(!checkError(resultE,  resultR)){
+                     std::cout << "<< [FAIL] MatrixNd*VectorNd" << std::endl;
+                     return;
+                 }
             }
         }
-        std::cout << "MatrixNd*VectorNd has passed unit testing..." << std::endl;
+        std::cout << "<< [PASS] MatrixNd*VectorNd" << std::endl;
     }
 
-    // VectorNd*VectorNd
+    // VectorNd'*VectorNd
     void VV_Dot()
     {
         for(int i=0;i<MAX_SIZE;i++){
@@ -115,9 +121,12 @@ const unsigned MIN_SIZE = 0, MAX_SIZE = 9;
             VecR resultR(1);
             resultR = R1.dot(R2);
             // Check if the error between the matricies is small
-            assert(checkError(resultE,  resultR));
+            if(!checkError(resultE,  resultR)){
+                std::cout << "<< [FAIL] VectorNd\'*VectorNd" << std::endl;
+                return;
+            }
         }
-        std::cout << "VectorNd dot VectorNd has passed unit testing..." << std::endl;
+        std::cout << "<< [PASS] VectorNd\'*VectorNd" << std::endl;
     }
 
     // MatrixNd*VectorNd
@@ -140,32 +149,14 @@ const unsigned MIN_SIZE = 0, MAX_SIZE = 9;
                  R1.transpose_mult(R2, resultR);
 
                  // Check if the error between the matricies is small
-                 assert(checkError(resultE,  resultR));
-            }
+                 if(!checkError(resultE,  resultR)){
+                     std::cout << "<< [FAIL]  MatrixNd*VectorNd" << std::endl;
+                     return;
+                 }
+             }
         }
-        std::cout << "MatrixNd*VectorNd has passed unit testing..." << std::endl;
+        std::cout << "<< [PASS]  MatrixNd*VectorNd" << std::endl;
     }
-
-    // VectorNd*VectorNd'
-//    void VDVDOuterProd()
-//    {
-//        for(int i=0;i<MAX_SIZE;i++){
-//            // Determine matrix size
-//            VecE E1(std::pow(2,i));
-//            E1.setRandom();
-//            VecR R1 = asRavelin(E1);
-//            VecE E2(std::pow(2,i));
-//            E2.setRandom();
-//            VecR R2 = asRavelin(E2);
-//            // Perform multiplication on matricies
-//            VecE resultE = E1*E2.transpose();
-//            VecR resultR(1);
-//            R1 R2,resultR);
-//            // Check if the error between the matricies is small
-//            assert(checkError(resultE,  resultR));
-//        }
-//        std::cout << "VectorNd dot VectorNd has passed unit testing..." << std::endl;
-//    }
 
     // Addition Subtraction
     void MM_Add() {
@@ -181,10 +172,13 @@ const unsigned MIN_SIZE = 0, MAX_SIZE = 9;
 
                 MatE resultE = E1 + E2;
                 resultR += R1;
-                assert(checkError(resultE, resultR));
+                if(!checkError(resultE,  resultR)){
+                    std::cout << "<< [FAIL]  MatrixNd+MatrixNd" << std::endl;
+                    return;
+                }
             }
         }
-        std::cout << "MatrixNd+MatrixNd has passed unit testing..." << std::endl;
+        std::cout << "<< [PASS]  MatrixNd+MatrixNd" << std::endl;
     }
 
     // VectorNd+VectorNd
@@ -202,9 +196,12 @@ const unsigned MIN_SIZE = 0, MAX_SIZE = 9;
                 VecE resultE = E1 + E2;
                 resultR += R1;
                 // Check if the error between the matricies is small
-                assert(checkError(resultE,  resultR));
+                if(!checkError(resultE,  resultR)){
+                    std::cout << "<< [FAIL]  VectorNd+VectorNd" << std::endl;
+                    return;
+                }
         }
-        std::cout << "VectorNd+VectorNd has passed unit testing..." << std::endl;
+        std::cout << "<< [PASS]  VectorNd+VectorNd" << std::endl;
     }
 
      // VectorNd-VectorNd
@@ -222,9 +219,12 @@ const unsigned MIN_SIZE = 0, MAX_SIZE = 9;
             VecE resultE = E1 - E2;
             resultR -= R2;
             // Check if the error between the matricies is small
-            assert(checkError(resultE,  resultR));
+            if(!checkError(resultE,  resultR)){
+                std::cout << "<< [FAIL]  VectorNd-VectorNd" << std::endl;
+                return;
+            }
         }
-        std::cout << "VectorNd+VectorNd has passed unit testing..." << std::endl;
+        std::cout << "<< [PASS]  VectorNd-VectorNd" << std::endl;
     }
     
 
@@ -243,15 +243,17 @@ const unsigned MIN_SIZE = 0, MAX_SIZE = 9;
 
                         MatE resultE = E2 - E1;
                         resultR -= R1;
-                        assert(checkError(resultE, resultR));
-
+                        if(!checkError(resultE,  resultR)){
+                            std::cout << "<< [FAIL]  MatrixNd-MatrixNd" << std::endl;
+                            return;
+                        }
                 }
         }
-        std::cout << "MatrixNd-MatrixNd has passed unit testing..." << std::endl;
+        std::cout << "<< [PASS]  MatrixNd-MatrixNd" << std::endl;
     }
 
     /// Run Unit Tests
-int main() {
+void TestArithmetic() {
     MM_Mult();
     MM_TMult();
     MV_Mult();
@@ -261,6 +263,9 @@ int main() {
     MM_Add();
     VV_Sub();
     MM_Sub();
-	return 0;
 }
 
+int main(){
+//    TestArithmetic();
+    TestLinearAlgebra();
+}
