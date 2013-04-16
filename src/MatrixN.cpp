@@ -276,25 +276,23 @@ MATRIXN MATRIXN::zero(unsigned int rows, unsigned int columns)
  */
 MATRIXN& MATRIXN::resize(unsigned rows, unsigned columns, bool preserve)
 {
-  shared_array<REAL> newdata;
-
   // if the matrix is already the proper size, exit
   if (_rows == rows && _columns == columns)
     return *this;
 
-  // set the new rows and columns
-  _rows = rows;
-  _columns = columns;
-
   // if we can downsize, do that..
   if (rows*columns <= _data.capacity() && (_rows == rows || !preserve))
   {
-    resize(_rows*_columns, false);
+    _rows = rows;
+    _columns = columns;
+    _data.resize(_rows*_columns, false);
     return *this;
   }
 
   // create a new array
-  resize(_rows*_columns, true);
+  _rows = rows;
+  _columns = columns;
+  _data.resize(_rows*_columns, true);
   return *this;
 }
 
