@@ -7,6 +7,7 @@
 #ifndef _MATRIXND_H
 #define _MATRIXND_H
 
+#include <Ravelin/SharedResizable>
 #include <Ravelin/cblas.h>
 #include <Ravelin/VectorNd.h>
 #include <Ravelin/Vector3d.h>

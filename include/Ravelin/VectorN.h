@@ -33,7 +33,7 @@ class VECTORN
     static VECTORN construct_variable(unsigned N, ...);
     virtual ~VECTORN() {}
     VECTORN& normalize() { assert(norm() > EPS); operator*=((REAL) 1.0/norm()); return *this; }
-    unsigned size() const { return _len; }
+    unsigned size() const { return _data.size(); }
     static REAL norm_sq(const VECTORN& v) { return VECTORN::dot(v, v); }
     static REAL norm(const VECTORN& v) { return std::sqrt(norm_sq(v)); } 
     REAL norm_inf() const { return norm_inf(*this); }
@@ -43,7 +43,7 @@ class VECTORN
     static VECTORN one(unsigned N);
     static VECTORN& concat(const VECTORN& v1, const VECTORN& v2, VECTORN& result);
     VECTORN& augment(const VECTORN& v);
-    VECTORN& resize(unsigned N, bool preserve = false);
+    VECTORN& resize(unsigned N, bool preserve = false) { _data.resize(N, preserve); return *this; }
     SHAREDVECTORN segment(unsigned start_idx, unsigned end_idx);
     CONST_SHAREDVECTORN segment(unsigned start_idx, unsigned end_idx) const;
     static VECTORN zero(unsigned n);
@@ -72,10 +72,10 @@ class VECTORN
     /// Sets this to a n-length ones vector
     VECTORN& set_one(unsigned n) { return resize(n).set_one(); }
 
-    void compress();
-    unsigned rows() const { return _len; }
+    void compress() { _data.compress(); }
+    unsigned rows() const { return _data.size(); }
     unsigned columns() const { return 1; }
-    unsigned leading_dim() const { return _len; }
+    unsigned leading_dim() const { return _data.size(); }
     unsigned inc() const { return 1; }
 
     // inline code specific to VectorN
@@ -87,9 +87,7 @@ class VECTORN
     #undef XVECTORN
 
   protected:
-    boost::shared_array<REAL> _data;
-    unsigned _len;
-    unsigned _capacity;
+    SharedResizable<REAL> _data;
 }; // end class
 
 std::ostream& operator<<(std::ostream& out, const VECTORN& v);

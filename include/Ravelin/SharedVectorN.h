@@ -22,6 +22,7 @@ class SHAREDVECTORN
   public:
     SHAREDVECTORN();
     SHAREDVECTORN(const SHAREDVECTORN& source);
+    SHAREDVECTORN(unsigned len, unsigned inc, unsigned start, SharedResizable<REAL> data);
     virtual ~SHAREDVECTORN() {}
     SHAREDVECTORN& normalize() { assert(norm() > EPS); operator*=((REAL) 1.0/norm()); return *this; }
     unsigned size() const { return _len; }
@@ -39,8 +40,8 @@ class SHAREDVECTORN
     SHAREDVECTORN& operator=(const CONST_SHAREDVECTORN& source);
     SHAREDVECTORN& operator=(const VECTORN& source);
     SHAREDVECTORN& operator/=(REAL scalar) { return operator*=((REAL) 1.0/scalar); }
-    REAL* data() { assert(_data); return _data.get() + _start; }
-    const REAL* data() const { assert(_data); return _data.get() + _start; }
+    REAL* data() { return _data.get() + _start; }
+    const REAL* data() const { return _data.get() + _start; }
     SHAREDVECTORN& resize(unsigned m, unsigned n, bool preserve = false) { if (n != 1) throw MissizeException(); return resize(m, preserve); }
 
     unsigned rows() const { return _len; }
@@ -57,7 +58,7 @@ class SHAREDVECTORN
     #undef XVECTORN
 
   protected:
-    boost::shared_array<REAL> _data;
+    SharedResizable<REAL> _data;
     unsigned _start;
     unsigned _inc;
     unsigned _len;
@@ -74,6 +75,7 @@ class CONST_SHAREDVECTORN
 
   public:
     CONST_SHAREDVECTORN();
+    CONST_SHAREDVECTORN(unsigned len, unsigned inc, unsigned start, SharedResizable<REAL> data);
     CONST_SHAREDVECTORN(const SHAREDVECTORN& source);
     CONST_SHAREDVECTORN(const CONST_SHAREDVECTORN& source);
     virtual ~CONST_SHAREDVECTORN() {}
@@ -86,7 +88,7 @@ class CONST_SHAREDVECTORN
     REAL norm_sq() const { return norm_sq(*this); }
     CONST_SHAREDVECTORN segment(unsigned start, unsigned end) const;
     CONST_SHAREDVECTORN& resize(unsigned N, bool preserve = false);
-    const REAL* data() const { assert(_data); return _data.get() + _start; }
+    const REAL* data() const { return _data.get() + _start; }
     CONST_SHAREDVECTORN& resize(unsigned m, unsigned n, bool preserve = false) 
     { 
       #ifndef NEXCEPT
@@ -105,7 +107,7 @@ class CONST_SHAREDVECTORN
     #include "ConstSharedVectorN.inl"
 
   protected:
-    boost::shared_array<REAL> _data;
+    SharedResizable<REAL> _data;
     unsigned _start;
     unsigned _inc;
     unsigned _len;

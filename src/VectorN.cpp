@@ -9,26 +9,19 @@
 /// Default constructor - constructs an empty vector
 VECTORN::VECTORN()
 {
-  _len = 0;
-  _capacity = 0;
-  _data = boost::shared_array<REAL>();
 }
 
 /// Constructs an uninitialized N-dimensional vector
 VECTORN::VECTORN(unsigned N)
 {
-  _len = N;
-  _capacity = N;
-  _data = boost::shared_array<REAL>(new REAL[N]);
+  _data.resize(N);
 }
 
 /// Constructs a vector from a VECTOR2
 VECTORN::VECTORN(const VECTOR2& v)
 {
   const unsigned LEN = 2;
-  _len = LEN;
-  _capacity = LEN;
-  _data = boost::shared_array<REAL>(new REAL[LEN]);
+  _data.resize(LEN);
   for (unsigned i=0; i< LEN; i++)
     _data[i] = v[i];
 }
@@ -37,9 +30,7 @@ VECTORN::VECTORN(const VECTOR2& v)
 VECTORN::VECTORN(const VECTOR3& v)
 {
   const unsigned LEN = 3;
-  _len = LEN;
-  _capacity = LEN;
-  _data = boost::shared_array<REAL>(new REAL[LEN]);
+  _data.resize(LEN);
   for (unsigned i=0; i< LEN; i++)
     _data[i] = v[i];
 }
@@ -50,58 +41,44 @@ VECTORN::VECTORN(const VECTOR3& v)
  */
 VECTORN::VECTORN(unsigned N, const REAL* array)
 {
-  _len = N;
-  _capacity = N;
-  _data = boost::shared_array<REAL>(new REAL[N]);
+  _data.resize(N);
   CBLAS::copy(N,array,1,data(),inc());
 }
 
 /// Copy constructor
 VECTORN::VECTORN(const VECTORN& source)
 {
-  _len = source._len;
-  _capacity = source._capacity;
-  _data = boost::shared_array<REAL>(new REAL[_len]);
+  _data.resize(source.size());
   operator=(source);
 }
 
 /// Copy constructor
 VECTORN::VECTORN(const MATRIXN& source)
 {
-  _len = 0;
-  _capacity = 0;
   operator=(source);
 }
 
 /// Copy constructor
 VECTORN::VECTORN(const SHAREDMATRIXN& source)
 {
-  _len = 0;
-  _capacity = 0;
   operator=(source);
 }
 
 /// Copy constructor
 VECTORN::VECTORN(const CONST_SHAREDMATRIXN& source)
 {
-  _len = 0;
-  _capacity = 0;
   operator=(source);
 }
 
 /// Copy constructor
 VECTORN::VECTORN(const SHAREDVECTORN& source)
 {
-  _len = 0;
-  _capacity = 0;
   operator=(source);
 }
 
 /// Copy constructor
 VECTORN::VECTORN(const CONST_SHAREDVECTORN& source)
 {
-  _len = 0;
-  _capacity = 0;
   operator=(source);
 }
 
@@ -141,66 +118,11 @@ VECTORN VECTORN::zero(unsigned N)
   return v;
 }
 
-/// Compresses this vector's storage (capacity) down to its size, preserving its contents in the process
-void VECTORN::compress()
-{
-  boost::shared_array<REAL> newdata;
-
-  // if array already is the proper size, return 
-  if (_len == _capacity)
-    return;
-
-  // create a new array
-  newdata = boost::shared_array<REAL>(new REAL[_len]);
-
-  // copy existing elements
-  CBLAS::copy(_len, _data.get(),1,newdata.get(),1);
-
-  // set the new data
-  _data = newdata;
-  _capacity = _len;
-}
-
-/// Resizes this vector, optionally preserving its existing elements
-/**
- * \note memory is only reallocated if the vector grows in size; this keeps
- *       from having to do expensive REALlocations if the vector shrinks
- */
-VECTORN& VECTORN::resize(unsigned N, bool preserve)
-{
-  boost::shared_array<REAL> newdata;
-
-  // if the array already is the proper size, exit
-  if (_len == N)
-    return *this;
-
-  // see whether we can just change size 
-  if (N < _capacity)
-  {
-    // even if we're preserving, we don't need to do anything else 
-    _len = N;
-    return *this;
-  }
-
-  // create a new array
-  newdata = boost::shared_array<REAL>(new REAL[N]);
-
-  // copy existing elements, if desired
-  if (preserve)
-    CBLAS::copy(_len, _data.get(),1,newdata.get(),1);
-
-  // set the new data
-  _data = newdata;
-  _len = N;
-  _capacity = N;
-  return *this;
-}
-
 /// Copies another vector
 VECTORN& VECTORN::operator=(const VECTOR2& source)
 {
   // resize the vector if necessary
-  if (_len != source.size())
+  if (size() != source.size())
     resize(source.size());
 
   // don't even worry about BLAS for copying
@@ -214,7 +136,7 @@ VECTORN& VECTORN::operator=(const VECTOR2& source)
 VECTORN& VECTORN::operator=(const VECTOR3& source)
 {
   // resize the vector if necessary
-  if (_len != source.size())
+  if (size() != source.size())
     resize(source.size());
 
   // don't even worry about BLAS for copying
@@ -229,11 +151,11 @@ VECTORN& VECTORN::operator=(const VECTOR3& source)
 VECTORN& VECTORN::operator=(const VECTORN& source)
 {  
   // resize this vector if necessary
-  if (_len != source.size())
+  if (size() != source.size())
     resize(source.size());
 
   // use the BLAS routine for copying
-  if (_len > 0)
+  if (size() > 0)
     CBLAS::copy(source.size(),source.data(),1,_data.get(),1);
 
   return *this;
@@ -243,11 +165,11 @@ VECTORN& VECTORN::operator=(const VECTORN& source)
 VECTORN& VECTORN::operator=(const SHAREDVECTORN& source)
 {  
   // resize this vector if necessary
-  if (_len != source.size())
+  if (size() != source.size())
     resize(source.size());
 
   // use the BLAS routine for copying
-  if (_len > 0)
+  if (size() > 0)
     CBLAS::copy(source.size(),source.data(),source.inc(),_data.get(),1);
 
   return *this;
@@ -257,11 +179,11 @@ VECTORN& VECTORN::operator=(const SHAREDVECTORN& source)
 VECTORN& VECTORN::operator=(const CONST_SHAREDVECTORN& source)
 {  
   // resize this vector if necessary
-  if (_len != source.size())
+  if (size() != source.size())
     resize(source.size());
 
   // use the BLAS routine for copying
-  if (_len > 0)
+  if (size() > 0)
     CBLAS::copy(source.size(),source.data(),source.inc(),_data.get(),1);
 
   return *this;
@@ -274,7 +196,7 @@ VECTORN& VECTORN::operator=(const MATRIXN& source)
   resize(source.rows(), source.columns());
 
   // use the BLAS routine for copying
-  if (_len > 0)
+  if (size() > 0)
     CBLAS::copy(source.rows(),source.data(),1,_data.get(),1);
 
   return *this;
@@ -287,7 +209,7 @@ VECTORN& VECTORN::operator=(const SHAREDMATRIXN& source)
   resize(source.rows(), source.columns());
 
   // use the C++ routine for copying
-  if (_len > 0)
+  if (size() > 0)
     std::copy(source.begin(),source.end(),begin());
 
   return *this;
@@ -300,7 +222,7 @@ VECTORN& VECTORN::operator=(const CONST_SHAREDMATRIXN& source)
   resize(source.rows(), source.columns());
 
   // use the C++ routine for copying
-  if (_len > 0)
+  if (size() > 0)
     std::copy(source.begin(),source.end(),begin());
 
   return *this;
@@ -311,7 +233,7 @@ SHAREDVECTORN VECTORN::segment(unsigned start_idx, unsigned end_idx)
 {
   // verify that we cna get the subvector
   #ifndef NEXCEPT
-  if (start_idx > end_idx || end_idx > _len)
+  if (start_idx > end_idx || end_idx > size())
     throw InvalidIndexException();
   #endif
 
@@ -328,7 +250,7 @@ CONST_SHAREDVECTORN VECTORN::segment(unsigned start_idx, unsigned end_idx) const
 {
   // verify that we cna get the subvector
   #ifndef NEXCEPT
-  if (start_idx > end_idx || end_idx > _len)
+  if (start_idx > end_idx || end_idx > size())
     throw InvalidIndexException();
   #endif
 

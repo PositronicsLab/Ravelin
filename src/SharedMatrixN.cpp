@@ -3,6 +3,16 @@ SHAREDMATRIXN::SHAREDMATRIXN()
   _rows = _columns = _ld = _start = 0;
 }
 
+/// Constructs the matrix using the given arguments
+SHAREDMATRIXN::SHAREDMATRIXN(unsigned rows, unsigned cols, unsigned leading_dim, unsigned start, SharedResizable<REAL> data)
+{
+  _rows = rows;
+  _columns = cols;
+  _ld = leading_dim;
+  _start = start;
+  _data = data;
+}
+
 /// Copy constructor
 SHAREDMATRIXN::SHAREDMATRIXN(const SHAREDMATRIXN& source)
 {
@@ -225,6 +235,16 @@ SHAREDMATRIXN& SHAREDMATRIXN::set_identity()
 CONST_SHAREDMATRIXN::CONST_SHAREDMATRIXN()
 {
   _rows = _columns = _ld = _start = 0;
+}
+
+/// Constructs the matrix using the given arguments
+CONST_SHAREDMATRIXN::CONST_SHAREDMATRIXN(unsigned rows, unsigned cols, unsigned leading_dim, unsigned start, SharedResizable<REAL> data)
+{
+  _rows = rows;
+  _columns = cols;
+  _ld = leading_dim;
+  _start = start;
+  _data = data;
 }
 
 /// Copy constructor

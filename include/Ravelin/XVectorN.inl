@@ -10,14 +10,14 @@
 ITERATOR segment_iterator_begin(unsigned start, unsigned end)
 {
   #ifndef NEXCEPT
-  if (end < start || end > _len)
+  if (end < start || end > size())
     throw InvalidIndexException();
   #endif
 
   ITERATOR i;
   i._count = 0;
   i._sz = end - start;
-  i._ld = _len;
+  i._ld = size();
   i._rows = i._sz;
   i._columns = 1;
   i._data_start = i._current_data = data() + start;
@@ -27,14 +27,14 @@ ITERATOR segment_iterator_begin(unsigned start, unsigned end)
 CONST_ITERATOR segment_iterator_begin(unsigned start, unsigned end) const
 {
   #ifndef NEXCEPT
-  if (end < start || end > _len)
+  if (end < start || end > size())
     throw InvalidIndexException();
   #endif
 
   CONST_ITERATOR i;
   i._count = 0;
   i._sz = end - start;
-  i._ld = _len;
+  i._ld = size();
   i._rows = i._sz;
   i._columns = 1;
   i._data_start = i._current_data  = data() + start;
@@ -44,14 +44,14 @@ CONST_ITERATOR segment_iterator_begin(unsigned start, unsigned end) const
 ITERATOR segment_iterator_end(unsigned start, unsigned end)
 {
   #ifndef NEXCEPT
-  if (end < start || end > _len)
+  if (end < start || end > size())
     throw InvalidIndexException();
   #endif
 
   ITERATOR i;
   i._sz = end - start;
   i._count = i._sz;
-  i._ld = _len;
+  i._ld = size();
   i._rows = i._sz;
   i._columns = 1;
   i._data_start = data() + start;
@@ -62,14 +62,14 @@ ITERATOR segment_iterator_end(unsigned start, unsigned end)
 CONST_ITERATOR segment_iterator_end(unsigned start, unsigned end) const
 {
   #ifndef NEXCEPT
-  if (end < start || end > _len)
+  if (end < start || end > size())
     throw InvalidIndexException();
   #endif
 
   CONST_ITERATOR i;
   i._sz = end - start;
   i._count = i._sz;
-  i._ld = _len;
+  i._ld = size();
   i._rows = i._sz;
   i._columns = 1;
   i._data_start = data() + start;
@@ -81,8 +81,8 @@ CONST_ITERATOR begin() const
 {
   CONST_ITERATOR i;
   i._count = 0;
-  i._sz = _len;
-  i._ld = _len;
+  i._sz = size();
+  i._ld = size();
   i._rows = i._sz;
   i._columns = 1;
   i._data_start = i._current_data  = data();
@@ -92,13 +92,13 @@ CONST_ITERATOR begin() const
 CONST_ITERATOR end() const
 {
   CONST_ITERATOR i;
-  i._count = _len;
-  i._sz = _len;
-  i._ld = _len;
+  i._count = size();
+  i._sz = size();
+  i._ld = size();
   i._rows = i._sz;
   i._columns = 1;
   i._data_start = data();
-  i._current_data  = data() + _len;
+  i._current_data  = data() + size();
   return i;
 }
 
@@ -106,8 +106,8 @@ ITERATOR begin()
 {
   ITERATOR i;
   i._count = 0;
-  i._sz = _len;
-  i._ld = _len;
+  i._sz = size();
+  i._ld = size();
   i._rows = i._sz;
   i._columns = 1;
   i._data_start = i._current_data  = data();
@@ -117,13 +117,13 @@ ITERATOR begin()
 ITERATOR end()
 {
   ITERATOR i;
-  i._count = _len;
-  i._sz = _len;
-  i._ld = _len;
+  i._count = size();
+  i._sz = size();
+  i._ld = size();
   i._rows = i._sz;
   i._columns = 1;
   i._data_start = data();
-  i._current_data  = data() + _len;
+  i._current_data  = data() + size();
   return i;
 }
 
@@ -171,8 +171,8 @@ XVECTORN& negate()
 /// Multiplies this vector in place by a scalar
 XVECTORN& operator*=(REAL scalar)
 {
-  if (_len > 0)
-    CBLAS::scal(_len, scalar, data(), inc());  
+  if (size() > 0)
+    CBLAS::scal(size(), scalar, data(), inc());  
 
   return *this;
 }
@@ -195,7 +195,7 @@ XVECTORN& set_sub_vec(unsigned start, const V& v)
 
   // see whether index is valid
   #ifndef NEXCEPT
-  if (start + SZ > _len)
+  if (start + SZ > size())
     throw InvalidIndexException();
   #endif
 
@@ -217,13 +217,13 @@ XVECTORN& operator+=(const V& v)
   if (sizeof(data()) != sizeof(v.data()))
     throw DataMismatchException();
 
-  if (v.size() != _len)
+  if (v.size() != size())
     throw MissizeException();
   #endif
 
   // use the BLAS routine for subtraction
-  if (_len > 0)
-    CBLAS::axpy(_len, (REAL) 1.0, v.data(), v.inc(), data(), inc());
+  if (size() > 0)
+    CBLAS::axpy(size(), (REAL) 1.0, v.data(), v.inc(), data(), inc());
 
   return *this;
 }
@@ -236,13 +236,13 @@ XVECTORN& operator-=(const V& v)
   if (sizeof(data()) != sizeof(v.data()))
     throw DataMismatchException();
 
-  if (v.size() != _len)
+  if (v.size() != size())
     throw MissizeException();
   #endif
 
   // use the BLAS routine for subtraction
-  if (_len > 0)
-    CBLAS::axpy(_len, (REAL) -1.0, v.data(), v.inc(), data(), inc());
+  if (size() > 0)
+    CBLAS::axpy(size(), (REAL) -1.0, v.data(), v.inc(), data(), inc());
 
   return *this;
 }
@@ -253,7 +253,7 @@ XVECTORN& set(ForwardIterator idx_begin, ForwardIterator idx_end, const V& v)
 {
   unsigned len = std::distance(idx_begin, idx_end);
   #ifndef NEXCEPT
-  if (len != v.size() || len > _len)
+  if (len != v.size() || len > size())
     throw MissizeException();
   if (sizeof(data()) != sizeof(v.data()))
     throw DataMismatchException();
@@ -277,7 +277,7 @@ template <class V>
 V& get_sub_vec(unsigned start, unsigned end, V& v) const
 {
   #ifndef NEXCEPT
-  if (start > end || end > _len)
+  if (start > end || end > size())
     throw InvalidIndexException();
   if (sizeof(data()) != sizeof(v.data()))
     throw DataMismatchException();
@@ -288,7 +288,7 @@ V& get_sub_vec(unsigned start, unsigned end, V& v) const
   v.resize(SZ);
 
   // see whether to exit now
-  if (_len == 0 || SZ == 0)
+  if (size() == 0 || SZ == 0)
     return v;
 
   // copy using BLAS
@@ -320,7 +320,7 @@ bool operator<(const V& v) const
   
   // still here?  comparison was identical to this point; if this is shorter
   // than v, return true
-  if (_len < v.size())
+  if (size() < v.size())
     return true;
   
   // vectors *may* be identical
@@ -339,13 +339,13 @@ bool operator==(const V& v) const
     throw DataMismatchException();
   #endif
 
-  if (_len != v.size())
+  if (size() != v.size())
     return false;
 
   // use iterator  
   CONST_ITERATOR data = begin();
   CONST_ITERATOR vdata = v.begin();
-  for (unsigned i=0; i< _len; i++, data++, vdata++)
+  for (unsigned i=0; i< size(); i++, data++, vdata++)
     if (!rel_equal(*data, *vdata))
       return false;
     
@@ -384,7 +384,7 @@ V& select(const std::vector<bool>& indices, V& v) const
   // setup the vector
   unsigned len = std::count(indices.begin(), indices.end(), true);
   #ifndef NEXCEPT
-  if (len > _len)
+  if (len > size())
     throw MissizeException();
   #endif
   v.resize(len);
@@ -406,7 +406,7 @@ V& select(ForwardIterator idx_begin, ForwardIterator idx_end, V& v) const
   // setup the vector
   unsigned len = std::distance(idx_begin, idx_end);
   #ifndef NEXCEPT
-  if (len > _len)
+  if (len > size())
     throw MissizeException();
   #endif
   v.resize(len);

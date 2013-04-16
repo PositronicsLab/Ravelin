@@ -7,7 +7,6 @@ FastThreadable<VECTORN> MATRIXN::_workv;
 MATRIXN::MATRIXN()
 {
   _rows = _columns = 0;
-  _capacity = 0;
 }
 
 /// Constructs a rows x columns dimensional (unitialized) matrix 
@@ -15,9 +14,8 @@ MATRIXN::MATRIXN(unsigned rows, unsigned columns)
 {
   _rows = rows;
   _columns = columns;
-  _capacity = rows*columns;
   if (rows > 0 && columns > 0)
-    _data = shared_array<REAL>(new REAL[rows*columns]);
+    _data.resize(_rows*_columns);
 }
 
 /// Constructs a matrix from a vector
@@ -27,7 +25,7 @@ MATRIXN::MATRIXN(unsigned rows, unsigned columns)
  */
 MATRIXN::MATRIXN(const VECTORN& v, Transposition trans)
 {
-  _rows = _columns = _capacity = 0;
+  _rows = _columns = 0;
   set(v, trans);
 }
 
@@ -38,7 +36,7 @@ MATRIXN::MATRIXN(const VECTORN& v, Transposition trans)
  */
 MATRIXN::MATRIXN(const CONST_SHAREDVECTORN& v, Transposition trans)
 {
-  _rows = _columns = _capacity = 0;
+  _rows = _columns = 0;
   set(v, trans);
 }
 
@@ -49,7 +47,7 @@ MATRIXN::MATRIXN(const CONST_SHAREDVECTORN& v, Transposition trans)
  */
 MATRIXN::MATRIXN(const SHAREDVECTORN& v, Transposition trans)
 {
-  _rows = _columns = _capacity = 0;
+  _rows = _columns = 0;
   set(v, trans);
 }
 
@@ -61,7 +59,7 @@ MATRIXN::MATRIXN(const SHAREDVECTORN& v, Transposition trans)
  */
 MATRIXN::MATRIXN(unsigned rows, unsigned columns, const REAL* array)
 {
-  _rows = _columns = _capacity = 0;
+  _rows = _columns = 0;
   resize(rows, columns, false);
   CBLAS::copy(rows*columns, array, 1, data(), 1);
 }
@@ -69,7 +67,7 @@ MATRIXN::MATRIXN(unsigned rows, unsigned columns, const REAL* array)
 /// Constructs a matrix from a MATRIX3
 MATRIXN::MATRIXN(const MATRIX3& m)
 {
-  _rows = _columns = _capacity = 0;
+  _rows = _columns = 0;
   operator=(m);
 }
 
@@ -85,21 +83,21 @@ MATRIXN::MATRIXN(const POSE& m)
 /// Copy constructor
 MATRIXN::MATRIXN(const MATRIXN& source)
 {
-  _rows = _columns = _capacity = 0;
+  _rows = _columns = 0;
   MATRIXN::operator=(source);
 }
 
 /// Copy constructor
 MATRIXN::MATRIXN(const SHAREDMATRIXN& source)
 {
-  _rows = _columns = _capacity = 0;
+  _rows = _columns = 0;
   MATRIXN::operator=(source);
 }
 
 /// Copy constructor
 MATRIXN::MATRIXN(const CONST_SHAREDMATRIXN& source)
 {
-  _rows = _columns = _capacity = 0;
+  _rows = _columns = 0;
   MATRIXN::operator=(source);
 }
 
@@ -270,35 +268,6 @@ MATRIXN MATRIXN::zero(unsigned int rows, unsigned int columns)
   return m; 
 }
 
-/// Compresses this matrix's storage to minimum necessary, preserving contents 
-void MATRIXN::compress()
-{
-  shared_array<REAL> newdata;
-
-  // if the matrix is already the proper size, exit
-  if (_capacity == _rows * _columns)
-    return;
-
-  // see whether the necessary capacity is zero
-  if (_rows == 0 || _columns == 0)
-  {
-    _data = shared_array<REAL>();
-    _capacity = 0;
-    return;
-  }
-
-  // create a new array
-  newdata = shared_array<REAL>(new REAL[_rows*_columns]);
-
-  // preserve existing elements
-  const unsigned n = _rows * _columns; 
-    CBLAS::copy(n, _data.get(),1,newdata.get(),1);
-
-  // set the new data
-  _data = newdata;
-  _capacity = n;
-}
-
 /// Resizes this matrix, optionally preserving its existing elements
 /**
  * \note this method keeps from reallocating memory unless absolutely
@@ -313,31 +282,19 @@ MATRIXN& MATRIXN::resize(unsigned rows, unsigned columns, bool preserve)
   if (_rows == rows && _columns == columns)
     return *this;
 
+  // set the new rows and columns
+  _rows = rows;
+  _columns = columns;
+
   // if we can downsize, do that..
-  if (rows*columns <= _capacity && (_rows == rows || !preserve))
+  if (rows*columns <= _data.capacity() && (_rows == rows || !preserve))
   {
-    _rows = rows;
-    _columns = columns;
+    resize(_rows*_columns, false);
     return *this;
   }
 
   // create a new array
-  if (rows > 0 && columns > 0)
-    newdata = shared_array<REAL>(new REAL[rows*columns]);
-
-  // preserve existing elements, if desired
-  if (preserve && _rows > 0 && _columns > 0)
-  {
-    const unsigned n = std::min(_rows, rows);
-    for (unsigned i=0; i< _columns; i++)
-      CBLAS::copy(n, _data.get()+_rows*i,1,newdata.get()+rows*i,1);
-  }
-
-  // set the new data
-  _data = newdata;
-  _rows = rows;
-  _columns = columns;
-  _capacity = rows*columns;
+  resize(_rows*_columns, true);
   return *this;
 }
 

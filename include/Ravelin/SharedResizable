@@ -1,0 +1,89 @@
+#ifndef _RAVELIN_SHARED_RESIZABLE_
+#define _RAVELIN_SHARED_RESIZABLE_
+
+#include <boost/shared_array.hpp>
+#include <algorithm>
+
+namespace Ravelin {
+
+template <class T>
+class SharedResizable
+{
+  public:
+    SharedResizable() { _size = _capacity = 0; }
+    T& operator[](unsigned i) { return _data[i]; }
+    const T& operator[](unsigned i) const { return _data[i]; }
+    T* get() { return _data.get(); }
+    const T* get() const { return _data.get(); }
+    unsigned capacity() const { return _capacity; }
+    unsigned size() const { return _size; }
+
+    SharedResizable(const SharedResizable& s)
+    {
+      operator=(s);
+    }
+
+    SharedResizable& operator=(const SharedResizable& s)
+    {
+      _size = s._size; 
+      _capacity = s._capacity;
+      _data = s._data;
+      return *this;
+    }
+
+    SharedResizable& compress()
+    {
+      // if the array is already the desired size, exit
+      if (_capacity == _size)
+        return *this;
+
+      // create a new array
+      boost::shared_array<T> newdata(new T[_size]);
+
+      // copy existing elements
+      std::copy(_data.get(), _data.get()+_size, newdata.get());
+
+      // set the new data
+      _data = newdata;
+      _capacity = _size;
+
+      return *this;
+    }
+
+    SharedResizable& resize(unsigned N, bool preserve = false)
+    {
+      // if the array is already the desired size, exit
+      if (N == _size)
+        return *this;
+
+      // see whether we can just change size
+      if (N < _capacity)
+      {
+        _size = N;
+        return *this;
+      }
+
+      // create a new array
+      boost::shared_array<T> newdata(new T[N]);
+
+      // copy existing elements, if desired
+      if (preserve)
+        std::copy(_data.get(), _data.get()+_size, newdata.get());
+
+      // set the new data
+      _data = newdata;
+      _size = N;
+      _capacity = N;
+      return *this;
+    }
+
+  private:
+    unsigned _size;
+    unsigned _capacity;
+    boost::shared_array<T> _data;
+}; // end class
+
+} // end namespace
+
+#endif
+

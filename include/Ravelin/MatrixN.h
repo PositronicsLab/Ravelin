@@ -72,7 +72,7 @@ class MATRIXN
     MATRIXN& operator*=(REAL scalar);
     REAL* data() { return _data.get(); }
     const REAL* data() const { return _data.get(); }    
-    void compress();
+    void compress() { _data.compress(); }
     unsigned leading_dim() const { return _rows; }
     unsigned inc() const { return 1; }
 
@@ -95,10 +95,9 @@ class MATRIXN
     static FastThreadable<VECTORN> _workv;
     #endif
 
-    boost::shared_array<REAL> _data;
+    SharedResizable<REAL> _data;
     unsigned _rows;
     unsigned _columns;
-    unsigned _capacity;
 }; // end class
 
 std::ostream& operator<<(std::ostream& out, const MATRIXN& m);

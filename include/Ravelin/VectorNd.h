@@ -9,6 +9,7 @@
 
 #include <cstdarg>
 #include <boost/shared_array.hpp>
+#include <Ravelin/SharedResizable>
 #include <Ravelin/cblas.h>
 #include <Ravelin/Vector2d.h>
 #include <Ravelin/Vector3d.h>

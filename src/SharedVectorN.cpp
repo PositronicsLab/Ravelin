@@ -14,6 +14,15 @@ SHAREDVECTORN::SHAREDVECTORN()
   _start = 0;
 }
 
+/// Constructs a shared vector using the given arguments
+SHAREDVECTORN::SHAREDVECTORN(unsigned len, unsigned inc, unsigned start, SharedResizable<REAL> data)
+{
+  _len = len;
+  _inc = inc;
+  _start = start;
+  _data = data;
+}
+
 /// Constructs a shared vector from another shared vector 
 SHAREDVECTORN::SHAREDVECTORN(const SHAREDVECTORN& v)
 {
@@ -135,6 +144,15 @@ CONST_SHAREDVECTORN::CONST_SHAREDVECTORN()
   _len = 0;
   _inc = 1;
   _start = 0;
+}
+
+/// Constructs a shared vector using the given arguments
+CONST_SHAREDVECTORN::CONST_SHAREDVECTORN(unsigned len, unsigned inc, unsigned start, SharedResizable<REAL> data)
+{
+  _len = len;
+  _inc = inc;
+  _start = start;
+  _data = data;
 }
 
 /// Constructs a shared vector from another shared vector 

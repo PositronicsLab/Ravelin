@@ -10,7 +10,7 @@
 REAL& operator[](unsigned i)
 {
   #ifndef NEXCEPT
-  if (i > _len)
+  if (i > size())
     throw InvalidIndexException();
   #endif
   return _data[i];
@@ -20,7 +20,7 @@ REAL& operator[](unsigned i)
 REAL operator[](unsigned i) const
 {
   #ifndef NEXCEPT
-  if (i > _len)
+  if (i > size())
     throw InvalidIndexException();
   #endif
   return _data[i];
@@ -30,7 +30,7 @@ REAL operator[](unsigned i) const
 REAL* data(unsigned i)
 {
   #ifndef NEXCEPT
-  if (i >= _len)
+  if (i >= size())
     throw InvalidIndexException();
   #endif
   return &_data[i];
@@ -40,7 +40,7 @@ REAL* data(unsigned i)
 const REAL* data(unsigned i) const
 {
   #ifndef NEXCEPT
-  if (i >= _len)
+  if (i >= size())
     throw InvalidIndexException();
   #endif
   return &_data[i];
