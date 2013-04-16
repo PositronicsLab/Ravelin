@@ -41,7 +41,6 @@ class MATRIXN
     virtual ~MATRIXN() { }
     MATRIXN& zero_upper_triangle();
     MATRIXN& zero_lower_triangle();
-    MATRIXN& select_square(const std::vector<bool>& indices, MATRIXN& result) const;
     MATRIXN& set(const VECTORN& v, Transposition trans = eNoTranspose);
     MATRIXN& set(const SHAREDVECTORN& v, Transposition trans = eNoTranspose);
     MATRIXN& set(const CONST_SHAREDVECTORN& v, Transposition trans = eNoTranspose);
