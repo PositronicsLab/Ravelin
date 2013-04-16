@@ -16,7 +16,8 @@ void testSVD(){
     std::cout << ">> testSVD: " << std::endl;
 
     for(int i=1;i<MAX_SIZE;i++){
-        unsigned r = std::pow(2,i),c = 2;
+        unsigned r = 1 << (i-1),c = r;
+        std::cout << "SIZE: " << r << std::endl;
         MatR A,B,AB(r,r);
 
         // Create PD matrix A
@@ -39,8 +40,7 @@ void testSVD(){
 
         U.mult(S,US);
         US.mult_transpose(V,AB);
-        assert(checkError(A,AB));
-        std::cout << "[PASS] svd1: " << std::endl;
+        checkError(std::cout, "svd1", A,AB);
 
         AB = A;
         /// Test the SVD2 Decomp
@@ -51,12 +51,11 @@ void testSVD(){
 
         U.mult(S,US);
         US.mult_transpose(V,AB);
-        assert(checkError(A,AB));
-        std::cout << "[PASS] svd2: " << std::endl;
+        checkError(std::cout, "svd2", A,AB);
 
         /// Test SVD Solve
         AB = A;
-        LA->svd2(AB,U,s,V);
+//        LA->svd2(AB,U,s,V);
 
         MatR x = randM(r,1),b(r,1);
         //Ax1 = b
@@ -65,17 +64,15 @@ void testSVD(){
         //(A^-1)b = x2
         LA->solve_LS_fast(U,s,V,xb);
         // x1 == x2 ?
-        assert(checkError(x,xb));
-        std::cout << "[PASS] solve_LS_fast(U,S,V): " << std::endl;
+        checkError(std::cout, "solve_LS_fast(U,S,V)", x,xb);
     }
-    std::cout << "<< [PASS] testSVD: " << std::endl;
 }
 
 void testLU(){
     std::cout << ">> testLU: " << std::endl;
 
     for(int i=1;i<MAX_SIZE;i++){
-        unsigned s = std::pow(2,i),c = 2;
+        unsigned s = 1 << (i-1),c = 2;
         MatR A,B,AB(s,s);
 
         // Create PD matrix A
@@ -118,8 +115,7 @@ void testLU(){
             A2.set_row(P[ii]-1,row1);
         }
 
-        assert(checkError(A,A2));
-        std::cout << "[PASS] factor_LU " << std::endl;
+        checkError(std::cout, "factor_LU", A,A2);
 
 
 
@@ -140,8 +136,7 @@ void testLU(){
         LA->solve_LU_fast(LU,false,P,xb);
 
         // x1 == x2 ?
-        assert(checkError(x,xb));
-        std::cout << "[PASS] solve_LU_fast " << std::endl;
+        checkError(std::cout, "solve_LU_fast", x,xb);
 
     }
     std::cout << "<< [PASS] testLU: " << std::endl;
@@ -151,7 +146,7 @@ void testChol(){
     std::cout << ">> testChol: " << std::endl;
 
     for(int i=1;i<MAX_SIZE;i++){
-        unsigned s = std::pow(2,i),c = s;
+        unsigned s = 1 << (i-1), c = s;
         MatR A,B,AB(s,s);
 
         std::cout << "SIZE: " << s << std::endl;
@@ -184,8 +179,7 @@ void testChol(){
             /// Test eigen decomp
                 LA->eig_symm (AB,evals);
                 // S should be same as eigenvalues
-                checkError(evals,S);
-                std::cout << " [PASS] eig_symm: " << std::endl;
+                checkError(std::cout, "eig_symm", evals,S);
 
             /// Test Eigen Vec...
 //                eig_symm_plus (X &A_evecs, Y &evals);
@@ -235,8 +229,7 @@ void testChol(){
             //(A^-1)b = x2
             LA->solve_chol_fast(B,xb);
             // x1 == x2 ?
-            assert(checkError(x,xb));
-            std::cout << " [PASS] solve_chol_fast: " << std::endl;
+            checkError(std::cout, "solve_chol_fast", x,xb);
 
         B = A;
         LA->factor_chol(B);
@@ -249,8 +242,7 @@ void testChol(){
             // I == A*B ?
             MatR I(s,s);
             I.set_identity();
-            assert(checkError(AB,I));
-            std::cout << " [PASS] inverse_chol: " << std::endl;
+            checkError(std::cout, "inverse_chol", AB,I);
 
         B = A;
 
@@ -261,11 +253,9 @@ void testChol(){
             A.mult(B,AB);
             // I == A*B ?
             I.set_identity();
-            assert(checkError(AB,I));
-            std::cout << " [PASS] inverse_SPD: " << std::endl;
+            checkError(std::cout, "inverse_SPD", AB,I);
 
     }
-    std::cout << "<< [PASS] testChol: " << std::endl;
 
 }
 
@@ -274,7 +264,7 @@ void testLA(){
 
     for(int i=1;i<MAX_SIZE;i++){
 
-        unsigned s = std::pow(2,i),c = s;
+        unsigned s = 1 << (i-1), c = s;
         MatR A,B,AB(s,s);
 
         std::cout << "SIZE: " << s << std::endl;
@@ -309,8 +299,7 @@ void testLA(){
             //(A^-1)b = x2
             LA->solve_LS_fast1(B,xb);
             // x1 == x2 ?
-            assert(checkError(x,xb));
-            std::cout << " [PASS] solve_LS_fast1: " << std::endl;
+            checkError(std::cout, "solve_LS_fast1", x,xb);
 
         B = A;
 
@@ -321,9 +310,8 @@ void testLA(){
             xb = b;
             //(A^-1)b = x2
             LA->solve_LS_fast2(B,xb);
-            std::cout << " [PASS] solve_LS_fast2: " << std::endl;
             // x1 == x2 ?
-            assert(checkError(x,xb));
+            checkError(std::cout, "solve_LS_fast2", x,xb);
 
         B = A;
 
@@ -334,9 +322,8 @@ void testLA(){
             xb = b;
             //(A^-1)b = x2
             LA->solve_fast(B,xb);
-            std::cout << " [PASS] solve_fast: " << std::endl;
             // x1 == x2 ?
-            assert(checkError(x,xb));
+            checkError(std::cout, "solve_fast", x,xb);
 
         B = A;
 
@@ -347,20 +334,18 @@ void testLA(){
             xb = b;
             //(A^-1)b = x2
             LA->solve_symmetric_fast(B,xb);
-            std::cout << " [PASS] solve_symmetric_fast: " << std::endl;
             // x1 == x2 ?
-            assert(checkError(x,xb));
+            checkError(std::cout, "solve_symmetric_fast", x,xb);
 
     }
-    std::cout << "<< [PASS] testLA: " << std::endl;
 
 }
 
 void TestLinearAlgebra(){
     LA = new LinAlg();
-//    testSVD();
-//    testChol();
-//    testLA();
+    testSVD();
+    testChol();
+    testLA();
     testLU();
 }
 

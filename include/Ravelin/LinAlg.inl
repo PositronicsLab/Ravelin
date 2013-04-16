@@ -1029,6 +1029,19 @@ X& solve_LS_fast(const Y& U, const Vec& S, const Z& V, X& XB, REAL tol = (REAL) 
   {
     assert(n >= m && n >= k);
 
+    // scale m columns of V (n x m)
+    workM2x = V;
+    for (unsigned i=0; i< m; i++)
+      workM2x.column(i) *= Sx_data[i];
+    SHAREDMATRIXN sharedV = workM2x.block(0, n, 0, m);
+
+    // multiply U' * XB (resulting in m x k matrix)
+    U.transpose_mult(XB, workMx);
+
+    // do the multiplication
+    sharedV.mult(workMx, XB);
+
+/*
     // scale m columns of V
     workM2x = V;
     for (unsigned i=0; i< m; i++)
@@ -1040,6 +1053,7 @@ X& solve_LS_fast(const Y& U, const Vec& S, const Z& V, X& XB, REAL tol = (REAL) 
     // multiply V * workM
     XB.resize(n,k);
     CBLAS::gemm(CblasColMajor, CblasNoTrans, CblasNoTrans, n, k, m, (REAL) 1.0, workM2x.data(), workM2x.leading_dim(), workMx.data(), workMx.leading_dim(), (REAL) 0.0, XB.data(), XB.leading_dim());
+*/
   }
 
   return XB;

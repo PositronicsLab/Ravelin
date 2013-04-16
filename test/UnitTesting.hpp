@@ -1,6 +1,7 @@
 #ifndef _UNITTESTING_HPP_
 #define _UNITTESTING_HPP_
 
+#include <iostream>
 #include <eigen3/Eigen/Core>
 #include <eigen3/Eigen/Dense>
 #include <cassert>
@@ -39,13 +40,13 @@
     const static double NEAR_ZERO = sqrt(ZERO_TOL);
 
     /// Test Utils
-    bool checkError(MatE E, MatR R);
-    bool checkError(VecE E, VecR R);
-    bool checkError(VecR E, VecR R);
-    bool checkError(MatR E, MatR R);
+    double checkError(std::ostream& out, const std::string& str, const MatE& E, const MatR& R);
+    double checkError(std::ostream& out, const std::string& str, const VecE& E, const VecR& R);
+    double checkError(std::ostream& out, const std::string& str, const VecR& E, const VecR& R);
+    double checkError(std::ostream& out, const std::string& str, const MatR& E, const MatR& R);
     MatR randM(unsigned r, unsigned c);
     VecR randV(unsigned r);
-    MatR asRavelin(MatE E);
-    VecR asRavelin(VecE E);
+    MatR asRavelin(const MatE& E);
+    VecR asRavelin(const VecE& E);
 
 #endif //_UNITTESTING_HPP_
