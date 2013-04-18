@@ -1301,12 +1301,12 @@ Y& solve_fast(X& A, Y& XB)
 template <class X, class Y>
 X& solve_LS_fast1(Y& A, X& XB, REAL tol = (REAL) -1.0) 
 { 
-  solve_LS_fast(A, XB, eSVD1, tol); 
+  return solve_LS_fast(A, XB, eSVD1, tol); 
 }     
 
 template <class X, class Y>
 X& solve_LS_fast2(Y& A, X& XB, REAL tol = (REAL) -1.0) 
 { 
-  solve_LS_fast(A, XB, eSVD2, tol); 
+  return solve_LS_fast(A, XB, eSVD2, tol); 
 }     
 

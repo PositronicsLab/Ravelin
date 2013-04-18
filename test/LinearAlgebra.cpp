@@ -76,7 +76,7 @@ void testLU(){
         MatR A,B,AB(s,s);
 
         // Create PD matrix A
-        A = randM(s,c);
+        A = randM(s,s);
         B = A;
         B.transpose();
         A.mult(B,AB);
@@ -124,7 +124,6 @@ void testLU(){
         MatR x = randM(s,1),b(s,1);
         //Ax1 = b
         A.mult(x,b);
-
         MatR xb = b;
 //        for(int ii = A2.rows()-1;ii>=0;ii--)
 //            std::cout << P[ii] << std::endl;
