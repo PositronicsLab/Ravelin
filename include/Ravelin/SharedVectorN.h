@@ -21,8 +21,9 @@ class SHAREDVECTORN
 
   public:
     SHAREDVECTORN();
-    SHAREDVECTORN(const SHAREDVECTORN& source);
+    SHAREDVECTORN(const SHAREDVECTORN& source) { reset_from(source); }
     SHAREDVECTORN(unsigned len, unsigned inc, unsigned start, SharedResizable<REAL> data);
+    void reset_from(const SHAREDVECTORN& source);
     virtual ~SHAREDVECTORN() {}
     SHAREDVECTORN& normalize() { assert(norm() > EPS); operator*=((REAL) 1.0/norm()); return *this; }
     unsigned size() const { return _len; }
@@ -76,8 +77,10 @@ class CONST_SHAREDVECTORN
   public:
     CONST_SHAREDVECTORN();
     CONST_SHAREDVECTORN(unsigned len, unsigned inc, unsigned start, SharedResizable<REAL> data);
-    CONST_SHAREDVECTORN(const SHAREDVECTORN& source);
-    CONST_SHAREDVECTORN(const CONST_SHAREDVECTORN& source);
+    CONST_SHAREDVECTORN(const SHAREDVECTORN& source) { reset_from(source); }
+    CONST_SHAREDVECTORN(const CONST_SHAREDVECTORN& source) { reset_from(source); }
+    void reset_from(const SHAREDVECTORN& source);
+    void reset_from(const CONST_SHAREDVECTORN& source);
     virtual ~CONST_SHAREDVECTORN() {}
     unsigned size() const { return _len; }
     static REAL norm(const CONST_SHAREDVECTORN& v) { return std::sqrt(norm_sq(v)); }

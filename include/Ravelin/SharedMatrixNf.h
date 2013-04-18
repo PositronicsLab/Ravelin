@@ -12,6 +12,7 @@
 #include <Ravelin/Vector3f.h>
 #include <Ravelin/Matrix3f.h>
 #include <Ravelin/DataMismatchException.h>
+#include <Ravelin/SharedResizable>
 //#include <Ravelin/Posef.h>
 
 namespace Ravelin {

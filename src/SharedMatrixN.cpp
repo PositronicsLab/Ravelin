@@ -16,10 +16,16 @@ SHAREDMATRIXN::SHAREDMATRIXN(unsigned rows, unsigned cols, unsigned leading_dim,
 /// Copy constructor
 SHAREDMATRIXN::SHAREDMATRIXN(const SHAREDMATRIXN& source)
 {
+  reset_from(source);
+}
+
+/// Resets this from another shared matrix
+void SHAREDMATRIXN::reset_from(const SHAREDMATRIXN& source)
+{
   _rows = source.rows();
   _columns = source.columns();
   _ld = source.rows();
-  _start = 0;
+  _start = source._start;
   _data = source._data;
 }
 
@@ -250,21 +256,33 @@ CONST_SHAREDMATRIXN::CONST_SHAREDMATRIXN(unsigned rows, unsigned cols, unsigned 
 /// Copy constructor
 CONST_SHAREDMATRIXN::CONST_SHAREDMATRIXN(const SHAREDMATRIXN& source)
 {
+  reset_from(source);
+}
+
+/// Resets this from another shared matrix
+void CONST_SHAREDMATRIXN::reset_from(const SHAREDMATRIXN& source)
+{
   _rows = source.rows();
   _columns = source.columns();
   _ld = source.rows();
-  _start = 0;
+  _start = source._start;
+  _data = source._data;
+}
+
+/// Resets this from another shared matrix
+void CONST_SHAREDMATRIXN::reset_from(const CONST_SHAREDMATRIXN& source)
+{
+  _rows = source.rows();
+  _columns = source.columns();
+  _ld = source.rows();
+  _start = source._start;
   _data = source._data;
 }
 
 /// Copy constructor
 CONST_SHAREDMATRIXN::CONST_SHAREDMATRIXN(const CONST_SHAREDMATRIXN& source)
 {
-  _rows = source.rows();
-  _columns = source.columns();
-  _ld = source.rows();
-  _start = 0;
-  _data = source._data;
+  reset_from(source);
 }
 
 /// Outputs this matrix to the stream

@@ -26,6 +26,8 @@ class CONST_SHAREDMATRIXN
     CONST_SHAREDMATRIXN(const SHAREDMATRIXN& source);
     CONST_SHAREDMATRIXN(const CONST_SHAREDMATRIXN& source);
     CONST_SHAREDMATRIXN(unsigned rows, unsigned cols, unsigned leading_dim, unsigned start, SharedResizable<REAL> data);
+    void reset_from(const CONST_SHAREDMATRIXN& source);
+    void reset_from(const SHAREDMATRIXN& source);
     bool is_symmetric(REAL tolerance = (REAL) -1.0) const;
     REAL norm_inf() const;
     unsigned rows() const { return _rows; }
@@ -58,6 +60,7 @@ class SHAREDMATRIXN
     SHAREDMATRIXN();
     SHAREDMATRIXN(const SHAREDMATRIXN& source);
     SHAREDMATRIXN(unsigned rows, unsigned cols, unsigned leading_dim, unsigned start, SharedResizable<REAL> data);
+    void reset_from(const SHAREDMATRIXN& source);
     SHAREDMATRIXN& set_identity();
     bool is_symmetric(REAL tolerance = (REAL) -1.0) const;
     REAL norm_inf() const;

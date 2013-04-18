@@ -24,7 +24,7 @@ SHAREDVECTORN::SHAREDVECTORN(unsigned len, unsigned inc, unsigned start, SharedR
 }
 
 /// Constructs a shared vector from another shared vector 
-SHAREDVECTORN::SHAREDVECTORN(const SHAREDVECTORN& v)
+void SHAREDVECTORN::reset_from(const SHAREDVECTORN& v)
 {
   _len = v._len;
   _inc = v._inc;
@@ -156,7 +156,7 @@ CONST_SHAREDVECTORN::CONST_SHAREDVECTORN(unsigned len, unsigned inc, unsigned st
 }
 
 /// Constructs a shared vector from another shared vector 
-CONST_SHAREDVECTORN::CONST_SHAREDVECTORN(const CONST_SHAREDVECTORN& v)
+void CONST_SHAREDVECTORN::reset_from(const CONST_SHAREDVECTORN& v)
 {
   _len = v._len;
   _inc = v._inc;
@@ -165,7 +165,7 @@ CONST_SHAREDVECTORN::CONST_SHAREDVECTORN(const CONST_SHAREDVECTORN& v)
 }
 
 /// Constructs a shared vector from another shared vector 
-CONST_SHAREDVECTORN::CONST_SHAREDVECTORN(const SHAREDVECTORN& v)
+void CONST_SHAREDVECTORN::reset_from(const SHAREDVECTORN& v)
 {
   _len = v._len;
   _inc = v._inc;
