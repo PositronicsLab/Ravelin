@@ -56,7 +56,7 @@ void LINALG::factor_QR(MATRIXN& AR, MATRIXN& Q, vector<int>& PI)
   unsigned min_mn = (unsigned) std::min(M,N); 
  
   // setup tau vector
-  workv().resize(min_mn);
+  workv2().resize(min_mn);
 
   // setup PI for entry
   PI.resize(N);
@@ -66,7 +66,7 @@ void LINALG::factor_QR(MATRIXN& AR, MATRIXN& Q, vector<int>& PI)
   // call LAPACK
   INTEGER LDA = AR.leading_dim();
   INTEGER INFO;
-  geqp3_(&M, &N, AR.data(), &LDA, PI.data(), workv().data(), &INFO);
+  geqp3_(&M, &N, AR.data(), &LDA, PI.data(), workv2().data(), &INFO);
   assert(INFO == 0);
 
   // correct indices for PI
