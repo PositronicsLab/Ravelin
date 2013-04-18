@@ -88,7 +88,7 @@ void LINALG::factor_QR(MATRIXN& AR, MATRIXN& Q, vector<int>& PI)
 void LINALG::factor_QR(MATRIXN& AR, MATRIXN& Q)
 {
   // get matrix/vector
-  VECTORN& tau = workv();
+  VECTORN& tau = workv2();
 
   // setup constants
   const unsigned m = AR.rows();
