@@ -21,7 +21,7 @@
     typedef Eigen::VectorXf VecE;
     typedef Ravelin::MatrixNf MatR;
     typedef Ravelin::VectorNf VecR;
-    const double TOL = 2e-6;
+    const double TOL = sqrt(ZERO_TOL);//2e-6;
 #else
     const static double ZERO_TOL = std::numeric_limits<double>::epsilon();
 
@@ -34,7 +34,7 @@
     typedef Eigen::VectorXd VecE;
     typedef Ravelin::MatrixNd MatR;
     typedef Ravelin::VectorNd VecR;
-    const double TOL = 2e-16;
+    const double TOL = sqrt(ZERO_TOL);//2e-16;
 #endif
 
     const static double NEAR_ZERO = sqrt(ZERO_TOL);
@@ -48,5 +48,7 @@
     VecR randV(unsigned r);
     MatR asRavelin(const MatE& E);
     VecR asRavelin(const VecE& E);
+    void swaprows(MatR& M,unsigned r1, unsigned r2);
+    void swapcolumns(MatR& M,unsigned r1, unsigned r2);
 
 #endif //_UNITTESTING_HPP_

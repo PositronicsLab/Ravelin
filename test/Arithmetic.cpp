@@ -1,6 +1,6 @@
 #include <UnitTesting.hpp>
 
-static const unsigned MIN_SIZE = 0, MAX_SIZE = 9;
+static const unsigned MIN_SIZE = 0, MAX_SIZE = 7;
 
     // MatrixNd*MatrixNd
     void MM_Mult()

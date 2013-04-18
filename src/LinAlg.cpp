@@ -50,9 +50,17 @@ void LINALG::factor_LDL(MATRIXN& A, vector<int>& IPIV)
  */
 void LINALG::factor_QR(MATRIXN& AR, MATRIXN& Q, vector<int>& PI)
 {
+  // get matrix/vector
+  VECTORN& tau = workv2();
+
+  // setup constants
+  const unsigned m = AR.rows();
+  const unsigned n = AR.columns();
+  
   // determine LAPACK parameters
   INTEGER M = AR.rows();
   INTEGER N = AR.columns();
+  INTEGER MINMN = std::min(M, N);
   unsigned min_mn = (unsigned) std::min(M,N); 
  
   // setup tau vector
@@ -69,9 +77,10 @@ void LINALG::factor_QR(MATRIXN& AR, MATRIXN& Q, vector<int>& PI)
   geqp3_(&M, &N, AR.data(), &LDA, PI.data(), workv2().data(), &INFO);
   assert(INFO == 0);
 
-  // correct indices for PI
-  for (int i=0; i< N; i++)
-    PI[i]--;
+  // setup Q
+  Q.resize(m,m);
+  std::copy(AR.data(), AR.data()+m*min_mn, Q.data());
+  orgqr_(&M, &MINMN, &MINMN, Q.data(), &M, tau.data(), &INFO);
 
   // resize AR
   AR.resize(std::min(AR.rows(), AR.columns()), AR.columns(), true);
