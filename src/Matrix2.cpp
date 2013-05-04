@@ -404,7 +404,7 @@ bool MATRIX2::is_symmetric(REAL tolerance) const
   tolerance = std::fabs(tolerance);
 
   // check symmetric
-  if (!rel_equal(xy(), yx(), tolerance))
+  if (!OPS::rel_equal(xy(), yx(), tolerance))
     return false;
 
   return true;

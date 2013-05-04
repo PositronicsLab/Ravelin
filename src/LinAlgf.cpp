@@ -18,7 +18,7 @@
 #include <Ravelin/NonsquareMatrixException.h>
 #include <Ravelin/NumericalException.h>
 #include <Ravelin/SingularException.h>
-#include <Ravelin/Operators.h>
+#include <Ravelin/Opsf.h>
 #include <Ravelin/LinAlgf.h>
 
 using namespace Ravelin;

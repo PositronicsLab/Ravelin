@@ -11,7 +11,7 @@
 #include <algorithm>
 #include <Ravelin/cblas.h>
 #include <Ravelin/Constants.h>
-#include <Ravelin/Operators.h>
+#include <Ravelin/Opsf.h>
 #include <Ravelin/MissizeException.h>
 #include <Ravelin/InvalidIndexException.h>
 #include <Ravelin/AAnglef.h>

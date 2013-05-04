@@ -5,7 +5,7 @@
  ****************************************************************************/
 
 #include <cmath>
-#include <Ravelin/Operators.h>
+#include <Ravelin/Opsf.h>
 #include <Ravelin/Constants.h>
 #include <Ravelin/Point3f.h>
 

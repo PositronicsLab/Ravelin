@@ -41,7 +41,7 @@ bool POINT3::operator<(const POINT3& v) const
   const unsigned LEN = 3;
   for (unsigned i=0; i< LEN; i++)
   {
-    if (rel_equal(_data[i], v[i]))
+    if (OPS::rel_equal(_data[i], v[i]))
       continue;
     return _data[i] < v[i];
   }

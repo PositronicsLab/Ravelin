@@ -621,7 +621,7 @@ bool MATRIX3::is_symmetric(REAL tolerance) const
   // check symmetric
   for (unsigned i=0; i< rows()-1; i++)
     for (unsigned j=i+1; j< rows(); j++)
-      if (!rel_equal(operator()(i,j), operator()(j,i), tolerance))
+      if (!OPS::rel_equal(operator()(i,j), operator()(j,i), tolerance))
         return false;
 
   return true;

@@ -35,4 +35,5 @@
 #define POSE2 Pose2d
 #define ORIGIN2 Origin2d
 #define ORIGIN3 Origin3d
+#define OPS Opsd
 

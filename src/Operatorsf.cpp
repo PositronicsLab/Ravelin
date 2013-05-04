@@ -4,7 +4,7 @@
  * License (found in COPYING).
  ****************************************************************************/
 
-#include <Ravelin/Operators.h>
+#include <Ravelin/Opsf.h>
 
 using namespace Ravelin;
 

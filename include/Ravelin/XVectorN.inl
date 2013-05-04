@@ -313,7 +313,7 @@ bool operator<(const V& v) const
   unsigned shorter = std::min(size(), v.size());
   for (unsigned i=0; i< shorter; i++, data++, vdata++)
   {
-    if (rel_equal(*data, *vdata))
+    if (OPS::rel_equal(*data, *vdata))
       continue;
     return (*data < *vdata);
   }
@@ -346,7 +346,7 @@ bool operator==(const V& v) const
   CONST_ITERATOR data = begin();
   CONST_ITERATOR vdata = v.begin();
   for (unsigned i=0; i< size(); i++, data++, vdata++)
-    if (!rel_equal(*data, *vdata))
+    if (!OPS::rel_equal(*data, *vdata))
       return false;
     
   return true;

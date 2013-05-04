@@ -12,7 +12,7 @@
 #include <Ravelin/InvalidIndexException.h>
 #include <Ravelin/MissizeException.h>
 #include <Ravelin/Constants.h>
-#include <Ravelin/Operators.h>
+#include <Ravelin/Opsd.h>
 #include <Ravelin/SharedResizable>
 
 namespace Ravelin {

@@ -8,7 +8,7 @@
 #include <cmath>
 #include <Ravelin/AAngled.h>
 #include <Ravelin/Constants.h>
-#include <Ravelin/Operators.h>
+#include <Ravelin/Opsd.h>
 #include <Ravelin/MissizeException.h>
 
 using namespace Ravelin;

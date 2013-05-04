@@ -10,7 +10,7 @@
 #include <cmath>
 #include <algorithm>
 #include <Ravelin/Constants.h>
-#include <Ravelin/Operators.h>
+#include <Ravelin/Opsd.h>
 #include <Ravelin/MatrixNd.h>
 #include <Ravelin/Matrix2d.h>
 

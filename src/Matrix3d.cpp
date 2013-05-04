@@ -14,7 +14,7 @@
 #include <Ravelin/MissizeException.h>
 #include <Ravelin/InvalidIndexException.h>
 #include <Ravelin/AAngled.h>
-#include <Ravelin/Operators.h>
+#include <Ravelin/Opsd.h>
 #include <Ravelin/MatrixNd.h>
 #include <Ravelin/Matrix3d.h>
 

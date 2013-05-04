@@ -35,4 +35,5 @@
 #undef ROT2
 #undef ORIGIN2
 #undef ORIGIN3
+#undef OPS
 

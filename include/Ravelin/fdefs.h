@@ -35,4 +35,5 @@
 #define POSE2 Pose2f
 #define ORIGIN2 Origin2f
 #define ORIGIN3 Origin3f
+#define OPS Opsf
 
