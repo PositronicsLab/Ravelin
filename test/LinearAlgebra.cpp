@@ -17,7 +17,7 @@ void testSVD(){
 
     for(int i=1;i<MAX_SIZE;i++){
         unsigned r = 1 << (i-1),c = r;
-        std::cout << "SIZE: " << r << std::endl;
+//        std::cout << "SIZE: " << r << std::endl;
         MatR A,B,AB(r,r);
 
         // Create PD matrix A
@@ -66,6 +66,89 @@ void testSVD(){
         // x1 == x2 ?
         checkError(std::cout, "solve_LS_fast(U,S,V)", x,xb);
     }
+
+    for(int i=2;i<MAX_SIZE;i++){
+        for(int j=2;j<MAX_SIZE;j++){
+            for(int k=2;k<MAX_SIZE;k++){
+                unsigned m = i;//1 << (i-1);
+                unsigned n = j;//1 << (j-1);
+//                if(!(n >= m && n >= k)) continue;
+                if(!(n == m && n >= k)) continue;
+                std::cout << "SIZE: " << m << "x" << n << ", k = " << k << std::endl;
+                MatR A,AB = randM(m,n);
+                MatR U,V;
+                VecR s;
+                A = AB;
+
+                /// Test the SVD1 Decomp
+                LA->svd1(AB,U,s,V);
+
+                MatR x = randM(n,k),b(m,k);
+                //Ax1 = b
+                A.mult(x,b);
+                MatR xb = b;
+                //(A^-1)b = x2
+                LA->solve_LS_fast(U,s,V,xb);
+                // x1 == x2 ?
+                checkError(std::cout, "solve_LS_fast(U,S,V)", x,xb);
+
+            }
+        }
+    }
+}
+
+void testQR(){
+    std::cout << ">> testQR: " << std::endl;
+
+    for(int i=2;i<MAX_SIZE;i++){
+        for(int j=2;j<MAX_SIZE;j++){
+            unsigned m = i;//1 << (i-1);
+            unsigned n = j, c = n;//1 << (j-1);
+            /// factor_QR only works for m<=n
+            if(m>n) continue;
+
+            MatR A,AR(m,n),Q(m,m);
+
+            // Create PD matrix A
+            AR = randM(m,n);
+
+            A = AR;
+            /// Test the QR Decomp
+            LA->factor_QR(AR,Q);
+            MatR QR(Q.rows(),AR.columns());
+
+            Q.mult(AR,QR);
+            checkError(std::cout, "factor_QR(AR,Q)", A,QR);
+
+            /// factor_QR(AR,Q,PI) only works for m!=n
+            if(m==n) continue;
+
+            AR = A;
+            Q.set_zero();
+            /// Test the QR Decomp
+            std::vector<int> PI;
+            LA->factor_QR(AR,Q,PI);
+
+            QR.set_zero();
+            VecR workv(AR.columns());
+
+            MatR R;
+
+            if(AR.rows()>=AR.columns()){
+               R.resize(PI.size(),AR.columns());
+               for(int ii = AR.columns()-1;ii>=0;ii--)
+                  R.set_row(PI[ii]-1,AR.get_row(ii,workv));
+            } else {
+               R.resize(AR.rows(),PI.size());
+               for(int ii = AR.columns()-1;ii>=0;ii--)
+                  R.set_column(PI[ii]-1,AR.get_column(ii,workv));
+            }
+            QR.resize(Q.rows(),R.columns());
+
+            Q.mult(R,QR);
+            checkError(std::cout, "factor_QR(AR,Q,PI)", A,QR);
+        }
+    }
 }
 
 void testLU(){
@@ -106,31 +189,17 @@ void testLU(){
         // Permutation is confusing... needs to be done back to front
         MatR A2(s,s);
         A2 = LU2;
-        for(int ii = A2.rows()-1;ii>=0;ii--){
-            VecR row1(A2.columns()), row2(A2.columns());
-            A2.get_row(ii,row1);
-            A2.get_row(P[ii]-1,row2);
+        for(int ii = A2.rows()-1;ii>=0;ii--)
+            swaprows(A2,ii,P[ii]-1);
 
-            A2.set_row(ii,row2);
-            A2.set_row(P[ii]-1,row1);
-        }
 
         checkError(std::cout, "factor_LU", A,A2);
-
-
-
 
         /// Test SVD Solve
         MatR x = randM(s,1),b(s,1);
         //Ax1 = b
         A.mult(x,b);
         MatR xb = b;
-//        for(int ii = A2.rows()-1;ii>=0;ii--)
-//            std::cout << P[ii] << std::endl;
-//            std::swap(xb(ii,0),xb(P[ii]-1,0));
-//        for(int ii = A2.rows()-1;ii>=0;ii--)
-//            std::swap(x(ii,0),x(P[ii]-1,0));
-        //(A^-1)b = x2
 
         LA->solve_LU_fast(LU,false,P,xb);
 
@@ -169,8 +238,11 @@ void testChol(){
 
             /// Test SPSD
                 AB =A;
-                LA->is_SPSD(AB,ZERO_TOL * S.rows() * (*std::max_element(S.begin(),S.end())));
-                std::cout << " [PASS] is_SPSD(SPSD): " << std::endl;
+                if(LA->is_SPSD(AB,ZERO_TOL * S.rows() * (*std::max_element(S.begin(),S.end()))))
+                    std::cout << "[PASS] is_SPSD(SPSD): " << std::endl;
+                else
+                    std::cout << "[FAIL] is_SPSD(SPSD): " << std::endl;
+
 
             /// Test Eigen
                 AB =A;
@@ -178,18 +250,15 @@ void testChol(){
             /// Test eigen decomp
                 LA->eig_symm (AB,evals);
                 // S should be same as eigenvalues
+                std::reverse(evals.begin(),evals.end());
                 checkError(std::cout, "eig_symm", evals,S);
-
-            /// Test Eigen Vec...
-//                eig_symm_plus (X &A_evecs, Y &evals);
-
         }
 
 
         // Create SPD matrix A
         bool PD = false;
         while(!PD){
-            A = randM(s,c);
+            A = randM(s,s);
             B = A;
             B.transpose();
             A.mult(B,AB);
@@ -206,13 +275,16 @@ void testChol(){
 
             /// Test SPD
                 AB =A;
-                LA->is_SPD(AB,ZERO_TOL * S.rows() * (*std::max_element(S.begin(),S.end())));
-                std::cout << " [PASS] is_SPD: " << std::endl;
-
+                if(LA->is_SPD(AB,ZERO_TOL * S.rows() * (*std::max_element(S.begin(),S.end()))))
+                    std::cout << "[PASS] is_SPD: " << std::endl;
+                else
+                    std::cout << "[FAIL] is_SPD: " << std::endl;
             /// Test SPSD
                 AB =A;
-                LA->is_SPSD(AB,ZERO_TOL * S.rows() * (*std::max_element(S.begin(),S.end())));
-                std::cout << " [PASS] is_SPSD(SPD): " << std::endl;
+                if(LA->is_SPSD(AB,ZERO_TOL * S.rows() * (*std::max_element(S.begin(),S.end()))))
+                    std::cout << "[PASS] is_SPSD(SPD): " << std::endl;
+                else
+                    std::cout << "[FAIL] is_SPSD(SPD): " << std::endl;
 
         }
 
@@ -346,6 +418,7 @@ void TestLinearAlgebra(){
     testChol();
     testLA();
     testLU();
+    testQR();
 }
 
 

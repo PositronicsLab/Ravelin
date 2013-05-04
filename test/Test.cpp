@@ -6,6 +6,6 @@ void TestLinearAlgebra();
 
 
 int main(){
-//    TestArithmetic();
+    TestArithmetic();
     TestLinearAlgebra();
 }

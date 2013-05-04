@@ -127,4 +127,16 @@
         return R;
     }
  
+    void swaprows(MatR& M,unsigned r1, unsigned r2){
+        for(unsigned i=0;i<M.columns();i++){
+            std::swap(M(r1,i),M(r2,i));
+        }
+    }
+
+    void swapcolumns(MatR& M,unsigned r1, unsigned r2){
+        for(unsigned i=0;i<M.rows();i++){
+            std::swap(M(i,r1),M(i,r2));
+        }
+    }
+
 
