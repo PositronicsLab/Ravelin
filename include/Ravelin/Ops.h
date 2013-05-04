@@ -7,7 +7,7 @@ class OPS
 
     /// Does a transposition operation
     template <class M1, class M2>
-    M2& transpose(const M1& m1, M2& m2)
+    static M2& transpose(const M1& m1, M2& m2)
     {
       // resize m2
       m2.resize(m1.columns(), m2.rows());
@@ -30,7 +30,7 @@ class OPS
 
     /// Multiples a matrix by the transpose of a matrix or vector
     template <class T, class U, class V>
-    V& mult_transpose(const T& x, const U& y, V& z)
+    static V& mult_transpose(const T& x, const U& y, V& z)
     {
       // verify that we can multiply these
       if (x.columns() != y.columns())
@@ -47,7 +47,7 @@ class OPS
 
     /// Multiples a matrix by a matrix or vector
     template <class T, class U, class V>
-    V& mult(const T& x, const U& y, V& z)
+    static V& mult(const T& x, const U& y, V& z)
     {
       // verify that we can multiply these
       if (x.columns() != y.rows())
@@ -69,7 +69,7 @@ class OPS
 
     /// Multiples the transpose of a matrix or vector by a matrix or vector
     template <class T, class U, class V>
-    V& transpose_mult(const T& x, const U& y, V& z)
+    static V& transpose_mult(const T& x, const U& y, V& z)
     {
       // verify that we can multiply these
       if (x.rows() != y.rows())
@@ -86,7 +86,7 @@ class OPS
 
     /// Multiples a matrix by a matrix or vector
     template <class T, class U, class V>
-    V& transpose_mult_transpose(const T& x, const U& y, V& z)
+    static V& transpose_mult_transpose(const T& x, const U& y, V& z)
     {
       // verify that we can multiply these
       if (x.rows() != y.columns())
@@ -102,7 +102,7 @@ class OPS
     }
 
     template <class U, class V, class M>
-    M& outer_prod(const U& x, const V& y, M& z)
+    static M& outer_prod(const U& x, const V& y, M& z)
     {
       // make sure both are vectors
       if (x.columns() != 1 || y.columns() != 1)
