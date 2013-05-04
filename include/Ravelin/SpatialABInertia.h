@@ -75,7 +75,7 @@ class SPATIAL_AB_INERTIA
     MATRIX3 M;
 
     /// The pose that this inertia is defined in
-    boost::shared_ptr<POSE3> pose;
+    boost::shared_ptr<const POSE3> pose;
 }; // end class
 
 std::ostream& operator<<(std::ostream& out, const SPATIAL_AB_INERTIA& m);

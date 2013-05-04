@@ -13,7 +13,7 @@ VECTOR2::VECTOR2(REAL x, REAL y)
 }
 
 /// Constructs this vector with the given values
-VECTOR2::VECTOR2(REAL x, REAL y, boost::shared_ptr<POSE2> rpose)
+VECTOR2::VECTOR2(REAL x, REAL y, boost::shared_ptr<const POSE2> rpose)
 {
   const unsigned X = 0, Y = 1;
   _data[X] = x;

@@ -15,15 +15,27 @@ class TWIST : public SVECTOR6
   public:
     /// Constructs a twist with zero linear and zero angular components
     TWIST() : SVECTOR6() {}
- 
+
+    /// Constructs a twist from a SVector6
+    TWIST(const SVECTOR6& v) : SVECTOR6(v.get_upper(), v.get_lower(), v.pose) {} 
+
     /// Constructs a twist from six values (first three linear, next three angular)
     TWIST(REAL lx, REAL ly, REAL lz, REAL ax, REAL ay, REAL az) : SVECTOR6(ax, ay, az, lx, ly, lz) {};
+
+    /// Constructs a twist from six values (first three linear, next three angular) and a pose
+    TWIST(REAL lx, REAL ly, REAL lz, REAL ax, REAL ay, REAL az, boost::shared_ptr<POSE3> pose) : SVECTOR6(ax, ay, az, lx, ly, lz, pose) {};
 
     /// Constructs a twist from six values (first three linear, next three angular)
     TWIST(const REAL* array) : SVECTOR6(array[3], array[4], array[5], array[0], array[1], array[2]) {}
 
+    /// Constructs a twist from six values (first three linear, next three angular) and a pose
+    TWIST(const REAL* array, boost::shared_ptr<POSE3> pose) : SVECTOR6(array[3], array[4], array[5], array[0], array[1], array[2], pose) {}
+
     /// Constructs a twist from linear and angular components
     TWIST(const VECTOR3& linear, const VECTOR3& angular) : SVECTOR6(angular, linear) {}
+
+    /// Constructs a twist from linear and angular components and a pose
+    TWIST(const VECTOR3& linear, const VECTOR3& angular, boost::shared_ptr<POSE3> pose) : SVECTOR6(angular, linear, pose) {}
 
     /// Returns a zero twist
     static TWIST zero() { TWIST t; t.set_zero(); return t; }
@@ -51,4 +63,5 @@ class TWIST : public SVECTOR6
 */
 }; // end class
 
+std::ostream& operator<<(std::ostream&, const TWIST& t);
 

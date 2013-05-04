@@ -17,7 +17,7 @@ class VECTOR3
   public:
     VECTOR3() {}
     VECTOR3(REAL x, REAL y, REAL z);
-    VECTOR3(REAL x, REAL y, REAL z, boost::shared_ptr<POSE3> pose);
+    VECTOR3(REAL x, REAL y, REAL z, boost::shared_ptr<const POSE3> pose);
     VECTOR3(const REAL* array);
     VECTOR3(const VECTOR3& source) { operator=(source); }
     VECTOR3(const POINT3& source) { operator=(source); }
@@ -90,7 +90,7 @@ class VECTOR3
     }
 
     /// The frame that this vector is defined in
-    boost::shared_ptr<POSE3> pose;
+    boost::shared_ptr<const POSE3> pose;
 
   private:
     REAL _data[3];

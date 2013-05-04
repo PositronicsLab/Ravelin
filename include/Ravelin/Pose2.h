@@ -44,7 +44,7 @@ class POSE2 : public boost::enable_shared_from_this<POSE2>
     ORIGIN2 x;
 
     /// the pose that *this* pose is relative to (if any)
-    boost::shared_ptr<POSE2> rpose; 
+    boost::shared_ptr<const POSE2> rpose; 
 
   private:
     std::pair<ROT2, ORIGIN2> calc_transform(boost::shared_ptr<const POSE2> p) const;

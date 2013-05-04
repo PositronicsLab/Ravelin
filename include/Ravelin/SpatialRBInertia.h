@@ -53,7 +53,7 @@ class SPATIAL_RB_INERTIA
     MATRIX3 J;
 
     /// The pose that this inertia is defined in
-    boost::shared_ptr<POSE3> pose;
+    boost::shared_ptr<const POSE3> pose;
 
     /// Converts this to a matrix
     template <class M>

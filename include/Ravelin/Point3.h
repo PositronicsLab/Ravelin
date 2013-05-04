@@ -18,7 +18,7 @@ class POINT3
   public:
     POINT3() {}
     POINT3(REAL x, REAL y, REAL z);
-    POINT3(REAL x, REAL y, REAL z, boost::shared_ptr<POSE3> pose);
+    POINT3(REAL x, REAL y, REAL z, boost::shared_ptr<const POSE3> pose);
     POINT3(const ORIGIN3& o) { operator=(o); }
     POINT3(const VECTOR3& p) { operator=(p); }
     POINT3(const REAL* array);
@@ -69,7 +69,7 @@ class POINT3
     REAL* data(unsigned i);
 
     /// The 3D pose this point is defined with respect to
-    boost::shared_ptr<POSE3> pose;
+    boost::shared_ptr<const POSE3> pose;
 
   private:
     REAL _data[3];

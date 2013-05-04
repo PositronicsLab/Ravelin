@@ -21,7 +21,7 @@ POINT2::POINT2(const ORIGIN2& o)
 }
 
 /// Constructs this vector with the given values
-POINT2::POINT2(REAL x, REAL y, boost::shared_ptr<POSE2> p)
+POINT2::POINT2(REAL x, REAL y, boost::shared_ptr<const POSE2> p)
 {
   const unsigned X = 0, Y = 1;
   _data[X] = x;

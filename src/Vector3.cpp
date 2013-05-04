@@ -14,7 +14,7 @@ VECTOR3::VECTOR3(REAL x, REAL y, REAL z)
 }
 
 /// Constructs this vector with the given values
-VECTOR3::VECTOR3(REAL x, REAL y, REAL z, boost::shared_ptr<POSE3> rpose)
+VECTOR3::VECTOR3(REAL x, REAL y, REAL z, boost::shared_ptr<const POSE3> rpose)
 {
   const unsigned X = 0, Y = 1, Z = 2;
   _data[X] = x;

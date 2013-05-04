@@ -18,7 +18,7 @@ class POINT2
   public:
     POINT2() {}
     POINT2(REAL x, REAL y);
-    POINT2(REAL x, REAL y, boost::shared_ptr<POSE2> pose);
+    POINT2(REAL x, REAL y, boost::shared_ptr<const POSE2> pose);
     POINT2(const REAL* array);
     POINT2(const ORIGIN2& o);
     POINT2(const VECTOR2& v) { operator=(v); } 
@@ -57,7 +57,7 @@ class POINT2
     REAL& y() { return _data[1]; }
 
     /// The 2D pose that this point is defined with respect to 
-    boost::shared_ptr<POSE2> pose; 
+    boost::shared_ptr<const POSE2> pose; 
 
   private:
     static REAL sqr(REAL x) { return x*x; }

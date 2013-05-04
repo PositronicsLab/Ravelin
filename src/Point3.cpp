@@ -14,7 +14,7 @@ POINT3::POINT3(REAL x, REAL y, REAL z)
 }
 
 /// Constructs this vector with the given values and defined with respect to the given pose
-POINT3::POINT3(REAL x, REAL y, REAL z, boost::shared_ptr<POSE3> p)
+POINT3::POINT3(REAL x, REAL y, REAL z, boost::shared_ptr<const POSE3> p)
 {
   const unsigned X = 0, Y = 1, Z = 2;
   _data[X] = x;

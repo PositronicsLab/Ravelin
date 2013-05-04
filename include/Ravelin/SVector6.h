@@ -19,9 +19,13 @@ class SVECTOR6
 {
   public:
     SVECTOR6() {}
+    SVECTOR6(boost::shared_ptr<const POSE3> pose) { this->pose = pose; }
     SVECTOR6(REAL x, REAL y, REAL z, REAL a, REAL b, REAL c);
+    SVECTOR6(REAL x, REAL y, REAL z, REAL a, REAL b, REAL c, boost::shared_ptr<const POSE3> pose);
     SVECTOR6(const REAL* array);
+    SVECTOR6(const REAL* array, boost::shared_ptr<const POSE3> pose);
     SVECTOR6(const VECTOR3& upper, const VECTOR3& lower);
+    SVECTOR6(const VECTOR3& upper, const VECTOR3& lower, boost::shared_ptr<const POSE3> pose);
     unsigned size() const { return 6; }
     static SVECTOR6 spatial_cross(const SVECTOR6& v1, const SVECTOR6& v2);
     static SVECTOR6 zero() { return SVECTOR6(0,0,0,0,0,0); }
@@ -54,9 +58,10 @@ class SVECTOR6
     CONST_ITERATOR begin() const;
     ITERATOR end();
     CONST_ITERATOR end() const;
+    SVECTOR6& negate() { std::transform(_data, _data+6, _data, std::negate<REAL>()); return *this; }
 
     /// The frame that this vector is defined in
-    boost::shared_ptr<POSE3> pose;
+    boost::shared_ptr<const POSE3> pose;
 
   private:
     REAL _data[6];

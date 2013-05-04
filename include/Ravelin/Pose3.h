@@ -71,7 +71,7 @@ class POSE3 : public boost::enable_shared_from_this<POSE3>
     ORIGIN3 x;
 
     /// the pose that *this* pose is relative to (if any)
-    boost::shared_ptr<POSE3> rpose; 
+    boost::shared_ptr<const POSE3> rpose; 
 
   private:
     void get_r_E(VECTOR3& r, MATRIX3& E, bool inverse) const;

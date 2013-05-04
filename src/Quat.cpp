@@ -120,7 +120,13 @@ QUAT QUAT::conjugate(const QUAT& q)
   return QUAT(-q.x, -q.y, -q.z, q.w);
 }
 
-/// Computes the 3x4 matrix 'L' times a four dimensional array
+/// Multiplies the 3x4 matrix 'L' times a four dimensional array
+/**
+ * This matrix is used in the relationships omega' = 2*L*qd and 
+ * alpha' = 2*L*qdd, where omega'/alpha' are the angular velocity/acceleration 
+ * of a rigid body in the body's frame and qd/qdd are the first/second time 
+ * derivatives of the Euler (unit quaternion) parameters.
+ */
 VECTOR3 QUAT::L_mult(const QUAT& q) const
 {
   VECTOR3 v;
@@ -152,17 +158,30 @@ MatrixNf& QUAT::determine_G(MatrixNf& G) const
   return G;
 }
 */
+
 /// Multiplies the matrix 'G' by a quaternion vector
+/**
+ * This matrix is used in the relationships omega = 2*G*qd and 
+ * alpha = 2*G*qdd, where omega/alpha are the angular velocity/acceleration 
+ * of a rigid body in the game frame and qd/qdd are the first/second time 
+ * derivatives of the Euler (unit quaternion) parameters.
+ */
 VECTOR3 QUAT::G_mult(REAL qw, REAL qx, REAL qy, REAL qz) const
 {
   VECTOR3 r;
   r.x() = -x*qw + w*qx - z*qy + y*qz;
   r.y() = -y*qw + z*qx + w*qy - x*qz;
-  r[2] = -z*qw - y*qx + x*qy + w*qz;
+  r.z() = -z*qw - y*qx + x*qy + w*qz;
   return r;
 }
 
-/// Multiplies the matrix 'G' (transpose) by a vector
+/// Multiplies the transpose of the matrix 'G' by a vector
+/**
+ * This matrix is used in the relationships qd = 1/2*G^T*omega and 
+ * qdd = 1/2*G^T*alpha - 1/4*omega^2*q, where omega/alpha are the angular 
+ * velocity/acceleration of a rigid body in the global frame and qd/qdd are the 
+ * first/second time derivatives of the Euler (unit quaternion) parameters.
+ */
 QUAT QUAT::G_transpose_mult(const VECTOR3& v) const
 {
   QUAT output;
@@ -173,7 +192,13 @@ QUAT QUAT::G_transpose_mult(const VECTOR3& v) const
   return output;
 }
 
-/// Multiplies the matrix 'L' (transpose) by a vector
+/// Multiplies the transpose of the matrix 'L' by a vector
+/**
+ * This matrix is used in the relationships qd = 1/2*L^T*omega and 
+ * qdd = 1/2*L^T*alpha' - 1/4*omega'^2*q, where omega'/alpha' are the angular 
+ * velocity/acceleration of a rigid body in the body frame and qd/qdd are the 
+ * first/second time derivatives of the Euler (unit quaternion) parameters.
+ */
 QUAT QUAT::L_transpose_mult(const VECTOR3& v) const
 {
   QUAT output;
