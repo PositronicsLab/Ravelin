@@ -55,7 +55,6 @@ class MATRIXN
     MATRIXN& negate();
     MATRIXN& set_zero();
     virtual MATRIXN& transpose();
-    static MATRIXN& transpose(const MATRIXN& m, MATRIXN& result);
     virtual MATRIXN& operator=(const MATRIXN& source);
     MATRIXN& operator=(const MATRIX2& source);
     MATRIXN& operator=(const MATRIX3& source);

@@ -15,6 +15,52 @@
 
 namespace Ravelin {
 
+/// Does a transposition operation
+template <class M1, class M2>
+M2& transpose(const M1& m1, M2& m2)
+{
+  if (sizeof(*m1.data()) != sizeof(*m2.data()))
+    throw DataMismatchException();
+ 
+  // resize m2
+  m2.resize(m1.columns(), m2.rows());
+
+  // setup necessary constants
+  const unsigned LD1 = m1.leading_dim();
+  const unsigned LD2 = m2.leading_dim();
+
+  // case 1: double type
+  if (sizeof(*m1.data()) == sizeof(double))
+  {
+    const double* d1 = (const double*) m1.data(); 
+    double* d2 = (double*) m2.data(); 
+
+    // do the transposition
+    for (unsigned i=0, i1=0; i< m1.rows(); i++)
+    {
+      for (unsigned j=0, i2=i; j< m1.columns(); j++, i2 += LD2)
+        d2[i2] = d1[i1+j]; 
+      i1 += LD1;
+    }
+  }
+  else
+  {
+    assert(sizeof(*m1.data()) == sizeof(float));
+    const float* d1 = (const float*) m1.data(); 
+    float* d2 = (float*) m2.data(); 
+
+    // do the transposition
+    for (unsigned i=0, i1=0; i< m1.rows(); i++)
+    {
+      for (unsigned j=0, i2=i; j< m1.columns(); j++, i2 += LD2)
+        d2[i2] = d1[i1+j];
+      i1 += LD1;
+    }
+  }
+
+  return m2;
+}
+
 /// Determines whether two floats are equal
 inline bool rel_equal(float x, float y)
 {
