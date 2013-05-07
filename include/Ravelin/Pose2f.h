@@ -9,8 +9,10 @@
 
 #include <boost/enable_shared_from_this.hpp>
 #include <boost/shared_ptr.hpp>
+#include <Ravelin/Constants.h>
 #include <Ravelin/FrameException.h>
 #include <Ravelin/Origin2f.h>
+#include <Ravelin/Opsf.h>
 #include <Ravelin/Rot2f.h>
 
 namespace Ravelin {

@@ -11,6 +11,8 @@
 #include <boost/shared_ptr.hpp>
 #include <Ravelin/FrameException.h>
 #include <Ravelin/Origin2d.h>
+#include <Ravelin/Constants.h>
+#include <Ravelin/Opsd.h>
 #include <Ravelin/Rot2d.h>
 
 namespace Ravelin {

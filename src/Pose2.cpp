@@ -38,6 +38,42 @@ POSE2& POSE2::operator=(const POSE2& p)
   return *this;
 }
 
+/// Wraps an angle to [-pi, pi]
+REAL POSE2::wrap(REAL theta)
+{
+  if (theta > (REAL) M_PI)
+  {
+    do
+    {
+      theta -= (REAL) M_PI;
+    }
+    while (theta > (REAL) M_PI);
+  }
+  else if (theta < (REAL) -M_PI)
+  {
+    do
+    {
+      theta += (REAL) M_PI;
+    }
+    while (theta < (REAL) -M_PI);
+  }
+
+  return theta;
+}
+
+/// Determines whether two poses in 2D are relatively equivalent
+bool POSE2::rel_equal(const POSE2& p1, const POSE2& p2, REAL tol)
+{
+  // wrap two thetas to [-pi, pi]
+  REAL theta1 = wrap(p1.r.theta);
+  REAL theta2 = wrap(p2.r.theta);
+
+  // check all components
+  return OPS::rel_equal(p1.x[0], p2.x[0], tol) && 
+         OPS::rel_equal(p1.x[1], p2.x[1], tol) &&
+         OPS::rel_equal(theta1, theta2, tol);
+}
+
 /// Interpolates between two 4x4 transforms using spherical linear interpolation
 /**
  * \param T1 the matrix to use when t=0
@@ -49,6 +85,10 @@ POSE2 POSE2::interpolate(const POSE2& T1, const POSE2& T2, REAL t)
 {
   // interpolate the positions
   ORIGIN2 x = T1.x*(1-t) + T2.x*t;
+
+  // wrap two thetas to [-pi, pi]
+  REAL theta1 = wrap(T1.r.theta);
+  REAL theta2 = wrap(T2.r.theta);
 
   // interpolate the rotations
   ROT2 r = T1.r.theta*(1-t) + T2.r.theta*t;

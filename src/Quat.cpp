@@ -127,12 +127,12 @@ QUAT QUAT::conjugate(const QUAT& q)
  * of a rigid body in the body's frame and qd/qdd are the first/second time 
  * derivatives of the Euler (unit quaternion) parameters.
  */
-VECTOR3 QUAT::L_mult(const QUAT& q) const
+VECTOR3 QUAT::L_mult(REAL qw, REAL qx, REAL qy, REAL qz) const
 {
   VECTOR3 v;
-  v.x() = -x*q.x + w*q.y + z*q.z - y*q.w;
-  v.y() = -y*q.x - z*q.y + w*q.z + x*q.w;
-  v.z() = -z*q.x + y*q.y - x*q.z + w*q.w;
+  v.x() = -x*qx + w*qy + z*qz - y*qw;
+  v.y() = -y*qx - z*qy + w*qz + x*qw;
+  v.z() = -z*qx + y*qy - x*qz + w*qw;
   return v;
 }
 

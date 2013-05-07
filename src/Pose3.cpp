@@ -62,6 +62,20 @@ POSE3& POSE3::operator=(const POSE3& p)
   return *this;
 }
 
+/// Determines whether two poses in 3D are relatively equivalent
+bool POSE3::rel_equal(const POSE3& p1, const POSE3& p2, REAL tol)
+{
+  // check x components first
+  if (!OPS::rel_equal(p1.x[0], p2.x[0], tol) || 
+      !OPS::rel_equal(p1.x[1], p2.x[1], tol) ||
+      !OPS::rel_equal(p1.x[2], p2.x[2], tol))
+    return false;
+
+  // now check rotation (it's more expensive)
+  REAL angle = QUAT::calc_angle(p1.q, p2.q);
+  return OPS::rel_equal(angle, (REAL) 0.0, tol);
+}
+
 /// Interpolates between two 4x4 transforms using spherical linear interpolation
 /**
  * \param T1 the matrix to use when t=0

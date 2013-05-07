@@ -79,7 +79,7 @@ class QUAT
     QUAT L_transpose_mult(const VECTOR3& v) const;
 //    MATRIXN& determine_G(MATRIXN& G) const;
 //    MATRIXN& determine_L(MATRIXN& L) const;
-    VECTOR3 L_mult(const QUAT& q) const;
+    VECTOR3 L_mult(REAL qw, REAL qx, REAL qy, REAL qz) const;
     
     /// First quaternion component
     REAL x;

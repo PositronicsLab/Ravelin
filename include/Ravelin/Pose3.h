@@ -26,9 +26,10 @@ class POSE3 : public boost::enable_shared_from_this<POSE3>
     POSE3(const ORIGIN3& v);
     static POSE3 identity() { POSE3 T; T.set_identity(); return T; }
     static POSE3 interpolate(const POSE3& m1, const POSE3& m2, REAL t);
-    POINT3 transform(const POINT3& v) const;
+    static bool rel_equal(const POSE3& p1, const POSE3& p2, REAL tol = EPS);
+    POINT3 transform(const POINT3& p) const;
     VECTOR3 transform(const VECTOR3& v) const;
-    POINT3 inverse_transform(const POINT3& v) const;
+    POINT3 inverse_transform(const POINT3& p) const;
     VECTOR3 inverse_transform(const VECTOR3& v) const;
     POINT3 transform(boost::shared_ptr<const POSE3> p, const POINT3& v) const;
     VECTOR3 transform(boost::shared_ptr<const POSE3> p, const VECTOR3& v) const;
@@ -51,6 +52,7 @@ class POSE3 : public boost::enable_shared_from_this<POSE3>
     SPATIAL_AB_INERTIA inverse_transform(const SPATIAL_AB_INERTIA& j) const;
     SPATIAL_AB_INERTIA transform(boost::shared_ptr<const POSE3> p, const SPATIAL_AB_INERTIA& j) const;
     static SPATIAL_AB_INERTIA transform(boost::shared_ptr<const POSE3> source, boost::shared_ptr<const POSE3> target, const SPATIAL_AB_INERTIA& j);
+    static std::pair<QUAT, ORIGIN3> calc_relative_pose(boost::shared_ptr<const POSE3> source, boost::shared_ptr<const POSE3> target) { return source->calc_transform(target); }
     POSE3& set_identity();
     POSE3& invert();
     POSE3 inverse() const { return inverse(*this); }
@@ -63,7 +65,6 @@ class POSE3 : public boost::enable_shared_from_this<POSE3>
     POSE3& set(const QUAT& q, const ORIGIN3& v);
     POSE3& operator=(const POSE3& source);
     POSE3 operator*(const POSE3& m) const;
-
     /// the orientation of the pose frame
     QUAT q;
 
