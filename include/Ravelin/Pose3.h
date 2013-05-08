@@ -39,10 +39,12 @@ class POSE3 : public boost::enable_shared_from_this<POSE3>
     WRENCH inverse_transform(const WRENCH& w) const;
     WRENCH transform(boost::shared_ptr<const POSE3> p, const WRENCH& w) const;
     static WRENCH transform(boost::shared_ptr<const POSE3> source, boost::shared_ptr<const POSE3> target, const WRENCH& w);
+    static std::vector<WRENCH>& transform(boost::shared_ptr<const POSE3> source, boost::shared_ptr<const POSE3> target, const std::vector<WRENCH>& w, std::vector<WRENCH>& result);
     TWIST transform(const TWIST& t) const;
     TWIST inverse_transform(const TWIST& t) const;
     TWIST transform(boost::shared_ptr<const POSE3> p, const TWIST& t) const;
     static TWIST transform(boost::shared_ptr<const POSE3> source, boost::shared_ptr<const POSE3> target, const TWIST& t);
+    static std::vector<TWIST>& transform(boost::shared_ptr<const POSE3> source, boost::shared_ptr<const POSE3> target, const std::vector<TWIST>& t, std::vector<TWIST>& result);
     void set_relative_pose(boost::shared_ptr<const POSE3> p); 
     SPATIAL_RB_INERTIA transform(const SPATIAL_RB_INERTIA& j) const;
     SPATIAL_RB_INERTIA inverse_transform(const SPATIAL_RB_INERTIA& j) const;

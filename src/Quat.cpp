@@ -346,6 +346,14 @@ QUAT QUAT::rpy(REAL roll, REAL pitch, REAL yaw)
   return q;
 }
 
+/// Converts quaternion to roll/pitch/yaw 
+void QUAT::to_rpy(REAL& roll, REAL& pitch, REAL& yaw) const
+{
+  pitch = std::atan2((REAL) 2.0*(y*z + w*x), w*w - x*x - y*y + z*z);
+  yaw = std::asin((REAL) -2.0*(x*z - w*y));
+  roll = std::atan2((REAL) 2.0*(x*y + w*z), w*w + x*x - y*y - z*z);
+}
+
 /// Performs spherical linear interpolation between this and q
 /**
  * Calculates the orientation of determined by linear interpolation between

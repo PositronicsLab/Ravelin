@@ -683,6 +683,49 @@ WRENCH POSE3::transform(boost::shared_ptr<const POSE3> p, const WRENCH& v) const
   return transform(shared_from_this(), p, v);
 }
 
+/// Transforms a vector of wrenches 
+std::vector<WRENCH>& POSE3::transform(boost::shared_ptr<const POSE3> source, boost::shared_ptr<const POSE3> target, const std::vector<WRENCH>& w, std::vector<WRENCH>& result)
+{
+  // look for empty vector (easy case)
+  if (w.empty())
+  {
+    result.clear();
+    return result;
+  }
+
+  #ifndef NEXCEPT
+  for (unsigned i=0; i< w.size(); i++)
+    if (source != w[i].pose)
+      throw FrameException();
+  #endif
+
+  // compute the relative transform
+  std::pair<QUAT, ORIGIN3> Tx = calc_transform(source, target);
+
+  // setup r and E
+  const ORIGIN3& r = Tx.second;
+  const MATRIX3 E = Tx.first;
+
+  // resize the result vector
+  result.resize(w.size());
+
+  // look over all wrenches
+  for (unsigned i=0; i< w.size(); i++)
+  {
+    // get the components of w[i] 
+    VECTOR3 top = w[i].get_force();
+    VECTOR3 bottom = w[i].get_torque();
+
+    // do the calculations
+    VECTOR3 Etop = E * top;
+    VECTOR3 cross = VECTOR3::cross(r, Etop);
+    result[i] = WRENCH(Etop, (E * bottom) - cross);
+    result[i].pose = boost::const_pointer_cast<POSE3>(target);
+  }
+
+  return result;
+}
+
 /// Transforms the wrench 
 WRENCH POSE3::transform(boost::shared_ptr<const POSE3> source, boost::shared_ptr<const POSE3> target, const WRENCH& v)
 {
@@ -740,6 +783,49 @@ TWIST POSE3::transform(boost::shared_ptr<const POSE3> source, boost::shared_ptr<
   VECTOR3 cross = VECTOR3::cross(r, Etop);
   TWIST result(Etop, (E * bottom) - cross);
   result.pose = boost::const_pointer_cast<POSE3>(target);
+  return result;
+}
+
+/// Transforms a vector of twists 
+std::vector<TWIST>& POSE3::transform(boost::shared_ptr<const POSE3> source, boost::shared_ptr<const POSE3> target, const std::vector<TWIST>& t, std::vector<TWIST>& result)
+{
+  // look for empty vector (easy case)
+  if (t.empty())
+  {
+    result.clear();
+    return result;
+  }
+
+  #ifndef NEXCEPT
+  for (unsigned i=0; i< t.size(); i++)
+    if (source != t[i].pose)
+      throw FrameException();
+  #endif
+
+  // compute the relative transform
+  std::pair<QUAT, ORIGIN3> Tx = calc_transform(source, target);
+
+  // setup r and E
+  const ORIGIN3& r = Tx.second;
+  const MATRIX3 E = Tx.first;
+
+  // resize the result vector
+  result.resize(t.size());
+
+  // look over all wrenches
+  for (unsigned i=0; i< t.size(); i++)
+  {
+    // get the components of t[i] 
+    VECTOR3 top = t[i].get_angular();
+    VECTOR3 bottom = t[i].get_linear();
+
+    // do the calculations
+    VECTOR3 Etop = E * top;
+    VECTOR3 cross = VECTOR3::cross(r, Etop);
+    result[i] = TWIST(Etop, (E * bottom) - cross);
+    result[i].pose = boost::const_pointer_cast<POSE3>(target);
+  }
+
   return result;
 }
 

@@ -7,7 +7,7 @@
 #ifndef _TWISTD_H
 #define _TWISTD_H
 
-#include <Ravelin/SVector6f.h>
+#include <Ravelin/SVector6d.h>
 
 namespace Ravelin {
 

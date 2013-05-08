@@ -68,7 +68,7 @@ class SPATIAL_RB_INERTIA
       // setup the three 3x3 blocks (LR is -UL)
       MATRIX3 UL(0, HZ, -HY, -HZ, 0, HX, HY, -HX, 0);
       const MATRIX3& LL = J;
-      MATRIX3 UR(m, 0, 0, 0, m, 0, 0, 0, m);
+      MATRIX3 UR(this->m, 0, 0, 0, this->m, 0, 0, 0, this->m);
       m.set_sub_mat(0,0, UL);
       m.set_sub_mat(3,0, LL);
       m.set_sub_mat(0,3, UR);

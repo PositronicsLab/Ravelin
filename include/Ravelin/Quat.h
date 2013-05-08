@@ -39,6 +39,7 @@ class QUAT
     static QUAT lerp(const QUAT& q1, const QUAT& q2, REAL alpha);
     static QUAT rpy(REAL roll, REAL pitch, REAL yaw);
     static REAL calc_angle(const QUAT& q1, const QUAT& q2);
+    void to_rpy(REAL& roll, REAL& pitch, REAL& yaw) const;
     QUAT& inverse();
     static QUAT invert(const QUAT& q);
     REAL norm_sq() const;
