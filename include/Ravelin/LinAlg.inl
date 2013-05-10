@@ -330,7 +330,7 @@ unsigned calc_rank(X& A, REAL tol = (REAL) -1.0)
  * \note A is destroyed on return
  */
 template <class Y>
-MATRIXN& nullspace(Y& A, MATRIXN& nullspace, REAL tol)
+MATRIXN& nullspace(Y& A, MATRIXN& nullspace, REAL tol = -1.0)
 {
   #ifndef NEXCEPT
   if (sizeof(A.data()) != sizeof(nullspace.data()))
