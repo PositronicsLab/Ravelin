@@ -20,6 +20,7 @@
 #include <Ravelin/Twistd.h>
 #include <Ravelin/SpatialRBInertiad.h>
 #include <Ravelin/SpatialABInertiad.h>
+#include <Ravelin/Transform3d.h>
 
 namespace Ravelin {
 

@@ -8,6 +8,7 @@
 #include <cmath>
 #include <iomanip>
 #include <Ravelin/FrameException.h>
+#include <Ravelin/Transform2d.h>
 #include <Ravelin/Pose2d.h>
 
 using namespace Ravelin;

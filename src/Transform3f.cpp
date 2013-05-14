@@ -9,17 +9,17 @@
 #include <cmath>
 #include <iomanip>
 #include <Ravelin/Constants.h>
-#include <Ravelin/Quatd.h>
-#include <Ravelin/AAngled.h>
-#include <Ravelin/Matrix3d.h>
-#include <Ravelin/Opsd.h>
-#include <Ravelin/Transform3d.h>
-#include <Ravelin/Pose3d.h>
+#include <Ravelin/Quatf.h>
+#include <Ravelin/AAnglef.h>
+#include <Ravelin/Matrix3f.h>
+#include <Ravelin/Opsf.h>
+#include <Ravelin/Pose3f.h>
+#include <Ravelin/Transform3f.h>
 
 using namespace Ravelin;
 
-#include <Ravelin/ddefs.h>
-#include "Pose3.cpp"
+#include <Ravelin/fdefs.h>
+#include "Transform3.cpp"
 #include <Ravelin/undefs.h>
 
 

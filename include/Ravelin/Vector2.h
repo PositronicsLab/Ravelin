@@ -15,10 +15,9 @@ class POINT2;
 class VECTOR2
 {
   public:
-    VECTOR2() {}
-    VECTOR2(REAL x, REAL y);
-    VECTOR2(REAL x, REAL y, boost::shared_ptr<const POSE2> pose);
-    VECTOR2(const REAL* array);
+    VECTOR2(boost::shared_ptr<const POSE2> pose = boost::shared_ptr<const POSE2>()) { this->pose = pose; }
+    VECTOR2(REAL x, REAL y, boost::shared_ptr<const POSE2> pose = boost::shared_ptr<const POSE2>());
+    VECTOR2(const REAL* array, boost::shared_ptr<const POSE2> pose = boost::shared_ptr<POSE2>());
     VECTOR2(const POINT2& p) { operator=(p); }
     REAL dot(const VECTOR2& v) const { return v[0]*_data[0] + v[1]*_data[1]; }
     static REAL dot(const VECTOR2& v1, const VECTOR2& v2) { return v1[0]*v2[0] + v1[1]*v2[1]; }

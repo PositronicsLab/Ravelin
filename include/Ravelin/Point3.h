@@ -16,12 +16,11 @@ class VECTOR3;
 class POINT3
 {
   public:
-    POINT3() {}
-    POINT3(REAL x, REAL y, REAL z);
-    POINT3(REAL x, REAL y, REAL z, boost::shared_ptr<const POSE3> pose);
+    POINT3(boost::shared_ptr<const POSE3> pose = boost::shared_ptr<const POSE3>()) { this->pose = pose; }
+    POINT3(REAL x, REAL y, REAL z, boost::shared_ptr<const POSE3> pose = boost::shared_ptr<const POSE3>());
     POINT3(const ORIGIN3& o) { operator=(o); }
     POINT3(const VECTOR3& p) { operator=(p); }
-    POINT3(const REAL* array);
+    POINT3(const REAL* array, boost::shared_ptr<const POSE3> pose = boost::shared_ptr<const POSE3>());
     POINT3(const POINT3& source) { operator=(source); }
     REAL dot(const VECTOR3& v) const { return dot(*this, v); }
     REAL dot(const POINT3& p) const { return dot(*this, p); }

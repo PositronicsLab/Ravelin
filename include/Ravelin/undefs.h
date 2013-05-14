@@ -36,4 +36,6 @@
 #undef ORIGIN2
 #undef ORIGIN3
 #undef OPS
+#undef TRANSFORM3
+#undef TRANSFORM2
 

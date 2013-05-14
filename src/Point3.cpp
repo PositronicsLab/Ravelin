@@ -4,15 +4,6 @@
  * License (found in COPYING).
  ****************************************************************************/
 
-/// Constructs this vector with the given values
-POINT3::POINT3(REAL x, REAL y, REAL z)
-{
-  const unsigned X = 0, Y = 1, Z = 2;
-  _data[X] = x;
-  _data[Y] = y;
-  _data[Z] = z;
-}
-
 /// Constructs this vector with the given values and defined with respect to the given pose
 POINT3::POINT3(REAL x, REAL y, REAL z, boost::shared_ptr<const POSE3> p)
 {
@@ -27,12 +18,13 @@ POINT3::POINT3(REAL x, REAL y, REAL z, boost::shared_ptr<const POSE3> p)
 /**
  * \param array a 3-dimensional (or larger) array
  */
-POINT3::POINT3(const REAL* array)
+POINT3::POINT3(const REAL* array, boost::shared_ptr<const POSE3> p)
 {
   const unsigned X = 0, Y = 1, Z = 2;
   _data[X] = array[X];
   _data[Y] = array[Y];
   _data[Z] = array[Z];
+  pose = p;
 }
 
 /// Compares the two vectors lexographically

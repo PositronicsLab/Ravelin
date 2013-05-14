@@ -36,4 +36,6 @@
 #define ORIGIN2 Origin2d
 #define ORIGIN3 Origin3d
 #define OPS Opsd
+#define TRANSFORM3 Transform3d
+#define TRANSFORM2 Transform2d
 

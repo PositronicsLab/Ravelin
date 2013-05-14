@@ -4,12 +4,11 @@
  * License (found in COPYING).
  ****************************************************************************/
 
-#ifndef _POSE3F_H
-#define _POSE3F_H
+#ifndef _TRANSFORM3F_H
+#define _TRANSFORM3F_H
 
 #include <boost/enable_shared_from_this.hpp>
 #include <boost/shared_ptr.hpp>
-#include <iostream>
 #include <Ravelin/FrameException.h>
 #include <Ravelin/Vector3f.h>
 #include <Ravelin/Point3f.h>
@@ -21,12 +20,11 @@
 #include <Ravelin/Twistf.h>
 #include <Ravelin/SpatialRBInertiaf.h>
 #include <Ravelin/SpatialABInertiaf.h>
-#include <Ravelin/Transform3f.h>
 
 namespace Ravelin {
 
 #include "fdefs.h"
-#include "Pose3.h"
+#include "Transform3.h"
 #include "undefs.h"
 
 } // end namespace

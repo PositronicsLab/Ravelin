@@ -8,63 +8,76 @@
 /**
  * Sets matrix to the identity matrix
  */
-POSE3::POSE3()
+POSE3::POSE3(boost::shared_ptr<POSE3> relative_pose)
 {
   set_identity();
+  rpose = relative_pose;
 }
 
-/// Constructs a 4x4 homogeneous transformation matrix from a unit quaternion and translation vector
-POSE3::POSE3(const QUAT& q, const ORIGIN3& v)
+/// Constructs a pose from a unit quaternion and translation vector
+POSE3::POSE3(const QUAT& q, const ORIGIN3& v, boost::shared_ptr<POSE3> relative_pose)
 {
   set(QUAT::normalize(q), v);
+  rpose = relative_pose;
 }
 
-/// Constructs a 4x4 homogeneous transformation matrix from a unit quaternion (for rotation) and zero translation
-POSE3::POSE3(const QUAT& q)
+/// Constructs a pose from a unit quaternion (for rotation) and zero translation
+POSE3::POSE3(const QUAT& q, boost::shared_ptr<POSE3> relative_pose)
 {
   set(QUAT::normalize(q), ORIGIN3::zero());
+  rpose = relative_pose;
 }
 
-/// Constructs a 4x4 homogeneous transformation matrix from a rotation matrix and translation vector
-POSE3::POSE3(const MATRIX3& r, const ORIGIN3& v) 
+/// Constructs a pose from a rotation matrix and translation vector
+POSE3::POSE3(const MATRIX3& r, const ORIGIN3& v, boost::shared_ptr<POSE3> relative_pose) 
 {
   set(r, v);
+  rpose = relative_pose;
 }
 
-/// Constructs a 4x4 homogeneous transformation matrix from a rotation matrix and zero translation
-POSE3::POSE3(const MATRIX3& r)
+/// Constructs a pose from a rotation matrix and zero translation
+POSE3::POSE3(const MATRIX3& r, boost::shared_ptr<POSE3> relative_pose)
 {
   set(r, ORIGIN3::zero());
+  rpose = relative_pose;
 }
 
-/// Constructs a 4x4 homogeneous transformation matrix from a axis-angle representation and a translation vector
-POSE3::POSE3(const AANGLE& a, const ORIGIN3& v)
+/// Constructs a pose from a axis-angle representation and a translation vector
+POSE3::POSE3(const AANGLE& a, const ORIGIN3& v, boost::shared_ptr<POSE3> relative_pose)
 {
   set(a, v);
+  rpose = relative_pose;
 }
 
-/// Constructs a 4x4 homogeneous transformation matrix from a axis-angle representation (for rotation) and zero translation
-POSE3::POSE3(const AANGLE& a)
+/// Constructs a pose from a axis-angle representation (for rotation) and zero translation
+POSE3::POSE3(const AANGLE& a, boost::shared_ptr<POSE3> relative_pose)
 {
   set(a, ORIGIN3::zero());
+  rpose = relative_pose;
 }
 
-/// Constructs a 4x4 homogeneous transformation matrix using identity orientation and a translation vector
-POSE3::POSE3(const ORIGIN3& v)
+/// Constructs a pose using identity orientation and a translation vector
+POSE3::POSE3(const ORIGIN3& v, boost::shared_ptr<POSE3> relative_pose)
 {
   set(QUAT::identity(), v);
+  rpose = relative_pose;
 }
 
 POSE3& POSE3::operator=(const POSE3& p)
 {
   q = p.q;
   x = p.x;
+  rpose = p.rpose;
   return *this;
 }
 
 /// Determines whether two poses in 3D are relatively equivalent
 bool POSE3::rel_equal(const POSE3& p1, const POSE3& p2, REAL tol)
 {
+  // verify relative frames are identity 
+  if (p1.rpose != p2.rpose)
+    throw FrameException();
+
   // check x components first
   if (!OPS::rel_equal(p1.x[0], p2.x[0], tol) || 
       !OPS::rel_equal(p1.x[1], p2.x[1], tol) ||
@@ -76,7 +89,7 @@ bool POSE3::rel_equal(const POSE3& p1, const POSE3& p2, REAL tol)
   return OPS::rel_equal(angle, (REAL) 0.0, tol);
 }
 
-/// Interpolates between two 4x4 transforms using spherical linear interpolation
+/// Interpolates between two poses using spherical linear interpolation
 /**
  * \param T1 the matrix to use when t=0
  * \param T2 the matrix to use when t=1
@@ -95,7 +108,7 @@ POSE3 POSE3::interpolate(const POSE3& T1, const POSE3& T2, REAL t)
   return POSE3(q, x);
 }
 
-// Sets the matrix to be a 4x4 homogeneous transform from an axis-angle representation and a translation vector
+// Sets the pose from an axis-angle representation and a translation vector
 /**
  * \todo make this marginally faster by setting the matrix components directly (eliminates redundancy in setting non-rotation and non-translational components)
  */
@@ -106,10 +119,7 @@ POSE3& POSE3::set(const AANGLE& a, const ORIGIN3& v)
   return *this;
 }
 
-/// Sets the matrix to be a 4x4 homogeneous transform from a rotation matrix and translation vector
-/**
- * \todo make this marginally faster by setting the matrix components directly (eliminates redundancy in setting non-rotation and non-translational components)
- */
+/// Sets the pose from a rotation matrix and translation vector
 POSE3& POSE3::set(const MATRIX3& m, const ORIGIN3& v)
 {
   q = m;
@@ -157,7 +167,7 @@ POSE3& POSE3::set_identity()
   return *this;
 }
 
-/// Special method for inverting a 4x4 transformation matrix in place
+/// method for inverting a pose in place
 POSE3& POSE3::invert()
 {
   // get the new rotation 
@@ -169,7 +179,7 @@ POSE3& POSE3::invert()
   return *this;
 }
 
-/// Special method for inverseing a 4x4 transformation matrix
+/// Special method for inverting a pose
 POSE3 POSE3::inverse(const POSE3& p)
 {
   return POSE3(p).invert();
@@ -597,12 +607,6 @@ void POSE3::get_r_E(VECTOR3& r, MATRIX3& E, bool inverse) const
   } 
 }
 
-/// Transforms a vector from one pose to another 
-VECTOR3 POSE3::transform(boost::shared_ptr<const POSE3> p, const VECTOR3& v) const
-{
-  return transform(shared_from_this(), p, v);
-}
-
 /// Applies this pose to a vector 
 VECTOR3 POSE3::transform(boost::shared_ptr<const POSE3> source, boost::shared_ptr<const POSE3> target, const VECTOR3& v) 
 {
@@ -612,15 +616,9 @@ VECTOR3 POSE3::transform(boost::shared_ptr<const POSE3> source, boost::shared_pt
   #endif
 
   // compute the relative transform
-  std::pair<QUAT, ORIGIN3> Tx = calc_transform(source, target);
+  TRANSFORM3 Tx = calc_transform(source, target);
 
-  return Tx.first * v;
-}
-
-/// Transforms a point from one pose to another 
-POINT3 POSE3::transform(boost::shared_ptr<const POSE3> p, const POINT3& point) const
-{
-  return transform(shared_from_this(), p, point);
+  return Tx.transform(v);
 }
 
 /// Transforms a point from one pose to another 
@@ -632,16 +630,10 @@ POINT3 POSE3::transform(boost::shared_ptr<const POSE3> source, boost::shared_ptr
   #endif
 
   // compute the relative transform
-  std::pair<QUAT, ORIGIN3> Tx = calc_transform(source, target);
+  TRANSFORM3 Tx = calc_transform(source, target);
 
   // do the transform
-  return Tx.first * point + Tx.second;
-}
-
-/// Transforms a spatial articulated body inertia 
-SPATIAL_AB_INERTIA POSE3::transform(boost::shared_ptr<const POSE3> p, const SPATIAL_AB_INERTIA& m) const
-{
-  return transform(shared_from_this(), p, m);
+  return Tx.transform(point);
 }
 
 /// Transforms a spatial articulated body inertia 
@@ -653,11 +645,11 @@ SPATIAL_AB_INERTIA POSE3::transform(boost::shared_ptr<const POSE3> source, boost
   #endif
 
   // compute the relative transform
-  std::pair<QUAT, ORIGIN3> Tx = calc_transform(source, target);
+  TRANSFORM3 Tx = calc_transform(source, target);
 
   // setup r and E
-  VECTOR3 r = Tx.second;
-  const MATRIX3 E = Tx.first;
+  VECTOR3 r = Tx.x;
+  const MATRIX3 E = Tx.q;
   const MATRIX3 ET = MATRIX3::transpose(E);
 
   // precompute some things we'll need
@@ -677,12 +669,6 @@ SPATIAL_AB_INERTIA POSE3::transform(boost::shared_ptr<const POSE3> source, boost
   return result;
 }
 
-/// Transforms the wrench 
-WRENCH POSE3::transform(boost::shared_ptr<const POSE3> p, const WRENCH& v) const
-{
-  return transform(shared_from_this(), p, v);
-}
-
 /// Transforms a vector of wrenches 
 std::vector<WRENCH>& POSE3::transform(boost::shared_ptr<const POSE3> source, boost::shared_ptr<const POSE3> target, const std::vector<WRENCH>& w, std::vector<WRENCH>& result)
 {
@@ -700,11 +686,11 @@ std::vector<WRENCH>& POSE3::transform(boost::shared_ptr<const POSE3> source, boo
   #endif
 
   // compute the relative transform
-  std::pair<QUAT, ORIGIN3> Tx = calc_transform(source, target);
+  TRANSFORM3 Tx = calc_transform(source, target);
 
   // setup r and E
-  const ORIGIN3& r = Tx.second;
-  const MATRIX3 E = Tx.first;
+  const ORIGIN3& r = Tx.x;
+  const MATRIX3 E = Tx.q;
 
   // resize the result vector
   result.resize(w.size());
@@ -735,11 +721,11 @@ WRENCH POSE3::transform(boost::shared_ptr<const POSE3> source, boost::shared_ptr
   #endif
 
   // compute the relative transform
-  std::pair<QUAT, ORIGIN3> Tx = calc_transform(source, target);
+  TRANSFORM3 Tx = calc_transform(source, target);
 
   // setup r and E
-  const ORIGIN3& r = Tx.second;
-  const MATRIX3 E = Tx.first;
+  const ORIGIN3& r = Tx.x;
+  const MATRIX3 E = Tx.q;
 
   // get the components of v
   VECTOR3 top = v.get_force();
@@ -754,12 +740,6 @@ WRENCH POSE3::transform(boost::shared_ptr<const POSE3> source, boost::shared_ptr
 }
 
 /// Transforms the twist 
-TWIST POSE3::transform(boost::shared_ptr<const POSE3> p, const TWIST& t) const
-{
-  return transform(shared_from_this(), p, t);
-}
-
-/// Transforms the twist 
 TWIST POSE3::transform(boost::shared_ptr<const POSE3> source, boost::shared_ptr<const POSE3> target, const TWIST& t)
 {
   #ifndef NEXCEPT
@@ -768,11 +748,11 @@ TWIST POSE3::transform(boost::shared_ptr<const POSE3> source, boost::shared_ptr<
   #endif
 
   // compute the relative transform
-  std::pair<QUAT, ORIGIN3> Tx = calc_transform(source, target);
+  TRANSFORM3 Tx = calc_transform(source, target);
 
   // setup r and E
-  const ORIGIN3& r = Tx.second;
-  const MATRIX3 E = Tx.first;
+  const ORIGIN3& r = Tx.x;
+  const MATRIX3 E = Tx.q;
 
   // get the components of t 
   VECTOR3 top = t.get_angular();
@@ -803,11 +783,11 @@ std::vector<TWIST>& POSE3::transform(boost::shared_ptr<const POSE3> source, boos
   #endif
 
   // compute the relative transform
-  std::pair<QUAT, ORIGIN3> Tx = calc_transform(source, target);
+  TRANSFORM3 Tx = calc_transform(source, target);
 
   // setup r and E
-  const ORIGIN3& r = Tx.second;
-  const MATRIX3 E = Tx.first;
+  const ORIGIN3& r = Tx.x;
+  const MATRIX3 E = Tx.q;
 
   // resize the result vector
   result.resize(t.size());
@@ -830,12 +810,6 @@ std::vector<TWIST>& POSE3::transform(boost::shared_ptr<const POSE3> source, boos
 }
 
 /// Transforms a spatial RB inertia to the given pose
-SPATIAL_RB_INERTIA POSE3::transform(boost::shared_ptr<const POSE3> p, const SPATIAL_RB_INERTIA& J) const
-{
-  return transform(shared_from_this(), p, J);
-}
-
-/// Transforms a spatial RB inertia to the given pose
 SPATIAL_RB_INERTIA POSE3::transform(boost::shared_ptr<const POSE3> source, boost::shared_ptr<const POSE3> target, const SPATIAL_RB_INERTIA& J)
 {
   #ifndef NEXCEPT
@@ -844,11 +818,11 @@ SPATIAL_RB_INERTIA POSE3::transform(boost::shared_ptr<const POSE3> source, boost
   #endif
 
   // compute the relative transform
-  std::pair<QUAT, ORIGIN3> Tx = calc_transform(source, target);
+  TRANSFORM3 Tx = calc_transform(source, target);
 
   // setup r and E
-  const ORIGIN3& r = Tx.second;
-  const MATRIX3 E = Tx.first;
+  const ORIGIN3& r = Tx.x;
+  const MATRIX3 E = Tx.q;
   const MATRIX3 ET = MATRIX3::transpose(E);
 
   // precompute some things
@@ -885,22 +859,20 @@ bool POSE3::is_common(boost::shared_ptr<const POSE3> x, boost::shared_ptr<const 
 }
 
 /// Computes the relative transformation from this pose to another
-std::pair<QUAT, ORIGIN3> POSE3::calc_transform(boost::shared_ptr<const POSE3> p) const
+TRANSFORM3 POSE3::calc_transform(boost::shared_ptr<const POSE3> source, boost::shared_ptr<const POSE3> target)
 {
-  return calc_transform(shared_from_this(), p);
-}
-
-/// Computes the relative transformation from this pose to another
-std::pair<QUAT, ORIGIN3> POSE3::calc_transform(boost::shared_ptr<const POSE3> source, boost::shared_ptr<const POSE3> target)
-{
-  std::pair<QUAT, ORIGIN3> result;
   boost::shared_ptr<const POSE3> r, s; 
+  TRANSFORM3 result;
 
-  // check for special case: transformation to and from global frame
-  if (source == target && !source)
+  // setup the source and targets
+  result.source = source;
+  result.target = target;
+
+  // check for special case: no transformation 
+  if (source == target)
   {
-    result.first = QUAT::identity();
-    result.second.set_zero();
+    result.q.set_identity();
+    result.x.set_zero();
     return result;
   }
 
@@ -908,46 +880,41 @@ std::pair<QUAT, ORIGIN3> POSE3::calc_transform(boost::shared_ptr<const POSE3> so
   if (!target)
   {
     // combine transforms from this to i: this will give aTl
-    QUAT left_q = source->q;
-    ORIGIN3 left_x = source->x;
+    result.q = source->q;
+    result.x = source->x;
     s = source;
     while (s)
     {
       s = s->rpose;
       if (!s)
         break;
-      left_x = s->x + s->q * left_x;
-      left_q = s->q * left_q;
+      result.x = s->x + s->q * result.x;
+      result.q = s->q * result.q;
     }
 
     // setup the transform 
-    result.first = left_q;      
-    result.second = -left_x;
+    return result; 
   }
 
   // check for special case: transformation from global frame
   if (!source)
   {
     // combine transforms from target to q
-    QUAT right_q = target->q;
-    ORIGIN3 right_x = target->x;
+    result.q = target->q;
+    result.x = target->x;
     r = target;
     while (r)
     {
       r = r->rpose;
       if (!r)
         break;
-      right_x = r->x + r->q * right_x; 
-      right_q = r->q * right_q;
+      result.x = r->x + r->q * result.x; 
+      result.q = r->q * result.q;
     }
 
     // compute the inverse pose of the right 
-    QUAT inv_right_q = QUAT::invert(right_q);
-    ORIGIN3 inv_right_x = inv_right_q * (-right_x);
-
-    // multiply the inverse pose of p by this 
-    result.first = inv_right_q;      
-    result.second = inv_right_q * inv_right_x;
+    result.q = QUAT::invert(result.q);
+    result.x = result.q * (-result.x);
     return result;
   }
 
@@ -955,12 +922,9 @@ std::pair<QUAT, ORIGIN3> POSE3::calc_transform(boost::shared_ptr<const POSE3> so
   if (source->rpose == target->rpose)
   {
     // compute the inverse pose of p 
-    QUAT target_q = QUAT::invert(target->q);
-    ORIGIN3 target_x = target_q * (-target->x);
-
-    // multiply the inverse pose of p by this 
-    result.first = target_q * source->q;      
-    result.second = target_q * (target_x - source->x);
+    result.q = QUAT::invert(target->q) * source->q;
+    result.x = result.q * (source->x - target->x);
+    return result;
   }
   else
   {
@@ -1001,14 +965,12 @@ std::pair<QUAT, ORIGIN3> POSE3::calc_transform(boost::shared_ptr<const POSE3> so
 
     // compute the inverse pose of the right 
     QUAT inv_right_q = QUAT::invert(right_q);
-    ORIGIN3 inv_right_x = inv_right_q * (-right_x);
 
     // multiply the inverse pose of p by this 
-    result.first = inv_right_q * left_q;      
-    result.second = inv_right_q * (inv_right_x - left_x);
+    result.q = inv_right_q * left_q;      
+    result.x = inv_right_q * (left_x - right_x);
+    return result;
   }
-
-  return result;
 }
 
 /// Outputs this matrix to the stream

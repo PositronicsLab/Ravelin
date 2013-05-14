@@ -14,28 +14,19 @@ class WRENCH : public SVECTOR6
 {
   public:
     /// Constructs a wrench with zero force and torque components
-    WRENCH() : SVECTOR6() {} 
+    WRENCH(boost::shared_ptr<const POSE3> pose = boost::shared_ptr<const POSE3>()) : SVECTOR6(pose) {} 
 
     /// Constructs a wrench from the SVector6 
     WRENCH(const SVECTOR6& w) : SVECTOR6(w.get_upper(), w.get_lower(), w.pose) { }
 
-    /// Constructs a wrench using six values: first three force, second three torque
-    WRENCH(REAL fx, REAL fy, REAL fz, REAL tx, REAL ty, REAL tz) : SVECTOR6(fx, fy, fz, tx, ty, tz) {};
-
     /// Constructs a wrench using six values- first three force, second three torque- and a pose
-    WRENCH(REAL fx, REAL fy, REAL fz, REAL tx, REAL ty, REAL tz, boost::shared_ptr<const POSE3> pose) : SVECTOR6(fx, fy, fz, tx, ty, tz, pose) {};
+    WRENCH(REAL fx, REAL fy, REAL fz, REAL tx, REAL ty, REAL tz, boost::shared_ptr<const POSE3> pose = boost::shared_ptr<const POSE3>()) : SVECTOR6(fx, fy, fz, tx, ty, tz, pose) {};
 
-    /// Constructs a wrench using six values: first three force, second three torque
-    WRENCH(const REAL* array) : SVECTOR6(array[0], array[1], array[2], array[3], array[4], array[5]) {}
-
-    /// Constructs a wrench using six values- first three force, second three torque- and a pose
-    WRENCH(const REAL* array, boost::shared_ptr<const POSE3> pose) : SVECTOR6(array[0], array[1], array[2], array[3], array[4], array[5], pose) {}
-
-    /// Constructs a wrench using given force and torque
-    WRENCH(const VECTOR3& f, const VECTOR3& t) : SVECTOR6(f, t) {}
+    /// Constructs a wrench using six values- first three force, second three torque0 and a pose
+    WRENCH(const REAL* array, boost::shared_ptr<const POSE3> pose = boost::shared_ptr<const POSE3>()) : SVECTOR6(array[0], array[1], array[2], array[3], array[4], array[5], pose) {}
 
     /// Constructs a wrench using given force and torque and pose
-    WRENCH(const VECTOR3& f, const VECTOR3& t, boost::shared_ptr<const POSE3> pose) : SVECTOR6(f, t, pose) {}
+    WRENCH(const VECTOR3& f, const VECTOR3& t, boost::shared_ptr<const POSE3> pose = boost::shared_ptr<const POSE3>()) : SVECTOR6(f, t, pose) {}
 
     /// Constructs a zero wrench
     static WRENCH zero() { WRENCH w; w.set_zero(); return w; }

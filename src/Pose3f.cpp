@@ -15,6 +15,7 @@
 #include <Ravelin/AAnglef.h>
 #include <Ravelin/Matrix3f.h>
 #include <Ravelin/Opsf.h>
+#include <Ravelin/Transform3f.h>
 #include <Ravelin/Pose3f.h>
 
 using namespace Ravelin;

@@ -17,6 +17,8 @@ class ROT2
     ROT2(const ROT2& q) { theta = q.theta; }
     static ROT2 zero() { return ROT2((REAL) 0.0); } 
     static ROT2 identity() { return ROT2((REAL) 0.0); }
+    ROT2& set_identity() { theta = (REAL) 0.0; return *this; }
+    ROT2& set_zero() { theta = (REAL) 0.0; return *this; }
     ROT2& inverse() { theta = -theta; return *this; }
     static ROT2 invert(const ROT2& q) { return ROT2(-q.theta); }
     ROT2& operator=(const ROT2& q) { theta = q.theta; return *this; }

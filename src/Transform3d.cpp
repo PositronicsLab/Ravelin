@@ -13,13 +13,13 @@
 #include <Ravelin/AAngled.h>
 #include <Ravelin/Matrix3d.h>
 #include <Ravelin/Opsd.h>
-#include <Ravelin/Transform3d.h>
 #include <Ravelin/Pose3d.h>
+#include <Ravelin/Transform3d.h>
 
 using namespace Ravelin;
 
 #include <Ravelin/ddefs.h>
-#include "Pose3.cpp"
+#include "Transform3.cpp"
 #include <Ravelin/undefs.h>
 
 

@@ -4,14 +4,6 @@
  * License (found in COPYING).
  ****************************************************************************/
 
-/// Constructs this vector with the given values
-POINT2::POINT2(REAL x, REAL y)
-{
-  const unsigned X = 0, Y = 1;
-  _data[X] = x;
-  _data[Y] = y;
-}
-
 /// Constructs this vector from the given origin 
 POINT2::POINT2(const ORIGIN2& o)
 {
@@ -33,11 +25,12 @@ POINT2::POINT2(REAL x, REAL y, boost::shared_ptr<const POSE2> p)
 /**
  * \param array a 2-dimensional (or larger) array
  */
-POINT2::POINT2(const REAL* array)
+POINT2::POINT2(const REAL* array, boost::shared_ptr<const POSE2> pose)
 {
   const unsigned X = 0, Y = 1;
   _data[X] = array[X];
   _data[Y] = array[Y];
+  this->pose = pose;
 }
 
 /// Constructs this point from the given origin

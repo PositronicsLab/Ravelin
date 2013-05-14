@@ -13,6 +13,7 @@
 #include <Ravelin/Origin2d.h>
 #include <Ravelin/Constants.h>
 #include <Ravelin/Opsd.h>
+#include <Ravelin/Transform2d.h>
 #include <Ravelin/Rot2d.h>
 
 namespace Ravelin {

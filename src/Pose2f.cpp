@@ -9,6 +9,7 @@
 #include <iomanip>
 #include <iostream>
 #include <Ravelin/FrameException.h>
+#include <Ravelin/Transform2f.h>
 #include <Ravelin/Pose2f.h>
 
 using namespace Ravelin;

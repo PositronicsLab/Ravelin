@@ -36,4 +36,6 @@
 #define ORIGIN2 Origin2f
 #define ORIGIN3 Origin3f
 #define OPS Opsf
+#define TRANSFORM3 Transform3f
+#define TRANSFORM2 Transform2f
 

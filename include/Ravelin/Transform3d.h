@@ -4,29 +4,27 @@
  * License (found in COPYING).
  ****************************************************************************/
 
-#ifndef _POSE3F_H
-#define _POSE3F_H
+#ifndef _TRANSFORM3D_H
+#define _TRANSFORM3D_H
 
 #include <boost/enable_shared_from_this.hpp>
 #include <boost/shared_ptr.hpp>
-#include <iostream>
 #include <Ravelin/FrameException.h>
-#include <Ravelin/Vector3f.h>
-#include <Ravelin/Point3f.h>
-#include <Ravelin/Origin3f.h>
-#include <Ravelin/Quatf.h>
-#include <Ravelin/AAnglef.h>
-#include <Ravelin/Matrix3f.h>
-#include <Ravelin/Wrenchf.h>
-#include <Ravelin/Twistf.h>
-#include <Ravelin/SpatialRBInertiaf.h>
-#include <Ravelin/SpatialABInertiaf.h>
-#include <Ravelin/Transform3f.h>
+#include <Ravelin/Vector3d.h>
+#include <Ravelin/Point3d.h>
+#include <Ravelin/Origin3d.h>
+#include <Ravelin/Quatd.h>
+#include <Ravelin/AAngled.h>
+#include <Ravelin/Matrix3d.h>
+#include <Ravelin/Wrenchd.h>
+#include <Ravelin/Twistd.h>
+#include <Ravelin/SpatialRBInertiad.h>
+#include <Ravelin/SpatialABInertiad.h>
 
 namespace Ravelin {
 
-#include "fdefs.h"
-#include "Pose3.h"
+#include "ddefs.h"
+#include "Transform3.h"
 #include "undefs.h"
 
 } // end namespace

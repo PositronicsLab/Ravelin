@@ -8,33 +8,38 @@
 /**
  * Sets matrix to the identity matrix
  */
-POSE2::POSE2()
+POSE2::POSE2(boost::shared_ptr<POSE2> relative_pose)
 {
   set_identity();
+  rpose = relative_pose;
 }
 
 /// Constructs a 2D pose from a rotation and translation vector
-POSE2::POSE2(const ROT2& r, const ORIGIN2& v)
+POSE2::POSE2(const ROT2& r, const ORIGIN2& v, boost::shared_ptr<POSE2> relative_pose)
 {
   set(r, v);
+  rpose = relative_pose;
 }
 
 /// Constructs a 2D pose from a rotation and zero translation
-POSE2::POSE2(const ROT2& r)
+POSE2::POSE2(const ROT2& r, boost::shared_ptr<POSE2> relative_pose)
 {
   set(r, ORIGIN2::zero());
+  rpose = relative_pose;
 }
 
 /// Constructs a 2D pose using identity orientation and a translation vector
-POSE2::POSE2(const ORIGIN2& v)
+POSE2::POSE2(const ORIGIN2& v, boost::shared_ptr<POSE2> relative_pose)
 {
   set(ROT2::identity(), v);
+  rpose = relative_pose;
 }
 
 POSE2& POSE2::operator=(const POSE2& p)
 {
   r = p.r;
   x = p.x;
+  rpose = p.rpose;
   return *this;
 }
 
@@ -64,6 +69,10 @@ REAL POSE2::wrap(REAL theta)
 /// Determines whether two poses in 2D are relatively equivalent
 bool POSE2::rel_equal(const POSE2& p1, const POSE2& p2, REAL tol)
 {
+  // verify relative frames are identity 
+  if (p1.rpose != p2.rpose)
+    throw FrameException();
+
   // wrap two thetas to [-pi, pi]
   REAL theta1 = wrap(p1.r.theta);
   REAL theta2 = wrap(p2.r.theta);
@@ -74,10 +83,10 @@ bool POSE2::rel_equal(const POSE2& p1, const POSE2& p2, REAL tol)
          OPS::rel_equal(theta1, theta2, tol);
 }
 
-/// Interpolates between two 4x4 transforms using spherical linear interpolation
+/// Interpolates between two poses using linear interpolation
 /**
- * \param T1 the matrix to use when t=0
- * \param T2 the matrix to use when t=1
+ * \param T1 the pose to use when t=0
+ * \param T2 the pose to use when t=1
  * \param t a real value in the interval [0,1]
  * \return the interpolated transform
  */
@@ -211,12 +220,6 @@ POINT2 POSE2::inverse_transform(const POINT2& p) const
   return result;
 }
 
-/// Transforms a vector from one pose to another 
-VECTOR2 POSE2::transform(boost::shared_ptr<const POSE2> p, const VECTOR2& v) const
-{
-  return transform(shared_from_this(), p, v);
-}
-
 /// Applies this pose to a vector 
 VECTOR2 POSE2::transform(boost::shared_ptr<const POSE2> source, boost::shared_ptr<const POSE2> target, const VECTOR2& v) 
 {
@@ -226,15 +229,9 @@ VECTOR2 POSE2::transform(boost::shared_ptr<const POSE2> source, boost::shared_pt
   #endif
 
   // compute the relative transform
-  std::pair<ROT2, ORIGIN2> Tx = calc_transform(source, target);
+  TRANSFORM2 Tx = calc_transform(source, target);
 
-  return Tx.first * v;
-}
-
-/// Transforms a point from one pose to another 
-POINT2 POSE2::transform(boost::shared_ptr<const POSE2> p, const POINT2& point) const
-{
-  return transform(shared_from_this(), p, point);
+  return Tx.transform(v);
 }
 
 /// Transforms a point from one pose to another 
@@ -246,10 +243,10 @@ POINT2 POSE2::transform(boost::shared_ptr<const POSE2> source, boost::shared_ptr
   #endif
 
   // compute the relative transform
-  std::pair<ROT2, ORIGIN2> Tx = calc_transform(source, target);
+  TRANSFORM2 Tx = calc_transform(source, target);
 
   // do the transform
-  return Tx.first * point + Tx.second;
+  return Tx.transform(point);
 }
 
 /// Special method for inverting a 2D pose in place
@@ -264,7 +261,7 @@ POSE2& POSE2::invert()
   return *this;
 }
 
-/// Special method for inverseing a 4x4 transformation matrix
+/// Special method for inverting a 2D pose 
 POSE2 POSE2::inverse(const POSE2& p)
 {
   return POSE2(p).invert();
@@ -298,22 +295,20 @@ bool POSE2::is_common(boost::shared_ptr<const POSE2> x, boost::shared_ptr<const 
 }
 
 /// Computes the relative transformation from this pose to another
-std::pair<ROT2, ORIGIN2> POSE2::calc_transform(boost::shared_ptr<const POSE2> p) const
+TRANSFORM2 POSE2::calc_transform(boost::shared_ptr<const POSE2> source, boost::shared_ptr<const POSE2> target)
 {
-  return calc_transform(shared_from_this(), p);
-}
-
-/// Computes the relative transformation from this pose to another
-std::pair<ROT2, ORIGIN2> POSE2::calc_transform(boost::shared_ptr<const POSE2> source, boost::shared_ptr<const POSE2> target)
-{
-  std::pair<ROT2, ORIGIN2> result;
+  TRANSFORM2 result;
   boost::shared_ptr<const POSE2> r, s; 
 
-  // check for special case: transformation to and from global frame
-  if (source == target && !source)
+  // setup the source and target
+  result.source = source;
+  result.target = target;
+
+  // check for special case: no transformation 
+  if (source == target)
   {
-    result.first = ROT2::identity();
-    result.second.set_zero();
+    result.r.set_identity();
+    result.x.set_zero();
     return result;
   }
 
@@ -334,8 +329,9 @@ std::pair<ROT2, ORIGIN2> POSE2::calc_transform(boost::shared_ptr<const POSE2> so
     }
 
     // setup the transform 
-    result.first = left_r;      
-    result.second = -left_x;
+    result.r = left_r;      
+    result.x = left_x;
+    return result;
   }
 
   // check for special case: transformation from global frame
@@ -358,9 +354,9 @@ std::pair<ROT2, ORIGIN2> POSE2::calc_transform(boost::shared_ptr<const POSE2> so
     ROT2 inv_right_r = ROT2::invert(right_r);
     ORIGIN2 inv_right_x = inv_right_r * (-right_x);
 
-    // multiply the inverse pose of p by this 
-    result.first = inv_right_r;      
-    result.second = inv_right_r * inv_right_x;
+    // setup the pose 
+    result.r = inv_right_r;      
+    result.x = inv_right_x;
     return result;
   }
 
@@ -369,11 +365,11 @@ std::pair<ROT2, ORIGIN2> POSE2::calc_transform(boost::shared_ptr<const POSE2> so
   {
     // compute the inverse pose of p 
     ROT2 target_r = ROT2::invert(target->r);
-    ORIGIN2 target_x = target_r * (-target->x);
 
     // multiply the inverse pose of p by this 
-    result.first = target_r * source->r;      
-    result.second = target_r * (target_x - source->x);
+    result.r = target_r * source->r;      
+    result.x = target_r * (source->x - target->x);
+    return result;
   }
   else
   {
@@ -414,11 +410,10 @@ std::pair<ROT2, ORIGIN2> POSE2::calc_transform(boost::shared_ptr<const POSE2> so
 
     // compute the inverse pose of the right 
     ROT2 inv_right_r = ROT2::invert(right_r);
-    ORIGIN2 inv_right_x = inv_right_r * (-right_x);
 
     // multiply the inverse pose of p by this 
-    result.first = inv_right_r * left_r;      
-    result.second = inv_right_r * (inv_right_x - left_x);
+    result.r = inv_right_r * left_r;      
+    result.x = inv_right_r * (left_x - right_x);
   }
 
   return result;

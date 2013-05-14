@@ -4,22 +4,17 @@
  * License (found in COPYING).
  ****************************************************************************/
 
-#include <Ravelin/cblas.h>
 #include <cstring>
 #include <cmath>
 #include <iomanip>
-#include <Ravelin/Constants.h>
-#include <Ravelin/Quatd.h>
-#include <Ravelin/AAngled.h>
-#include <Ravelin/Matrix3d.h>
-#include <Ravelin/Opsd.h>
-#include <Ravelin/Transform3d.h>
-#include <Ravelin/Pose3d.h>
+#include <Ravelin/FrameException.h>
+#include <Ravelin/Pose2d.h>
+#include <Ravelin/Transform2d.h>
 
 using namespace Ravelin;
 
 #include <Ravelin/ddefs.h>
-#include "Pose3.cpp"
+#include "Transform2.cpp"
 #include <Ravelin/undefs.h>
 
 

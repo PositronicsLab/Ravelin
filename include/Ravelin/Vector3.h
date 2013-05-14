@@ -15,10 +15,9 @@ class MATRIX3;
 class VECTOR3
 {
   public:
-    VECTOR3() {}
-    VECTOR3(REAL x, REAL y, REAL z);
-    VECTOR3(REAL x, REAL y, REAL z, boost::shared_ptr<const POSE3> pose);
-    VECTOR3(const REAL* array);
+    VECTOR3(boost::shared_ptr<const POSE3> pose = boost::shared_ptr<const POSE3>()) { this->pose = pose; }
+    VECTOR3(REAL x, REAL y, REAL z, boost::shared_ptr<const POSE3> pose = boost::shared_ptr<const POSE3>());
+    VECTOR3(const REAL* array, boost::shared_ptr<const POSE3> pose = boost::shared_ptr<const POSE3>());
     VECTOR3(const VECTOR3& source) { operator=(source); }
     VECTOR3(const POINT3& source) { operator=(source); }
     VECTOR3(const ORIGIN3& source) { operator=(source); }

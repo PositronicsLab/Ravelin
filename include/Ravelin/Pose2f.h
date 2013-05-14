@@ -13,6 +13,7 @@
 #include <Ravelin/FrameException.h>
 #include <Ravelin/Origin2f.h>
 #include <Ravelin/Opsf.h>
+#include <Ravelin/Transform2f.h>
 #include <Ravelin/Rot2f.h>
 
 namespace Ravelin {
