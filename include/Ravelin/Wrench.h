@@ -31,8 +31,18 @@ class WRENCH : public SVECTOR6
     /// Constructs a zero wrench
     static WRENCH zero() { WRENCH w; w.set_zero(); return w; }
 
-    /// Computes the dot product with a twist
-    REAL dot(const TWIST& t) const { return SVECTOR6::dot(*this, t); }
+    template <class V>
+    static WRENCH from_vector(const V& v, boost::shared_ptr<const POSE3> pose = boost::shared_ptr<const POSE3>())
+    {
+      const unsigned SPATIAL_DIM = 6;
+      if (v.size() != SPATIAL_DIM)
+        throw MissizeException();
+      WRENCH w(pose);
+      REAL* wdata = w.data();
+      const REAL* vdata = v.data();
+      CBLAS::copy(SPATIAL_DIM, vdata, v.inc(), wdata, 1);
+      return w;
+    }
 
     void set_force(const VECTOR3& f) { set_upper(f); }
     void set_torque(const VECTOR3& t) { set_lower(t); }
@@ -56,5 +66,9 @@ class WRENCH : public SVECTOR6
 */
 }; // end class
 
-std::ostream& operator<<(std::ostream& out, const WRENCH& w);
+inline std::ostream& operator<<(std::ostream& out, const WRENCH& w)
+{
+  out << "Wrench (force = " << w.get_force() << ", torque = " << w.get_torque() << ") frame: " << w.pose;
+  return out;
+}
 

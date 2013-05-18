@@ -50,8 +50,8 @@ class POSE3 : public boost::enable_shared_from_this<POSE3>
     static TRANSFORM3 calc_relative_pose(boost::shared_ptr<const POSE3> source, boost::shared_ptr<const POSE3> target) { return source->calc_transform(target); }
     POSE3& set_identity();
     POSE3& invert();
-    POSE3 inverse() const { return inverse(*this); }
-    static POSE3 inverse(const POSE3& m);
+    POSE3 inverse() const { return invert(*this); }
+    static POSE3 invert(const POSE3& m);
     POSE3& set(const AANGLE& a);
     POSE3& set(const MATRIX3& m);
     POSE3& set(const QUAT& q);

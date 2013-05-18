@@ -31,8 +31,8 @@ class POSE2 : public boost::enable_shared_from_this<POSE2>
     static VECTOR2 transform(boost::shared_ptr<const POSE2> source, boost::shared_ptr<const POSE2> target, const VECTOR2& v);
     POSE2& set_identity();
     POSE2& invert();
-    POSE2 inverse() const { return inverse(*this); }
-    static POSE2 inverse(const POSE2& m);
+    POSE2 inverse() const { return invert(*this); }
+    static POSE2 invert(const POSE2& m);
     POSE2& set(const ROT2& r, const ORIGIN2& v);
     POSE2& set(const ROT2& r);
     POSE2& operator=(const POSE2& source);

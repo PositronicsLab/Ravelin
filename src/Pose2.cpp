@@ -253,7 +253,7 @@ POINT2 POSE2::transform(boost::shared_ptr<const POSE2> source, boost::shared_ptr
 POSE2& POSE2::invert()
 {
   // get the new rotation 
-  r.inverse();
+  r.invert();
 
   // determine the new translation
   x = r * (-x);
@@ -262,7 +262,7 @@ POSE2& POSE2::invert()
 }
 
 /// Special method for inverting a 2D pose 
-POSE2 POSE2::inverse(const POSE2& p)
+POSE2 POSE2::invert(const POSE2& p)
 {
   return POSE2(p).invert();
 }

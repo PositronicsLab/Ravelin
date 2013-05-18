@@ -13,16 +13,16 @@ class POSE3;
 /// A 6x6 spatial algebra matrix used for dynamics calculations
 /** 
  * The matrix is represented by:
- * | J - hx*hx*m  hx*m |
  * | -hx*m        I*m  |
+ * | J - hx*hx*m  hx*m |
  * where hx is the skew symmetric matrix determined by h and I is the identity
  * matrix.
  */
 class SPATIAL_RB_INERTIA
 {
   public:
-    SPATIAL_RB_INERTIA();
-    SPATIAL_RB_INERTIA(REAL m, const VECTOR3& h, const MATRIX3& J);
+    SPATIAL_RB_INERTIA(boost::shared_ptr<const POSE3> pose = boost::shared_ptr<const POSE3>());
+    SPATIAL_RB_INERTIA(REAL m, const VECTOR3& h, const MATRIX3& J, boost::shared_ptr<const POSE3> pose = boost::shared_ptr<const POSE3>());
     SPATIAL_RB_INERTIA(const SPATIAL_RB_INERTIA& source) { operator=(source); }
     void set_zero();
     static SPATIAL_RB_INERTIA zero() { SPATIAL_RB_INERTIA m; m.set_zero(); return m; }
@@ -56,25 +56,25 @@ class SPATIAL_RB_INERTIA
     boost::shared_ptr<const POSE3> pose;
 
     /// Converts this to a matrix
-    template <class M>
-    M& to_matrix(M& m) const
+    template <class Mat>
+    Mat& to_matrix(Mat& M) const
     {
       const unsigned X = 0, Y = 1, Z = 2, SPATIAL_DIM = 6;
-      const REAL HX = h[X], HY = h[Y], HZ = h[Z];
 
       // resize the matrix
-      m.resize(SPATIAL_DIM, SPATIAL_DIM);
+      M.resize(SPATIAL_DIM, SPATIAL_DIM);
 
-      // setup the three 3x3 blocks (LR is -UL)
-      MATRIX3 UL(0, HZ, -HY, -HZ, 0, HX, HY, -HX, 0);
-      const MATRIX3& LL = J;
-      MATRIX3 UR(this->m, 0, 0, 0, this->m, 0, 0, 0, this->m);
-      m.set_sub_mat(0,0, UL);
-      m.set_sub_mat(3,0, LL);
-      m.set_sub_mat(0,3, UR);
-      m.set_sub_mat(3,3, UL, eTranspose);
+      // precompute matrices
+      MATRIX3 hxm = MATRIX3::skew_symmetric(h*m);
+      MATRIX3 hxhxm = MATRIX3::skew_symmetric(h)*hxm;
 
-      return m;
+      // setup the 3x3 blocks
+      M.set_sub_mat(0,0, hxm);
+      M.set_sub_mat(3,0, J - hxhxm);
+      M.set_sub_mat(0,3, MATRIX3(m, 0, 0, 0, m, 0, 0, 0, m));
+      M.set_sub_mat(3,3, hxm, eTranspose);
+
+      return M;
     }
 }; // end class
 

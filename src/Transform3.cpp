@@ -149,7 +149,7 @@ TRANSFORM3& TRANSFORM3::set_identity()
 TRANSFORM3& TRANSFORM3::invert()
 {
   // get the new rotation 
-  q.inverse();
+  q.invert();
 
   // determine the new translation
   x = q * (-x);
@@ -161,7 +161,7 @@ TRANSFORM3& TRANSFORM3::invert()
 }
 
 /// Special method for inverting a pose transformation
-TRANSFORM3 TRANSFORM3::inverse(const TRANSFORM3& p)
+TRANSFORM3 TRANSFORM3::invert(const TRANSFORM3& p)
 {
   return TRANSFORM3(p).invert();
 }

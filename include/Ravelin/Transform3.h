@@ -39,8 +39,8 @@ class TRANSFORM3
     SPATIAL_AB_INERTIA inverse_transform(const SPATIAL_AB_INERTIA& j) const;
     TRANSFORM3& set_identity();
     TRANSFORM3& invert();
-    TRANSFORM3 inverse() const { return inverse(*this); }
-    static TRANSFORM3 inverse(const TRANSFORM3& m);
+    TRANSFORM3 inverse() const { return invert(*this); }
+    static TRANSFORM3 invert(const TRANSFORM3& m);
     TRANSFORM3& set(const AANGLE& a);
     TRANSFORM3& set(const MATRIX3& m);
     TRANSFORM3& set(const QUAT& q);

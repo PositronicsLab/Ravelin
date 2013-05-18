@@ -165,17 +165,6 @@ void SVECTOR6::set_upper(const VECTOR3& upper)
   _data[2] = upper[2];
 }
 
-/// Performs the dot product
-REAL SVECTOR6::dot(const SVECTOR6& v1, const SVECTOR6& v2)
-{
-  #ifndef NEXCEPT
-  if (v1.pose != v2.pose)
-    throw FrameException();
-  #endif
-
-  return v1[3]*v2[0] + v1[4]*v2[1] + v1[5]*v2[2] + v1[0]*v2[3] + v1[1]*v2[4] + v1[2]*v2[5];
-}
-
 /// Copies this vector from another SVECTOR6
 SVECTOR6& SVECTOR6::operator=(const SVECTOR6& v)
 {
@@ -279,5 +268,35 @@ SVECTOR6 SVECTOR6::operator-(const SVECTOR6& v) const
   std::transform(begin(), end(), v.begin(), result.begin(), std::minus<REAL>());
   result.pose = pose;
   return result;
+}
+
+/// Template specialization for dot product
+template <>
+REAL SVECTOR6::dot(const SVECTOR6& v, const WRENCH& w)
+{
+  #ifndef NEXCEPT
+  if (v.pose != w.pose)
+    throw FrameException();
+  #endif
+
+  const REAL* d1 = v.data(); 
+  const REAL* d2 = w.data(); 
+  return d1[3]+d2[0] + d1[4]+d2[1] + d1[5]+d2[2]+ 
+         d1[0]+d2[3] + d1[1]+d2[4] + d1[2]+d2[5];
+}
+
+/// Template specialization for dot product
+template <>
+REAL SVECTOR6::dot(const SVECTOR6& v, const TWIST& t)
+{
+  #ifndef NEXCEPT
+  if (v.pose != t.pose)
+    throw FrameException();
+  #endif
+
+  const REAL* d1 = v.data(); 
+  const REAL* d2 = t.data(); 
+  return d1[3]+d2[0] + d1[4]+d2[1] + d1[5]+d2[2]+ 
+         d1[0]+d2[3] + d1[1]+d2[4] + d1[2]+d2[5];
 }
 

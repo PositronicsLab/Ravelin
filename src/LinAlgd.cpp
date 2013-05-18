@@ -273,7 +273,7 @@ void LinAlgd::geqrf_(INTEGER* M, INTEGER* N, DOUBLE* A, INTEGER* LDA, DOUBLE* TA
   INTEGER ISPEC = 1L;
   INTEGER TMP = -1;
   INTEGER NB = ilaenv_(&ISPEC, (char*) NAME, (char*) OPTS, M, N, &TMP, &TMP, strlen(NAME), strlen(OPTS));
-  assert(NB >= 0);
+  assert(NB > 0);
 
   // setup WORK vectors
   INTEGER LWORK = NB*(*N);

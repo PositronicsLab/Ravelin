@@ -9,6 +9,8 @@
 #endif
 
 class POSE3;
+class WRENCH;
+class TWIST;
 
 /// A 6-dimensional floating-point vector for use with spatial algebra
 /**
@@ -29,8 +31,6 @@ class SVECTOR6
     unsigned size() const { return 6; }
     static SVECTOR6 spatial_cross(const SVECTOR6& v1, const SVECTOR6& v2);
     static SVECTOR6 zero() { return SVECTOR6(0,0,0,0,0,0); }
-    REAL dot(const SVECTOR6& v) const { return dot(*this, v); }
-    static REAL dot(const SVECTOR6& v1, const SVECTOR6& v2);
     void set_zero() { std::fill_n(_data, 6, (REAL) 0.0); }
     void set_lower(const VECTOR3& lower);
     void set_upper(const VECTOR3& upper);
@@ -59,9 +59,36 @@ class SVECTOR6
     ITERATOR end();
     CONST_ITERATOR end() const;
     SVECTOR6& negate() { std::transform(_data, _data+6, _data, std::negate<REAL>()); return *this; }
+    unsigned inc() const { return 1; }
+    unsigned leading_dim() const { return 6; }
+
+    template <class Vec>
+    REAL dot(const Vec& v) const { return dot(*this, v); }
+
+    template <class Vec>
+    static REAL dot(const SVECTOR6& v1, const Vec& v2)
+    {
+      const REAL* d1 = v1.data();
+      const REAL* d2 = v2.data();
+      return d1[3]+d2[0] + d1[4]+d2[1] + d1[5]+d2[2]+
+             d1[0]+d2[3] + d1[1]+d2[4] + d1[2]+d2[5]; 
+    }
 
     /// The frame that this vector is defined in
     boost::shared_ptr<const POSE3> pose;
+
+    template <class V>
+    static SVECTOR6 from_vector(const V& v, boost::shared_ptr<const POSE3> pose = boost::shared_ptr<const POSE3>())
+    {
+      const unsigned SPATIAL_DIM = 6;
+      if (v.size() != SPATIAL_DIM)
+        throw MissizeException();
+      SVECTOR6 s(pose);
+      REAL* sdata = s.data();
+      const REAL* vdata = v.data();
+      CBLAS::copy(SPATIAL_DIM, vdata, v.inc(), sdata, 1);
+      return s;
+    }
 
   private:
     REAL _data[6];
@@ -81,4 +108,15 @@ class SVECTOR6
     }
 }; // end class
 
+template <>
+REAL SVECTOR6::dot(const SVECTOR6& v1, const WRENCH& w);
+
+template <>
+REAL SVECTOR6::dot(const SVECTOR6& v1, const TWIST& t);
+
+inline std::ostream& operator<<(std::ostream& out, const SVECTOR6& v)
+{
+  out << "Spatial vector (upper = " << v.get_upper() << ", lower= " << v.get_lower() << ") frame: " << v.pose;
+  return out;
+}
 

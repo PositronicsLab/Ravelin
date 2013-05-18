@@ -157,9 +157,18 @@ POINT2 TRANSFORM2::inverse_transform(const POINT2& p) const
 }
 
 /// Special method for inverting a 2D pose 
-TRANSFORM2 TRANSFORM2::inverse(const TRANSFORM2& p)
+TRANSFORM2 TRANSFORM2::invert(const TRANSFORM2& p)
 {
   return TRANSFORM2(p).invert();
+}
+
+/// Special method for inverting a 2D pose 
+TRANSFORM2& TRANSFORM2::invert()
+{
+  r.invert();
+  x = r * -x;
+  std::swap(source, target);
+  return *this;
 }
 
 /// Concatenates transformations

@@ -9,6 +9,8 @@
 #include <algorithm>
 #include <Ravelin/cblas.h>
 #include <Ravelin/FrameException.h>
+#include <Ravelin/Twistd.h>
+#include <Ravelin/Wrenchd.h>
 #include <Ravelin/SVector6d.h>
 
 using namespace Ravelin;

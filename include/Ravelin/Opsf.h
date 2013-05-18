@@ -21,7 +21,7 @@ inline bool Opsf::rel_equal(float x, float y)
 }
 
 /// Determines whether two floats are equal
-inline bool rel_equal(float x, float y, float tol)
+inline bool Opsf::rel_equal(float x, float y, float tol)
 {
   return (std::fabs(x-y) <= tol * std::max(std::fabs(x), std::max(std::fabs(y), 
 1.0f)));

@@ -40,7 +40,8 @@ class QUAT
     static QUAT rpy(REAL roll, REAL pitch, REAL yaw);
     static REAL calc_angle(const QUAT& q1, const QUAT& q2);
     void to_rpy(REAL& roll, REAL& pitch, REAL& yaw) const;
-    QUAT& inverse();
+    QUAT& invert();
+    QUAT inverse() const { QUAT q = *this; q.invert(); return q; }
     static QUAT invert(const QUAT& q);
     REAL norm_sq() const;
     REAL norm() const { return magnitude(); }

@@ -5,21 +5,24 @@
  ****************************************************************************/
 
 using std::vector;
+using boost::shared_ptr;
 
 /// Default constructor -- constructs a zero inertia matrix
-SPATIAL_AB_INERTIA::SPATIAL_AB_INERTIA()
+SPATIAL_AB_INERTIA::SPATIAL_AB_INERTIA(shared_ptr<const POSE3> pose)
 {
   M.set_zero();
   H.set_zero();
   J.set_zero();
+  this->pose = pose;
 }
 
 /// Constructs the spatial AB inertia from the given values 
-SPATIAL_AB_INERTIA::SPATIAL_AB_INERTIA(const MATRIX3& M, const MATRIX3& H, const MATRIX3& J)
+SPATIAL_AB_INERTIA::SPATIAL_AB_INERTIA(const MATRIX3& M, const MATRIX3& H, const MATRIX3& J, shared_ptr<const POSE3> pose)
 {
   this->M = M;
   this->H = H;
   this->J = J;
+  this->pose = pose;
 }
 
 /// Copies a spatial AB inertia to this one 

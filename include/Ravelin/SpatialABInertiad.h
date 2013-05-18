@@ -9,6 +9,7 @@
 
 #include <vector>
 #include <boost/shared_ptr.hpp>
+#include <Ravelin/cblas.h>
 #include <Ravelin/Wrenchd.h>
 #include <Ravelin/Twistd.h>
 #include <Ravelin/SpatialRBInertiad.h>

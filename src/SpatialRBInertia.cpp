@@ -4,20 +4,24 @@
  * License (found in COPYING).
  ****************************************************************************/
 
+using boost::shared_ptr;
+
 /// Default constructor -- constructs a zero inertia matrix
-SPATIAL_RB_INERTIA::SPATIAL_RB_INERTIA()
+SPATIAL_RB_INERTIA::SPATIAL_RB_INERTIA(shared_ptr<const POSE3> pose)
 {
   m = (REAL) 0.0;
   h.set_zero();
   J.set_zero();
+  this->pose = pose;
 }
 
 /// Constructs the 6x6 spatial matrix from the given values 
-SPATIAL_RB_INERTIA::SPATIAL_RB_INERTIA(REAL m, const VECTOR3& h, const MATRIX3& J)
+SPATIAL_RB_INERTIA::SPATIAL_RB_INERTIA(REAL m, const VECTOR3& h, const MATRIX3& J, shared_ptr<const POSE3> pose)
 {
   this->m = m;
   this->h = h;
   this->J = J;
+  this->pose = pose;
 }
 
 /// Copies a spatial matrix to this one 

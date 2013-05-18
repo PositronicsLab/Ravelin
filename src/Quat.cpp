@@ -395,7 +395,7 @@ QUAT QUAT::slerp(const QUAT& q1, const QUAT& q2, REAL alpha)
 }
 
 /// Computes the inverse orientation represented by this quaternion in place
-QUAT& QUAT::inverse()
+QUAT& QUAT::invert()
 {
   conjugate();
   return *this;

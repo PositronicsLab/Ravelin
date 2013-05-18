@@ -245,6 +245,7 @@ U& transpose_mult(const T& x, U& y) const
     y.set_zero();
     return y;
   }
+// TODO: q: why is this commented out?
 //  if (xcols > 1)
     CBLAS::gemm(CblasColMajor, CblasTrans, CblasNoTrans, columns(), xcols, rows(), (REAL) 1.0, data(), leading_dim(), x.data(), x.leading_dim(), (REAL) 0.0, y.data(), y.leading_dim()); 
 /*
@@ -276,6 +277,7 @@ U& mult(const T& x, U& y) const
     y.set_zero();
     return y;
   }
+// Q: why is this commented out?
 //  if (xcols > 1)
     CBLAS::gemm(CblasColMajor, CblasNoTrans, CblasNoTrans, rows(), xcols, columns(), (REAL) 1.0, data(), leading_dim(), x.data(), x.leading_dim(), (REAL) 0.0, y.data(), y.leading_dim()); 
 /*
@@ -387,7 +389,10 @@ M& select_columns(ForwardIterator col_start, ForwardIterator col_end, M& m) cons
   unsigned mi;
   ForwardIterator i;
   for (i=col_start, mi=0; i != col_end; i++, mi++)
+  {
+    assert(*i < columns());
     CBLAS::copy(rows(), data()+rows()*(*i), 1, m.data()+rows()*mi, 1);
+  }
 
   return m;
 }
@@ -415,7 +420,10 @@ M& select_rows(ForwardIterator row_start, ForwardIterator row_end, M& m) const
   unsigned mi;
   ForwardIterator i;
   for (i=row_start, mi=0; i != row_end; i++, mi++)
+  {
+    assert(*i < rows());
     CBLAS::copy(columns(), data()+*i, rows(), m.data()+mi, nrows);
+  }
 
   return m;
 }
@@ -454,8 +462,11 @@ X& select(ForwardIterator1 row_start, ForwardIterator1 row_end, ForwardIterator2
   // outer loop is over columns 
   for (ForwardIterator2 j=col_start; j != col_end; )
   {
+    assert(*j < columns());
     for (ForwardIterator1 i = row_start; i != row_end; )
     {
+      assert(*i < rows());
+
       // copy the data
       *mdata = *data;
       mdata++;

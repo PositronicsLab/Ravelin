@@ -14,8 +14,8 @@ class POSE3;
 class SPATIAL_AB_INERTIA 
 {
   public:
-    SPATIAL_AB_INERTIA();
-    SPATIAL_AB_INERTIA(const MATRIX3& M, const MATRIX3& H, const MATRIX3& J);
+    SPATIAL_AB_INERTIA(boost::shared_ptr<const POSE3> pose = boost::shared_ptr<const POSE3>());
+    SPATIAL_AB_INERTIA(const MATRIX3& M, const MATRIX3& H, const MATRIX3& J, boost::shared_ptr<const POSE3> pose = boost::shared_ptr<const POSE3>());
     SPATIAL_AB_INERTIA(const SPATIAL_AB_INERTIA& source) { operator=(source); }
     SPATIAL_AB_INERTIA(const SPATIAL_RB_INERTIA& source) { operator=(source); }
     void set_zero();
@@ -43,22 +43,29 @@ class SPATIAL_AB_INERTIA
     static SPATIAL_AB_INERTIA inverse_inertia(const SPATIAL_AB_INERTIA& I);    
 
     template <class Mat>
-    SPATIAL_AB_INERTIA(const Mat& m)
+    static SPATIAL_AB_INERTIA from_matrix(const Mat& m, boost::shared_ptr<const POSE3> pose = boost::shared_ptr<const POSE3>())
     {
+      SPATIAL_AB_INERTIA I(pose);
+
       #ifndef NEXCEPT
       if (m.rows() != 6 || m.columns() != 6)
         throw MissizeException();
       #endif
-      m.get_sub_mat(0, 3, 3, 6, M);
-      m.get_sub_mat(3, 6, 3, 6, H);
-      m.get_sub_mat(3, 6, 0, 3, J);
+      m.get_sub_mat(3, 6, 3, 6, I.H);
+      #ifndef NDEBUG
+      m.get_sub_mat(0, 3, 0, 3, I.M);   // note: just using M here as a temporary
+      assert((I.H - I.M).norm_inf() < I.H.norm_inf() * EPS);
+      #endif
+      m.get_sub_mat(0, 3, 3, 6, I.M);
+      m.get_sub_mat(3, 6, 0, 3, I.J);
+      return I;
     }
 
     template <class Mat>
     Mat& to_matrix(Mat& m) const
     {
       m.resize(6,6);
-      m.set_sub_mat(0, 0, MATRIX3::zero());
+      m.set_sub_mat(0, 0, H);
       m.set_sub_mat(0, 3, M);
       m.set_sub_mat(3, 3, H);
       m.set_sub_mat(3, 0, J);

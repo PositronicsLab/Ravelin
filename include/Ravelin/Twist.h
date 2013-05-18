@@ -31,16 +31,29 @@ class TWIST : public SVECTOR6
     /// Returns a zero twist
     static TWIST zero() { TWIST t; t.set_zero(); return t; }
 
-    /// Computes the dot product with a wrench
-    REAL dot(const WRENCH& w) const { return SVECTOR6::dot(*this, w); }
+    template <class V>
+    static TWIST from_vector(const V& v, boost::shared_ptr<const POSE3> pose = boost::shared_ptr<const POSE3>())
+    {
+      const unsigned SPATIAL_DIM = 6;
+      if (v.size() != SPATIAL_DIM)
+        throw MissizeException();
+      TWIST t(pose);
+      REAL* tdata = t.data();
+      const REAL* vdata = v.data();
+      CBLAS::copy(SPATIAL_DIM, vdata, v.inc(), tdata, 1);
+      return t;
+    }
+
     void set_linear(const VECTOR3& lin) { set_lower(lin); }
     void set_angular(const VECTOR3& ang) { set_upper(ang); }
     VECTOR3 get_angular() const { return get_upper(); }
     VECTOR3 get_linear() const { return get_lower(); }
     TWIST& operator=(const TWIST& source) { SVECTOR6::operator=(source); return *this; }
     TWIST& operator=(const SVECTOR6& source) { SVECTOR6::operator=(source); return *this; }
+    TWIST operator-() const { TWIST w = *this; w.negate(); return w; }
+    TWIST operator+(const TWIST& t) const { TWIST result = *this; result += t; return result; }
+    TWIST operator-(const TWIST& t) const { TWIST result = *this; result -= t; return result; }
 /*
-    TWIST operator-() const;
     TWIST operator*(REAL scalar) const { TWIST v = *this; return v*= scalar; }
     TWIST operator/(REAL scalar) const { TWIST v = *this; return v/= scalar; }
     TWIST& operator/=(REAL scalar) { return operator*=((REAL) 1.0/scalar); }
@@ -54,5 +67,9 @@ class TWIST : public SVECTOR6
 */
 }; // end class
 
-std::ostream& operator<<(std::ostream&, const TWIST& t);
+inline std::ostream& operator<<(std::ostream& out, const TWIST& t)
+{
+  out << "Twist (linear= " << t.get_linear() << ", angular= " << t.get_angular() << ") frame: " << t.pose;
+  return out;
+}
 

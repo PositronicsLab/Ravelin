@@ -28,8 +28,8 @@ class TRANSFORM2
     VECTOR2 inverse_transform(const VECTOR2& v) const;
     TRANSFORM2& set_identity();
     TRANSFORM2& invert();
-    TRANSFORM2 inverse() const { return inverse(*this); }
-    static TRANSFORM2 inverse(const TRANSFORM2& m);
+    TRANSFORM2 inverse() const { return invert(*this); }
+    static TRANSFORM2 invert(const TRANSFORM2& m);
     TRANSFORM2& set(const ROT2& r, const ORIGIN2& v);
     TRANSFORM2& set(const ROT2& r);
     TRANSFORM2& operator=(const TRANSFORM2& source);
