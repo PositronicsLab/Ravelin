@@ -378,7 +378,7 @@ SPATIAL_RB_INERTIA TRANSFORM3::transform(const SPATIAL_RB_INERTIA& J) const
   SPATIAL_RB_INERTIA Jx(target);
   Jx.m = J.m;
   Jx.J = EhxETrx + MATRIX3::transpose(EhxETrx) + (E*J.J*ET) - mrxrx; 
-  Jx.h = E * J.h - mr;
+  Jx.h = E * ORIGIN3(J.h) - mr;
 
   return Jx;
 }
@@ -408,7 +408,7 @@ SPATIAL_RB_INERTIA TRANSFORM3::inverse_transform(const SPATIAL_RB_INERTIA& J) co
   SPATIAL_RB_INERTIA Jx(source);
   Jx.m = J.m;
   Jx.J = EhxETrx + MATRIX3::transpose(EhxETrx) + (E*J.J*ET) - mrxrx; 
-  Jx.h = E * J.h - mr;
+  Jx.h = E * ORIGIN3(J.h) - mr;
 
   return Jx;
 }

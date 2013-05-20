@@ -18,8 +18,8 @@ class ORIGIN3
     ORIGIN3() {}
     ORIGIN3(REAL x, REAL y, REAL z);
     ORIGIN3(const REAL* array);
-    ORIGIN3(const POINT3& p) { operator=(p); }
-    ORIGIN3(const VECTOR3& v) { operator=(v); }
+    explicit ORIGIN3(const POINT3& p) { operator=(p); }
+    explicit ORIGIN3(const VECTOR3& v) { operator=(v); }
     REAL norm_inf() const { return std::max(std::max(std::fabs(_data[0]), std::fabs(_data[1])), std::fabs(_data[2])); }
     REAL norm() const { return std::sqrt(norm_sq()); }
     REAL norm_sq() const { return sqr(_data[0]) + sqr(_data[1]) + sqr(_data[2]); }

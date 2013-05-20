@@ -18,8 +18,8 @@ class ORIGIN2
     ORIGIN2() {}
     ORIGIN2(REAL x, REAL y);
     ORIGIN2(const REAL* array);
-    ORIGIN2(const POINT2& p) { operator=(p); }
-    ORIGIN2(const VECTOR2& v) { operator=(v); }
+    explicit ORIGIN2(const POINT2& p) { operator=(p); }
+    explicit ORIGIN2(const VECTOR2& v) { operator=(v); }
     REAL norm_inf() const { return std::max(std::fabs(_data[0]), std::fabs(_data[1])); }
     REAL norm() const { return std::sqrt(norm_sq()); }
     REAL norm_sq() const { return sqr(_data[0]) + sqr(_data[1]); }
