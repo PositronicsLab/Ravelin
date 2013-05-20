@@ -25,6 +25,8 @@ class TRANSFORM3
     TRANSFORM3(const ORIGIN3& v);
     static TRANSFORM3 identity() { TRANSFORM3 T; T.set_identity(); return T; }
     static bool rel_equal(const TRANSFORM3& p1, const TRANSFORM3& p2, REAL tol = EPS);
+    POSE3 transform(const POSE3& p) const;
+    POSE3 inverse_transform(const POSE3& p) const;
     POINT3 transform(const POINT3& p) const;
     VECTOR3 transform(const VECTOR3& v) const;
     POINT3 inverse_transform(const POINT3& p) const;

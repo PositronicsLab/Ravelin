@@ -20,7 +20,7 @@ class VECTOR3
     VECTOR3(const REAL* array, boost::shared_ptr<const POSE3> pose = boost::shared_ptr<const POSE3>());
     VECTOR3(const VECTOR3& source) { operator=(source); }
     VECTOR3(const POINT3& source) { operator=(source); }
-    VECTOR3(const ORIGIN3& source) { operator=(source); }
+    VECTOR3(const ORIGIN3& source, boost::shared_ptr<const POSE3> pose) { this->pose = pose; operator=(source); }
     REAL dot(const VECTOR3& v) const { return dot(*this, v); }
     REAL dot(const POINT3& p) const { return dot(*this, p); }
     static REAL dot(const VECTOR3& v1, const VECTOR3& v2);
@@ -46,8 +46,12 @@ class VECTOR3
     VECTOR3& operator=(const POINT3& p);
     VECTOR3 operator+(const VECTOR3& v) const { VECTOR3 result = *this; result += v; return result; }
     VECTOR3 operator-(const VECTOR3& v) const { VECTOR3 result = *this; result -= v; return result; }
+    VECTOR3 operator+(const ORIGIN3& o) const { VECTOR3 result = *this; result += o; return result; }
+    VECTOR3 operator-(const ORIGIN3& o) const { VECTOR3 result = *this; result -= o; return result; }
     VECTOR3& operator+=(const VECTOR3& v);
     VECTOR3& operator-=(const VECTOR3& v);
+    VECTOR3& operator+=(const ORIGIN3& o);
+    VECTOR3& operator-=(const ORIGIN3& o);
     VECTOR3& operator*=(REAL scalar) { _data[0] *= scalar; _data[1] *= scalar; _data[2] *= scalar; return *this; }
     VECTOR3 operator*(REAL scalar) const { VECTOR3 v = *this; v *= scalar; return v; }
     VECTOR3 operator/(REAL scalar) const { VECTOR3 v = *this; v /= scalar; return v; }

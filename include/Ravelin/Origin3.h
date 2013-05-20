@@ -8,6 +8,7 @@
 #error This class is not to be included by the user directly. Use Origin3d.h or Origin3d.h instead.
 #endif
 
+class VECTOR3;
 class POINT3;
 
 /// A two-dimensional floating point vector used for computational geometry calculations
@@ -17,7 +18,8 @@ class ORIGIN3
     ORIGIN3() {}
     ORIGIN3(REAL x, REAL y, REAL z);
     ORIGIN3(const REAL* array);
-    ORIGIN3(const POINT3& p);
+    ORIGIN3(const POINT3& p) { operator=(p); }
+    ORIGIN3(const VECTOR3& v) { operator=(v); }
     REAL norm_inf() const { return std::max(std::max(std::fabs(_data[0]), std::fabs(_data[1])), std::fabs(_data[2])); }
     REAL norm() const { return std::sqrt(norm_sq()); }
     REAL norm_sq() const { return sqr(_data[0]) + sqr(_data[1]) + sqr(_data[2]); }
@@ -27,9 +29,12 @@ class ORIGIN3
     static ORIGIN3 zero() { return ORIGIN3((REAL) 0.0, (REAL) 0.0, (REAL) 0.0); }
     ORIGIN3& operator=(const POINT3& p);
     ORIGIN3& operator=(const ORIGIN3& o);
+    ORIGIN3& operator=(const VECTOR3& v);
     ORIGIN3 operator+(const ORIGIN3& o) const;
-    POINT3 operator+(const POINT3& o) const;
-    POINT3 operator-(const POINT3& o) const;
+    VECTOR3 operator+(const POINT3& o) const;
+    VECTOR3 operator-(const POINT3& o) const;
+    VECTOR3 operator+(const VECTOR3& o) const;
+    VECTOR3 operator-(const VECTOR3& o) const;
     ORIGIN3 operator-(const ORIGIN3& v) const;
     ORIGIN3& operator+=(const ORIGIN3& v);
     ORIGIN3& operator-=(const ORIGIN3& v);
@@ -54,6 +59,11 @@ class ORIGIN3
     CONST_ITERATOR begin() const;
     ITERATOR end();
     CONST_ITERATOR end() const;
+    unsigned rows() const { return 3; }
+    unsigned columns() const { return 1; }
+    unsigned inc() const { return 1; }
+    unsigned leading_dim() const { return 3; }
+    ORIGIN3& resize(unsigned m, unsigned n, bool preserve = false);
 
   private:
     REAL _data[3];

@@ -61,13 +61,13 @@ TWIST SPATIAL_RB_INERTIA::inverse_mult(const WRENCH& w) const
   MATRIX3 LL = ((hx * UL) - MATRIX3::identity()) * inv_m;
 
   // get the components of the wrench 
-  VECTOR3 top = w.get_force();
-  VECTOR3 bot = w.get_torque();
+  ORIGIN3 top(w.get_force());
+  ORIGIN3 bot(w.get_torque());
+  VECTOR3 ttop(UL*top + UR*bot, pose); 
+  VECTOR3 tbot(LL*top + UL.transpose_mult(bot), pose); 
 
   // do the arithmetic
-  TWIST t(UL*top + UR*bot, LL*top + UL.transpose_mult(bot));
-  t.pose = pose;
-  return t;
+  return TWIST(ttop, tbot, pose);
 }
 
 /// Multiplies the inverse of this spatial matrix by a wrench 
@@ -96,12 +96,12 @@ std::vector<TWIST>& SPATIAL_RB_INERTIA::inverse_mult(const std::vector<WRENCH>& 
       throw FrameException();
     #endif
 
-    VECTOR3 top = w[i].get_force();
-    VECTOR3 bot = w[i].get_torque();
-
     // do the arithmetic
-    result[i] = TWIST(UL*top + UR*bot, LL*top + UL.transpose_mult(bot));
-    result[i].pose = pose;
+    ORIGIN3 top(w[i].get_force());
+    ORIGIN3 bot(w[i].get_torque());
+    VECTOR3 ttop(UL*top + UR*bot, pose); 
+    VECTOR3 tbot(LL*top + UL.transpose_mult(bot), pose); 
+    result[i] = TWIST(ttop, tbot, pose);
   }
 
   return result;
@@ -116,19 +116,16 @@ WRENCH SPATIAL_RB_INERTIA::operator*(const TWIST& t) const
   #endif
 
   // get necessary components of t
-  VECTOR3 ttop = t.get_angular();
-  VECTOR3 tbot = t.get_linear();
+  ORIGIN3 ttop(t.get_angular());
+  ORIGIN3 tbot(t.get_linear());
 
   // do some precomputation
   MATRIX3 hX = MATRIX3::skew_symmetric(h);
 
-  // compute top part of result
-  VECTOR3 rtop = (tbot * m) - (hX * ttop);
-  VECTOR3 rbot = (J * ttop) + (hX * tbot);
-
-  WRENCH w(rtop, rbot); 
-  w.pose = pose;
-  return w;
+  // compute result
+  VECTOR3 rtop((tbot * m) - (hX * ttop), pose);
+  VECTOR3 rbot((J * ttop) + (hX * tbot), pose);
+  return WRENCH(rtop, rbot, pose); 
 }
 
 /// Multiplies this matrix by a scalar in place
@@ -236,11 +233,11 @@ std::vector<WRENCH>& SPATIAL_RB_INERTIA::mult(const std::vector<TWIST>& t, std::
       throw FrameException();
     #endif
 
-    VECTOR3 top = twist.get_angular();
-    VECTOR3 bot = twist.get_linear();
-    WRENCH w((bot * this->m)-(hX * top), (this->J * top)+(hX * bot));
-    result[i] = w;
-    result[i].pose = pose;
+    ORIGIN3 top(twist.get_angular());
+    ORIGIN3 bot(twist.get_linear());
+    VECTOR3 wtop((bot * this->m)-(hX * top), pose);
+    VECTOR3 wbot((this->J * top)+(hX * bot), pose);
+    result[i] = WRENCH(wtop, wbot, pose);
   } 
 
   return result;

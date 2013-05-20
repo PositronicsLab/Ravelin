@@ -12,11 +12,11 @@
 class POSE2 : public boost::enable_shared_from_this<POSE2>
 {
   public:
-    POSE2(boost::shared_ptr<POSE2> relative_pose = boost::shared_ptr<POSE2>());
+    POSE2(boost::shared_ptr<const POSE2> relative_pose = boost::shared_ptr<const POSE2>());
     POSE2(const POSE2& source) { operator=(source); }
-    POSE2(const ROT2& r, const ORIGIN2& x, boost::shared_ptr<POSE2> relative_pose = boost::shared_ptr<POSE2>());
-    POSE2(const ORIGIN2& x, boost::shared_ptr<POSE2> relative_pose = boost::shared_ptr<POSE2>());
-    POSE2(const ROT2& r, boost::shared_ptr<POSE2> relative_pose = boost::shared_ptr<POSE2>());
+    POSE2(const ROT2& r, const ORIGIN2& x, boost::shared_ptr<const POSE2> relative_pose = boost::shared_ptr<const POSE2>());
+    POSE2(const ORIGIN2& x, boost::shared_ptr<const POSE2> relative_pose = boost::shared_ptr<const POSE2>());
+    POSE2(const ROT2& r, boost::shared_ptr<const POSE2> relative_pose = boost::shared_ptr<const POSE2>());
     static POSE2 identity() { POSE2 T; T.set_identity(); return T; }
     static POSE2 interpolate(const POSE2& m1, const POSE2& m2, REAL t);
     static REAL wrap(REAL theta);

@@ -8,6 +8,7 @@
 #include <Ravelin/Opsd.h>
 #include <Ravelin/Constants.h>
 #include <Ravelin/Point2d.h>
+#include <Ravelin/Vector2d.h>
 #include <Ravelin/Origin2d.h>
 
 using namespace Ravelin;

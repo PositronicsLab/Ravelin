@@ -14,7 +14,7 @@ namespace Ravelin {
  * \param i the 0-index of the column
  */
 template <>
-VECTOR2& MATRIX2::get_column(unsigned i, VECTOR2& result) const
+ORIGIN2& MATRIX2::get_column(unsigned i, ORIGIN2& result) const
 {
   const unsigned SZ = 2;
   assert(i < SZ);
@@ -30,7 +30,7 @@ VECTOR2& MATRIX2::get_column(unsigned i, VECTOR2& result) const
  * \param i the 0-index of the row
  */
 template <>
-VECTOR2& MATRIX2::get_row(unsigned i, VECTOR2& result) const
+ORIGIN2& MATRIX2::get_row(unsigned i, ORIGIN2& result) const
 {
   const unsigned SZ = 2;
   assert(i < SZ);
@@ -45,38 +45,38 @@ VECTOR2& MATRIX2::get_row(unsigned i, VECTOR2& result) const
 /// Sets the specified column of the matrix
 /**
  * \param i the 0-index of the column
- * \param v a 2D vector 
+ * \param o a 2D vector 
  */
 template <>
-MATRIX2& MATRIX2::set_column(unsigned i, const VECTOR2& v)
+MATRIX2& MATRIX2::set_column(unsigned i, const ORIGIN2& o)
 {
   const unsigned SZ = 2;
   assert(i < SZ);
 
-  const REAL* vdata = v.data();
+  const REAL* odata = o.data();
   unsigned st = i*SZ;
-  _data[st++] = vdata[0];
-  _data[st] = vdata[1];
+  _data[st++] = odata[0];
+  _data[st] = odata[1];
   return *this;
 }
 
 /// Sets the specified row of the matrix
 /**
  * \param i the 0-index of the row
- * \param v a 2D vector
+ * \param o a 2D vector
  * \note the number of columns of this must be three!
  */
 template <>
-MATRIX2& MATRIX2::set_row(unsigned i, const VECTOR2& v)
+MATRIX2& MATRIX2::set_row(unsigned i, const ORIGIN2& o)
 {
   const unsigned SZ = 2;
   assert(i < SZ);
 
-  const REAL* vdata = v.data();
+  const REAL* odata = o.data();
   unsigned st = i;
-  _data[st] = vdata[0];
+  _data[st] = odata[0];
   st += SZ;
-  _data[st] = vdata[1]; 
+  _data[st] = odata[1]; 
   return *this;
 }
 
@@ -113,24 +113,24 @@ MATRIX2::MATRIX2(REAL m00, REAL m01, REAL m10, REAL m11)
 }
 
 /// Multiplies this matrix by a vector and returns the result in a new vector
-VECTOR2 MATRIX2::mult(const VECTOR2& v) const
+ORIGIN2 MATRIX2::mult(const ORIGIN2& o) const
 {
-  VECTOR2 result;
+  ORIGIN2 result;
   REAL* rdata = result.data();
-  const REAL* vdata = v.data();
-  rdata[0] = _data[0]*vdata[0] + _data[2]*vdata[1];
-  rdata[1] = _data[1]*vdata[0] + _data[3]*vdata[1];
+  const REAL* odata = o.data();
+  rdata[0] = _data[0]*odata[0] + _data[2]*odata[1];
+  rdata[1] = _data[1]*odata[0] + _data[3]*odata[1];
   return result;
 }
 
 /// Multiplies the transpose of this matrix by a vector and returns the result in a new vector
-VECTOR2 MATRIX2::transpose_mult(const VECTOR2& v) const
+ORIGIN2 MATRIX2::transpose_mult(const ORIGIN2& o) const
 {
-  VECTOR2 result;
+  ORIGIN2 result;
   REAL* rdata = result.data();
-  const REAL* vdata = v.data();
-  rdata[0] = _data[0]*vdata[0] + _data[1]*vdata[1];
-  rdata[1] = _data[2]*vdata[0] + _data[3]*vdata[1];
+  const REAL* odata = o.data();
+  rdata[0] = _data[0]*odata[0] + _data[1]*odata[1];
+  rdata[1] = _data[2]*odata[0] + _data[3]*odata[1];
   return result;
 }
 
@@ -268,22 +268,22 @@ bool MATRIX2::orthonormalize()
 /**
  * \param i the 0-index of the row
  */
-VECTOR2 MATRIX2::get_row(unsigned i) const
+ORIGIN2 MATRIX2::get_row(unsigned i) const
 {
-  VECTOR2 v;
-  get_row(i, v);
-  return v;
+  ORIGIN2 o;
+  get_row(i, o);
+  return o;
 }
 
 /// Gets the specified column of the matrix
 /**
  * \param i the 0-index of the column
  */
-VECTOR2 MATRIX2::get_column(unsigned i) const
+ORIGIN2 MATRIX2::get_column(unsigned i) const
 {
-  VECTOR2 v;
-  get_column(i, v);
-  return v;
+  ORIGIN2 o;
+  get_column(i, o);
+  return o;
 }
 
 /// Sets this matrix to its transpose

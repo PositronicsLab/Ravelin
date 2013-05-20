@@ -19,7 +19,7 @@ class POINT2
     POINT2(boost::shared_ptr<const POSE2> pose = boost::shared_ptr<const POSE2>()) { this->pose = pose; }
     POINT2(REAL x, REAL y, boost::shared_ptr<const POSE2> pose = boost::shared_ptr<const POSE2>());
     POINT2(const REAL* array, boost::shared_ptr<const POSE2> pose = boost::shared_ptr<const POSE2>());
-    POINT2(const ORIGIN2& o);
+    POINT2(const ORIGIN2& o, boost::shared_ptr<const POSE2> pose) { this->pose = pose; operator=(o); }
     POINT2(const VECTOR2& v) { operator=(v); } 
     REAL norm_inf() const { return std::max(std::fabs(_data[0]), std::fabs(_data[1])); }
     REAL norm() const { return std::sqrt(norm_sq()); }

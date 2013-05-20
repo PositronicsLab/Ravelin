@@ -8,6 +8,7 @@
 #error This class is not to be included by the user directly. Use VECTOR2.h or Vector2f.h instead.
 #endif
 
+class ORIGIN2;
 class POSE2;
 class POINT2;
 
@@ -19,6 +20,7 @@ class VECTOR2
     VECTOR2(REAL x, REAL y, boost::shared_ptr<const POSE2> pose = boost::shared_ptr<const POSE2>());
     VECTOR2(const REAL* array, boost::shared_ptr<const POSE2> pose = boost::shared_ptr<POSE2>());
     VECTOR2(const POINT2& p) { operator=(p); }
+    VECTOR2(const ORIGIN2& o, boost::shared_ptr<const POSE2> pose) { this->pose = pose; operator=(o); } 
     REAL dot(const VECTOR2& v) const { return v[0]*_data[0] + v[1]*_data[1]; }
     static REAL dot(const VECTOR2& v1, const VECTOR2& v2) { return v1[0]*v2[0] + v1[1]*v2[1]; }
     REAL norm_inf() const { return std::max(std::fabs(_data[0]), std::fabs(_data[1])); }
@@ -34,10 +36,15 @@ class VECTOR2
     static VECTOR2 zero() { return VECTOR2(0.0, 0.0); }
     VECTOR2& operator=(const VECTOR2& v) { _data[0] = v[0]; _data[1] = v[1]; pose = v.pose; return *this; }
     VECTOR2& operator=(const POINT2& p);
-    VECTOR2 operator+(const VECTOR2& v) const;
-    VECTOR2 operator-(const VECTOR2& v) const;
+    VECTOR2& operator=(const ORIGIN2& o);
+    VECTOR2 operator+(const VECTOR2& v) const { VECTOR2 w = *this; return w += v; }
+    VECTOR2 operator-(const VECTOR2& v) const { VECTOR2 w = *this; return w -= v; }
+    VECTOR2 operator+(const ORIGIN2& o) const { VECTOR2 v = *this; return v += o; }
+    VECTOR2 operator-(const ORIGIN2& o) const { VECTOR2 v = *this; return v -= o; }
     VECTOR2& operator+=(const VECTOR2& v);
     VECTOR2& operator-=(const VECTOR2& v);
+    VECTOR2& operator+=(const ORIGIN2& o);
+    VECTOR2& operator-=(const ORIGIN2& o);
     VECTOR2& operator*=(REAL scalar) { _data[0] *= scalar; _data[1] *= scalar; return *this; }
     VECTOR2& operator/=(REAL scalar) { _data[0] /= scalar; _data[1] /= scalar; return *this; }
     VECTOR2 operator*(REAL scalar) const { VECTOR2 v = *this; v *= scalar; return v; }

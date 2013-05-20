@@ -9,6 +9,7 @@
 #endif
 
 class POINT2;
+class VECTOR2;
 
 /// A two-dimensional floating point vector used for computational geometry calculations
 class ORIGIN2
@@ -17,7 +18,8 @@ class ORIGIN2
     ORIGIN2() {}
     ORIGIN2(REAL x, REAL y);
     ORIGIN2(const REAL* array);
-    ORIGIN2(const POINT2& p);
+    ORIGIN2(const POINT2& p) { operator=(p); }
+    ORIGIN2(const VECTOR2& v) { operator=(v); }
     REAL norm_inf() const { return std::max(std::fabs(_data[0]), std::fabs(_data[1])); }
     REAL norm() const { return std::sqrt(norm_sq()); }
     REAL norm_sq() const { return sqr(_data[0]) + sqr(_data[1]); }
@@ -26,10 +28,13 @@ class ORIGIN2
     void set_zero() { _data[0] = _data[1] = 0.0; }
     static ORIGIN2 zero() { return ORIGIN2(0.0, 0.0); }
     ORIGIN2& operator=(const POINT2& p);
+    ORIGIN2& operator=(const VECTOR2& v);
     ORIGIN2& operator=(const ORIGIN2& v) { _data[0] = v[0]; _data[1] = v[1]; return *this; }
     ORIGIN2 operator+(const ORIGIN2& v) const { return ORIGIN2(_data[0] + v[0], _data[1] + v[1]); }
-    POINT2 operator+(const POINT2& p) const;
-    POINT2 operator-(const POINT2& p) const;
+    VECTOR2 operator+(const POINT2& p) const;
+    VECTOR2 operator-(const POINT2& p) const;
+    VECTOR2 operator+(const VECTOR2& p) const;
+    VECTOR2 operator-(const VECTOR2& p) const;
     ORIGIN2 operator-(const ORIGIN2& v) const { return ORIGIN2(_data[0] - v[0], _data[1] - v[1]); }
     ORIGIN2& operator+=(const ORIGIN2& v) { _data[0] += v[0]; _data[1] += v[1];  return *this; }
     ORIGIN2& operator-=(const ORIGIN2& v) { _data[0] -= v[0]; _data[1] -= v[1];  return *this; }
@@ -48,6 +53,11 @@ class ORIGIN2
     const REAL& y() const { return _data[1]; }
     REAL& x() { return _data[0]; }
     REAL& y() { return _data[1]; }
+    unsigned rows() const { return 3; }
+    unsigned columns() const { return 1; }
+    unsigned leading_dim() const { return 3; }
+    unsigned inc() const { return 1; }
+    ORIGIN2& resize(unsigned m, unsigned n, bool preserve = false);
 
   private:
     REAL _data[2];

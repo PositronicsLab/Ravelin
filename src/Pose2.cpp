@@ -8,28 +8,28 @@
 /**
  * Sets matrix to the identity matrix
  */
-POSE2::POSE2(boost::shared_ptr<POSE2> relative_pose)
+POSE2::POSE2(boost::shared_ptr<const POSE2> relative_pose)
 {
   set_identity();
   rpose = relative_pose;
 }
 
 /// Constructs a 2D pose from a rotation and translation vector
-POSE2::POSE2(const ROT2& r, const ORIGIN2& v, boost::shared_ptr<POSE2> relative_pose)
+POSE2::POSE2(const ROT2& r, const ORIGIN2& v, boost::shared_ptr<const POSE2> relative_pose)
 {
   set(r, v);
   rpose = relative_pose;
 }
 
 /// Constructs a 2D pose from a rotation and zero translation
-POSE2::POSE2(const ROT2& r, boost::shared_ptr<POSE2> relative_pose)
+POSE2::POSE2(const ROT2& r, boost::shared_ptr<const POSE2> relative_pose)
 {
   set(r, ORIGIN2::zero());
   rpose = relative_pose;
 }
 
 /// Constructs a 2D pose using identity orientation and a translation vector
-POSE2::POSE2(const ORIGIN2& v, boost::shared_ptr<POSE2> relative_pose)
+POSE2::POSE2(const ORIGIN2& v, boost::shared_ptr<const POSE2> relative_pose)
 {
   set(ROT2::identity(), v);
   rpose = relative_pose;
@@ -169,7 +169,7 @@ VECTOR2 POSE2::inverse_transform(const VECTOR2& v) const
   }
   if (v.pose != rpose)
     throw FrameException();
-  result.pose = boost::const_pointer_cast<POSE2>(pose);
+  result.pose = boost::const_pointer_cast<const POSE2>(pose);
   #endif
 
   return result;
@@ -214,7 +214,7 @@ POINT2 POSE2::inverse_transform(const POINT2& p) const
   }
   if (p.pose != rpose)
     throw FrameException();
-  result.pose = boost::const_pointer_cast<POSE2>(pose);
+  result.pose = boost::const_pointer_cast<const POSE2>(pose);
   #endif
 
   return result;

@@ -15,15 +15,15 @@ class MATRIX3;
 class POSE3 : public boost::enable_shared_from_this<POSE3>
 {
   public:
-    POSE3(boost::shared_ptr<POSE3> relative_pose = boost::shared_ptr<POSE3>());
+    POSE3(boost::shared_ptr<const POSE3> relative_pose = boost::shared_ptr<const POSE3>());
     POSE3(const POSE3& source) { operator=(source); }
-    POSE3(const AANGLE& a, boost::shared_ptr<POSE3> relative_pose = boost::shared_ptr<POSE3>());
-    POSE3(const MATRIX3& m, boost::shared_ptr<POSE3> relative_pose = boost::shared_ptr<POSE3>());
-    POSE3(const QUAT& q, boost::shared_ptr<POSE3> relative_pose = boost::shared_ptr<POSE3>());
-    POSE3(const AANGLE& a, const ORIGIN3& v, boost::shared_ptr<POSE3> relative_pose = boost::shared_ptr<POSE3>());
-    POSE3(const MATRIX3& m, const ORIGIN3& v, boost::shared_ptr<POSE3> relative_pose = boost::shared_ptr<POSE3>());
-    POSE3(const QUAT& q, const ORIGIN3& v, boost::shared_ptr<POSE3> relative_pose = boost::shared_ptr<POSE3>());
-    POSE3(const ORIGIN3& v, boost::shared_ptr<POSE3> relative_pose = boost::shared_ptr<POSE3>());
+    POSE3(const AANGLE& a, boost::shared_ptr<const POSE3> relative_pose = boost::shared_ptr<const POSE3>());
+    POSE3(const MATRIX3& m, boost::shared_ptr<const POSE3> relative_pose = boost::shared_ptr<const POSE3>());
+    POSE3(const QUAT& q, boost::shared_ptr<const POSE3> relative_pose = boost::shared_ptr<const POSE3>());
+    POSE3(const AANGLE& a, const ORIGIN3& v, boost::shared_ptr<const POSE3> relative_pose = boost::shared_ptr<const POSE3>());
+    POSE3(const MATRIX3& m, const ORIGIN3& v, boost::shared_ptr<const POSE3> relative_pose = boost::shared_ptr<const POSE3>());
+    POSE3(const QUAT& q, const ORIGIN3& v, boost::shared_ptr<const POSE3> relative_pose = boost::shared_ptr<const POSE3>());
+    POSE3(const ORIGIN3& v, boost::shared_ptr<const POSE3> relative_pose = boost::shared_ptr<const POSE3>());
     static POSE3 identity() { POSE3 T; T.set_identity(); return T; }
     static POSE3 interpolate(const POSE3& m1, const POSE3& m2, REAL t);
     static bool rel_equal(const POSE3& p1, const POSE3& p2, REAL tol = EPS);
@@ -60,6 +60,7 @@ class POSE3 : public boost::enable_shared_from_this<POSE3>
     POSE3& set(const QUAT& q, const ORIGIN3& v);
     POSE3& operator=(const POSE3& source);
     POSE3 operator*(const POSE3& m) const;
+    void update_relative_pose(boost::shared_ptr<const POSE3> pose);
 
     /// the orientation of the pose frame
     QUAT q;
@@ -71,7 +72,7 @@ class POSE3 : public boost::enable_shared_from_this<POSE3>
     boost::shared_ptr<const POSE3> rpose; 
 
   private:
-    void get_r_E(VECTOR3& r, MATRIX3& E, bool inverse) const;
+    void get_r_E(ORIGIN3& r, MATRIX3& E, bool inverse) const;
     TRANSFORM3 calc_transform(boost::shared_ptr<const POSE3> p) const;
     static TRANSFORM3 calc_transform(boost::shared_ptr<const POSE3> source, boost::shared_ptr<const POSE3> target);
     static bool is_common(boost::shared_ptr<const POSE3> source, boost::shared_ptr<const POSE3> p, unsigned& i);

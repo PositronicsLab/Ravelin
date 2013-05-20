@@ -4,14 +4,6 @@
  * License (found in COPYING).
  ****************************************************************************/
 
-/// Constructs this vector from the given origin 
-POINT2::POINT2(const ORIGIN2& o)
-{
-  const unsigned X = 0, Y = 1;
-  _data[X] = o.x();
-  _data[Y] = o.y();
-}
-
 /// Constructs this vector with the given values
 POINT2::POINT2(REAL x, REAL y, boost::shared_ptr<const POSE2> p)
 {

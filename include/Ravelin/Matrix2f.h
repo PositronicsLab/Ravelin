@@ -14,7 +14,7 @@
 #include <Ravelin/MissizeException.h>
 #include <Ravelin/InvalidIndexException.h>
 #include <Ravelin/DataMismatchException.h>
-#include <Ravelin/Vector2f.h>
+#include <Ravelin/Origin2f.h>
 
 namespace Ravelin {
 

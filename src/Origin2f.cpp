@@ -8,6 +8,7 @@
 #include <Ravelin/Opsf.h>
 #include <Ravelin/Constants.h>
 #include <Ravelin/Point2f.h>
+#include <Ravelin/Vector2f.h>
 #include <Ravelin/Origin2f.h>
 
 using namespace Ravelin;

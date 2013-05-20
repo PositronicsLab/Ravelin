@@ -39,12 +39,12 @@ class MATRIX2
     static bool valid_rotation(const MATRIX2& R);
     static MATRIX2 identity() { MATRIX2 m; m.set_identity(); return m; }
     static MATRIX2 zero() { MATRIX2 m; m.set_zero(); return m; }
-    VECTOR2 get_row(unsigned i) const;
-    VECTOR2 get_column(unsigned i) const;
+    ORIGIN2 get_row(unsigned i) const;
+    ORIGIN2 get_column(unsigned i) const;
     void set_identity();
     void set_zero();
-    VECTOR2 mult(const VECTOR2& v) const;
-    VECTOR2 transpose_mult(const VECTOR2& v) const;
+    ORIGIN2 mult(const ORIGIN2& v) const;
+    ORIGIN2 transpose_mult(const ORIGIN2& v) const;
     MATRIX2 mult(const MATRIX2& m) const;
     MATRIX2 transpose_mult(const MATRIX2& m) const;
     MATRIX2 transpose_mult_transpose(const MATRIX2& m) const;
@@ -58,7 +58,7 @@ class MATRIX2
     MATRIX2& operator*=(const MATRIX2& m) { return *this = *this * m; }
     MATRIX2& operator*=(REAL scalar);
     MATRIX2& operator/=(REAL scalar) { return operator*=(1.0/scalar); }
-    VECTOR2 operator*(const VECTOR2& v) const { return mult(v); } 
+    ORIGIN2 operator*(const ORIGIN2& o) const { return mult(o); } 
     MATRIX2 operator+(const MATRIX2& m) const { MATRIX2 n = *this; n += m; return n; }
     MATRIX2 operator-(const MATRIX2& m) const { MATRIX2 n = *this; n -= m; return n; }
     MATRIX2 operator*(const MATRIX2& m) const { return mult(m); }

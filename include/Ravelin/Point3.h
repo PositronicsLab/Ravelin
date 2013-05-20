@@ -18,7 +18,7 @@ class POINT3
   public:
     POINT3(boost::shared_ptr<const POSE3> pose = boost::shared_ptr<const POSE3>()) { this->pose = pose; }
     POINT3(REAL x, REAL y, REAL z, boost::shared_ptr<const POSE3> pose = boost::shared_ptr<const POSE3>());
-    POINT3(const ORIGIN3& o) { operator=(o); }
+    POINT3(const ORIGIN3& o, boost::shared_ptr<const POSE3> pose) { this->pose = pose; operator=(o); }
     POINT3(const VECTOR3& p) { operator=(p); }
     POINT3(const REAL* array, boost::shared_ptr<const POSE3> pose = boost::shared_ptr<const POSE3>());
     POINT3(const POINT3& source) { operator=(source); }
@@ -40,6 +40,8 @@ class POINT3
     POINT3& operator=(const POINT3& p);
     VECTOR3 operator+(const POINT3& v) const;
     VECTOR3 operator-(const POINT3& v) const;
+    VECTOR3 operator+(const ORIGIN3& o) const;
+    VECTOR3 operator-(const ORIGIN3& o) const;
     POINT3& operator+=(const ORIGIN3& o);
     POINT3& operator-=(const ORIGIN3& o);
     POINT3& operator+=(const VECTOR3& v);

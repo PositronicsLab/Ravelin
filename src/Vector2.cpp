@@ -25,6 +25,14 @@ VECTOR2::VECTOR2(const REAL* array, boost::shared_ptr<const POSE2> pose)
   this->pose = pose;
 }
 
+/// Constructs a vector from an origin object
+VECTOR2& VECTOR2::operator=(const ORIGIN2& o)
+{
+  x() = o.x();
+  y() = o.y();
+  return *this;
+}
+
 /// Constructs a vector from a point
 VECTOR2& VECTOR2::operator=(const POINT2& p)
 {
@@ -134,18 +142,6 @@ CONST_ITERATOR VECTOR2::end() const
   return i;
 }
 
-/// Adds two vectors together
-VECTOR2 VECTOR2::operator+(const VECTOR2& v) const
-{
-  #ifndef NEXCEPT
-  if (pose != v.pose)
-    throw FrameException();
-  #endif
-  VECTOR2 result = *this;
-  result += v;
-  return result;
-}
-
 /// Adds a vector to this
 VECTOR2& VECTOR2::operator+=(const VECTOR2& v) 
 {
@@ -162,14 +158,6 @@ VECTOR2& VECTOR2::operator+=(const VECTOR2& v)
 }
 
 /// Subtracts a vector from this
-VECTOR2 VECTOR2::operator-(const VECTOR2& v) const
-{
-  VECTOR2 result = *this;
-  result -= v;
-  return result;
-}
-
-/// Subtracts a vector from this
 VECTOR2& VECTOR2::operator-=(const VECTOR2& v) 
 {
   #ifndef NEXCEPT
@@ -180,6 +168,26 @@ VECTOR2& VECTOR2::operator-=(const VECTOR2& v)
   // do the subtraction
   _data[0] -= v._data[0];
   _data[1] -= v._data[1];
+
+  return *this;
+}
+
+/// Adds an origin to this
+VECTOR2& VECTOR2::operator+=(const ORIGIN2& o) 
+{
+  // do the addition 
+  _data[0] += o.x();
+  _data[1] += o.y();
+
+  return *this;
+}
+
+/// Subtracts an origin from this
+VECTOR2& VECTOR2::operator-=(const ORIGIN2& o) 
+{
+  // do the subtraction
+  _data[0] -= o.x();
+  _data[1] -= o.y();
 
   return *this;
 }

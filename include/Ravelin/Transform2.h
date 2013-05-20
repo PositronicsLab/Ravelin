@@ -22,6 +22,8 @@ class TRANSFORM2
     static TRANSFORM2 identity() { TRANSFORM2 T; T.set_identity(); return T; }
     static bool rel_equal(const TRANSFORM2& p1, const TRANSFORM2& p2, REAL tol=EPS);
     static REAL wrap(REAL theta);
+    POSE2 transform(const POSE2& p) const;
+    POSE2 inverse_transform(const POSE2& p) const;
     POINT2 transform(const POINT2& v) const;
     VECTOR2 transform(const VECTOR2& v) const;
     POINT2 inverse_transform(const POINT2& v) const;

@@ -192,7 +192,16 @@ VECTOR3& VECTOR3::operator+=(const VECTOR3& v)
   return *this;
 }
  
-/// Subtracts a vector from this (in the same frame)
+/// Adds a vector and an origin 
+VECTOR3& VECTOR3::operator+=(const ORIGIN3& o)
+{
+  x() += o.x();
+  y() += o.y();
+  z() += o.z();
+  return *this;
+}
+
+ /// Subtracts a vector from this (in the same frame)
 VECTOR3& VECTOR3::operator-=(const VECTOR3& v)
 {
   #ifndef NEXCEPT
@@ -206,6 +215,15 @@ VECTOR3& VECTOR3::operator-=(const VECTOR3& v)
   return *this;
 }
  
+/// Subtracts an origin from this vector
+VECTOR3& VECTOR3::operator-=(const ORIGIN3& o)
+{
+  x() -= o.x();
+  y() -= o.y();
+  z() -= o.z();
+  return *this;
+}
+
 ITERATOR VECTOR3::begin()
 {
   ITERATOR i;

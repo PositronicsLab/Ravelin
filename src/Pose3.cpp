@@ -4,60 +4,62 @@
  * License (found in COPYING).
  ****************************************************************************/
 
+using boost::shared_ptr;
+
 /// Default constructor
 /**
  * Sets matrix to the identity matrix
  */
-POSE3::POSE3(boost::shared_ptr<POSE3> relative_pose)
+POSE3::POSE3(boost::shared_ptr<const POSE3> relative_pose)
 {
   set_identity();
   rpose = relative_pose;
 }
 
 /// Constructs a pose from a unit quaternion and translation vector
-POSE3::POSE3(const QUAT& q, const ORIGIN3& v, boost::shared_ptr<POSE3> relative_pose)
+POSE3::POSE3(const QUAT& q, const ORIGIN3& v, boost::shared_ptr<const POSE3> relative_pose)
 {
   set(QUAT::normalize(q), v);
   rpose = relative_pose;
 }
 
 /// Constructs a pose from a unit quaternion (for rotation) and zero translation
-POSE3::POSE3(const QUAT& q, boost::shared_ptr<POSE3> relative_pose)
+POSE3::POSE3(const QUAT& q, boost::shared_ptr<const POSE3> relative_pose)
 {
   set(QUAT::normalize(q), ORIGIN3::zero());
   rpose = relative_pose;
 }
 
 /// Constructs a pose from a rotation matrix and translation vector
-POSE3::POSE3(const MATRIX3& r, const ORIGIN3& v, boost::shared_ptr<POSE3> relative_pose) 
+POSE3::POSE3(const MATRIX3& r, const ORIGIN3& v, boost::shared_ptr<const POSE3> relative_pose) 
 {
   set(r, v);
   rpose = relative_pose;
 }
 
 /// Constructs a pose from a rotation matrix and zero translation
-POSE3::POSE3(const MATRIX3& r, boost::shared_ptr<POSE3> relative_pose)
+POSE3::POSE3(const MATRIX3& r, boost::shared_ptr<const POSE3> relative_pose)
 {
   set(r, ORIGIN3::zero());
   rpose = relative_pose;
 }
 
 /// Constructs a pose from a axis-angle representation and a translation vector
-POSE3::POSE3(const AANGLE& a, const ORIGIN3& v, boost::shared_ptr<POSE3> relative_pose)
+POSE3::POSE3(const AANGLE& a, const ORIGIN3& v, boost::shared_ptr<const POSE3> relative_pose)
 {
   set(a, v);
   rpose = relative_pose;
 }
 
 /// Constructs a pose from a axis-angle representation (for rotation) and zero translation
-POSE3::POSE3(const AANGLE& a, boost::shared_ptr<POSE3> relative_pose)
+POSE3::POSE3(const AANGLE& a, boost::shared_ptr<const POSE3> relative_pose)
 {
   set(a, ORIGIN3::zero());
   rpose = relative_pose;
 }
 
 /// Constructs a pose using identity orientation and a translation vector
-POSE3::POSE3(const ORIGIN3& v, boost::shared_ptr<POSE3> relative_pose)
+POSE3::POSE3(const ORIGIN3& v, boost::shared_ptr<const POSE3> relative_pose)
 {
   set(QUAT::identity(), v);
   rpose = relative_pose;
@@ -74,9 +76,11 @@ POSE3& POSE3::operator=(const POSE3& p)
 /// Determines whether two poses in 3D are relatively equivalent
 bool POSE3::rel_equal(const POSE3& p1, const POSE3& p2, REAL tol)
 {
-  // verify relative frames are identity 
+  #ifndef NEXCEPT
+  // verify relative frames are identical 
   if (p1.rpose != p2.rpose)
     throw FrameException();
+  #endif
 
   // check x components first
   if (!OPS::rel_equal(p1.x[0], p2.x[0], tol) || 
@@ -98,6 +102,11 @@ bool POSE3::rel_equal(const POSE3& p1, const POSE3& p2, REAL tol)
  */
 POSE3 POSE3::interpolate(const POSE3& T1, const POSE3& T2, REAL t)
 {
+  #ifndef NEXCEPT
+  if (T1.rpose != T2.rpose)
+    throw FrameException();
+  #endif
+
   // interpolate the positions
   ORIGIN3 x = T1.x*(1-t) + T2.x*t;
 
@@ -110,7 +119,7 @@ POSE3 POSE3::interpolate(const POSE3& T1, const POSE3& T2, REAL t)
 
 // Sets the pose from an axis-angle representation and a translation vector
 /**
- * \todo make this marginally faster by setting the matrix components directly (eliminates redundancy in setting non-rotation and non-translational components)
+ * \note relative pose will be unaltered
  */
 POSE3& POSE3::set(const AANGLE& a, const ORIGIN3& v)
 {
@@ -120,6 +129,9 @@ POSE3& POSE3::set(const AANGLE& a, const ORIGIN3& v)
 }
 
 /// Sets the pose from a rotation matrix and translation vector
+/**
+ * \note relative pose will be unaltered
+ */
 POSE3& POSE3::set(const MATRIX3& m, const ORIGIN3& v)
 {
   q = m;
@@ -128,6 +140,9 @@ POSE3& POSE3::set(const MATRIX3& m, const ORIGIN3& v)
 }
 
 /// Sets the pose from a unit quaternion and translation vector
+/**
+ * \note relative pose will be unaltered
+ */
 POSE3& POSE3::set(const QUAT& q, const ORIGIN3& v)
 {
   this->q = q;
@@ -136,6 +151,9 @@ POSE3& POSE3::set(const QUAT& q, const ORIGIN3& v)
 }
 
 /// Sets this pose from a unit quaternion only (translation will be zero'd) 
+/**
+ * \note relative pose will be unaltered
+ */
 POSE3& POSE3::set(const QUAT& q)
 {
   this->q = q;
@@ -144,6 +162,9 @@ POSE3& POSE3::set(const QUAT& q)
 }
 
 /// Sets this pose from a axis-angle object only (translation will be zero'd) 
+/**
+ * \note relative pose will be unaltered
+ */
 POSE3& POSE3::set(const AANGLE& a)
 {
   this->q = a;
@@ -152,6 +173,9 @@ POSE3& POSE3::set(const AANGLE& a)
 }
 
 /// Sets this pose from a 3x3 rotation matrix only (translation will be zero'd) 
+/**
+ * \note relative pose will be unaltered
+ */
 POSE3& POSE3::set(const MATRIX3& m)
 {
   this->q = m;
@@ -160,6 +184,9 @@ POSE3& POSE3::set(const MATRIX3& m)
 }
 
 /// Sets this matrix to identity
+/**
+ * \note relative pose will be unaltered
+ */
 POSE3& POSE3::set_identity()
 {
   this->q = QUAT::identity();
@@ -189,10 +216,20 @@ POSE3 POSE3::invert(const POSE3& p)
 POSE3 POSE3::operator*(const POSE3& p) const
 {
   #ifndef NEXCEPT
-  if (rpose != p.rpose)
+  boost::shared_ptr<const POSE3> pose;
+  try
+  {
+    pose = shared_from_this();
+  }
+  catch (boost::bad_weak_ptr e)
+  {
+    std::cerr << "Pose3::operator*() - pose allocated on stack!" << std::endl;
+  }
+  if (p.rpose != pose)
     throw FrameException();
   #endif
-  return POSE3(q * p.q, q*p.x + x);
+
+  return POSE3(q * p.q, q*p.x + x, rpose);
 }
 
 /// Transforms a vector from one pose to another 
@@ -206,23 +243,18 @@ VECTOR3 POSE3::transform(const VECTOR3& v) const
   }
   catch (boost::bad_weak_ptr e)
   {
-    std::cerr << "Pose3 can't check frames when allocated on the stack! Allocate on heap or disable debugging exceptions." << std::endl;
+    std::cerr << "Pose3::transform() - pose allocated on stack!" << std::endl;
   }
   if (v.pose != pose)
     throw FrameException();
   #endif
 
-  VECTOR3 result = q * v;
-  result.pose = rpose;
-  return result;
+  return VECTOR3(q * ORIGIN3(v), rpose);
 }
 
 /// Transforms a vector from one pose to another 
 VECTOR3 POSE3::inverse_transform(const VECTOR3& v) const
 {
-  VECTOR3 result = QUAT::invert(q) * v;
-
-  #ifndef NEXCEPT
   boost::shared_ptr<const POSE3> pose;
   try
   {
@@ -230,14 +262,14 @@ VECTOR3 POSE3::inverse_transform(const VECTOR3& v) const
   }
   catch (boost::bad_weak_ptr e)
   {
-    std::cerr << "Pose3 can't check frames when allocated on the stack! Allocate on heap or disable debugging exceptions." << std::endl;
+    std::cerr << "Pose3::inverse_transform() - pose allocated on stack!" << std::endl;
   }
+  #ifndef NEXCEPT
   if (v.pose != rpose)
     throw FrameException();
-  result.pose = boost::const_pointer_cast<POSE3>(pose);
   #endif
 
-  return result;
+  return VECTOR3(QUAT::invert(q) * ORIGIN3(v), pose);
 }
 
 /// Transforms a point from one pose to another 
@@ -251,23 +283,18 @@ POINT3 POSE3::transform(const POINT3& p) const
   }
   catch (boost::bad_weak_ptr e)
   {
-    std::cerr << "Pose3 can't check frames when allocated on the stack! Allocate on heap or disable debugging exceptions." << std::endl;
+    std::cerr << "Pose3::transform() - pose allocated on stack!" << std::endl;
   }
   if (p.pose != pose)
     throw FrameException();
   #endif
 
-  POINT3 result = q * p + x;
-  result.pose = rpose;
-  return result;
+  return POINT3(q * ORIGIN3(p) + x, rpose);
 }
 
 /// Transforms a point from one pose to another 
 POINT3 POSE3::inverse_transform(const POINT3& p) const
 {
-  POINT3 result = QUAT::invert(q) * (p - x);
-
-  #ifndef NEXCEPT
   boost::shared_ptr<const POSE3> pose;
   try
   {
@@ -275,14 +302,14 @@ POINT3 POSE3::inverse_transform(const POINT3& p) const
   }
   catch (boost::bad_weak_ptr e)
   {
-    std::cerr << "Pose3 can't check frames when allocated on the stack! Allocate on heap or disable debugging exceptions." << std::endl;
+    std::cerr << "Pose3::inverse_transform() - pose allocated on stack!" << std::endl;
   }
+  #ifndef NEXCEPT
   if (p.pose != rpose)
     throw FrameException();
-  result.pose = boost::const_pointer_cast<POSE3>(pose);
   #endif
 
-  return result;
+  return POINT3(QUAT::invert(q) * ORIGIN3(p - x), pose);
 }
 
 /// Transforms a wrench from one pose to another 
@@ -296,14 +323,14 @@ WRENCH POSE3::transform(const WRENCH& w) const
   }
   catch (boost::bad_weak_ptr e)
   {
-    std::cerr << "Pose3 can't check frames when allocated on the stack! Allocate on heap or disable debugging exceptions." << std::endl;
+    std::cerr << "Pose3::transform() - pose allocated on stack!" << std::endl;
   }
   if (w.pose != pose)
     throw FrameException();
   #endif
 
   // setup r and E
-  VECTOR3 r;
+  ORIGIN3 r;
   MATRIX3 E;
   get_r_E(r, E, false);
   const MATRIX3 ET = MATRIX3::transpose(E);
@@ -313,19 +340,31 @@ WRENCH POSE3::transform(const WRENCH& w) const
   VECTOR3 bottom = w.get_torque();
 
   // do the calculations
-  VECTOR3 Etop = E * top;
-  VECTOR3 cross = VECTOR3::cross(r, Etop);
-  WRENCH result(Etop, (E * bottom) - cross);
-  result.pose = rpose;
-
-  return result;
+  VECTOR3 Etop(E * ORIGIN3(top), rpose);
+  VECTOR3 cross = VECTOR3::cross(VECTOR3(r, rpose), Etop);
+  return WRENCH(Etop, (E * ORIGIN3(bottom)) - cross, rpose);
 }
 
 /// Transforms a point from one pose to another 
 WRENCH POSE3::inverse_transform(const WRENCH& w) const
 {
+  // get the target pose
+  boost::shared_ptr<const POSE3> pose;
+  try
+  {
+    pose = shared_from_this();
+  }
+  catch (boost::bad_weak_ptr e)
+  {
+    std::cerr << "Pose3::inverse_transform() - pose allocated on stack!" << std::endl;
+  }
+  #ifndef NEXCEPT
+  if (w.pose != rpose)
+    throw FrameException();
+  #endif
+
   // setup r and E
-  VECTOR3 r;
+  ORIGIN3 r;
   MATRIX3 E;
   get_r_E(r, E, true);
   const MATRIX3 ET = MATRIX3::transpose(E);
@@ -335,26 +374,9 @@ WRENCH POSE3::inverse_transform(const WRENCH& w) const
   VECTOR3 bottom = w.get_torque();
 
   // do the calculations
-  VECTOR3 Etop = E * top;
-  VECTOR3 cross = VECTOR3::cross(r, Etop);
-  WRENCH result(Etop, (E * bottom) - cross);
-
-  #ifndef NEXCEPT
-  boost::shared_ptr<const POSE3> pose;
-  try
-  {
-    pose = shared_from_this();
-  }
-  catch (boost::bad_weak_ptr e)
-  {
-    std::cerr << "Pose3 can't check frames when allocated on the stack! Allocate on heap or disable debugging exceptions." << std::endl;
-  }
-  if (w.pose != rpose)
-    throw FrameException();
-  result.pose = boost::const_pointer_cast<POSE3>(pose);
-  #endif
-
-  return result;
+  VECTOR3 Etop(E * ORIGIN3(top), pose);
+  VECTOR3 cross = VECTOR3::cross(VECTOR3(r, pose), Etop);
+  return WRENCH(Etop, (E * ORIGIN3(bottom) - cross), pose);
 }
 
 /// Transforms a twist from one pose to another 
@@ -368,14 +390,14 @@ TWIST POSE3::transform(const TWIST& t) const
   }
   catch (boost::bad_weak_ptr e)
   {
-    std::cerr << "Pose3 can't check frames when allocated on the stack! Allocate on heap or disable debugging exceptions." << std::endl;
+    std::cerr << "Pose3::transform() - pose allocated on stack!" << std::endl;
   }
   if (t.pose != pose)
     throw FrameException();
   #endif
 
   // setup r and E
-  VECTOR3 r;
+  ORIGIN3 r;
   MATRIX3 E;
   get_r_E(r, E, false);
   const MATRIX3 ET = MATRIX3::transpose(E);
@@ -385,19 +407,31 @@ TWIST POSE3::transform(const TWIST& t) const
   VECTOR3 bottom = t.get_linear();
 
   // do the calculations
-  VECTOR3 Etop = E * top;
-  VECTOR3 cross = VECTOR3::cross(r, Etop);
-  TWIST result(Etop, (E * bottom) - cross);
-  result.pose = rpose;
-
-  return result;
+  VECTOR3 Etop(E * ORIGIN3(top), rpose);
+  VECTOR3 cross = VECTOR3::cross(VECTOR3(r, rpose), Etop);
+  return TWIST(Etop, (E * ORIGIN3(bottom)) - cross, rpose);
 }
 
 /// Transforms a twist from one pose to another 
 TWIST POSE3::inverse_transform(const TWIST& t) const
 {
+  // determine the resulting frame
+  boost::shared_ptr<const POSE3> pose;
+  try
+  {
+    pose = shared_from_this();
+  }
+  catch (boost::bad_weak_ptr e)
+  {
+    std::cerr << "Pose3::inverse_transform() - pose allocated on stack!" << std::endl;
+  }
+  #ifndef NEXCEPT
+  if (t.pose != rpose)
+    throw FrameException();
+  #endif
+
   // setup r and E
-  VECTOR3 r;
+  ORIGIN3 r;
   MATRIX3 E;
   get_r_E(r, E, true);
   const MATRIX3 ET = MATRIX3::transpose(E);
@@ -407,26 +441,9 @@ TWIST POSE3::inverse_transform(const TWIST& t) const
   VECTOR3 bottom = t.get_linear();
 
   // do the calculations
-  VECTOR3 Etop = E * top;
-  VECTOR3 cross = VECTOR3::cross(r, Etop);
-  TWIST result(Etop, (E * bottom) - cross);
-
-  #ifndef NEXCEPT
-  boost::shared_ptr<const POSE3> pose;
-  try
-  {
-    pose = shared_from_this();
-  }
-  catch (boost::bad_weak_ptr e)
-  {
-    std::cerr << "Pose3 can't check frames when allocated on the stack! Allocate on heap or disable debugging exceptions." << std::endl;
-  }
-  if (t.pose != rpose)
-    throw FrameException();
-  result.pose = boost::const_pointer_cast<POSE3>(pose);
-  #endif
-
-  return result;
+  VECTOR3 Etop(E * ORIGIN3(top), pose);
+  VECTOR3 cross = VECTOR3::cross(VECTOR3(r, pose), Etop);
+  return TWIST(Etop, (E * ORIGIN3(bottom)) - cross, pose);
 }
 
 /// Transforms a rigid body inertia from one pose to another 
@@ -440,21 +457,21 @@ SPATIAL_RB_INERTIA POSE3::transform(const SPATIAL_RB_INERTIA& J) const
   }
   catch (boost::bad_weak_ptr e)
   {
-    std::cerr << "Pose3 can't check frames when allocated on the stack! Allocate on heap or disable debugging exceptions." << std::endl;
+    std::cerr << "Pose3::transform() - pose allocated on stack!" << std::endl;
   }
   if (J.pose != pose)
     throw FrameException();
   #endif
 
   // setup r and E
-  VECTOR3 r;
+  ORIGIN3 r;
   MATRIX3 E;
   get_r_E(r, E, false);
   const MATRIX3 ET = MATRIX3::transpose(E);
 
   // precompute some things
-  VECTOR3 mr = r * J.m;
-  MATRIX3 rx = MATRIX3::skew_symmetric(r);
+  VECTOR3 mr(r * J.m, rpose);
+  MATRIX3 rx = MATRIX3::skew_symmetric(VECTOR3(r, rpose));
   MATRIX3 hx = MATRIX3::skew_symmetric(J.h);
   MATRIX3 mrxrx = rx * MATRIX3::skew_symmetric(mr);  
   MATRIX3 EhxETrx = E * hx * ET * rx;
@@ -463,7 +480,7 @@ SPATIAL_RB_INERTIA POSE3::transform(const SPATIAL_RB_INERTIA& J) const
   SPATIAL_RB_INERTIA Jx;
   Jx.m = J.m;
   Jx.J = EhxETrx + MATRIX3::transpose(EhxETrx) + (E*J.J*ET) - mrxrx; 
-  Jx.h = E * J.h - mr;
+  Jx.h = E * ORIGIN3(J.h) - mr;
   Jx.pose = rpose;
 
   return Jx;
@@ -472,26 +489,6 @@ SPATIAL_RB_INERTIA POSE3::transform(const SPATIAL_RB_INERTIA& J) const
 /// Transforms a rigid body inertia from one pose to another 
 SPATIAL_RB_INERTIA POSE3::inverse_transform(const SPATIAL_RB_INERTIA& J) const
 {
-  // setup r and E
-  VECTOR3 r;
-  MATRIX3 E;
-  get_r_E(r, E, true);
-  const MATRIX3 ET = MATRIX3::transpose(E);
-
-  // precompute some things
-  VECTOR3 mr = r * J.m;
-  MATRIX3 rx = MATRIX3::skew_symmetric(r);
-  MATRIX3 hx = MATRIX3::skew_symmetric(J.h);
-  MATRIX3 mrxrx = rx * MATRIX3::skew_symmetric(mr);  
-  MATRIX3 EhxETrx = E * hx * ET * rx;
-
-  // setup the new inertia
-  SPATIAL_RB_INERTIA Jx;
-  Jx.m = J.m;
-  Jx.J = EhxETrx + MATRIX3::transpose(EhxETrx) + (E*J.J*ET) - mrxrx; 
-  Jx.h = E * J.h - mr;
-
-  #ifndef NEXCEPT
   boost::shared_ptr<const POSE3> pose;
   try
   {
@@ -499,12 +496,32 @@ SPATIAL_RB_INERTIA POSE3::inverse_transform(const SPATIAL_RB_INERTIA& J) const
   }
   catch (boost::bad_weak_ptr e)
   {
-    std::cerr << "Pose3 can't check frames when allocated on the stack! Allocate on heap or disable debugging exceptions." << std::endl;
+    std::cerr << "Pose3::inverse_transform() - pose allocated on stack!" << std::endl;
   }
+  #ifndef NEXCEPT
   if (J.pose != rpose)
     throw FrameException();
-  Jx.pose = boost::const_pointer_cast<POSE3>(pose);
   #endif
+
+  // setup r and E
+  ORIGIN3 r;
+  MATRIX3 E;
+  get_r_E(r, E, true);
+  const MATRIX3 ET = MATRIX3::transpose(E);
+
+  // precompute some things
+  VECTOR3 rv(r, pose);
+  VECTOR3 mr = rv * J.m;
+  MATRIX3 rx = MATRIX3::skew_symmetric(rv);
+  MATRIX3 hx = MATRIX3::skew_symmetric(J.h);
+  MATRIX3 mrxrx = rx * MATRIX3::skew_symmetric(mr);  
+  MATRIX3 EhxETrx = E * hx * ET * rx;
+
+  // setup the new inertia
+  SPATIAL_RB_INERTIA Jx(pose);
+  Jx.m = J.m;
+  Jx.J = EhxETrx + MATRIX3::transpose(EhxETrx) + (E*J.J*ET) - mrxrx; 
+  Jx.h = E * ORIGIN3(J.h) - mr;
 
   return Jx;
 }
@@ -520,20 +537,21 @@ SPATIAL_AB_INERTIA POSE3::transform(const SPATIAL_AB_INERTIA& J) const
   }
   catch (boost::bad_weak_ptr e)
   {
-    std::cerr << "Pose3 can't check frames when allocated on the stack! Allocate on heap or disable debugging exceptions." << std::endl;
+    std::cerr << "Pose3::transform() - pose allocated on stack!" << std::endl;
   }
   if (J.pose != pose)
     throw FrameException();
   #endif
 
   // setup r and E
-  VECTOR3 r;
+  ORIGIN3 r;
   MATRIX3 E;
   get_r_E(r, E, false);
   const MATRIX3 ET = MATRIX3::transpose(E);
+  VECTOR3 rv(r, rpose);
 
   // precompute some things we'll need
-  MATRIX3 rx = MATRIX3::skew_symmetric(r);
+  MATRIX3 rx = MATRIX3::skew_symmetric(rv);
   MATRIX3 HT = MATRIX3::transpose(J.H);
   MATRIX3 EJET = E * J.J * ET;
   MATRIX3 rx_E_HT_ET = rx*E*HT*ET;
@@ -553,14 +571,29 @@ SPATIAL_AB_INERTIA POSE3::transform(const SPATIAL_AB_INERTIA& J) const
 /// Transforms an articulated body inertia from one pose to another 
 SPATIAL_AB_INERTIA POSE3::inverse_transform(const SPATIAL_AB_INERTIA& J) const
 {
+  boost::shared_ptr<const POSE3> pose;
+  try
+  {
+    pose = shared_from_this();
+  }
+  catch (boost::bad_weak_ptr e)
+  {
+    std::cerr << "Pose3::inverse_transform() - pose allocated on stack!" << std::endl;
+  }
+  #ifndef NEXCEPT
+  if (J.pose != rpose)
+    throw FrameException();
+  #endif
+
   // setup r and E
-  VECTOR3 r;
+  ORIGIN3 r;
   MATRIX3 E;
   get_r_E(r, E, true);
   const MATRIX3 ET = MATRIX3::transpose(E);
 
   // precompute some things we'll need
-  MATRIX3 rx = MATRIX3::skew_symmetric(r);
+  VECTOR3 rv(r, pose);
+  MATRIX3 rx = MATRIX3::skew_symmetric(rv);
   MATRIX3 HT = MATRIX3::transpose(J.H);
   MATRIX3 EJET = E * J.J * ET;
   MATRIX3 rx_E_HT_ET = rx*E*HT*ET;
@@ -569,31 +602,16 @@ SPATIAL_AB_INERTIA POSE3::inverse_transform(const SPATIAL_AB_INERTIA& J) const
   MATRIX3 rxEMET = rx * EMET;
 
   // compute the result
-  SPATIAL_AB_INERTIA result;
+  SPATIAL_AB_INERTIA result(pose);
   result.M = EMET;
   result.H = EHET - rxEMET;
   result.J = EJET - rx_E_HT_ET + ((EHET - rxEMET) * rx); 
-
-  #ifndef NEXCEPT
-  boost::shared_ptr<const POSE3> pose;
-  try
-  {
-    pose = shared_from_this();
-  }
-  catch (boost::bad_weak_ptr e)
-  {
-    std::cerr << "Pose3 can't check frames when allocated on the stack! Allocate on heap or disable debugging exceptions." << std::endl;
-  }
-  if (J.pose != rpose)
-    throw FrameException();
-  result.pose = boost::const_pointer_cast<POSE3>(pose);
-  #endif
 
   return result;
 }
 
 /// Gets r and E from the current pose only
-void POSE3::get_r_E(VECTOR3& r, MATRIX3& E, bool inverse) const
+void POSE3::get_r_E(ORIGIN3& r, MATRIX3& E, bool inverse) const
 {
   if (!inverse)
   {
@@ -648,12 +666,13 @@ SPATIAL_AB_INERTIA POSE3::transform(boost::shared_ptr<const POSE3> source, boost
   TRANSFORM3 Tx = calc_transform(source, target);
 
   // setup r and E
-  VECTOR3 r = Tx.x;
+  const ORIGIN3& r = Tx.x;
   const MATRIX3 E = Tx.q;
   const MATRIX3 ET = MATRIX3::transpose(E);
 
   // precompute some things we'll need
-  MATRIX3 rx = MATRIX3::skew_symmetric(r);
+  VECTOR3 rv(r, target);
+  MATRIX3 rx = MATRIX3::skew_symmetric(rv);
   MATRIX3 HT = MATRIX3::transpose(m.H);
   MATRIX3 EJET = E * m.J * ET;
   MATRIX3 rx_E_HT_ET = rx*E*HT*ET;
@@ -662,7 +681,7 @@ SPATIAL_AB_INERTIA POSE3::transform(boost::shared_ptr<const POSE3> source, boost
   MATRIX3 rxEMET = rx * EMET;
 
   SPATIAL_AB_INERTIA result;
-  result.pose = boost::const_pointer_cast<POSE3>(target);
+  result.pose = target;
   result.M = EMET;
   result.H = EHET - rxEMET;
   result.J = EJET - rx_E_HT_ET + ((EHET - rxEMET) * rx); 
@@ -691,6 +710,7 @@ std::vector<WRENCH>& POSE3::transform(boost::shared_ptr<const POSE3> source, boo
   // setup r and E
   const ORIGIN3& r = Tx.x;
   const MATRIX3 E = Tx.q;
+  VECTOR3 rv(r, target);
 
   // resize the result vector
   result.resize(w.size());
@@ -703,10 +723,10 @@ std::vector<WRENCH>& POSE3::transform(boost::shared_ptr<const POSE3> source, boo
     VECTOR3 bottom = w[i].get_torque();
 
     // do the calculations
-    VECTOR3 Etop = E * top;
-    VECTOR3 cross = VECTOR3::cross(r, Etop);
-    result[i] = WRENCH(Etop, (E * bottom) - cross);
-    result[i].pose = boost::const_pointer_cast<POSE3>(target);
+    VECTOR3 Etop(E * ORIGIN3(top), target);
+    VECTOR3 cross = VECTOR3::cross(rv, Etop);
+    result[i] = WRENCH(Etop, (E * ORIGIN3(bottom)) - cross);
+    result[i].pose = target;
   }
 
   return result;
@@ -726,17 +746,16 @@ WRENCH POSE3::transform(boost::shared_ptr<const POSE3> source, boost::shared_ptr
   // setup r and E
   const ORIGIN3& r = Tx.x;
   const MATRIX3 E = Tx.q;
+  VECTOR3 rv(r, target);
 
   // get the components of v
   VECTOR3 top = v.get_force();
   VECTOR3 bottom = v.get_torque();
 
   // do the calculations
-  VECTOR3 Etop = E * top;
-  VECTOR3 cross = VECTOR3::cross(r, Etop);
-  WRENCH result(Etop, (E * bottom) - cross);
-  result.pose = boost::const_pointer_cast<POSE3>(target);
-  return result;
+  VECTOR3 Etop(E * ORIGIN3(top), target);
+  VECTOR3 cross = VECTOR3::cross(rv, Etop);
+  return WRENCH(Etop, (E * ORIGIN3(bottom)) - cross, target);
 }
 
 /// Transforms the twist 
@@ -753,17 +772,16 @@ TWIST POSE3::transform(boost::shared_ptr<const POSE3> source, boost::shared_ptr<
   // setup r and E
   const ORIGIN3& r = Tx.x;
   const MATRIX3 E = Tx.q;
+  VECTOR3 rv(r, target);
 
   // get the components of t 
   VECTOR3 top = t.get_angular();
   VECTOR3 bottom = t.get_linear();
 
   // do the calculations
-  VECTOR3 Etop = E * top;
-  VECTOR3 cross = VECTOR3::cross(r, Etop);
-  TWIST result(Etop, (E * bottom) - cross);
-  result.pose = boost::const_pointer_cast<POSE3>(target);
-  return result;
+  VECTOR3 Etop(E * ORIGIN3(top), target);
+  VECTOR3 cross = VECTOR3::cross(rv, Etop);
+  return TWIST(Etop, (E * ORIGIN3(bottom)) - cross, target);
 }
 
 /// Transforms a vector of twists 
@@ -788,6 +806,7 @@ std::vector<TWIST>& POSE3::transform(boost::shared_ptr<const POSE3> source, boos
   // setup r and E
   const ORIGIN3& r = Tx.x;
   const MATRIX3 E = Tx.q;
+  VECTOR3 rv(r, target);
 
   // resize the result vector
   result.resize(t.size());
@@ -800,10 +819,9 @@ std::vector<TWIST>& POSE3::transform(boost::shared_ptr<const POSE3> source, boos
     VECTOR3 bottom = t[i].get_linear();
 
     // do the calculations
-    VECTOR3 Etop = E * top;
-    VECTOR3 cross = VECTOR3::cross(r, Etop);
-    result[i] = TWIST(Etop, (E * bottom) - cross);
-    result[i].pose = boost::const_pointer_cast<POSE3>(target);
+    VECTOR3 Etop(E * ORIGIN3(top), target);
+    VECTOR3 cross = VECTOR3::cross(rv, Etop);
+    result[i] = TWIST(Etop, (E * ORIGIN3(bottom)) - cross, target);
   }
 
   return result;
@@ -824,20 +842,20 @@ SPATIAL_RB_INERTIA POSE3::transform(boost::shared_ptr<const POSE3> source, boost
   const ORIGIN3& r = Tx.x;
   const MATRIX3 E = Tx.q;
   const MATRIX3 ET = MATRIX3::transpose(E);
+  VECTOR3 rv(r, target);
 
   // precompute some things
-  VECTOR3 mr = r * J.m;
-  MATRIX3 rx = MATRIX3::skew_symmetric(r);
+  VECTOR3 mr = rv * J.m;
+  MATRIX3 rx = MATRIX3::skew_symmetric(rv);
   MATRIX3 hx = MATRIX3::skew_symmetric(J.h);
   MATRIX3 mrxrx = rx * MATRIX3::skew_symmetric(mr);  
   MATRIX3 EhxETrx = E * hx * ET * rx;
 
   // setup the new inertia
-  SPATIAL_RB_INERTIA Jx;
-  Jx.pose = boost::const_pointer_cast<POSE3>(target);
+  SPATIAL_RB_INERTIA Jx(target);
   Jx.m = J.m;
   Jx.J = EhxETrx + MATRIX3::transpose(EhxETrx) + (E*J.J*ET) - mrxrx; 
-  Jx.h = E * J.h - mr;
+  Jx.h = E * ORIGIN3(J.h) - mr;
   return Jx;
 }
 

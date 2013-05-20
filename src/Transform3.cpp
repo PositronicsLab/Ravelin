@@ -13,43 +13,43 @@ TRANSFORM3::TRANSFORM3()
   set_identity();
 }
 
-/// Constructs a 4x4 homogeneous transformation matrix from a unit quaternion and translation vector
+/// Constructs a transformation from a unit quaternion and translation vector
 TRANSFORM3::TRANSFORM3(const QUAT& q, const ORIGIN3& v)
 {
   set(QUAT::normalize(q), v);
 }
 
-/// Constructs a 4x4 homogeneous transformation matrix from a unit quaternion (for rotation) and zero translation
+/// Constructs a transformation from a unit quaternion (for rotation) and zero translation
 TRANSFORM3::TRANSFORM3(const QUAT& q)
 {
   set(QUAT::normalize(q), ORIGIN3::zero());
 }
 
-/// Constructs a 4x4 homogeneous transformation matrix from a rotation matrix and translation vector
+/// Constructs a transformation from a rotation matrix and translation vector
 TRANSFORM3::TRANSFORM3(const MATRIX3& r, const ORIGIN3& v) 
 {
   set(r, v);
 }
 
-/// Constructs a 4x4 homogeneous transformation matrix from a rotation matrix and zero translation
+/// Constructs a transformation from a rotation matrix and zero translation
 TRANSFORM3::TRANSFORM3(const MATRIX3& r)
 {
   set(r, ORIGIN3::zero());
 }
 
-/// Constructs a 4x4 homogeneous transformation matrix from a axis-angle representation and a translation vector
+/// Constructs a transformation from a axis-angle representation and a translation vector
 TRANSFORM3::TRANSFORM3(const AANGLE& a, const ORIGIN3& v)
 {
   set(a, v);
 }
 
-/// Constructs a 4x4 homogeneous transformation matrix from a axis-angle representation (for rotation) and zero translation
+/// Constructs a transformation from a axis-angle representation (for rotation) and zero translation
 TRANSFORM3::TRANSFORM3(const AANGLE& a)
 {
   set(a, ORIGIN3::zero());
 }
 
-/// Constructs a 4x4 homogeneous transformation matrix using identity orientation and a translation vector
+/// Constructs a transformation using identity orientation and a translation vector
 TRANSFORM3::TRANSFORM3(const ORIGIN3& v)
 {
   set(QUAT::identity(), v);
@@ -65,7 +65,7 @@ TRANSFORM3& TRANSFORM3::operator=(const TRANSFORM3& p)
   return *this;
 }
 
-/// Determines whether two poses in 3D are relatively equivalent
+/// Determines whether two transformations in 3D are relatively equivalent
 bool TRANSFORM3::rel_equal(const TRANSFORM3& p1, const TRANSFORM3& p2, REAL tol)
 {
   // verify both sources and both targets are equal
@@ -83,7 +83,7 @@ bool TRANSFORM3::rel_equal(const TRANSFORM3& p1, const TRANSFORM3& p2, REAL tol)
   return OPS::rel_equal(angle, (REAL) 0.0, tol);
 }
 
-// Sets the matrix to be a 4x4 homogeneous transform from an axis-angle representation and a translation vector
+// Sets the transformation from an axis-angle representation and a translation vector
 /**
  * \todo make this marginally faster by setting the matrix components directly (eliminates redundancy in setting non-rotation and non-translational components)
  */
@@ -94,7 +94,7 @@ TRANSFORM3& TRANSFORM3::set(const AANGLE& a, const ORIGIN3& v)
   return *this;
 }
 
-/// Sets the matrix to be a 4x4 homogeneous transform from a rotation matrix and translation vector
+/// Sets the transformation from a rotation matrix and translation vector
 /**
  * \todo make this marginally faster by setting the matrix components directly (eliminates redundancy in setting non-rotation and non-translational components)
  */
@@ -105,7 +105,7 @@ TRANSFORM3& TRANSFORM3::set(const MATRIX3& m, const ORIGIN3& v)
   return *this;
 }
 
-/// Sets the pose from a unit quaternion and translation vector
+/// Sets the transformation from a unit quaternion and translation vector
 TRANSFORM3& TRANSFORM3::set(const QUAT& q, const ORIGIN3& v)
 {
   this->q = q;
@@ -113,7 +113,7 @@ TRANSFORM3& TRANSFORM3::set(const QUAT& q, const ORIGIN3& v)
   return *this;
 }
 
-/// Sets this pose from a unit quaternion only (translation will be zero'd) 
+/// Sets this transformation from a unit quaternion only (translation will be zero'd) 
 TRANSFORM3& TRANSFORM3::set(const QUAT& q)
 {
   this->q = q;
@@ -121,7 +121,7 @@ TRANSFORM3& TRANSFORM3::set(const QUAT& q)
   return *this;
 }
 
-/// Sets this pose from a axis-angle object only (translation will be zero'd) 
+/// Sets this transformation from a axis-angle object only (translation will be zero'd) 
 TRANSFORM3& TRANSFORM3::set(const AANGLE& a)
 {
   this->q = a;
@@ -129,7 +129,7 @@ TRANSFORM3& TRANSFORM3::set(const AANGLE& a)
   return *this;
 }
 
-/// Sets this pose from a 3x3 rotation matrix only (translation will be zero'd) 
+/// Sets this transformation from a 3x3 rotation matrix only (translation will be zero'd) 
 TRANSFORM3& TRANSFORM3::set(const MATRIX3& m)
 {
   this->q = m;
@@ -145,7 +145,7 @@ TRANSFORM3& TRANSFORM3::set_identity()
   return *this;
 }
 
-/// Special method for inverting a pose transformation in place
+/// Special method for inverting a transformation in place
 TRANSFORM3& TRANSFORM3::invert()
 {
   // get the new rotation 
@@ -160,13 +160,13 @@ TRANSFORM3& TRANSFORM3::invert()
   return *this;
 }
 
-/// Special method for inverting a pose transformation
+/// Special method for inverting a transformation
 TRANSFORM3 TRANSFORM3::invert(const TRANSFORM3& p)
 {
   return TRANSFORM3(p).invert();
 }
 
-/// Multiplies this pose by another
+/// Multiplies this transformation by another
 /**
  * If this transforms from frame b to frame c and T transforms from frame a 
  * to frame b, the multiplication transforms from from a to frame c.
@@ -183,6 +183,37 @@ TRANSFORM3 TRANSFORM3::operator*(const TRANSFORM3& T) const
   return result;
 }
 
+/// Transforms a pose
+POSE3 TRANSFORM3::transform(const POSE3& p) const
+{
+  #ifndef NEXCEPT
+  if (p.rpose != source)
+    throw FrameException();
+  #endif
+
+  POSE3 result(target);
+  result.q = q * p.q;
+  result.x = ORIGIN3(q * p.x) + x; 
+ 
+  return result;
+}
+
+/// Transforms a pose
+POSE3 TRANSFORM3::inverse_transform(const POSE3& p) const
+{
+  #ifndef NEXCEPT
+  if (p.rpose != target)
+    throw FrameException();
+  #endif
+
+  POSE3 result(source);
+  QUAT qi = QUAT::invert(q);
+  result.q = qi * p.q;
+  result.x = ORIGIN3(qi * p.x) - qi*x; 
+ 
+  return result;
+}
+
 /// Transforms a vector from one pose to another 
 VECTOR3 TRANSFORM3::transform(const VECTOR3& v) const
 {
@@ -191,9 +222,7 @@ VECTOR3 TRANSFORM3::transform(const VECTOR3& v) const
     throw FrameException();
   #endif
 
-  VECTOR3 result = q * v;
-  result.pose = target;
-  return result;
+  return VECTOR3(q * ORIGIN3(v), target);
 }
 
 /// Transforms a vector from one pose to another 
@@ -204,9 +233,7 @@ VECTOR3 TRANSFORM3::inverse_transform(const VECTOR3& v) const
     throw FrameException();
   #endif
 
-  VECTOR3 result = QUAT::invert(q) * v;
-  result.pose = source;
-  return result;
+  return VECTOR3(QUAT::invert(q) * ORIGIN3(v), source);
 }
 
 /// Transforms a point from one pose to another 
@@ -217,9 +244,7 @@ POINT3 TRANSFORM3::transform(const POINT3& p) const
     throw FrameException();
   #endif
 
-  POINT3 result = q * p + x;
-  result.pose = target;
-  return result;
+  return POINT3(q * ORIGIN3(p) + x, target);
 }
 
 /// Transforms a point from one pose to another 
@@ -230,9 +255,7 @@ POINT3 TRANSFORM3::inverse_transform(const POINT3& p) const
     throw FrameException();
   #endif
 
-  POINT3 result = QUAT::invert(q) * (p - x);
-  result.pose = source;
-  return result;
+  return POINT3(QUAT::invert(q) * (ORIGIN3(p) - x), source);
 }
 
 /// Transforms a wrench from one pose to another 
@@ -244,21 +267,19 @@ WRENCH TRANSFORM3::transform(const WRENCH& w) const
   #endif
 
   // setup r and E
-  VECTOR3 r = -x;
+  ORIGIN3 r = -x;
   MATRIX3 E = q;
+  VECTOR3 rv(r, target);
   const MATRIX3 ET = MATRIX3::transpose(E);
 
   // get the components of w
-  VECTOR3 top = w.get_force();
-  VECTOR3 bottom = w.get_torque();
+  ORIGIN3 top(w.get_force());
+  ORIGIN3 bottom(w.get_torque());
 
   // do the calculations
-  VECTOR3 Etop = E * top;
-  VECTOR3 cross = VECTOR3::cross(r, Etop);
-  WRENCH result(Etop, (E * bottom) - cross);
-  result.pose = target;
-
-  return result;
+  VECTOR3 Etop(E * top, target);
+  VECTOR3 cross = VECTOR3::cross(rv, Etop);
+  return WRENCH(Etop, (E * bottom) - cross, target);
 }
 
 /// Transforms a point from one pose to another 
@@ -271,19 +292,18 @@ WRENCH TRANSFORM3::inverse_transform(const WRENCH& w) const
 
   // setup r and E
   MATRIX3 E = QUAT::invert(q);
-  VECTOR3 r = E * x;
+  ORIGIN3 r = E * x;
   const MATRIX3 ET = MATRIX3::transpose(E);
+  VECTOR3 rv(r, source);
 
   // get the components of w
-  VECTOR3 top = w.get_force();
-  VECTOR3 bottom = w.get_torque();
+  ORIGIN3 top(w.get_force());
+  ORIGIN3 bottom(w.get_torque());
 
   // do the calculations
-  VECTOR3 Etop = E * top;
-  VECTOR3 cross = VECTOR3::cross(r, Etop);
-  WRENCH result(Etop, (E * bottom) - cross);
-
-  return result;
+  VECTOR3 Etop(E * top, source);
+  VECTOR3 cross = VECTOR3::cross(rv, Etop);
+  return WRENCH(Etop, (E * bottom) - cross, source);
 }
 
 /// Transforms a twist from one pose to another 
@@ -295,21 +315,19 @@ TWIST TRANSFORM3::transform(const TWIST& t) const
   #endif
 
   // setup r and E
-  VECTOR3 r = -x;
+  ORIGIN3 r = -x;
   MATRIX3 E = q;
+  VECTOR3 rv(r, target);
   const MATRIX3 ET = MATRIX3::transpose(E);
 
   // get the components of t 
-  VECTOR3 top = t.get_angular();
-  VECTOR3 bottom = t.get_linear();
+  ORIGIN3 top(t.get_angular());
+  ORIGIN3 bottom(t.get_linear());
 
   // do the calculations
-  VECTOR3 Etop = E * top;
-  VECTOR3 cross = VECTOR3::cross(r, Etop);
-  TWIST result(Etop, (E * bottom) - cross);
-  result.pose = target;
-
-  return result;
+  VECTOR3 Etop(E * top, target);
+  VECTOR3 cross = VECTOR3::cross(rv, Etop);
+  return TWIST(Etop, (E * bottom) - cross, target);
 }
 
 /// Transforms a twist from one pose to another 
@@ -322,19 +340,17 @@ TWIST TRANSFORM3::inverse_transform(const TWIST& t) const
 
   // setup r and E
   MATRIX3 E = QUAT::invert(q);
-  VECTOR3 r = E * x;
+  VECTOR3 r(E * x, source);
   const MATRIX3 ET = MATRIX3::transpose(E);
 
   // get the components of t 
-  VECTOR3 top = t.get_angular();
-  VECTOR3 bottom = t.get_linear();
+  ORIGIN3 top(t.get_angular());
+  ORIGIN3 bottom(t.get_linear());
 
   // do the calculations
-  VECTOR3 Etop = E * top;
+  VECTOR3 Etop(E * top, source);
   VECTOR3 cross = VECTOR3::cross(r, Etop);
-  TWIST result(Etop, (E * bottom) - cross);
-
-  return result;
+  return TWIST(Etop, (E * bottom) - cross, source);
 }
 
 /// Transforms a rigid body inertia from one pose to another 
@@ -346,23 +362,23 @@ SPATIAL_RB_INERTIA TRANSFORM3::transform(const SPATIAL_RB_INERTIA& J) const
   #endif
 
   // setup r and E
-  VECTOR3 r = -x;
+  ORIGIN3 r = -x;
   MATRIX3 E = q;
+  VECTOR3 rv(r, target);
   const MATRIX3 ET = MATRIX3::transpose(E);
 
   // precompute some things
-  VECTOR3 mr = r * J.m;
-  MATRIX3 rx = MATRIX3::skew_symmetric(r);
+  VECTOR3 mr = rv * J.m;
+  MATRIX3 rx = MATRIX3::skew_symmetric(rv);
   MATRIX3 hx = MATRIX3::skew_symmetric(J.h);
   MATRIX3 mrxrx = rx * MATRIX3::skew_symmetric(mr);  
   MATRIX3 EhxETrx = E * hx * ET * rx;
 
   // setup the new inertia
-  SPATIAL_RB_INERTIA Jx;
+  SPATIAL_RB_INERTIA Jx(target);
   Jx.m = J.m;
   Jx.J = EhxETrx + MATRIX3::transpose(EhxETrx) + (E*J.J*ET) - mrxrx; 
   Jx.h = E * J.h - mr;
-  Jx.pose = target;
 
   return Jx;
 }
@@ -377,18 +393,19 @@ SPATIAL_RB_INERTIA TRANSFORM3::inverse_transform(const SPATIAL_RB_INERTIA& J) co
 
   // setup r and E
   MATRIX3 E = QUAT::invert(q);
-  VECTOR3 r = E * x;
+  ORIGIN3 r = E * x;
+  VECTOR3 rv(r, target);
   const MATRIX3 ET = MATRIX3::transpose(E);
 
   // precompute some things
-  VECTOR3 mr = r * J.m;
-  MATRIX3 rx = MATRIX3::skew_symmetric(r);
+  VECTOR3 mr = rv * J.m;
+  MATRIX3 rx = MATRIX3::skew_symmetric(rv);
   MATRIX3 hx = MATRIX3::skew_symmetric(J.h);
   MATRIX3 mrxrx = rx * MATRIX3::skew_symmetric(mr);  
   MATRIX3 EhxETrx = E * hx * ET * rx;
 
   // setup the new inertia
-  SPATIAL_RB_INERTIA Jx;
+  SPATIAL_RB_INERTIA Jx(source);
   Jx.m = J.m;
   Jx.J = EhxETrx + MATRIX3::transpose(EhxETrx) + (E*J.J*ET) - mrxrx; 
   Jx.h = E * J.h - mr;
@@ -405,12 +422,13 @@ SPATIAL_AB_INERTIA TRANSFORM3::transform(const SPATIAL_AB_INERTIA& J) const
   #endif
 
   // setup r and E
-  VECTOR3 r = -x;
+  ORIGIN3 r = -x;
   MATRIX3 E = q;
   const MATRIX3 ET = MATRIX3::transpose(E);
+  VECTOR3 rv(r, target);
 
   // precompute some things we'll need
-  MATRIX3 rx = MATRIX3::skew_symmetric(r);
+  MATRIX3 rx = MATRIX3::skew_symmetric(rv);
   MATRIX3 HT = MATRIX3::transpose(J.H);
   MATRIX3 EJET = E * J.J * ET;
   MATRIX3 rx_E_HT_ET = rx*E*HT*ET;
@@ -418,11 +436,10 @@ SPATIAL_AB_INERTIA TRANSFORM3::transform(const SPATIAL_AB_INERTIA& J) const
   MATRIX3 EMET = E * J.M * ET;
   MATRIX3 rxEMET = rx * EMET;
 
-  SPATIAL_AB_INERTIA result;
+  SPATIAL_AB_INERTIA result(target);
   result.M = EMET;
   result.H = EHET - rxEMET;
   result.J = EJET - rx_E_HT_ET + ((EHET - rxEMET) * rx); 
-  result.pose = target;
 
   return result;
 }
@@ -437,11 +454,12 @@ SPATIAL_AB_INERTIA TRANSFORM3::inverse_transform(const SPATIAL_AB_INERTIA& J) co
 
   // setup r and E
   MATRIX3 E = QUAT::invert(q);
-  VECTOR3 r = E * x;
+  ORIGIN3 r = E * x;
   const MATRIX3 ET = MATRIX3::transpose(E);
+  VECTOR3 rv(r, source);
 
   // precompute some things we'll need
-  MATRIX3 rx = MATRIX3::skew_symmetric(r);
+  MATRIX3 rx = MATRIX3::skew_symmetric(rv);
   MATRIX3 HT = MATRIX3::transpose(J.H);
   MATRIX3 EJET = E * J.J * ET;
   MATRIX3 rx_E_HT_ET = rx*E*HT*ET;
@@ -450,7 +468,7 @@ SPATIAL_AB_INERTIA TRANSFORM3::inverse_transform(const SPATIAL_AB_INERTIA& J) co
   MATRIX3 rxEMET = rx * EMET;
 
   // compute the result
-  SPATIAL_AB_INERTIA result;
+  SPATIAL_AB_INERTIA result(source);
   result.M = EMET;
   result.H = EHET - rxEMET;
   result.J = EJET - rx_E_HT_ET + ((EHET - rxEMET) * rx); 

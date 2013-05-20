@@ -40,6 +40,37 @@ TRANSFORM2& TRANSFORM2::operator=(const TRANSFORM2& p)
   return *this;
 }
 
+/// Transforms a pose
+POSE2 TRANSFORM2::transform(const POSE2& p) const
+{
+  #ifndef NEXCEPT
+  if (p.rpose != source)
+    throw FrameException();
+  #endif
+
+  POSE2 result(target);
+  result.r = r * p.r;
+  result.x = ORIGIN2(r * p.x) + x; 
+ 
+  return result;
+}
+
+/// Transforms a pose
+POSE2 TRANSFORM2::inverse_transform(const POSE2& p) const
+{
+  #ifndef NEXCEPT
+  if (p.rpose != target)
+    throw FrameException();
+  #endif
+
+  POSE2 result(source);
+  ROT2 ri = ROT2::invert(r);
+  result.r = ri * p.r;
+  result.x = ORIGIN2(ri * p.x) - ri*x; 
+ 
+  return result;
+}
+
 REAL TRANSFORM2::wrap(REAL theta)
 {
   if (theta > (REAL) M_PI)

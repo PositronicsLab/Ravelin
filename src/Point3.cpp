@@ -105,6 +105,24 @@ POINT3& POINT3::operator=(const POINT3& p)
   return *this;
 }
 
+VECTOR3 POINT3::operator+(const ORIGIN3& o) const
+{
+  VECTOR3 result(pose);
+  result.x() = x() + o.x();
+  result.y() = y() + o.y();
+  result.z() = z() + o.z();
+  return result;
+}
+
+VECTOR3 POINT3::operator-(const ORIGIN3& o) const
+{
+  VECTOR3 result(pose);
+  result.x() = x() - o.x();
+  result.y() = y() - o.y();
+  result.z() = z() - o.z();
+  return result;
+}
+
 VECTOR3 POINT3::operator+(const POINT3& p) const
 {
   #ifndef NEXCEPT

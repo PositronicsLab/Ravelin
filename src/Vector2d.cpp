@@ -7,6 +7,7 @@
 #include <Ravelin/FrameException.h>
 #include <Ravelin/InvalidIndexException.h>
 #include <Ravelin/Point2d.h>
+#include <Ravelin/Origin2d.h>
 #include <Ravelin/Vector2d.h>
 
 using namespace Ravelin;

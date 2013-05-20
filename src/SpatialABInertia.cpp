@@ -62,16 +62,14 @@ WRENCH SPATIAL_AB_INERTIA::mult(const TWIST& t) const
   #endif
 
   // get necessary components of the twist 
-  VECTOR3 top = t.get_angular();
-  VECTOR3 bot = t.get_linear();
+  ORIGIN3 top(t.get_angular());
+  ORIGIN3 bot(t.get_linear());
 
   // compute top part of result
-  VECTOR3 rtop = H.transpose_mult(top) + (M * bot);
-  VECTOR3 rbot = (J * top) + (H * bot);
+  VECTOR3 rtop(H.transpose_mult(top) + (M * bot), pose);
+  VECTOR3 rbot((J * top) + (H * bot), pose);
 
-  WRENCH w(rtop, rbot); 
-  w.pose = pose;
-  return w;
+  return WRENCH(rtop, rbot, pose); 
 }
 
 /// Multiplies this matrix by a vector of twists and returns the result in a vector of wrenches 
@@ -87,11 +85,11 @@ vector<WRENCH>& SPATIAL_AB_INERTIA::mult(const vector<TWIST>& t, vector<WRENCH>&
       throw FrameException();
     #endif
 
-    VECTOR3 top = t[i].get_angular();
-    VECTOR3 bot = t[i].get_linear();
-
-    result[i] = WRENCH(H.transpose_mult(top) + (M * bot), (J * top) + (H * bot)); 
-    result[i].pose = pose;
+    ORIGIN3 top(t[i].get_angular());
+    ORIGIN3 bot(t[i].get_linear());
+    VECTOR3 wtop(H.transpose_mult(top) + (M * bot), pose);
+    VECTOR3 wbot((J * top) + (H * bot), pose);
+    result[i] = WRENCH(wtop, wbot, pose); 
   }
 
   return result;
@@ -128,8 +126,7 @@ SPATIAL_AB_INERTIA SPATIAL_AB_INERTIA::operator+(const SPATIAL_RB_INERTIA& m) co
   #endif
 
   // do some preliminary calculations
-  SPATIAL_AB_INERTIA result;
-  result.pose = pose;
+  SPATIAL_AB_INERTIA result(pose);
   result.M = M;
   result.H = H;
   result.J = m.J + J;
@@ -154,11 +151,10 @@ SPATIAL_AB_INERTIA SPATIAL_AB_INERTIA::operator+(const SPATIAL_AB_INERTIA& m) co
     throw FrameException();
   #endif
 
-  SPATIAL_AB_INERTIA result;
+  SPATIAL_AB_INERTIA result(pose);
   result.M = this->M + m.M;
   result.H = this->H + m.H;
   result.J = this->J + m.J;
-  result.pose = this->pose;
   return result;
 }
 
@@ -170,11 +166,10 @@ SPATIAL_AB_INERTIA SPATIAL_AB_INERTIA::operator-(const SPATIAL_AB_INERTIA& m) co
     throw FrameException();
   #endif
 
-  SPATIAL_AB_INERTIA result;
+  SPATIAL_AB_INERTIA result(pose);
   result.M = this->M - m.M;
   result.H = this->H - m.H;
   result.J = this->J - m.J;
-  result.pose = this->pose;
   return result;
 }
 
@@ -220,13 +215,13 @@ TWIST SPATIAL_AB_INERTIA::inverse_mult(const WRENCH& w) const
   MATRIX3 LL = nMinv * (H.transpose_mult(UL) - MATRIX3::identity());
 
   // get the components of the wrench 
-  VECTOR3 top = w.get_force();
-  VECTOR3 bot = w.get_torque();
+  ORIGIN3 top(w.get_force());
+  ORIGIN3 bot(w.get_torque());
+  VECTOR3 ttop(UL*top + UR*bot, pose);
+  VECTOR3 tbot(LL*top + UL.transpose_mult(bot), pose); 
 
   // do the arithmetic
-  TWIST t(UL*top + UR*bot, LL*top + UL.transpose_mult(bot));
-  t.pose = pose;
-  return t;
+  return TWIST(ttop, tbot, pose);
 }
 
 /// Multiplies the inverse of this spatial AB inertia by a wrench to yield a twist
@@ -251,12 +246,13 @@ vector<TWIST>& SPATIAL_AB_INERTIA::inverse_mult(const std::vector<WRENCH>& w, ve
     #endif
 
     // get the components of the wrench 
-    VECTOR3 top = w[i].get_force();
-    VECTOR3 bot = w[i].get_torque();
+    ORIGIN3 top(w[i].get_force());
+    ORIGIN3 bot(w[i].get_torque());
+    VECTOR3 ttop(UL*top + UR*bot, pose);
+    VECTOR3 tbot(LL*top + UL.transpose_mult(bot), pose);
 
     // do the arithmetic
-    result[i] = TWIST(UL*top + UR*bot, LL*top + UL.transpose_mult(bot));
-    result[i].pose = pose;
+    result[i] = TWIST(ttop, tbot, pose);
   }
 
   return result;

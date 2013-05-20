@@ -74,8 +74,8 @@ class MATRIX3
     static MATRIX3 zero() { MATRIX3 m; m.set_zero(); return m; }
     MATRIX3& set_identity();
     MATRIX3& set_zero() { std::fill_n(_data, 9, (REAL) 0.0); return *this; }
-    VECTOR3 transpose_mult(const VECTOR3& v) const;
-    VECTOR3 mult(const VECTOR3& v) const;
+    ORIGIN3 transpose_mult(const ORIGIN3& v) const;
+    ORIGIN3 mult(const ORIGIN3& v) const;
     MATRIX3 mult(const MATRIX3& m) const;
     MATRIX3 transpose_mult(const MATRIX3& m) const;
     MATRIX3 mult_transpose(const MATRIX3& m) const;
@@ -94,11 +94,11 @@ class MATRIX3
     MATRIX3 operator/(REAL scalar) const { return operator*(1.0/scalar); }
     MATRIX3 operator-() const; 
     MATRIX3 operator*(const MATRIX3& m) const { MATRIX3 result; mult(m, result); return result; }
-    VECTOR3 operator*(const VECTOR3& v) const { VECTOR3 result; mult(v, result); return result; }
+    ORIGIN3 operator*(const ORIGIN3& v) const { ORIGIN3 result; mult(v, result); return result; }
     unsigned leading_dim() const { return 3; }
     unsigned inc() const { return 1; }
-    VECTOR3 get_column(unsigned i) const;
-    VECTOR3 get_row(unsigned i) const;
+    ORIGIN3 get_column(unsigned i) const;
+    ORIGIN3 get_row(unsigned i) const;
     REAL& operator()(unsigned i, unsigned j);
     const REAL& operator()(unsigned i, unsigned j) const;
     MATRIX3& resize(unsigned rows, unsigned columns, bool preserve = false);

@@ -63,9 +63,7 @@ class QUAT
     QUAT& operator+=(const QUAT& q);
     QUAT operator*(const QUAT& q) const;
     QUAT operator/(const QUAT& q) const;
-    VECTOR3 operator*(const VECTOR3& v) const;
     ORIGIN3 operator*(const ORIGIN3& v) const;
-    POINT3 operator*(const POINT3& p) const;
     QUAT operator*(REAL scalar) const;
     QUAT operator/(REAL scalar) const { return operator*(1.0/scalar); }
     QUAT& operator*=(const QUAT& q);

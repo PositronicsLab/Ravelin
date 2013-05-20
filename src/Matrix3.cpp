@@ -13,18 +13,18 @@ namespace Ravelin {
 /// Sets the specified column of the matrix
 /**
  * \param i the 0-index of the column
- * \param v a 3D vector 
+ * \param o a 3D vector 
  */
 template <>
-MATRIX3& MATRIX3::set_column(unsigned i, const VECTOR3& v)
+MATRIX3& MATRIX3::set_column(unsigned i, const ORIGIN3& o)
 {
   const unsigned SZ = 3;
   assert(i < SZ);
 
   unsigned st = i*SZ;
-  _data[st++] = v.x();
-  _data[st++] = v.y();
-  _data[st] = v.z();
+  _data[st++] = o.x();
+  _data[st++] = o.y();
+  _data[st] = o.z();
   return *this;
 }
 
@@ -33,7 +33,7 @@ MATRIX3& MATRIX3::set_column(unsigned i, const VECTOR3& v)
  * \param i the 0-index of the column
  */
 template <>
-VECTOR3& MATRIX3::get_column(unsigned i, VECTOR3& result) const
+ORIGIN3& MATRIX3::get_column(unsigned i, ORIGIN3& result) const
 {
   const unsigned SZ = 3;
   assert(i < SZ);
@@ -48,21 +48,21 @@ VECTOR3& MATRIX3::get_column(unsigned i, VECTOR3& result) const
 /// Sets the specified row of the matrix
 /**
  * \param i the 0-index of the row
- * \param v a 3D vector
+ * \param o a 3D vector
  * \note the number of columns of this must be three!
  */
 template <>
-MATRIX3& MATRIX3::set_row(unsigned i, const VECTOR3& v)
+MATRIX3& MATRIX3::set_row(unsigned i, const ORIGIN3& o)
 {
   const unsigned SZ = 3;
   assert(i < SZ);
 
   unsigned st = i;
-  _data[st] = v.x();
+  _data[st] = o.x();
   st += SZ;
-  _data[st] = v.y(); 
+  _data[st] = o.y(); 
   st += SZ;
-  _data[st] = v.z(); 
+  _data[st] = o.z(); 
   return *this;
 }
 
@@ -71,7 +71,7 @@ MATRIX3& MATRIX3::set_row(unsigned i, const VECTOR3& v)
  * \param i the 0-index of the row
  */
 template <>
-VECTOR3& MATRIX3::get_row(unsigned i, VECTOR3& result) const
+ORIGIN3& MATRIX3::get_row(unsigned i, ORIGIN3& result) const
 {
   const unsigned SZ = 3;
   assert(i < SZ);
@@ -115,12 +115,12 @@ MATRIX3::MATRIX3(REAL m00, REAL m01, REAL m02, REAL m10, REAL m11, REAL m12, REA
 }
 
 /// Multiplies the transpose of this matrix by a vector and returns the result in a new vector
-VECTOR3 MATRIX3::transpose_mult(const VECTOR3& v) const
+ORIGIN3 MATRIX3::transpose_mult(const ORIGIN3& o) const
 {
-  VECTOR3 result;
-  result.x() = _data[0]*v.x() + _data[1]*v.y() + _data[2]*v.z();
-  result.y() = _data[3]*v.x() + _data[4]*v.y() + _data[5]*v.z();  
-  result.z() = _data[6]*v.x() + _data[7]*v.y() + _data[8]*v.z();  
+  ORIGIN3 result;
+  result.x() = _data[0]*o.x() + _data[1]*o.y() + _data[2]*o.z();
+  result.y() = _data[3]*o.x() + _data[4]*o.y() + _data[5]*o.z();  
+  result.z() = _data[6]*o.x() + _data[7]*o.y() + _data[8]*o.z();  
   return result;
 }
 
@@ -148,12 +148,12 @@ MATRIX3 MATRIX3::transpose_mult(const MATRIX3& m) const
 }
 
 /// Multiplies this matrix by a vector and returns the result in a new vector
-VECTOR3 MATRIX3::mult(const VECTOR3& v) const
+ORIGIN3 MATRIX3::mult(const ORIGIN3& o) const
 {
-  VECTOR3 result;
-  result.x() = _data[0]*v.x() + _data[3]*v.y() + _data[6]*v.z();
-  result.y() = _data[1]*v.x() + _data[4]*v.y() + _data[7]*v.z();  
-  result.z() = _data[2]*v.x() + _data[5]*v.y() + _data[8]*v.z();  
+  ORIGIN3 result;
+  result.x() = _data[0]*o.x() + _data[3]*o.y() + _data[6]*o.z();
+  result.y() = _data[1]*o.x() + _data[4]*o.y() + _data[7]*o.z();  
+  result.z() = _data[2]*o.x() + _data[5]*o.y() + _data[8]*o.z();  
   return result;
 }
 
@@ -393,9 +393,9 @@ bool MATRIX3::valid_rotation_scale(const MATRIX3& R)
   const REAL TOLERANCE = std::sqrt(EPS_FLOAT);
 
   // create vectors for each column
-  VECTOR3 cx = R.get_column(X);
-  VECTOR3 cy = R.get_column(Y);
-  VECTOR3 cz = R.get_column(Z);
+  VECTOR3 cx(R.get_column(X), boost::shared_ptr<const POSE3>());
+  VECTOR3 cy(R.get_column(Y), boost::shared_ptr<const POSE3>());
+  VECTOR3 cz(R.get_column(Z), boost::shared_ptr<const POSE3>());
 
   // get the norms for each column
   REAL cx_norm = cx.norm();
@@ -487,22 +487,22 @@ bool MATRIX3::orthonormalize()
  * \param i the 0-index of the row
  *
  */
-VECTOR3 MATRIX3::get_row(unsigned i) const
+ORIGIN3 MATRIX3::get_row(unsigned i) const
 {
-  VECTOR3 v;
-  get_row(i, v);
-  return v;
+  ORIGIN3 o;
+  get_row(i, o);
+  return o;
 }
 
 /// Gets the specified column of the matrix
 /**
  * \param i the 0-index of the column
  */
-VECTOR3 MATRIX3::get_column(unsigned i) const
+ORIGIN3 MATRIX3::get_column(unsigned i) const
 {
-  VECTOR3 v;
-  get_column(i, v);
-  return v;
+  ORIGIN3 o;
+  get_column(i, o);
+  return o;
 }
 
 /// Sets this matrix to its transpose
@@ -631,12 +631,12 @@ bool MATRIX3::is_symmetric(REAL tolerance) const
 VECTOR3 MATRIX3::calc_differential(const MATRIX3& R1, const MATRIX3& R2)
 {
   const unsigned X = 0, Y = 1, Z = 2;
-  VECTOR3 R1x = R1.get_column(X);
-  VECTOR3 R1y = R1.get_column(Y);
-  VECTOR3 R1z = R1.get_column(Z);
-  VECTOR3 R2x = R2.get_column(X);
-  VECTOR3 R2y = R2.get_column(Y);
-  VECTOR3 R2z = R2.get_column(Z);
+  VECTOR3 R1x(R1.get_column(X), boost::shared_ptr<POSE3>());
+  VECTOR3 R1y(R1.get_column(Y), boost::shared_ptr<POSE3>());
+  VECTOR3 R1z(R1.get_column(Z), boost::shared_ptr<POSE3>());
+  VECTOR3 R2x(R2.get_column(X), boost::shared_ptr<POSE3>());
+  VECTOR3 R2y(R2.get_column(Y), boost::shared_ptr<POSE3>());
+  VECTOR3 R2z(R2.get_column(Z), boost::shared_ptr<POSE3>());
   return (VECTOR3::cross(R1x,R2x) + VECTOR3::cross(R1y,R2y) + 
           VECTOR3::cross(R1z,R2z))*0.5;
 }
