@@ -29,7 +29,7 @@ class WRENCH : public SVECTOR6
     WRENCH(const VECTOR3& f, const VECTOR3& t, boost::shared_ptr<const POSE3> pose = boost::shared_ptr<const POSE3>()) : SVECTOR6(f, t, pose) {}
 
     /// Constructs a zero wrench
-    static WRENCH zero() { WRENCH w; w.set_zero(); return w; }
+    static WRENCH zero(boost::shared_ptr<const POSE3> pose = boost::shared_ptr<const POSE3>()) { WRENCH w(pose); w.set_zero(); return w; }
 
     template <class V>
     static WRENCH from_vector(const V& v, boost::shared_ptr<const POSE3> pose = boost::shared_ptr<const POSE3>())

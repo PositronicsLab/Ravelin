@@ -62,6 +62,16 @@ class SVECTOR6
     unsigned inc() const { return 1; }
     unsigned leading_dim() const { return 6; }
 
+    template <class V>
+    V& to_vector(V& v) const
+    {
+      const unsigned SPATIAL_DIM = 6;
+      v.resize(SPATIAL_DIM);
+      REAL* vdata = v.data();
+      CBLAS::copy(SPATIAL_DIM, _data, 1, vdata, inc());
+      return v;
+    }
+
     template <class Vec>
     REAL dot(const Vec& v) const { return dot(*this, v); }
 

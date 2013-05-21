@@ -29,7 +29,7 @@ class TWIST : public SVECTOR6
     TWIST(const VECTOR3& linear, const VECTOR3& angular, boost::shared_ptr<const POSE3> pose = boost::shared_ptr<const POSE3>()) : SVECTOR6(angular, linear, pose) {}
 
     /// Returns a zero twist
-    static TWIST zero() { TWIST t; t.set_zero(); return t; }
+    static TWIST zero(boost::shared_ptr<const POSE3> pose = boost::shared_ptr<const POSE3>()) { TWIST t(pose); t.set_zero(); return t; }
 
     template <class V>
     static TWIST from_vector(const V& v, boost::shared_ptr<const POSE3> pose = boost::shared_ptr<const POSE3>())
