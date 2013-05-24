@@ -23,7 +23,7 @@ class MATRIX2
     MATRIX2(const MATRIXN& m) { operator=(m); }
     MATRIX2(const SHAREDMATRIXN& m) { operator=(m); }
     MATRIX2(const CONST_SHAREDMATRIXN& m) { operator=(m); }
-    unsigned size() const { return 2; }
+    unsigned size() const { return 4; }
     unsigned rows() const { return 2; }
     unsigned columns() const { return 2; }
     bool is_symmetric(REAL tolerance) const;

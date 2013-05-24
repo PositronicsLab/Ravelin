@@ -74,6 +74,9 @@ class MATRIXN
     unsigned leading_dim() const { return _rows; }
     unsigned inc() const { return 1; }
 
+    /// Gets the total number of elements in this matrix
+    unsigned size() const { return _rows * _columns; }
+
     /// Sets this to a m x n sized zero matrix
     MATRIXN& set_zero(unsigned m, unsigned n) { return resize(m,n).set_zero(); }
 

@@ -5,6 +5,17 @@ class OPS
     static bool rel_equal(REAL x, REAL y);
     static bool rel_equal(REAL x, REAL y, REAL tol);
 
+    /// Does a axpy operation
+    template <class V1, class V2>
+    static V2& axpy(REAL alpha, const V1& v1, V2& v2)
+    {
+      if (v1.size() != v2.size())
+        throw MissizeException();
+
+      CBLAS::axpy(v1.size(), v1.data(), v1.inc(), v2.data(), v2.inc()); 
+      return v2;
+    }
+
     /// Does a transposition operation
     template <class M1, class M2>
     static M2& transpose(const M1& m1, M2& m2)

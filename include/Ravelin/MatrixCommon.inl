@@ -172,8 +172,9 @@ MATRIXX& set_column(unsigned column, const V& v)
   return *this;
 }
 
+/// Does the operation y = beta*y + alpha*this'*x' 
 template <class T, class U>
-U& transpose_mult_transpose(const T& x, U& y) const
+U& transpose_mult_transpose(const T& x, U& y, REAL alpha=(REAL) 1.0, REAL beta=(REAL) 0.0) const
 {
   #ifndef NEXCEPT
   if (sizeof(data()) != sizeof(x.data()))
@@ -194,12 +195,13 @@ U& transpose_mult_transpose(const T& x, U& y) const
     y.set_zero();
     return y;
   }
-  CBLAS::gemm(CblasColMajor, CblasTrans, CblasTrans, columns(), xrows, rows(), (REAL) 1.0, data(), leading_dim(), x.data(), x.leading_dim(), (REAL) 0.0, y.data(), y.leading_dim()); 
+  CBLAS::gemm(CblasColMajor, CblasTrans, CblasTrans, columns(), xrows, rows(), alpha, data(), leading_dim(), x.data(), x.leading_dim(), beta, y.data(), y.leading_dim()); 
   return y;
 }
 
+/// Does the operation y = beta*y + alpha*this*x' 
 template <class T, class U>
-U& mult_transpose(const T& x, U& y) const
+U& mult_transpose(const T& x, U& y, REAL alpha=(REAL) 1.0, REAL beta=(REAL) 0.0) const
 {
   #ifndef NEXCEPT
   if (sizeof(data()) != sizeof(x.data()))
@@ -219,12 +221,13 @@ U& mult_transpose(const T& x, U& y) const
     y.set_zero();
     return y;
   }
-  CBLAS::gemm(CblasColMajor, CblasNoTrans, CblasTrans, rows(), xrows, columns(), (REAL) 1.0, data(), leading_dim(), x.data(), x.leading_dim(), (REAL) 0.0, y.data(), y.leading_dim()); 
+  CBLAS::gemm(CblasColMajor, CblasNoTrans, CblasTrans, rows(), xrows, columns(), alpha, data(), leading_dim(), x.data(), x.leading_dim(), beta, y.data(), y.leading_dim()); 
       return y;
 }
 
+/// Does the operation y = beta*y + alpha*this'*x 
 template <class T, class U>
-U& transpose_mult(const T& x, U& y) const
+U& transpose_mult(const T& x, U& y, REAL alpha=(REAL) 1.0, REAL beta=(REAL) 0.0) const
 {
   #ifndef NEXCEPT
   if (sizeof(data()) != sizeof(x.data()))
@@ -247,16 +250,17 @@ U& transpose_mult(const T& x, U& y) const
   }
 // TODO: q: why is this commented out?
 //  if (xcols > 1)
-    CBLAS::gemm(CblasColMajor, CblasTrans, CblasNoTrans, columns(), xcols, rows(), (REAL) 1.0, data(), leading_dim(), x.data(), x.leading_dim(), (REAL) 0.0, y.data(), y.leading_dim()); 
+    CBLAS::gemm(CblasColMajor, CblasTrans, CblasNoTrans, columns(), xcols, rows(), alpha, data(), leading_dim(), x.data(), x.leading_dim(), beta, y.data(), y.leading_dim()); 
 /*
   else
-    CBLAS::gemv(CblasTrans, rows(), columns(), (REAL) 1.0, data(), leading_dim(), x.data(), x.inc(), (REAL) 0.0, y.data(), y.inc());
+    CBLAS::gemv(CblasTrans, rows(), columns(), alpha, data(), leading_dim(), x.data(), x.inc(), beta, y.data(), y.inc());
 */
   return y;
 }
 
+/// Does the operation y = beta*y + alpha*this*x 
 template <class T, class U>
-U& mult(const T& x, U& y) const
+U& mult(const T& x, U& y, REAL alpha=(REAL) 1.0, REAL beta=(REAL) 0.0) const
 {
   #ifndef NEXCEPT
   if (sizeof(data()) != sizeof(x.data()))
@@ -279,7 +283,7 @@ U& mult(const T& x, U& y) const
   }
 // Q: why is this commented out?
 //  if (xcols > 1)
-    CBLAS::gemm(CblasColMajor, CblasNoTrans, CblasNoTrans, rows(), xcols, columns(), (REAL) 1.0, data(), leading_dim(), x.data(), x.leading_dim(), (REAL) 0.0, y.data(), y.leading_dim()); 
+    CBLAS::gemm(CblasColMajor, CblasNoTrans, CblasNoTrans, rows(), xcols, columns(), alpha, data(), leading_dim(), x.data(), x.leading_dim(), beta, y.data(), y.leading_dim()); 
 /*
   else
     CBLAS::gemv(CblasNoTrans, rows(), columns(), (REAL) 1.0, data(), leading_dim(), x.data(), x.inc(), (REAL) 0.0, y.data(), y.inc());

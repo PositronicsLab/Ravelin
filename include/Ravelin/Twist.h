@@ -32,6 +32,18 @@ class TWIST : public SVECTOR6
     static TWIST zero(boost::shared_ptr<const POSE3> pose = boost::shared_ptr<const POSE3>()) { TWIST t(pose); t.set_zero(); return t; }
 
     template <class V>
+    V& transpose_to_vector(V& v) const
+    {
+      const unsigned SPATIAL_DIM = 6;
+      v.resize(SPATIAL_DIM);
+      REAL* vdata = v.data();
+      const REAL* d = data();
+      vdata[0] = d[3];  vdata[1] = d[4];  vdata[2] = d[5];
+      vdata[3] = d[0];  vdata[4] = d[1];  vdata[5] = d[2];
+      return v;
+    }
+
+    template <class V>
     static TWIST from_vector(const V& v, boost::shared_ptr<const POSE3> pose = boost::shared_ptr<const POSE3>())
     {
       const unsigned SPATIAL_DIM = 6;

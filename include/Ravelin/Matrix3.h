@@ -109,6 +109,9 @@ class MATRIX3
     CONST_ITERATOR begin() const;
     CONST_ITERATOR end() const;
 
+    /// Gets the total number of elements in this matrix
+    unsigned size() const { return 9; }
+
     /// Gets constant pointer to the beginning of the matrix array
     const REAL* data() const { return _data; }
 
