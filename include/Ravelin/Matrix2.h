@@ -30,8 +30,9 @@ class MATRIX2
     bool orthonormalize();
     bool is_orthonormal() const;    
     REAL det() const;
-    void inverse();
-    static MATRIX2 inverse(const MATRIX2& m);
+    MATRIX2& invert();
+    static MATRIX2 invert(const MATRIX2& m);
+    MATRIX2 inverse() const { MATRIX2 m = *this; return m.invert(); }
     void set_rot_Z(REAL angle);
     static MATRIX2 rot_Z(REAL angle);
     static MATRIX2 transpose(const MATRIX2& m);

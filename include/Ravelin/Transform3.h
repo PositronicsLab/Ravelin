@@ -23,6 +23,10 @@ class TRANSFORM3
     TRANSFORM3(const MATRIX3& m, const ORIGIN3& v);
     TRANSFORM3(const QUAT& q, const ORIGIN3& v);
     TRANSFORM3(const ORIGIN3& v);
+    static ORIGIN3 interpolate_transform_vector(const TRANSFORM3& T1, const TRANSFORM3& T2, REAL t, const ORIGIN3& o);
+    static ORIGIN3 interpolate_transform_point(const TRANSFORM3& T1, const TRANSFORM3& T2, REAL t, const ORIGIN3& o);
+    static ORIGIN3 interpolate_inverse_transform_vector(const TRANSFORM3& T1, const TRANSFORM3& T2, REAL t, const ORIGIN3& o);
+    static ORIGIN3 interpolate_inverse_transform_point(const TRANSFORM3& T1, const TRANSFORM3& T2, REAL t, const ORIGIN3& o);
     static TRANSFORM3 identity() { TRANSFORM3 T; T.set_identity(); return T; }
     static bool rel_equal(const TRANSFORM3& p1, const TRANSFORM3& p2, REAL tol = EPS);
     POSE3 transform(const POSE3& p) const;

@@ -209,8 +209,8 @@ TWIST SPATIAL_AB_INERTIA::inverse_mult(const WRENCH& w) const
     throw FrameException();
   #endif
 
-  MATRIX3 nMinv = -MATRIX3::inverse(M);
-  MATRIX3 UR = MATRIX3::inverse((H * nMinv.mult_transpose(H)) + J);
+  MATRIX3 nMinv = -MATRIX3::invert(M);
+  MATRIX3 UR = MATRIX3::invert((H * nMinv.mult_transpose(H)) + J);
   MATRIX3 UL = UR * H * nMinv;
   MATRIX3 LL = nMinv * (H.transpose_mult(UL) - MATRIX3::identity());
 
@@ -232,8 +232,8 @@ vector<TWIST>& SPATIAL_AB_INERTIA::inverse_mult(const std::vector<WRENCH>& w, ve
     return result;
 
   // do precomputation
-  MATRIX3 nMinv = -MATRIX3::inverse(M);
-  MATRIX3 UR = MATRIX3::inverse((H * nMinv.mult_transpose(H)) + J);
+  MATRIX3 nMinv = -MATRIX3::invert(M);
+  MATRIX3 UR = MATRIX3::invert((H * nMinv.mult_transpose(H)) + J);
   MATRIX3 UL = UR * H * nMinv;
   MATRIX3 LL = nMinv * (H.transpose_mult(UL) - MATRIX3::identity());
 

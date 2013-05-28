@@ -18,7 +18,6 @@ class POSE2 : public boost::enable_shared_from_this<POSE2>
     POSE2(const ORIGIN2& x, boost::shared_ptr<const POSE2> relative_pose = boost::shared_ptr<const POSE2>());
     POSE2(const ROT2& r, boost::shared_ptr<const POSE2> relative_pose = boost::shared_ptr<const POSE2>());
     static POSE2 identity() { POSE2 T; T.set_identity(); return T; }
-    static POSE2 interpolate(const POSE2& m1, const POSE2& m2, REAL t);
     static REAL wrap(REAL theta);
     static bool rel_equal(const POSE2& p1, const POSE2& p2, REAL tol=EPS);
     POINT2 transform(const POINT2& v) const;
@@ -37,6 +36,8 @@ class POSE2 : public boost::enable_shared_from_this<POSE2>
     POSE2& set(const ROT2& r);
     POSE2& operator=(const POSE2& source);
     POSE2 operator*(const POSE2& m) const;
+    static VECTOR2 interpolate_transform_vector(const POSE2& P1, const POSE2& P2, REAL t, const ORIGIN2& o);
+    static POINT2 interpolate_transform_point(const POSE2& P1, const POSE2& P2, REAL t, const ORIGIN2& o);
 
     /// the orientation of the pose frame
     ROT2 r;

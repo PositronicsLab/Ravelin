@@ -905,7 +905,7 @@ static X& inverse_SPD(X& A)
  * \param A a square matrix; contains the inverse on return
  */
 template <class X>
-X& inverse(X& A)
+X& invert(X& A)
 {
   factor_LU(A, pivwork());
   inverse_LU(A, pivwork());

@@ -49,7 +49,7 @@ LDA, REAL* B, INTEGER* LDB, REAL* RCOND, INTEGER* INFO);
     void factor_QR(MATRIXN& AR, MATRIXN& Q);
     void factor_QR(MATRIXN& AR, MATRIXN& Q, std::vector<int>& PI);
     static void factor_LDL(MATRIXN& M, std::vector<int>& IPIV);
-    MATRIXN& pseudo_inverse(MATRIXN& A, void (*svd)(MATRIXN&, MATRIXN&, VECTORN&, MATRIXN&), REAL tol=(REAL) -1.0);
+    MATRIXN& pseudo_invert(MATRIXN& A, void (*svd)(MATRIXN&, MATRIXN&, VECTORN&, MATRIXN&), REAL tol=(REAL) -1.0);
     static void givens(REAL a, REAL b, REAL& c, REAL& s);
     static MATRIX2 givens(REAL c, REAL s);
     static void householder(REAL alpha, const VECTORN& x, REAL& tau, VECTORN& v);

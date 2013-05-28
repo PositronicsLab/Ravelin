@@ -25,7 +25,8 @@ class POSE3 : public boost::enable_shared_from_this<POSE3>
     POSE3(const QUAT& q, const ORIGIN3& v, boost::shared_ptr<const POSE3> relative_pose = boost::shared_ptr<const POSE3>());
     POSE3(const ORIGIN3& v, boost::shared_ptr<const POSE3> relative_pose = boost::shared_ptr<const POSE3>());
     static POSE3 identity() { POSE3 T; T.set_identity(); return T; }
-    static POSE3 interpolate(const POSE3& m1, const POSE3& m2, REAL t);
+    static VECTOR3 interpolate_vector(const POSE3& m1, const POSE3& m2, REAL t, const ORIGIN3& o);
+    static POINT3 interpolate_point(const POSE3& m1, const POSE3& m2, REAL t, const ORIGIN3& o);
     static bool rel_equal(const POSE3& p1, const POSE3& p2, REAL tol = EPS);
     POINT3 transform(const POINT3& p) const;
     VECTOR3 transform(const VECTOR3& v) const;
@@ -61,6 +62,8 @@ class POSE3 : public boost::enable_shared_from_this<POSE3>
     POSE3& operator=(const POSE3& source);
     POSE3 operator*(const POSE3& m) const;
     void update_relative_pose(boost::shared_ptr<const POSE3> pose);
+    static VECTOR3 interpolate_transform_vector(const POSE3& P1, const POSE3& P2, REAL t, const ORIGIN3& o);
+    static POINT3 interpolate_transform_point(const POSE3& P1, const POSE3& P2, REAL t, const ORIGIN3& o);
 
     /// the orientation of the pose frame
     QUAT q;

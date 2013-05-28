@@ -179,9 +179,10 @@ MATRIX2 MATRIX2::mult(const MATRIX2& m) const
 }
 
 /// Inverts this matrix 
-void MATRIX2::inverse()
+MATRIX2& MATRIX2::invert()
 {
-  *this = inverse(*this);
+  *this = invert(*this);
+  return *this;
 }
 
 /// Calculates the determinant for a 2x2 matrix
@@ -198,7 +199,7 @@ bool MATRIX2::is_orthonormal() const
 }
 
 /// Determines the inverse of the given matrix
-MATRIX2 MATRIX2::inverse(const MATRIX2& m)
+MATRIX2 MATRIX2::invert(const MATRIX2& m)
 {
   // compute the determinant
   REAL dt = (REAL) 1.0/m.det();

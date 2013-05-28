@@ -40,6 +40,151 @@ TRANSFORM2& TRANSFORM2::operator=(const TRANSFORM2& p)
   return *this;
 }
 
+/// Tranforms a vector with an interpolated transform (between transforms T1 and T2)
+/**
+ * \param T1 the pose to use when t=0
+ * \param T2 the pose to use when t=1
+ * \param t interpolation value
+ * \param o the vector to transform 
+ * \return the transformed vector 
+ */
+ORIGIN2 TRANSFORM2::interpolate_transform_vector(const TRANSFORM2& T1, const TRANSFORM2& T2, REAL t, const ORIGIN2& o)
+{
+  // wrap two thetas to [-pi, pi]
+  REAL theta1 = TRANSFORM2::wrap(T1.r.theta);
+  REAL theta2 = TRANSFORM2::wrap(T2.r.theta);
+
+  // interpolate the rotations
+  ROT2 r = T1.r.theta*(1-t) + T2.r.theta*t;
+
+   // transform the vector
+  return r*o;
+}
+
+/// Tranforms a point with an interpolated pose (between poses T1 and T2)
+/**
+ * \param T1 the pose to use when t=0
+ * \param T2 the pose to use when t=1
+ * \param t interpolation value
+ * \param o the point to transform 
+ * \return the transformed point 
+ */
+ORIGIN2 TRANSFORM2::interpolate_transform_point(const TRANSFORM2& T1, const TRANSFORM2& T2, REAL t, const ORIGIN2& o)
+{
+  // interpolate the positions
+  ORIGIN2 x = T1.x*(1-t) + T2.x*t;
+
+  // wrap two thetas to [-pi, pi]
+  REAL theta1 = TRANSFORM2::wrap(T1.r.theta);
+  REAL theta2 = TRANSFORM2::wrap(T2.r.theta);
+
+  // interpolate the rotations
+  ROT2 r = T1.r.theta*(1-t) + T2.r.theta*t;
+
+   // trnsform the point 
+  return x+r*o;
+}
+
+/// Tranforms a vector with the inverse of an interpolated transform (between transforms T1 and T2)
+/**
+ * \param T1 the pose to use when t=0
+ * \param T2 the pose to use when t=1
+ * \param t interpolation value
+ * \param o the vector to transform 
+ * \return the transformed vector 
+ */
+ORIGIN2 TRANSFORM2::interpolate_inverse_transform_vector(const TRANSFORM2& T1, const TRANSFORM2& T2, REAL t, const ORIGIN2& o)
+{
+  // wrap two thetas to [-pi, pi]
+  REAL theta1 = TRANSFORM2::wrap(T1.r.theta);
+  REAL theta2 = TRANSFORM2::wrap(T2.r.theta);
+
+  // interpolate the rotations
+  ROT2 r = ROT2::invert(T1.r.theta*(1-t) + T2.r.theta*t);
+
+  // transform the vector
+  return r*o;
+}
+
+/// Tranforms a point with the inverse of an interpolated pose (between poses T1 and T2)
+/**
+ * \param T1 the pose to use when t=0
+ * \param T2 the pose to use when t=1
+ * \param t interpolation value
+ * \param o the point to transform 
+ * \return the transformed point 
+ */
+ORIGIN2 TRANSFORM2::interpolate_inverse_transform_point(const TRANSFORM2& T1, const TRANSFORM2& T2, REAL t, const ORIGIN2& o)
+{
+  // wrap two thetas to [-pi, pi]
+  REAL theta1 = TRANSFORM2::wrap(T1.r.theta);
+  REAL theta2 = TRANSFORM2::wrap(T2.r.theta);
+
+  // interpolate the rotations
+  ROT2 r = ROT2::invert(T1.r.theta*(1-t) + T2.r.theta*t);
+
+  // interpolate the positions
+  ORIGIN2 x = r * (T1.x*(t-1) - T2.x*t);
+
+  // trnsform the point 
+  return x + r*o;
+}
+
+/// Tranforms a vector with an interpolated pose (between poses T1 and T2)
+/**
+ * \param T1 the pose to use when t=0
+ * \param T2 the pose to use when t=1
+ * \param t interpolation value
+ * \param o the vector to transform 
+ * \return the transformed vector 
+ */
+VECTOR2 POSE2::interpolate_transform_vector(const POSE2& T1, const POSE2& T2, REAL t, const ORIGIN2& o)
+{
+  #ifndef NEXCEPT
+  if (T1.rpose != T2.rpose)
+    throw FrameException();
+  #endif
+
+  // wrap two thetas to [-pi, pi]
+  REAL theta1 = TRANSFORM2::wrap(T1.r.theta);
+  REAL theta2 = TRANSFORM2::wrap(T2.r.theta);
+
+  // interpolate the rotations
+  ROT2 r = T1.r.theta*(1-t) + T2.r.theta*t;
+
+  // transform the vector
+  return VECTOR2(r*o, T1.rpose);
+}
+
+/// Tranforms a point with an interpolated pose (between poses T1 and T2)
+/**
+ * \param T1 the pose to use when t=0
+ * \param T2 the pose to use when t=1
+ * \param t interpolation value
+ * \param o the point to transform 
+ * \return the transformed point 
+ */
+POINT2 POSE2::interpolate_transform_point(const POSE2& T1, const POSE2& T2, REAL t, const ORIGIN2& o)
+{
+  #ifndef NEXCEPT
+  if (T1.rpose != T2.rpose)
+    throw FrameException();
+  #endif
+
+  // interpolate the positions
+  ORIGIN2 x = T1.x*(1-t) + T2.x*t;
+
+  // wrap two thetas to [-pi, pi]
+  REAL theta1 = TRANSFORM2::wrap(T1.r.theta);
+  REAL theta2 = TRANSFORM2::wrap(T2.r.theta);
+
+  // interpolate the rotations
+  ROT2 r = T1.r.theta*(1-t) + T2.r.theta*t;
+
+  // trnsform the point 
+  return POINT2(x+r*o, T1.rpose);
+}
+
 /// Transforms a pose
 POSE2 TRANSFORM2::transform(const POSE2& p) const
 {
@@ -101,8 +246,8 @@ bool TRANSFORM2::rel_equal(const TRANSFORM2& p1, const TRANSFORM2& p2, REAL tol)
     throw FrameException();
 
   // wrap two thetas to [-pi, pi]
-  REAL theta1 = wrap(p1.r.theta);
-  REAL theta2 = wrap(p2.r.theta);
+  REAL theta1 = TRANSFORM2::wrap(p1.r.theta);
+  REAL theta2 = TRANSFORM2::wrap(p2.r.theta);
 
   // check all components
   return OPS::rel_equal(p1.x[0], p2.x[0], tol) && 

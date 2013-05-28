@@ -35,7 +35,7 @@ class MATRIX3
     bool orthonormalize();
     bool is_orthonormal() const;    
     REAL det() const;
-    void inverse();
+    MATRIX3& invert();
     const REAL& xx() const { return _data[0]; }
     REAL& xx() { return _data[0]; }
     const REAL& xy() const { return _data[3]; }
@@ -55,7 +55,8 @@ class MATRIX3
     const REAL& zz() const { return _data[8]; }
     REAL& zz() { return _data[8]; }
     static VECTOR3 calc_differential(const MATRIX3& R1, const MATRIX3& R2);
-    static MATRIX3 inverse(const MATRIX3& m);
+    static MATRIX3 invert(const MATRIX3& m);
+    MATRIX3 inverse() const { MATRIX3 m = *this; return m.invert(); }
     void set_rot_X(REAL angle);
     static MATRIX3 rot_X(REAL angle);
     void set_rot_Y(REAL angle);

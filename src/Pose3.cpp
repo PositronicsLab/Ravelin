@@ -93,28 +93,51 @@ bool POSE3::rel_equal(const POSE3& p1, const POSE3& p2, REAL tol)
   return OPS::rel_equal(angle, (REAL) 0.0, tol);
 }
 
-/// Interpolates between two poses using spherical linear interpolation
+/// Tranforms a vector with an interpolated pose (between poses P1 and P2)
 /**
- * \param T1 the matrix to use when t=0
- * \param T2 the matrix to use when t=1
- * \param t a real value in the interval [0,1]
- * \return the interpolated transform
+ * \param P1 the pose to use when t=0
+ * \param P2 the pose to use when t=1
+ * \param t interpolation value
+ * \param o the vector to transform 
+ * \return the transformed vector 
  */
-POSE3 POSE3::interpolate(const POSE3& T1, const POSE3& T2, REAL t)
+VECTOR3 POSE3::interpolate_transform_vector(const POSE3& P1, const POSE3& P2, REAL t, const ORIGIN3& o)
 {
   #ifndef NEXCEPT
-  if (T1.rpose != T2.rpose)
+  if (P1.rpose != P2.rpose)
+    throw FrameException();
+  #endif
+
+  // interpolate the rotations
+  QUAT q = QUAT::slerp(P1.q, P2.q, t);
+
+  // transform the vector
+  return VECTOR3(q*o, P1.rpose);
+}
+
+/// Tranforms a point with an interpolated pose (between poses P1 and P2)
+/**
+ * \param P1 the pose to use when t=0
+ * \param P2 the pose to use when t=1
+ * \param t interpolation value
+ * \param o the point to transform 
+ * \return the transformed point 
+ */
+POINT3 POSE3::interpolate_transform_point(const POSE3& P1, const POSE3& P2, REAL t, const ORIGIN3& o)
+{
+  #ifndef NEXCEPT
+  if (P1.rpose != P2.rpose)
     throw FrameException();
   #endif
 
   // interpolate the positions
-  ORIGIN3 x = T1.x*(1-t) + T2.x*t;
+  ORIGIN3 x = P1.x*(1-t) + P2.x*t;
 
   // interpolate the rotations
-  QUAT q = QUAT::slerp(T1.q, T2.q, t);
+  QUAT q = QUAT::slerp(P1.q, P2.q, t);
 
-  // return the new matrix
-  return POSE3(q, x);
+  // trnsform the point 
+  return POINT3(x+q*o, P1.rpose);
 }
 
 // Sets the pose from an axis-angle representation and a translation vector

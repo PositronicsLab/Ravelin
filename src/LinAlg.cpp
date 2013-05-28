@@ -134,7 +134,7 @@ void LINALG::factor_QR(MATRIXN& AR, MATRIXN& Q)
 }
 
 //// Computes the psuedo-inverse of a matrix
-MATRIXN& LINALG::pseudo_inverse(MATRIXN& A, void (*svd)(MATRIXN&, MATRIXN&, VECTORN&, MATRIXN&), REAL tol)
+MATRIXN& LINALG::pseudo_invert(MATRIXN& A, void (*svd)(MATRIXN&, MATRIXN&, VECTORN&, MATRIXN&), REAL tol)
 {
   // get the dimensionality of A
   const unsigned m = A.rows();

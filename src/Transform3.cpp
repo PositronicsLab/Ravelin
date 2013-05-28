@@ -65,6 +65,80 @@ TRANSFORM3& TRANSFORM3::operator=(const TRANSFORM3& p)
   return *this;
 }
 
+/// Tranforms a vector with an interpolated transform (between transforms T1 and T2)
+/**
+ * \param T1 the pose to use when t=0
+ * \param T2 the pose to use when t=1
+ * \param t interpolation value
+ * \param o the vector to transform 
+ * \return the transformed vector 
+ */
+ORIGIN3 TRANSFORM3::interpolate_transform_vector(const TRANSFORM3& T1, const TRANSFORM3& T2, REAL t, const ORIGIN3& o)
+{
+  // interpolate the rotations
+  QUAT q = QUAT::slerp(T1.q, T2.q, t);
+
+  // transform the vector
+  return q*o;
+}
+
+/// Tranforms a point with an interpolated pose (between poses T1 and T2)
+/**
+ * \param T1 the pose to use when t=0
+ * \param T2 the pose to use when t=1
+ * \param t interpolation value
+ * \param o the point to transform 
+ * \return the transformed point 
+ */
+ORIGIN3 TRANSFORM3::interpolate_transform_point(const TRANSFORM3& T1, const TRANSFORM3& T2, REAL t, const ORIGIN3& o)
+{
+  // interpolate the positions
+  ORIGIN3 x = T1.x*(1-t) + T2.x*t;
+
+  // interpolate the rotations
+  QUAT q = QUAT::slerp(T1.q, T2.q, t);
+
+  // trnsform the point 
+  return x+q*o;
+}
+
+/// Tranforms a vector with the inverse of an interpolated transform (between transforms T1 and T2)
+/**
+ * \param T1 the pose to use when t=0
+ * \param T2 the pose to use when t=1
+ * \param t interpolation value
+ * \param o the vector to transform 
+ * \return the transformed vector 
+ */
+ORIGIN3 TRANSFORM3::interpolate_inverse_transform_vector(const TRANSFORM3& T1, const TRANSFORM3& T2, REAL t, const ORIGIN3& o)
+{
+  // interpolate the rotations
+  QUAT q = QUAT::invert(QUAT::slerp(T1.q, T2.q, t));
+
+  // transform the vector
+  return q*o;
+}
+
+/// Tranforms a point with the inverse of an interpolated pose (between poses T1 and T2)
+/**
+ * \param T1 the pose to use when t=0
+ * \param T2 the pose to use when t=1
+ * \param t interpolation value
+ * \param o the point to transform 
+ * \return the transformed point 
+ */
+ORIGIN3 TRANSFORM3::interpolate_inverse_transform_point(const TRANSFORM3& T1, const TRANSFORM3& T2, REAL t, const ORIGIN3& o)
+{
+  // interpolate the rotations
+  QUAT q = QUAT::invert(QUAT::slerp(T1.q, T2.q, t));
+
+  // interpolate the positions
+  ORIGIN3 x = q * (T1.x*(t-1) - T2.x*t);
+
+  // trnsform the point 
+  return x + q*o;
+}
+
 /// Determines whether two transformations in 3D are relatively equivalent
 bool TRANSFORM3::rel_equal(const TRANSFORM3& p1, const TRANSFORM3& p2, REAL tol)
 {

@@ -275,9 +275,10 @@ MATRIX3 MATRIX3::skew_symmetric(const VECTOR3& v)
 }
 
 /// Inverts this matrix 
-void MATRIX3::inverse()
+MATRIX3& MATRIX3::invert()
 {
-  *this = inverse(*this);
+  *this = invert(*this);
+  return *this; 
 }
 
 /// Calculates the determinant for a 3x3 matrix
@@ -298,7 +299,7 @@ bool MATRIX3::is_orthonormal() const
 }
 
 /// Determines the inverse of the given matrix
-MATRIX3 MATRIX3::inverse(const MATRIX3& m)
+MATRIX3 MATRIX3::invert(const MATRIX3& m)
 {
   // compute the determinant
   REAL determ = 1.0/m.det();

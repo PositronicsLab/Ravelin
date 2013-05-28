@@ -36,6 +36,10 @@ class TRANSFORM2
     TRANSFORM2& set(const ROT2& r);
     TRANSFORM2& operator=(const TRANSFORM2& source);
     TRANSFORM2 operator*(const TRANSFORM2& m) const;
+    static ORIGIN2 interpolate_transform_vector(const TRANSFORM2& T1, const TRANSFORM2& T2, REAL t, const ORIGIN2& o);
+    static ORIGIN2 interpolate_transform_point(const TRANSFORM2& T1, const TRANSFORM2& T2, REAL t, const ORIGIN2& o);
+    static ORIGIN2 interpolate_inverse_transform_vector(const TRANSFORM2& T1, const TRANSFORM2& T2, REAL t, const ORIGIN2& o);
+    static ORIGIN2 interpolate_inverse_transform_point(const TRANSFORM2& T1, const TRANSFORM2& T2, REAL t, const ORIGIN2& o);
 
     /// the orientation of the pose frame
     ROT2 r;

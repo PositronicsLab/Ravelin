@@ -56,7 +56,7 @@ TWIST SPATIAL_RB_INERTIA::inverse_mult(const WRENCH& w) const
   REAL inv_m = (REAL) 1.0/m;
 
   // compute the components of the matrix
-  MATRIX3 UR = MATRIX3::inverse((hx * hx * inv_m) + J);
+  MATRIX3 UR = MATRIX3::invert((hx * hx * inv_m) + J);
   MATRIX3 UL = UR * hx * -inv_m;
   MATRIX3 LL = ((hx * UL) - MATRIX3::identity()) * inv_m;
 
@@ -84,7 +84,7 @@ std::vector<TWIST>& SPATIAL_RB_INERTIA::inverse_mult(const std::vector<WRENCH>& 
   REAL inv_m = (REAL) 1.0/m;
 
   // compute the components of the matrix
-  MATRIX3 UR = MATRIX3::inverse((hx * hx * inv_m) + J);
+  MATRIX3 UR = MATRIX3::invert((hx * hx * inv_m) + J);
   MATRIX3 UL = UR * hx * -inv_m;
   MATRIX3 LL = ((hx * UL) - MATRIX3::identity()) * inv_m;
 

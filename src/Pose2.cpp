@@ -83,27 +83,59 @@ bool POSE2::rel_equal(const POSE2& p1, const POSE2& p2, REAL tol)
          OPS::rel_equal(theta1, theta2, tol);
 }
 
-/// Interpolates between two poses using linear interpolation
+/// Tranforms a vector with an interpolated pose (between poses P1 and P2)
 /**
- * \param T1 the pose to use when t=0
- * \param T2 the pose to use when t=1
- * \param t a real value in the interval [0,1]
- * \return the interpolated transform
+ * \param P1 the pose to use when t=0
+ * \param P2 the pose to use when t=1
+ * \param t interpolation value
+ * \param o the vector to transform 
+ * \return the transformed vector 
  */
-POSE2 POSE2::interpolate(const POSE2& T1, const POSE2& T2, REAL t)
+VECTOR2 POSE2::interpolate_transform_vector(const POSE2& P1, const POSE2& P2, REAL t, const ORIGIN2& o)
 {
-  // interpolate the positions
-  ORIGIN2 x = T1.x*(1-t) + T2.x*t;
+  #ifndef NEXCEPT
+  if (P1.rpose != P2.rpose)
+    throw FrameException();
+  #endif
 
   // wrap two thetas to [-pi, pi]
-  REAL theta1 = wrap(T1.r.theta);
-  REAL theta2 = wrap(T2.r.theta);
+  REAL theta1 = wrap(P1.r.theta);
+  REAL theta2 = wrap(P2.r.theta);
 
   // interpolate the rotations
-  ROT2 r = T1.r.theta*(1-t) + T2.r.theta*t;
+  ROT2 r = P1.r.theta*(1-t) + P2.r.theta*t;
 
-  // return the new matrix
-  return POSE2(r, x);
+  // transform the vector
+  return VECTOR2(r*o, P1.rpose);
+}
+
+/// Tranforms a point with an interpolated pose (between poses P1 and P2)
+/**
+ * \param P1 the pose to use when t=0
+ * \param P2 the pose to use when t=1
+ * \param t interpolation value
+ * \param o the point to transform 
+ * \return the transformed point 
+ */
+POINT2 POSE2::interpolate_transform_point(const POSE2& P1, const POSE2& P2, REAL t, const ORIGIN2& o)
+{
+  #ifndef NEXCEPT
+  if (P1.rpose != P2.rpose)
+    throw FrameException();
+  #endif
+
+  // interpolate the positions
+  ORIGIN2 x = P1.x*(1-t) + P2.x*t;
+
+  // wrap two thetas to [-pi, pi]
+  REAL theta1 = wrap(P1.r.theta);
+  REAL theta2 = wrap(P2.r.theta);
+
+  // interpolate the rotations
+  ROT2 r = P1.r.theta*(1-t) + P2.r.theta*t;
+
+  // trnsform the point 
+  return POINT2(x+r*o, P1.rpose);
 }
 
 /// Sets the pose from a rotation and translation vector
