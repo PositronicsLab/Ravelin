@@ -9,6 +9,7 @@
 
 #include <algorithm>
 #include <boost/shared_ptr.hpp>
+#include <Ravelin/cblas.h>
 #include <Ravelin/MissizeException.h>
 #include <Ravelin/Vector3f.h>
 #include <Ravelin/fIterator.h>
