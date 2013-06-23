@@ -1014,6 +1014,21 @@ TRANSFORM3 POSE3::calc_transform(boost::shared_ptr<const POSE3> source, boost::s
   }
 }
 
+/// Computes the twist that gets from one pose (P1) to another (P2)
+TWIST POSE3::diff(const POSE3& P1, const POSE3& P2)
+{
+  #ifndef NEXCEPT
+  if (P1.rpose != P2.rpose)
+    throw FrameException();
+  #endif
+
+  // compute the different in positions
+  VECTOR3 xd = P2.x - P1.x;
+  VECTOR3 omega = QUAT::to_omega(P1.q, P2.q - P1.q);
+
+  return TWIST(xd, omega, P1.rpose);
+}
+
 /// Outputs this matrix to the stream
 std::ostream& Ravelin::operator<<(std::ostream& out, const POSE3& m)
 {

@@ -19,9 +19,6 @@ option (ATLAS_BUGFIX "Use bugfix for Debian/Ubuntu ATLAS packages?" OFF)
 option (DISABLE_EXCEPT "Disable user-level exceptions for extra speed (not recommended)?" OFF)
 
 # modify C++ flags
-if (DISABLE_EXCEPT)
-  add_definitions (-DNEXCEPT)
-endif ()
 if (REENTRANT)
   add_definitions (-DREENTRANT)
 endif (REENTRANT)

@@ -64,6 +64,7 @@ class POSE3 : public boost::enable_shared_from_this<POSE3>
     void update_relative_pose(boost::shared_ptr<const POSE3> pose);
     static VECTOR3 interpolate_transform_vector(const POSE3& P1, const POSE3& P2, REAL t, const ORIGIN3& o);
     static POINT3 interpolate_transform_point(const POSE3& P1, const POSE3& P2, REAL t, const ORIGIN3& o);
+    static TWIST diff(const POSE3& P1, const POSE3& P2);
 
     /// the orientation of the pose frame
     QUAT q;
