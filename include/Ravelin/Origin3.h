@@ -31,10 +31,10 @@ class ORIGIN3
     ORIGIN3& operator=(const ORIGIN3& o);
     ORIGIN3& operator=(const VECTOR3& v);
     ORIGIN3 operator+(const ORIGIN3& o) const;
-    VECTOR3 operator+(const POINT3& o) const;
-    VECTOR3 operator-(const POINT3& o) const;
-    VECTOR3 operator+(const VECTOR3& o) const;
-    VECTOR3 operator-(const VECTOR3& o) const;
+    POINT3 operator+(const POINT3& o) const;
+    POINT3 operator-(const POINT3& o) const;
+    POINT3 operator+(const VECTOR3& o) const;
+    POINT3 operator-(const VECTOR3& o) const;
     ORIGIN3 operator-(const ORIGIN3& v) const;
     ORIGIN3& operator+=(const ORIGIN3& v);
     ORIGIN3& operator-=(const ORIGIN3& v);

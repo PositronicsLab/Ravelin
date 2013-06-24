@@ -1022,9 +1022,12 @@ TWIST POSE3::diff(const POSE3& P1, const POSE3& P2)
     throw FrameException();
   #endif
 
-  // compute the different in positions
-  VECTOR3 xd = P2.x - P1.x;
+  // compute the differential in positions
+  VECTOR3 xd(P2.x - P1.x, P1.rpose);
+
+  // compute the differential in orientations
   VECTOR3 omega = QUAT::to_omega(P1.q, P2.q - P1.q);
+  omega.pose = P1.rpose;
 
   return TWIST(xd, omega, P1.rpose);
 }

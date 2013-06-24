@@ -34,7 +34,7 @@ ORIGIN2& ORIGIN2::resize(unsigned m, unsigned n, bool preserve)
 }
 
 /// Constructs this vector with the given values
-inline ORIGIN2& ORIGIN2::operator=(const POINT2& p)
+ORIGIN2& ORIGIN2::operator=(const POINT2& p)
 {
   const unsigned X = 0, Y = 1;
   _data[X] = p.x();
@@ -43,7 +43,7 @@ inline ORIGIN2& ORIGIN2::operator=(const POINT2& p)
 }
 
 /// Constructs this vector with the given values
-inline ORIGIN2& ORIGIN2::operator=(const VECTOR2& v)
+ORIGIN2& ORIGIN2::operator=(const VECTOR2& v)
 {
   const unsigned X = 0, Y = 1;
   _data[X] = v.x();
@@ -52,19 +52,19 @@ inline ORIGIN2& ORIGIN2::operator=(const VECTOR2& v)
 }
 
 /// Adds a point and an origin to yield a vector 
-inline VECTOR2 ORIGIN2::operator+(const POINT2& p) const
+VECTOR2 ORIGIN2::operator+(const POINT2& p) const
 {
   return p + *this;
 }
 
 /// Subtract a point from this origin to yield a vector 
-inline VECTOR2 ORIGIN2::operator-(const POINT2& p) const
+VECTOR2 ORIGIN2::operator-(const POINT2& p) const
 {
   return -p + *this;
 }
 
 /// Adds a vector and an origin to yield a vector 
-inline VECTOR2 ORIGIN2::operator+(const VECTOR2& v) const
+VECTOR2 ORIGIN2::operator+(const VECTOR2& v) const
 {
   return v + *this; 
 }

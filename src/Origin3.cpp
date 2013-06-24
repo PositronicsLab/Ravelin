@@ -83,28 +83,28 @@ ORIGIN3& ORIGIN3::operator+=(const ORIGIN3& o)
   return *this;
 }
 
-/// Adds a point and an origin to yield a vector 
-inline VECTOR3 ORIGIN3::operator+(const POINT3& p) const
+/// Adds an origin and a vector to yield a point 
+POINT3 ORIGIN3::operator+(const VECTOR3& v) const
+{
+  return v + *this;
+}
+
+/// Adds a point and an origin to yield a point
+POINT3 ORIGIN3::operator+(const POINT3& p) const
 {
   return p + *this;
 }
 
-/// Subtract a point from this origin to yield a vector 
-inline VECTOR3 ORIGIN3::operator-(const POINT3& p) const
+/// Subtracts a vector from an origin to yield a point 
+POINT3 ORIGIN3::operator-(const VECTOR3& v) const
+{
+  return v - *this;
+}
+
+/// Subtract a point from this origin to yield a point
+POINT3 ORIGIN3::operator-(const POINT3& p) const
 {
   return -p + *this;
-}
-
-/// Adds a vector and an origin to yield a vector 
-inline VECTOR3 ORIGIN3::operator+(const VECTOR3& v) const
-{
-  return v + *this; 
-}
-
-/// Subtract a vector from this origin to yield a vector 
-VECTOR3 ORIGIN3::operator-(const VECTOR3& v) const
-{
-  return -v + *this;
 }
 
 /// Subtracts one origin from another

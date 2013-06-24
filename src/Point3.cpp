@@ -159,11 +159,35 @@ POINT3& POINT3::operator+=(const ORIGIN3& o)
   return *this;
 }
 
+POINT3& POINT3::operator+=(const VECTOR3& v) 
+{
+  #ifndef NEXCEPT
+  if (pose != v.pose)
+    throw FrameException();
+  #endif
+  x() += v.x();
+  y() += v.y();
+  z() += v.z();
+  return *this;
+}
+
 POINT3& POINT3::operator-=(const ORIGIN3& o) 
 {
   x() -= o.x();
   y() -= o.y();
   z() -= o.z();
+  return *this;
+}
+
+POINT3& POINT3::operator-=(const VECTOR3& v) 
+{
+  #ifndef NEXCEPT
+  if (pose != v.pose)
+    throw FrameException();
+  #endif
+  x() -= v.x();
+  y() -= v.y();
+  z() -= v.z();
   return *this;
 }
 

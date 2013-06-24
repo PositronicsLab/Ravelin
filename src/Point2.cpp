@@ -143,6 +143,30 @@ POINT2& POINT2::operator+=(const ORIGIN2& o)
   return *this;
 }
 
+/// Adds a vector to this
+POINT2& POINT2::operator+=(const VECTOR2& v) 
+{
+  #ifndef NEXCEPT
+  if (pose != v.pose)
+    throw FrameException();
+  #endif
+  x() += v.x();
+  y() += v.y();
+  return *this;
+}
+
+/// Subtracts a vector from this
+POINT2& POINT2::operator-=(const VECTOR2& v) 
+{
+  #ifndef NEXCEPT
+  if (pose != v.pose)
+    throw FrameException();
+  #endif
+  x() -= v.x();
+  y() -= v.y();
+  return *this;
+}
+
 /// Subtracts an origin from this
 POINT2& POINT2::operator-=(const ORIGIN2& o) 
 {
