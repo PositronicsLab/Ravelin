@@ -11,6 +11,7 @@
 #include <boost/shared_ptr.hpp>
 #include <Ravelin/cblas.h>
 #include <Ravelin/SForcef.h>
+#include <Ravelin/SMomentumf.h>
 #include <Ravelin/SAccelf.h> 
 #include <Ravelin/SVelocityf.h>
 #include <Ravelin/SpatialRBInertiaf.h>

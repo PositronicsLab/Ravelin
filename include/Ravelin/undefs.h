@@ -23,6 +23,7 @@
 #undef ITERATOR
 #undef SVECTOR6 
 #undef SFORCE
+#undef SMOMENTUM
 #undef SVELOCITY
 #undef SACCEL 
 #undef SPATIAL_AB_INERTIA

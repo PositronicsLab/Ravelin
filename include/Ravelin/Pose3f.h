@@ -18,6 +18,7 @@
 #include <Ravelin/AAnglef.h>
 #include <Ravelin/Matrix3f.h>
 #include <Ravelin/SForcef.h>
+#include <Ravelin/SMomentumf.h>
 #include <Ravelin/SAccelf.h> 
 #include <Ravelin/SVelocityf.h>
 #include <Ravelin/SpatialRBInertiaf.h>

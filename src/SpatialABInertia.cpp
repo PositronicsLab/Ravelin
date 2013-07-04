@@ -72,6 +72,25 @@ SFORCE SPATIAL_AB_INERTIA::mult(const SACCEL& t) const
   return SFORCE(rtop, rbot, pose); 
 }
 
+/// Multiplies this matrix by a velocity and returns the result in a momentum 
+SMOMENTUM SPATIAL_AB_INERTIA::mult(const SVELOCITY& t) const
+{
+  #ifndef NEXCEPT
+  if (pose != t.pose)
+    throw FrameException();
+  #endif
+
+  // get necessary components of the velocity 
+  ORIGIN3 top(t.get_angular());
+  ORIGIN3 bot(t.get_linear());
+
+  // compute top part of result
+  VECTOR3 rtop(H.transpose_mult(top) + (M * bot), pose);
+  VECTOR3 rbot((J * top) + (H * bot), pose);
+
+  return SMOMENTUM(rtop, rbot, pose); 
+}
+
 /// Multiplies this matrix by a vector of accelerations and returns the result in a vector of forces 
 vector<SFORCE>& SPATIAL_AB_INERTIA::mult(const vector<SACCEL>& t, vector<SFORCE>& result) const
 {
@@ -90,6 +109,29 @@ vector<SFORCE>& SPATIAL_AB_INERTIA::mult(const vector<SACCEL>& t, vector<SFORCE>
     VECTOR3 wtop(H.transpose_mult(top) + (M * bot), pose);
     VECTOR3 wbot((J * top) + (H * bot), pose);
     result[i] = SFORCE(wtop, wbot, pose); 
+  }
+
+  return result;
+}
+
+/// Multiplies this inertia by a vector of velocities and returns the result in a vector of momenta 
+vector<SMOMENTUM>& SPATIAL_AB_INERTIA::mult(const vector<SVELOCITY>& t, vector<SMOMENTUM>& result) const
+{
+  result.resize(t.size());
+
+  // get necessary components of the velocity 
+  for (unsigned i=0; i< t.size(); i++)
+  { 
+    #ifndef NEXCEPT
+    if (pose != t[i].pose)
+      throw FrameException();
+    #endif
+
+    ORIGIN3 top(t[i].get_angular());
+    ORIGIN3 bot(t[i].get_linear());
+    VECTOR3 wtop(H.transpose_mult(top) + (M * bot), pose);
+    VECTOR3 wbot((J * top) + (H * bot), pose);
+    result[i] = SMOMENTUM(wtop, wbot, pose); 
   }
 
   return result;

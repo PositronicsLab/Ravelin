@@ -11,6 +11,7 @@
 #include <boost/shared_ptr.hpp>
 #include <Ravelin/cblas.h>
 #include <Ravelin/SForced.h>
+#include <Ravelin/SMomentumd.h>
 #include <Ravelin/SAcceld.h> 
 #include <Ravelin/SVelocityd.h>
 #include <Ravelin/Matrix3d.h>

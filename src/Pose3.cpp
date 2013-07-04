@@ -536,6 +536,73 @@ SVELOCITY POSE3::inverse_transform(const SVELOCITY& t) const
   return SVELOCITY(Etop, (E * ORIGIN3(bottom)) - cross, pose);
 }
 
+/// Transforms a momentum from one pose to another 
+SMOMENTUM POSE3::inverse_transform(const SMOMENTUM& t) const
+{
+  // determine the resulting frame
+  boost::shared_ptr<const POSE3> pose;
+  try
+  {
+    pose = shared_from_this();
+  }
+  catch (boost::bad_weak_ptr e)
+  {
+    std::cerr << "Pose3::inverse_transform() - pose allocated on stack!" << std::endl;
+  }
+  #ifndef NEXCEPT
+  if (t.pose != rpose)
+    throw FrameException();
+  #endif
+
+  // setup r and E
+  ORIGIN3 r;
+  MATRIX3 E;
+  get_r_E(r, E, true);
+  const MATRIX3 ET = MATRIX3::transpose(E);
+
+  // get the components of t 
+  VECTOR3 top = t.get_angular();
+  VECTOR3 bottom = t.get_linear();
+
+  // do the calculations
+  VECTOR3 Etop(E * ORIGIN3(top), pose);
+  VECTOR3 cross = VECTOR3::cross(VECTOR3(r, pose), Etop);
+  return SMOMENTUM(Etop, (E * ORIGIN3(bottom)) - cross, pose);
+}
+
+/// Transforms a momentum from one pose to another 
+SMOMENTUM POSE3::transform(const SMOMENTUM& t) const
+{
+  #ifndef NEXCEPT
+  boost::shared_ptr<const POSE3> pose;
+  try
+  {
+    pose = shared_from_this();
+  }
+  catch (boost::bad_weak_ptr e)
+  {
+    std::cerr << "Pose3::transform() - pose allocated on stack!" << std::endl;
+  }
+  if (t.pose != pose)
+    throw FrameException();
+  #endif
+
+  // setup r and E
+  ORIGIN3 r;
+  MATRIX3 E;
+  get_r_E(r, E, false);
+  const MATRIX3 ET = MATRIX3::transpose(E);
+
+  // get the components of t 
+  VECTOR3 top = t.get_angular();
+  VECTOR3 bottom = t.get_linear();
+
+  // do the calculations
+  VECTOR3 Etop(E * ORIGIN3(top), rpose);
+  VECTOR3 cross = VECTOR3::cross(VECTOR3(r, rpose), Etop);
+  return SMOMENTUM(Etop, (E * ORIGIN3(bottom)) - cross, rpose);
+}
+
 /// Transforms a rigid body inertia from one pose to another 
 SPATIAL_RB_INERTIA POSE3::transform(const SPATIAL_RB_INERTIA& J) const
 {
@@ -981,6 +1048,75 @@ std::vector<SVELOCITY>& POSE3::transform(boost::shared_ptr<const POSE3> source, 
     VECTOR3 Etop(E * ORIGIN3(top), target);
     VECTOR3 cross = VECTOR3::cross(rv, Etop);
     result[i] = SVELOCITY(Etop, (E * ORIGIN3(bottom)) - cross, target);
+  }
+
+  return result;
+}
+
+/// Transforms the momentum 
+SMOMENTUM POSE3::transform(boost::shared_ptr<const POSE3> source, boost::shared_ptr<const POSE3> target, const SMOMENTUM& t)
+{
+  #ifndef NEXCEPT
+  if (source != t.pose)
+    throw FrameException();
+  #endif
+
+  // compute the relative transform
+  TRANSFORM3 Tx = calc_transform(source, target);
+
+  // setup r and E
+  const ORIGIN3& r = Tx.x;
+  const MATRIX3 E = Tx.q;
+  VECTOR3 rv(r, target);
+
+  // get the components of t 
+  VECTOR3 top = t.get_angular();
+  VECTOR3 bottom = t.get_linear();
+
+  // do the calculations
+  VECTOR3 Etop(E * ORIGIN3(top), target);
+  VECTOR3 cross = VECTOR3::cross(rv, Etop);
+  return SMOMENTUM(Etop, (E * ORIGIN3(bottom)) - cross, target);
+}
+
+/// Transforms a vector of momenta 
+std::vector<SMOMENTUM>& POSE3::transform(boost::shared_ptr<const POSE3> source, boost::shared_ptr<const POSE3> target, const std::vector<SMOMENTUM>& t, std::vector<SMOMENTUM>& result)
+{
+  // look for empty vector (easy case)
+  if (t.empty())
+  {
+    result.clear();
+    return result;
+  }
+
+  #ifndef NEXCEPT
+  for (unsigned i=0; i< t.size(); i++)
+    if (source != t[i].pose)
+      throw FrameException();
+  #endif
+
+  // compute the relative transform
+  TRANSFORM3 Tx = calc_transform(source, target);
+
+  // setup r and E
+  const ORIGIN3& r = Tx.x;
+  const MATRIX3 E = Tx.q;
+  VECTOR3 rv(r, target);
+
+  // resize the result vector
+  result.resize(t.size());
+
+  // look over all forcees
+  for (unsigned i=0; i< t.size(); i++)
+  {
+    // get the components of t[i] 
+    VECTOR3 top = t[i].get_angular();
+    VECTOR3 bottom = t[i].get_linear();
+
+    // do the calculations
+    VECTOR3 Etop(E * ORIGIN3(top), target);
+    VECTOR3 cross = VECTOR3::cross(rv, Etop);
+    result[i] = SMOMENTUM(Etop, (E * ORIGIN3(bottom)) - cross, target);
   }
 
   return result;

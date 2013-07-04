@@ -5,13 +5,14 @@
  ****************************************************************************/
 
 #ifndef SVECTOR6
-#error This class is not to be included by the user directly. Use SForced.h, SForcef.h, SVelocityd.h, SVelocityf.h, SAcceld.h, or SAccelf.h instead.
+#error This class is not to be included by the user directly. Use SForced.h, SForcef.h, SMomentumd.h, SMomentumf.h, SVelocityd.h, SVelocityf.h, SAcceld.h, or SAccelf.h instead.
 #endif
 
 class POSE3;
 class SFORCE;
 class SVELOCITY;
 class SACCEL;
+class SMOMENTUM;
 
 /// A 6-dimensional floating-point vector for use with spatial algebra
 /**

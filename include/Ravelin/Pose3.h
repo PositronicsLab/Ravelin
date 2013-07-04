@@ -38,10 +38,14 @@ class POSE3 : public boost::enable_shared_from_this<POSE3>
     SFORCE inverse_transform(const SFORCE& w) const;
     static SFORCE transform(boost::shared_ptr<const POSE3> source, boost::shared_ptr<const POSE3> target, const SFORCE& w);
     static std::vector<SFORCE>& transform(boost::shared_ptr<const POSE3> source, boost::shared_ptr<const POSE3> target, const std::vector<SFORCE>& w, std::vector<SFORCE>& result);
+    SMOMENTUM transform(const SMOMENTUM& t) const;
+    SMOMENTUM inverse_transform(const SMOMENTUM& t) const;
     SVELOCITY transform(const SVELOCITY& t) const;
     SVELOCITY inverse_transform(const SVELOCITY& t) const;
+    static SMOMENTUM transform(boost::shared_ptr<const POSE3> source, boost::shared_ptr<const POSE3> target, const SMOMENTUM& t);
     static SVELOCITY transform(boost::shared_ptr<const POSE3> source, boost::shared_ptr<const POSE3> target, const SVELOCITY& t);
     static std::vector<SVELOCITY>& transform(boost::shared_ptr<const POSE3> source, boost::shared_ptr<const POSE3> target, const std::vector<SVELOCITY>& t, std::vector<SVELOCITY>& result);
+    static std::vector<SMOMENTUM>& transform(boost::shared_ptr<const POSE3> source, boost::shared_ptr<const POSE3> target, const std::vector<SMOMENTUM>& t, std::vector<SMOMENTUM>& result);
     SACCEL transform(const SACCEL& t) const;
     SACCEL inverse_transform(const SACCEL& t) const;
     static SACCEL transform(boost::shared_ptr<const POSE3> source, boost::shared_ptr<const POSE3> target, const SACCEL& t);

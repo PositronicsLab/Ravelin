@@ -9,6 +9,7 @@
 #endif
 
 class SFORCE;
+class SMOMENTUM;
 
 class SVELOCITY : public SVECTOR6 
 {
@@ -56,6 +57,7 @@ class SVELOCITY : public SVECTOR6
       return t;
     }
 
+    SACCEL cross(const SMOMENTUM& m) const { return SACCEL(spatial_cross(*this, m)); }
     void set_linear(const VECTOR3& lin) { set_lower(lin); }
     void set_angular(const VECTOR3& ang) { set_upper(ang); }
     VECTOR3 get_angular() const { return get_upper(); }

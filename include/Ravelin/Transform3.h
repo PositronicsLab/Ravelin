@@ -37,6 +37,8 @@ class TRANSFORM3
     VECTOR3 inverse_transform(const VECTOR3& v) const;
     SFORCE transform(const SFORCE& w) const;
     SFORCE inverse_transform(const SFORCE& w) const;
+    SMOMENTUM transform(const SMOMENTUM& t) const;
+    SMOMENTUM inverse_transform(const SMOMENTUM& t) const;
     SVELOCITY transform(const SVELOCITY& t) const;
     SVELOCITY inverse_transform(const SVELOCITY& t) const;
     SACCEL transform(const SACCEL& t) const;

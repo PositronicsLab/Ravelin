@@ -22,6 +22,7 @@
 #define CONST_ITERATOR dIterator_const
 #define ITERATOR dIterator
 #define SVECTOR6 SVector6d
+#define SMOMENTUM SMomentumd
 #define SFORCE SForced 
 #define SVELOCITY SVelocityd
 #define SACCEL SAcceld

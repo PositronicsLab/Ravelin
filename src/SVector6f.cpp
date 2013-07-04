@@ -10,6 +10,7 @@
 #include <Ravelin/cblas.h>
 #include <Ravelin/FrameException.h>
 #include <Ravelin/SAccelf.h> 
+#include <Ravelin/SMomentumf.h>
 #include <Ravelin/SVelocityf.h>
 #include <Ravelin/SForcef.h>
 #include <Ravelin/SVector6f.h>

@@ -107,7 +107,7 @@ std::vector<SACCEL>& SPATIAL_RB_INERTIA::inverse_mult(const std::vector<SFORCE>&
   return result;
 }
 
-/// Multiplies this matrix by a vector and returns the result in a new vector
+/// Multiplies this inertia by an acceleration and returns a force 
 SFORCE SPATIAL_RB_INERTIA::operator*(const SACCEL& t) const
 {
   #ifndef NEXCEPT
@@ -126,6 +126,27 @@ SFORCE SPATIAL_RB_INERTIA::operator*(const SACCEL& t) const
   VECTOR3 rtop((tbot * m) - (hX * ttop), pose);
   VECTOR3 rbot((J * ttop) + (hX * tbot), pose);
   return SFORCE(rtop, rbot, pose); 
+}
+
+/// Multiplies this inertia by a velocity and returns a momentum 
+SMOMENTUM SPATIAL_RB_INERTIA::operator*(const SVELOCITY& t) const
+{
+  #ifndef NEXCEPT
+  if (pose != t.pose)
+    throw FrameException();
+  #endif
+
+  // get necessary components of t
+  ORIGIN3 ttop(t.get_angular());
+  ORIGIN3 tbot(t.get_linear());
+
+  // do some precomputation
+  MATRIX3 hX = MATRIX3::skew_symmetric(h);
+
+  // compute result
+  VECTOR3 rtop((tbot * m) - (hX * ttop), pose);
+  VECTOR3 rbot((J * ttop) + (hX * tbot), pose);
+  return SMOMENTUM(rtop, rbot, pose); 
 }
 
 /// Multiplies this matrix by a scalar in place
@@ -207,7 +228,7 @@ SPATIAL_RB_INERTIA& SPATIAL_RB_INERTIA::operator-=(const SPATIAL_RB_INERTIA& m)
   return *this;
 }
 
-/// Multiplies a spatial matrix by a spatial matrix and returns the result in a spatial matrix
+/// Multiplies this inertia by a vector of accelerations and returns a vector of forces
 std::vector<SFORCE>& SPATIAL_RB_INERTIA::mult(const std::vector<SACCEL>& t, std::vector<SFORCE>& result) const
 {
   // get number of accels 
@@ -238,6 +259,42 @@ std::vector<SFORCE>& SPATIAL_RB_INERTIA::mult(const std::vector<SACCEL>& t, std:
     VECTOR3 wtop((bot * this->m)-(hX * top), pose);
     VECTOR3 wbot((this->J * top)+(hX * bot), pose);
     result[i] = SFORCE(wtop, wbot, pose);
+  } 
+
+  return result;
+}
+
+/// Multiplies this inertia by a vector of accelerations and returns a vector of forces
+std::vector<SMOMENTUM>& SPATIAL_RB_INERTIA::mult(const std::vector<SVELOCITY>& t, std::vector<SMOMENTUM>& result) const
+{
+  // get number of accels 
+  const unsigned N = t.size(); 
+
+  // resize the result
+  result.resize(N);
+
+  // look for empty result
+  if (N == 0)
+    return result;
+
+  // compute the skew symmetric matrix corresponding to h
+  MATRIX3 hX = MATRIX3::skew_symmetric(this->h);
+
+  // carry out multiplication one column at a time
+  for (unsigned i=0; i< N; i++)
+  {
+    const SVELOCITY& v= t[i];
+
+    #ifndef NEXCEPT
+    if (pose != v.pose)
+      throw FrameException();
+    #endif
+
+    ORIGIN3 top(v.get_angular());
+    ORIGIN3 bot(v.get_linear());
+    VECTOR3 wtop((bot * this->m)-(hX * top), pose);
+    VECTOR3 wbot((this->J * top)+(hX * bot), pose);
+    result[i] = SMOMENTUM(wtop, wbot, pose);
   } 
 
   return result;
