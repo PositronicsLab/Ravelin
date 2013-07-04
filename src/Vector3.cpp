@@ -178,6 +178,16 @@ REAL VECTOR3::dot(const VECTOR3& v1, const VECTOR3& v2)
   return v1.x()*v2.x() + v1.y()*v2.y() + v1.z()*v2.z();
 }
 
+/// Computes the dot product between two vectors, one of which is given as a Point3 (for convenience)
+REAL VECTOR3::dot(const VECTOR3& v1, const POINT3& v2)
+{
+  #ifndef NEXCEPT
+  if (v1.pose != v2.pose)
+    throw FrameException();
+  #endif
+  return v1.x()*v2.x() + v1.y()*v2.y() + v1.z()*v2.z();
+}
+
 /// Adds two vectors in the same frame
 VECTOR3& VECTOR3::operator+=(const VECTOR3& v)
 {

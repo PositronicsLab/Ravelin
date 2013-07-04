@@ -332,8 +332,8 @@ POINT3 TRANSFORM3::inverse_transform(const POINT3& p) const
   return POINT3(QUAT::invert(q) * (ORIGIN3(p) - x), source);
 }
 
-/// Transforms a wrench from one pose to another 
-WRENCH TRANSFORM3::transform(const WRENCH& w) const
+/// Transforms a force from one pose to another 
+SFORCE TRANSFORM3::transform(const SFORCE& w) const
 {
   #ifndef NEXCEPT
   if (w.pose != source)
@@ -353,11 +353,11 @@ WRENCH TRANSFORM3::transform(const WRENCH& w) const
   // do the calculations
   VECTOR3 Etop(E * top, target);
   VECTOR3 cross = VECTOR3::cross(rv, Etop);
-  return WRENCH(Etop, (E * bottom) - cross, target);
+  return SFORCE(Etop, (E * bottom) - cross, target);
 }
 
 /// Transforms a point from one pose to another 
-WRENCH TRANSFORM3::inverse_transform(const WRENCH& w) const
+SFORCE TRANSFORM3::inverse_transform(const SFORCE& w) const
 {
   #ifndef NEXCEPT
   if (w.pose != target)
@@ -377,11 +377,11 @@ WRENCH TRANSFORM3::inverse_transform(const WRENCH& w) const
   // do the calculations
   VECTOR3 Etop(E * top, source);
   VECTOR3 cross = VECTOR3::cross(rv, Etop);
-  return WRENCH(Etop, (E * bottom) - cross, source);
+  return SFORCE(Etop, (E * bottom) - cross, source);
 }
 
-/// Transforms a twist from one pose to another 
-TWIST TRANSFORM3::transform(const TWIST& t) const
+/// Transforms a velocity from one pose to another 
+SVELOCITY TRANSFORM3::transform(const SVELOCITY& t) const
 {
   #ifndef NEXCEPT
   if (t.pose != source)
@@ -401,11 +401,11 @@ TWIST TRANSFORM3::transform(const TWIST& t) const
   // do the calculations
   VECTOR3 Etop(E * top, target);
   VECTOR3 cross = VECTOR3::cross(rv, Etop);
-  return TWIST(Etop, (E * bottom) - cross, target);
+  return SVELOCITY(Etop, (E * bottom) - cross, target);
 }
 
-/// Transforms a twist from one pose to another 
-TWIST TRANSFORM3::inverse_transform(const TWIST& t) const
+/// Transforms a velocity from one pose to another 
+SVELOCITY TRANSFORM3::inverse_transform(const SVELOCITY& t) const
 {
   #ifndef NEXCEPT
   if (t.pose != target)
@@ -424,7 +424,54 @@ TWIST TRANSFORM3::inverse_transform(const TWIST& t) const
   // do the calculations
   VECTOR3 Etop(E * top, source);
   VECTOR3 cross = VECTOR3::cross(r, Etop);
-  return TWIST(Etop, (E * bottom) - cross, source);
+  return SVELOCITY(Etop, (E * bottom) - cross, source);
+}
+
+/// Transforms an acceleration from one pose to another 
+SACCEL TRANSFORM3::transform(const SACCEL& t) const
+{
+  #ifndef NEXCEPT
+  if (t.pose != source)
+    throw FrameException();
+  #endif
+
+  // setup r and E
+  ORIGIN3 r = -x;
+  MATRIX3 E = q;
+  VECTOR3 rv(r, target);
+  const MATRIX3 ET = MATRIX3::transpose(E);
+
+  // get the components of t 
+  ORIGIN3 top(t.get_angular());
+  ORIGIN3 bottom(t.get_linear());
+
+  // do the calculations
+  VECTOR3 Etop(E * top, target);
+  VECTOR3 cross = VECTOR3::cross(rv, Etop);
+  return SACCEL(Etop, (E * bottom) - cross, target);
+}
+
+/// Transforms an acceleration from one pose to another 
+SACCEL TRANSFORM3::inverse_transform(const SACCEL& t) const
+{
+  #ifndef NEXCEPT
+  if (t.pose != target)
+    throw FrameException();
+  #endif
+
+  // setup r and E
+  MATRIX3 E = QUAT::invert(q);
+  VECTOR3 r(E * x, source);
+  const MATRIX3 ET = MATRIX3::transpose(E);
+
+  // get the components of t 
+  ORIGIN3 top(t.get_angular());
+  ORIGIN3 bottom(t.get_linear());
+
+  // do the calculations
+  VECTOR3 Etop(E * top, source);
+  VECTOR3 cross = VECTOR3::cross(r, Etop);
+  return SACCEL(Etop, (E * bottom) - cross, source);
 }
 
 /// Transforms a rigid body inertia from one pose to another 

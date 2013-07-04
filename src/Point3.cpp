@@ -27,6 +27,45 @@ POINT3::POINT3(const REAL* array, boost::shared_ptr<const POSE3> p)
   pose = p;
 }
 
+/// Computes the dot product between two vectors stored as Point3d objects
+/**
+ * This is a function for convenience.
+ */
+REAL POINT3::dot(const POINT3& v1, const POINT3& v2)
+{
+  #ifndef NEXCEPT
+  if (v1.pose != v2.pose)
+    throw FrameException();
+  #endif
+  return v1.x()*v2.x() + v1.y()*v2.y() + v1.z()*v2.z();
+}
+
+/// Computes the dot product between two vectors stored as Point3d objects
+/**
+ * This is a function for convenience.
+ */
+REAL POINT3::dot(const VECTOR3& v1, const POINT3& v2)
+{
+  #ifndef NEXCEPT
+  if (v1.pose != v2.pose)
+    throw FrameException();
+  #endif
+  return v1.x()*v2.x() + v1.y()*v2.y() + v1.z()*v2.z();
+}
+
+/// Computes the dot product between two vectors stored as Vector3d/Point3d objects
+/**
+ * This is a function for convenience.
+ */
+REAL POINT3::dot(const POINT3& v1, const VECTOR3& v2)
+{
+  #ifndef NEXCEPT
+  if (v1.pose != v2.pose)
+    throw FrameException();
+  #endif
+  return v1.x()*v2.x() + v1.y()*v2.y() + v1.z()*v2.z();
+}
+
 /// Compares the two vectors lexographically
 bool POINT3::operator<(const POINT3& v) const
 {

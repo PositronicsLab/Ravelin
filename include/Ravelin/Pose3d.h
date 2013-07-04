@@ -16,8 +16,9 @@
 #include <Ravelin/Quatd.h>
 #include <Ravelin/AAngled.h>
 #include <Ravelin/Matrix3d.h>
-#include <Ravelin/Wrenchd.h>
-#include <Ravelin/Twistd.h>
+#include <Ravelin/SForced.h>
+#include <Ravelin/SAcceld.h> 
+#include <Ravelin/SVelocityd.h>
 #include <Ravelin/SpatialRBInertiad.h>
 #include <Ravelin/SpatialABInertiad.h>
 #include <Ravelin/Transform3d.h>

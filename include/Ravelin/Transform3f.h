@@ -16,8 +16,9 @@
 #include <Ravelin/Quatf.h>
 #include <Ravelin/AAnglef.h>
 #include <Ravelin/Matrix3f.h>
-#include <Ravelin/Wrenchf.h>
-#include <Ravelin/Twistf.h>
+#include <Ravelin/SForcef.h>
+#include <Ravelin/SAccelf.h> 
+#include <Ravelin/SVelocityf.h>
 #include <Ravelin/SpatialRBInertiaf.h>
 #include <Ravelin/SpatialABInertiaf.h>
 

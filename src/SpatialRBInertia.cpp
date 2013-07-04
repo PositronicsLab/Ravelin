@@ -41,8 +41,8 @@ void SPATIAL_RB_INERTIA::set_zero()
   J.set_zero();
 }
 
-/// Multiplies the inverse of this spatial matrix by a wrench 
-TWIST SPATIAL_RB_INERTIA::inverse_mult(const WRENCH& w) const
+/// Multiplies the inverse of this spatial matrix by a force 
+SACCEL SPATIAL_RB_INERTIA::inverse_mult(const SFORCE& w) const
 {
   #ifndef NEXCEPT
   if (pose != w.pose)
@@ -60,18 +60,18 @@ TWIST SPATIAL_RB_INERTIA::inverse_mult(const WRENCH& w) const
   MATRIX3 UL = UR * hx * -inv_m;
   MATRIX3 LL = ((hx * UL) - MATRIX3::identity()) * inv_m;
 
-  // get the components of the wrench 
+  // get the components of the force 
   ORIGIN3 top(w.get_force());
   ORIGIN3 bot(w.get_torque());
   VECTOR3 ttop(UL*top + UR*bot, pose); 
   VECTOR3 tbot(LL*top + UL.transpose_mult(bot), pose); 
 
   // do the arithmetic
-  return TWIST(ttop, tbot, pose);
+  return SACCEL(ttop, tbot, pose);
 }
 
-/// Multiplies the inverse of this spatial matrix by a wrench 
-std::vector<TWIST>& SPATIAL_RB_INERTIA::inverse_mult(const std::vector<WRENCH>& w, std::vector<TWIST>& result) const
+/// Multiplies the inverse of this spatial matrix by a force 
+std::vector<SACCEL>& SPATIAL_RB_INERTIA::inverse_mult(const std::vector<SFORCE>& w, std::vector<SACCEL>& result) const
 {
   result.resize(w.size());
   if (result.empty())
@@ -88,7 +88,7 @@ std::vector<TWIST>& SPATIAL_RB_INERTIA::inverse_mult(const std::vector<WRENCH>& 
   MATRIX3 UL = UR * hx * -inv_m;
   MATRIX3 LL = ((hx * UL) - MATRIX3::identity()) * inv_m;
 
-  // get the components of the wrench 
+  // get the components of the force 
   for (unsigned i=0; i< w.size(); i++)
   {
     #ifndef NEXCEPT
@@ -101,14 +101,14 @@ std::vector<TWIST>& SPATIAL_RB_INERTIA::inverse_mult(const std::vector<WRENCH>& 
     ORIGIN3 bot(w[i].get_torque());
     VECTOR3 ttop(UL*top + UR*bot, pose); 
     VECTOR3 tbot(LL*top + UL.transpose_mult(bot), pose); 
-    result[i] = TWIST(ttop, tbot, pose);
+    result[i] = SACCEL(ttop, tbot, pose);
   }
 
   return result;
 }
 
 /// Multiplies this matrix by a vector and returns the result in a new vector
-WRENCH SPATIAL_RB_INERTIA::operator*(const TWIST& t) const
+SFORCE SPATIAL_RB_INERTIA::operator*(const SACCEL& t) const
 {
   #ifndef NEXCEPT
   if (pose != t.pose)
@@ -125,7 +125,7 @@ WRENCH SPATIAL_RB_INERTIA::operator*(const TWIST& t) const
   // compute result
   VECTOR3 rtop((tbot * m) - (hX * ttop), pose);
   VECTOR3 rbot((J * ttop) + (hX * tbot), pose);
-  return WRENCH(rtop, rbot, pose); 
+  return SFORCE(rtop, rbot, pose); 
 }
 
 /// Multiplies this matrix by a scalar in place
@@ -208,9 +208,9 @@ SPATIAL_RB_INERTIA& SPATIAL_RB_INERTIA::operator-=(const SPATIAL_RB_INERTIA& m)
 }
 
 /// Multiplies a spatial matrix by a spatial matrix and returns the result in a spatial matrix
-std::vector<WRENCH>& SPATIAL_RB_INERTIA::mult(const std::vector<TWIST>& t, std::vector<WRENCH>& result) const
+std::vector<SFORCE>& SPATIAL_RB_INERTIA::mult(const std::vector<SACCEL>& t, std::vector<SFORCE>& result) const
 {
-  // get number of twists 
+  // get number of accels 
   const unsigned N = t.size(); 
 
   // resize the result
@@ -226,18 +226,18 @@ std::vector<WRENCH>& SPATIAL_RB_INERTIA::mult(const std::vector<TWIST>& t, std::
   // carry out multiplication one column at a time
   for (unsigned i=0; i< N; i++)
   {
-    const TWIST& twist = t[i];
+    const SACCEL& accel = t[i];
 
     #ifndef NEXCEPT
-    if (pose != twist.pose)
+    if (pose != accel.pose)
       throw FrameException();
     #endif
 
-    ORIGIN3 top(twist.get_angular());
-    ORIGIN3 bot(twist.get_linear());
+    ORIGIN3 top(accel.get_angular());
+    ORIGIN3 bot(accel.get_linear());
     VECTOR3 wtop((bot * this->m)-(hX * top), pose);
     VECTOR3 wbot((this->J * top)+(hX * bot), pose);
-    result[i] = WRENCH(wtop, wbot, pose);
+    result[i] = SFORCE(wtop, wbot, pose);
   } 
 
   return result;

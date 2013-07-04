@@ -22,8 +22,9 @@
 #undef CONST_ITERATOR
 #undef ITERATOR
 #undef SVECTOR6 
-#undef WRENCH 
-#undef TWIST 
+#undef SFORCE
+#undef SVELOCITY
+#undef SACCEL 
 #undef SPATIAL_AB_INERTIA
 #undef SPATIAL_RB_INERTIA 
 #undef LINALG 

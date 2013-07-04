@@ -335,8 +335,8 @@ POINT3 POSE3::inverse_transform(const POINT3& p) const
   return POINT3(QUAT::invert(q) * ORIGIN3(p - x), pose);
 }
 
-/// Transforms a wrench from one pose to another 
-WRENCH POSE3::transform(const WRENCH& w) const
+/// Transforms a force from one pose to another 
+SFORCE POSE3::transform(const SFORCE& w) const
 {
   #ifndef NEXCEPT
   boost::shared_ptr<const POSE3> pose;
@@ -365,11 +365,11 @@ WRENCH POSE3::transform(const WRENCH& w) const
   // do the calculations
   VECTOR3 Etop(E * ORIGIN3(top), rpose);
   VECTOR3 cross = VECTOR3::cross(VECTOR3(r, rpose), Etop);
-  return WRENCH(Etop, (E * ORIGIN3(bottom)) - cross, rpose);
+  return SFORCE(Etop, (E * ORIGIN3(bottom)) - cross, rpose);
 }
 
 /// Transforms a point from one pose to another 
-WRENCH POSE3::inverse_transform(const WRENCH& w) const
+SFORCE POSE3::inverse_transform(const SFORCE& w) const
 {
   // get the target pose
   boost::shared_ptr<const POSE3> pose;
@@ -399,11 +399,11 @@ WRENCH POSE3::inverse_transform(const WRENCH& w) const
   // do the calculations
   VECTOR3 Etop(E * ORIGIN3(top), pose);
   VECTOR3 cross = VECTOR3::cross(VECTOR3(r, pose), Etop);
-  return WRENCH(Etop, (E * ORIGIN3(bottom) - cross), pose);
+  return SFORCE(Etop, (E * ORIGIN3(bottom) - cross), pose);
 }
 
-/// Transforms a twist from one pose to another 
-TWIST POSE3::transform(const TWIST& t) const
+/// Transforms an acceleration from one pose to another 
+SACCEL POSE3::transform(const SACCEL& t) const
 {
   #ifndef NEXCEPT
   boost::shared_ptr<const POSE3> pose;
@@ -432,11 +432,44 @@ TWIST POSE3::transform(const TWIST& t) const
   // do the calculations
   VECTOR3 Etop(E * ORIGIN3(top), rpose);
   VECTOR3 cross = VECTOR3::cross(VECTOR3(r, rpose), Etop);
-  return TWIST(Etop, (E * ORIGIN3(bottom)) - cross, rpose);
+  return SACCEL(Etop, (E * ORIGIN3(bottom)) - cross, rpose);
 }
 
-/// Transforms a twist from one pose to another 
-TWIST POSE3::inverse_transform(const TWIST& t) const
+/// Transforms a velocity from one pose to another 
+SVELOCITY POSE3::transform(const SVELOCITY& t) const
+{
+  #ifndef NEXCEPT
+  boost::shared_ptr<const POSE3> pose;
+  try
+  {
+    pose = shared_from_this();
+  }
+  catch (boost::bad_weak_ptr e)
+  {
+    std::cerr << "Pose3::transform() - pose allocated on stack!" << std::endl;
+  }
+  if (t.pose != pose)
+    throw FrameException();
+  #endif
+
+  // setup r and E
+  ORIGIN3 r;
+  MATRIX3 E;
+  get_r_E(r, E, false);
+  const MATRIX3 ET = MATRIX3::transpose(E);
+
+  // get the components of t 
+  VECTOR3 top = t.get_angular();
+  VECTOR3 bottom = t.get_linear();
+
+  // do the calculations
+  VECTOR3 Etop(E * ORIGIN3(top), rpose);
+  VECTOR3 cross = VECTOR3::cross(VECTOR3(r, rpose), Etop);
+  return SVELOCITY(Etop, (E * ORIGIN3(bottom)) - cross, rpose);
+}
+
+/// Transforms an acceleration from one pose to another 
+SACCEL POSE3::inverse_transform(const SACCEL& t) const
 {
   // determine the resulting frame
   boost::shared_ptr<const POSE3> pose;
@@ -466,7 +499,41 @@ TWIST POSE3::inverse_transform(const TWIST& t) const
   // do the calculations
   VECTOR3 Etop(E * ORIGIN3(top), pose);
   VECTOR3 cross = VECTOR3::cross(VECTOR3(r, pose), Etop);
-  return TWIST(Etop, (E * ORIGIN3(bottom)) - cross, pose);
+  return SACCEL(Etop, (E * ORIGIN3(bottom)) - cross, pose);
+}
+
+/// Transforms a velocity from one pose to another 
+SVELOCITY POSE3::inverse_transform(const SVELOCITY& t) const
+{
+  // determine the resulting frame
+  boost::shared_ptr<const POSE3> pose;
+  try
+  {
+    pose = shared_from_this();
+  }
+  catch (boost::bad_weak_ptr e)
+  {
+    std::cerr << "Pose3::inverse_transform() - pose allocated on stack!" << std::endl;
+  }
+  #ifndef NEXCEPT
+  if (t.pose != rpose)
+    throw FrameException();
+  #endif
+
+  // setup r and E
+  ORIGIN3 r;
+  MATRIX3 E;
+  get_r_E(r, E, true);
+  const MATRIX3 ET = MATRIX3::transpose(E);
+
+  // get the components of t 
+  VECTOR3 top = t.get_angular();
+  VECTOR3 bottom = t.get_linear();
+
+  // do the calculations
+  VECTOR3 Etop(E * ORIGIN3(top), pose);
+  VECTOR3 cross = VECTOR3::cross(VECTOR3(r, pose), Etop);
+  return SVELOCITY(Etop, (E * ORIGIN3(bottom)) - cross, pose);
 }
 
 /// Transforms a rigid body inertia from one pose to another 
@@ -711,8 +778,8 @@ SPATIAL_AB_INERTIA POSE3::transform(boost::shared_ptr<const POSE3> source, boost
   return result;
 }
 
-/// Transforms a vector of wrenches 
-std::vector<WRENCH>& POSE3::transform(boost::shared_ptr<const POSE3> source, boost::shared_ptr<const POSE3> target, const std::vector<WRENCH>& w, std::vector<WRENCH>& result)
+/// Transforms a vector of forcees 
+std::vector<SFORCE>& POSE3::transform(boost::shared_ptr<const POSE3> source, boost::shared_ptr<const POSE3> target, const std::vector<SFORCE>& w, std::vector<SFORCE>& result)
 {
   // look for empty vector (easy case)
   if (w.empty())
@@ -738,7 +805,7 @@ std::vector<WRENCH>& POSE3::transform(boost::shared_ptr<const POSE3> source, boo
   // resize the result vector
   result.resize(w.size());
 
-  // look over all wrenches
+  // look over all forcees
   for (unsigned i=0; i< w.size(); i++)
   {
     // get the components of w[i] 
@@ -748,15 +815,15 @@ std::vector<WRENCH>& POSE3::transform(boost::shared_ptr<const POSE3> source, boo
     // do the calculations
     VECTOR3 Etop(E * ORIGIN3(top), target);
     VECTOR3 cross = VECTOR3::cross(rv, Etop);
-    result[i] = WRENCH(Etop, (E * ORIGIN3(bottom)) - cross);
+    result[i] = SFORCE(Etop, (E * ORIGIN3(bottom)) - cross);
     result[i].pose = target;
   }
 
   return result;
 }
 
-/// Transforms the wrench 
-WRENCH POSE3::transform(boost::shared_ptr<const POSE3> source, boost::shared_ptr<const POSE3> target, const WRENCH& v)
+/// Transforms the force 
+SFORCE POSE3::transform(boost::shared_ptr<const POSE3> source, boost::shared_ptr<const POSE3> target, const SFORCE& v)
 {
   #ifndef NEXCEPT
   if (source != v.pose)
@@ -778,11 +845,11 @@ WRENCH POSE3::transform(boost::shared_ptr<const POSE3> source, boost::shared_ptr
   // do the calculations
   VECTOR3 Etop(E * ORIGIN3(top), target);
   VECTOR3 cross = VECTOR3::cross(rv, Etop);
-  return WRENCH(Etop, (E * ORIGIN3(bottom)) - cross, target);
+  return SFORCE(Etop, (E * ORIGIN3(bottom)) - cross, target);
 }
 
-/// Transforms the twist 
-TWIST POSE3::transform(boost::shared_ptr<const POSE3> source, boost::shared_ptr<const POSE3> target, const TWIST& t)
+/// Transforms the velocity  
+SVELOCITY POSE3::transform(boost::shared_ptr<const POSE3> source, boost::shared_ptr<const POSE3> target, const SVELOCITY& t)
 {
   #ifndef NEXCEPT
   if (source != t.pose)
@@ -804,11 +871,37 @@ TWIST POSE3::transform(boost::shared_ptr<const POSE3> source, boost::shared_ptr<
   // do the calculations
   VECTOR3 Etop(E * ORIGIN3(top), target);
   VECTOR3 cross = VECTOR3::cross(rv, Etop);
-  return TWIST(Etop, (E * ORIGIN3(bottom)) - cross, target);
+  return SVELOCITY(Etop, (E * ORIGIN3(bottom)) - cross, target);
 }
 
-/// Transforms a vector of twists 
-std::vector<TWIST>& POSE3::transform(boost::shared_ptr<const POSE3> source, boost::shared_ptr<const POSE3> target, const std::vector<TWIST>& t, std::vector<TWIST>& result)
+/// Transforms the acceleration 
+SACCEL POSE3::transform(boost::shared_ptr<const POSE3> source, boost::shared_ptr<const POSE3> target, const SACCEL& t)
+{
+  #ifndef NEXCEPT
+  if (source != t.pose)
+    throw FrameException();
+  #endif
+
+  // compute the relative transform
+  TRANSFORM3 Tx = calc_transform(source, target);
+
+  // setup r and E
+  const ORIGIN3& r = Tx.x;
+  const MATRIX3 E = Tx.q;
+  VECTOR3 rv(r, target);
+
+  // get the components of t 
+  VECTOR3 top = t.get_angular();
+  VECTOR3 bottom = t.get_linear();
+
+  // do the calculations
+  VECTOR3 Etop(E * ORIGIN3(top), target);
+  VECTOR3 cross = VECTOR3::cross(rv, Etop);
+  return SACCEL(Etop, (E * ORIGIN3(bottom)) - cross, target);
+}
+
+/// Transforms a vector of accelerations 
+std::vector<SACCEL>& POSE3::transform(boost::shared_ptr<const POSE3> source, boost::shared_ptr<const POSE3> target, const std::vector<SACCEL>& t, std::vector<SACCEL>& result)
 {
   // look for empty vector (easy case)
   if (t.empty())
@@ -834,7 +927,7 @@ std::vector<TWIST>& POSE3::transform(boost::shared_ptr<const POSE3> source, boos
   // resize the result vector
   result.resize(t.size());
 
-  // look over all wrenches
+  // look over all forcees
   for (unsigned i=0; i< t.size(); i++)
   {
     // get the components of t[i] 
@@ -844,7 +937,50 @@ std::vector<TWIST>& POSE3::transform(boost::shared_ptr<const POSE3> source, boos
     // do the calculations
     VECTOR3 Etop(E * ORIGIN3(top), target);
     VECTOR3 cross = VECTOR3::cross(rv, Etop);
-    result[i] = TWIST(Etop, (E * ORIGIN3(bottom)) - cross, target);
+    result[i] = SACCEL(Etop, (E * ORIGIN3(bottom)) - cross, target);
+  }
+
+  return result;
+}
+
+/// Transforms a vector of velocities 
+std::vector<SVELOCITY>& POSE3::transform(boost::shared_ptr<const POSE3> source, boost::shared_ptr<const POSE3> target, const std::vector<SVELOCITY>& t, std::vector<SVELOCITY>& result)
+{
+  // look for empty vector (easy case)
+  if (t.empty())
+  {
+    result.clear();
+    return result;
+  }
+
+  #ifndef NEXCEPT
+  for (unsigned i=0; i< t.size(); i++)
+    if (source != t[i].pose)
+      throw FrameException();
+  #endif
+
+  // compute the relative transform
+  TRANSFORM3 Tx = calc_transform(source, target);
+
+  // setup r and E
+  const ORIGIN3& r = Tx.x;
+  const MATRIX3 E = Tx.q;
+  VECTOR3 rv(r, target);
+
+  // resize the result vector
+  result.resize(t.size());
+
+  // look over all forcees
+  for (unsigned i=0; i< t.size(); i++)
+  {
+    // get the components of t[i] 
+    VECTOR3 top = t[i].get_angular();
+    VECTOR3 bottom = t[i].get_linear();
+
+    // do the calculations
+    VECTOR3 Etop(E * ORIGIN3(top), target);
+    VECTOR3 cross = VECTOR3::cross(rv, Etop);
+    result[i] = SVELOCITY(Etop, (E * ORIGIN3(bottom)) - cross, target);
   }
 
   return result;
@@ -1014,8 +1150,8 @@ TRANSFORM3 POSE3::calc_transform(boost::shared_ptr<const POSE3> source, boost::s
   }
 }
 
-/// Computes the twist that gets from one pose (P1) to another (P2)
-TWIST POSE3::diff(const POSE3& P1, const POSE3& P2)
+/// Computes the spatial velocity that gets from one pose (P1) to another (P2)
+SVELOCITY POSE3::diff(const POSE3& P1, const POSE3& P2)
 {
   #ifndef NEXCEPT
   if (P1.rpose != P2.rpose)
@@ -1029,7 +1165,7 @@ TWIST POSE3::diff(const POSE3& P1, const POSE3& P2)
   VECTOR3 omega = QUAT::to_omega(P1.q, P2.q - P1.q);
   omega.pose = P1.rpose;
 
-  return TWIST(xd, omega, P1.rpose);
+  return SVELOCITY(xd, omega, P1.rpose);
 }
 
 /// Outputs this matrix to the stream

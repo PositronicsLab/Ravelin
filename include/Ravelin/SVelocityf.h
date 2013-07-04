@@ -4,15 +4,15 @@
  * License (found in COPYING).
  ****************************************************************************/
 
-#ifndef _TWISTD_H
-#define _TWISTD_H
+#ifndef _SVELOCITYF_H
+#define _SVELOCITYF_H
 
-#include <Ravelin/SVector6d.h>
+#include <Ravelin/SVector6f.h>
 
 namespace Ravelin {
 
-#include "ddefs.h"
-#include "Twist.h"
+#include "fdefs.h"
+#include "SVelocity.h"
 #include "undefs.h"
 
 } // end namespace

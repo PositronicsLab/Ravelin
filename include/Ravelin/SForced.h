@@ -4,15 +4,15 @@
  * License (found in COPYING).
  ****************************************************************************/
 
-#ifndef _WRENCHF_H
-#define _WRENCHF_H
+#ifndef _SFORCED_H
+#define _SFORCED_H
 
-#include <Ravelin/SVector6f.h>
+#include <Ravelin/SVector6d.h>
 
 namespace Ravelin {
 
-#include "fdefs.h"
-#include "Wrench.h"
+#include "ddefs.h"
+#include "SForce.h"
 #include "undefs.h"
 
 } // end namespace

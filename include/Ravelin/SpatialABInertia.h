@@ -20,8 +20,8 @@ class SPATIAL_AB_INERTIA
     SPATIAL_AB_INERTIA(const SPATIAL_RB_INERTIA& source) { operator=(source); }
     void set_zero();
     static SPATIAL_AB_INERTIA zero() { SPATIAL_AB_INERTIA m; m.set_zero(); return m; }
-    TWIST inverse_mult(const WRENCH& f) const;
-    std::vector<TWIST>& inverse_mult(const std::vector<WRENCH>& w, std::vector<TWIST>& result) const;
+    SACCEL inverse_mult(const SFORCE& f) const;
+    std::vector<SACCEL>& inverse_mult(const std::vector<SFORCE>& w, std::vector<SACCEL>& result) const;
     SPATIAL_AB_INERTIA& operator=(const SPATIAL_RB_INERTIA& source);
     SPATIAL_AB_INERTIA& operator=(const SPATIAL_AB_INERTIA& source);
     SPATIAL_AB_INERTIA& operator+=(const SPATIAL_AB_INERTIA& m);
@@ -36,9 +36,9 @@ class SPATIAL_AB_INERTIA
     SPATIAL_AB_INERTIA operator*(const SPATIAL_AB_INERTIA& m) const;
     SPATIAL_AB_INERTIA operator*(REAL scalar) const { SPATIAL_AB_INERTIA m = *this; m *= scalar; return m; }
     SPATIAL_AB_INERTIA operator/(REAL scalar) const { return operator*((REAL) 1.0/scalar); }
-    WRENCH operator*(const TWIST& t) const { return mult(t); }
-    WRENCH mult(const TWIST& t) const;
-    std::vector<WRENCH>& mult(const std::vector<TWIST>& t, std::vector<WRENCH>& result) const;
+    SFORCE operator*(const SACCEL& s) const { return mult(s); }
+    SFORCE mult(const SACCEL& s) const;
+    std::vector<SFORCE>& mult(const std::vector<SACCEL>& s, std::vector<SFORCE>& result) const;
     SPATIAL_AB_INERTIA operator-() const;
     static SPATIAL_AB_INERTIA inverse_inertia(const SPATIAL_AB_INERTIA& I);    
 

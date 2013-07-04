@@ -22,8 +22,9 @@
 #define CONST_ITERATOR fIterator_const
 #define ITERATOR fIterator
 #define SVECTOR6 SVector6f 
-#define WRENCH Wrenchf
-#define TWIST Twistf
+#define SFORCE SForcef
+#define SVELOCITY SVelocityf
+#define SACCEL SAccelf
 #define SPATIAL_AB_INERTIA SpatialABInertiaf
 #define SPATIAL_RB_INERTIA SpatialRBInertiaf
 #define LINALG LinAlgf

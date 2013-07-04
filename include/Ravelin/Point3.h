@@ -26,7 +26,7 @@ class POINT3
     REAL dot(const POINT3& p) const { return dot(*this, p); }
     static REAL dot(const POINT3& p1, const POINT3& p2);
     static REAL dot(const POINT3& p, const VECTOR3& v);
-    static REAL dot(const VECTOR3& v, const POINT3& p) { return dot(p, v); }
+    static REAL dot(const VECTOR3& v, const POINT3& p);
     REAL norm_inf() const { return std::max(std::fabs(_data[0]), std::max(std::fabs(_data[1]), std::fabs(_data[2]))); }
     REAL norm() const { return std::sqrt(norm_sq()); }
     REAL norm_sq() const { return sqr(_data[0]) + sqr(_data[1]) + sqr(_data[2]); }

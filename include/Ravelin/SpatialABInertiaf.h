@@ -10,8 +10,9 @@
 #include <vector>
 #include <boost/shared_ptr.hpp>
 #include <Ravelin/cblas.h>
-#include <Ravelin/Wrenchf.h>
-#include <Ravelin/Twistf.h>
+#include <Ravelin/SForcef.h>
+#include <Ravelin/SAccelf.h> 
+#include <Ravelin/SVelocityf.h>
 #include <Ravelin/SpatialRBInertiaf.h>
 #include <Ravelin/Matrix3f.h>
 

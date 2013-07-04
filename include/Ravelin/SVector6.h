@@ -5,12 +5,13 @@
  ****************************************************************************/
 
 #ifndef SVECTOR6
-#error This class is not to be included by the user directly. Use Wrenchd.h, Wrenchf.h, Twistd.h, or Twistf.h instead.
+#error This class is not to be included by the user directly. Use SForced.h, SForcef.h, SVelocityd.h, SVelocityf.h, SAcceld.h, or SAccelf.h instead.
 #endif
 
 class POSE3;
-class WRENCH;
-class TWIST;
+class SFORCE;
+class SVELOCITY;
+class SACCEL;
 
 /// A 6-dimensional floating-point vector for use with spatial algebra
 /**
@@ -119,10 +120,13 @@ class SVECTOR6
 }; // end class
 
 template <>
-REAL SVECTOR6::dot(const SVECTOR6& v1, const WRENCH& w);
+REAL SVECTOR6::dot(const SVECTOR6& v1, const SFORCE& w);
 
 template <>
-REAL SVECTOR6::dot(const SVECTOR6& v1, const TWIST& t);
+REAL SVECTOR6::dot(const SVECTOR6& v1, const SVELOCITY& t);
+
+template <>
+REAL SVECTOR6::dot(const SVECTOR6& v1, const SACCEL& t);
 
 inline std::ostream& operator<<(std::ostream& out, const SVECTOR6& v)
 {

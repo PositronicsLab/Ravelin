@@ -26,8 +26,8 @@ class SPATIAL_RB_INERTIA
     SPATIAL_RB_INERTIA(const SPATIAL_RB_INERTIA& source) { operator=(source); }
     void set_zero();
     static SPATIAL_RB_INERTIA zero() { SPATIAL_RB_INERTIA m; m.set_zero(); return m; }
-    TWIST inverse_mult(const WRENCH& v) const;
-    std::vector<TWIST>& inverse_mult(const std::vector<WRENCH>& v, std::vector<TWIST>& result) const;
+    SACCEL inverse_mult(const SFORCE& v) const;
+    std::vector<SACCEL>& inverse_mult(const std::vector<SFORCE>& v, std::vector<SACCEL>& result) const;
     SPATIAL_RB_INERTIA& operator=(const SPATIAL_RB_INERTIA& source);
     SPATIAL_RB_INERTIA& operator+=(const SPATIAL_RB_INERTIA& m);
     SPATIAL_RB_INERTIA& operator-=(const SPATIAL_RB_INERTIA& m);
@@ -39,8 +39,8 @@ class SPATIAL_RB_INERTIA
     SPATIAL_RB_INERTIA operator*(const SPATIAL_RB_INERTIA& m) const;
     SPATIAL_RB_INERTIA operator*(REAL scalar) const { SPATIAL_RB_INERTIA m = *this; m *= scalar; return m; }
     SPATIAL_RB_INERTIA operator/(REAL scalar) const { return operator*((REAL) 1.0/scalar); }
-    WRENCH operator*(const TWIST& v) const;
-    std::vector<WRENCH>& mult(const std::vector<TWIST>& v, std::vector<WRENCH>& result) const;
+    SFORCE operator*(const SACCEL& s) const;
+    std::vector<SFORCE>& mult(const std::vector<SACCEL>& s, std::vector<SFORCE>& result) const;
     SPATIAL_RB_INERTIA operator-() const;
 
     /// The rigid body mass

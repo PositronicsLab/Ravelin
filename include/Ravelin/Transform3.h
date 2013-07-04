@@ -35,10 +35,12 @@ class TRANSFORM3
     VECTOR3 transform(const VECTOR3& v) const;
     POINT3 inverse_transform(const POINT3& p) const;
     VECTOR3 inverse_transform(const VECTOR3& v) const;
-    WRENCH transform(const WRENCH& w) const;
-    WRENCH inverse_transform(const WRENCH& w) const;
-    TWIST transform(const TWIST& t) const;
-    TWIST inverse_transform(const TWIST& t) const;
+    SFORCE transform(const SFORCE& w) const;
+    SFORCE inverse_transform(const SFORCE& w) const;
+    SVELOCITY transform(const SVELOCITY& t) const;
+    SVELOCITY inverse_transform(const SVELOCITY& t) const;
+    SACCEL transform(const SACCEL& t) const;
+    SACCEL inverse_transform(const SACCEL& t) const;
     SPATIAL_RB_INERTIA transform(const SPATIAL_RB_INERTIA& j) const;
     SPATIAL_RB_INERTIA inverse_transform(const SPATIAL_RB_INERTIA& j) const;
     SPATIAL_AB_INERTIA transform(const SPATIAL_AB_INERTIA& j) const;

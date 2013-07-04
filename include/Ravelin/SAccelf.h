@@ -4,21 +4,15 @@
  * License (found in COPYING).
  ****************************************************************************/
 
-#ifndef _SPATIAL_RB_INERTIAF_H
-#define _SPATIAL_RB_INERTIAF_H
+#ifndef _SACCELF_H
+#define _SACCELF_H
 
-#include <vector>
-#include <boost/shared_ptr.hpp>
-#include <Ravelin/cblas.h>
-#include <Ravelin/SForcef.h>
-#include <Ravelin/SAccelf.h> 
-#include <Ravelin/SVelocityf.h>
-#include <Ravelin/Matrix3f.h>
+#include <Ravelin/SVector6f.h>
 
 namespace Ravelin {
 
 #include "fdefs.h"
-#include "SpatialRBInertia.h"
+#include "SAccel.h"
 #include "undefs.h"
 
 } // end namespace

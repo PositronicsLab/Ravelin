@@ -34,14 +34,18 @@ class POSE3 : public boost::enable_shared_from_this<POSE3>
     VECTOR3 inverse_transform(const VECTOR3& v) const;
     static POINT3 transform(boost::shared_ptr<const POSE3> source, boost::shared_ptr<const POSE3> target, const POINT3& v);
     static VECTOR3 transform(boost::shared_ptr<const POSE3> source, boost::shared_ptr<const POSE3> target, const VECTOR3& v);
-    WRENCH transform(const WRENCH& w) const;
-    WRENCH inverse_transform(const WRENCH& w) const;
-    static WRENCH transform(boost::shared_ptr<const POSE3> source, boost::shared_ptr<const POSE3> target, const WRENCH& w);
-    static std::vector<WRENCH>& transform(boost::shared_ptr<const POSE3> source, boost::shared_ptr<const POSE3> target, const std::vector<WRENCH>& w, std::vector<WRENCH>& result);
-    TWIST transform(const TWIST& t) const;
-    TWIST inverse_transform(const TWIST& t) const;
-    static TWIST transform(boost::shared_ptr<const POSE3> source, boost::shared_ptr<const POSE3> target, const TWIST& t);
-    static std::vector<TWIST>& transform(boost::shared_ptr<const POSE3> source, boost::shared_ptr<const POSE3> target, const std::vector<TWIST>& t, std::vector<TWIST>& result);
+    SFORCE transform(const SFORCE& w) const;
+    SFORCE inverse_transform(const SFORCE& w) const;
+    static SFORCE transform(boost::shared_ptr<const POSE3> source, boost::shared_ptr<const POSE3> target, const SFORCE& w);
+    static std::vector<SFORCE>& transform(boost::shared_ptr<const POSE3> source, boost::shared_ptr<const POSE3> target, const std::vector<SFORCE>& w, std::vector<SFORCE>& result);
+    SVELOCITY transform(const SVELOCITY& t) const;
+    SVELOCITY inverse_transform(const SVELOCITY& t) const;
+    static SVELOCITY transform(boost::shared_ptr<const POSE3> source, boost::shared_ptr<const POSE3> target, const SVELOCITY& t);
+    static std::vector<SVELOCITY>& transform(boost::shared_ptr<const POSE3> source, boost::shared_ptr<const POSE3> target, const std::vector<SVELOCITY>& t, std::vector<SVELOCITY>& result);
+    SACCEL transform(const SACCEL& t) const;
+    SACCEL inverse_transform(const SACCEL& t) const;
+    static SACCEL transform(boost::shared_ptr<const POSE3> source, boost::shared_ptr<const POSE3> target, const SACCEL& t);
+    static std::vector<SACCEL>& transform(boost::shared_ptr<const POSE3> source, boost::shared_ptr<const POSE3> target, const std::vector<SACCEL>& t, std::vector<SACCEL>& result);
     SPATIAL_RB_INERTIA transform(const SPATIAL_RB_INERTIA& j) const;
     SPATIAL_RB_INERTIA inverse_transform(const SPATIAL_RB_INERTIA& j) const;
     static SPATIAL_RB_INERTIA transform(boost::shared_ptr<const POSE3> source, boost::shared_ptr<const POSE3> target, const SPATIAL_RB_INERTIA& j);
@@ -64,7 +68,7 @@ class POSE3 : public boost::enable_shared_from_this<POSE3>
     void update_relative_pose(boost::shared_ptr<const POSE3> pose);
     static VECTOR3 interpolate_transform_vector(const POSE3& P1, const POSE3& P2, REAL t, const ORIGIN3& o);
     static POINT3 interpolate_transform_point(const POSE3& P1, const POSE3& P2, REAL t, const ORIGIN3& o);
-    static TWIST diff(const POSE3& P1, const POSE3& P2);
+    static SVELOCITY diff(const POSE3& P1, const POSE3& P2);
 
     /// the orientation of the pose frame
     QUAT q;

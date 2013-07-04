@@ -272,7 +272,7 @@ SVECTOR6 SVECTOR6::operator-(const SVECTOR6& v) const
 
 /// Template specialization for dot product
 template <>
-REAL SVECTOR6::dot(const SVECTOR6& v, const WRENCH& w)
+REAL SVECTOR6::dot(const SVECTOR6& v, const SFORCE& w)
 {
   #ifndef NEXCEPT
   if (v.pose != w.pose)
@@ -287,7 +287,22 @@ REAL SVECTOR6::dot(const SVECTOR6& v, const WRENCH& w)
 
 /// Template specialization for dot product
 template <>
-REAL SVECTOR6::dot(const SVECTOR6& v, const TWIST& t)
+REAL SVECTOR6::dot(const SVECTOR6& v, const SACCEL& t)
+{
+  #ifndef NEXCEPT
+  if (v.pose != t.pose)
+    throw FrameException();
+  #endif
+
+  const REAL* d1 = v.data(); 
+  const REAL* d2 = t.data(); 
+  return d1[3]+d2[0] + d1[4]+d2[1] + d1[5]+d2[2]+ 
+         d1[0]+d2[3] + d1[1]+d2[4] + d1[2]+d2[5];
+}
+
+/// Template specialization for dot product
+template <>
+REAL SVECTOR6::dot(const SVECTOR6& v, const SVELOCITY& t)
 {
   #ifndef NEXCEPT
   if (v.pose != t.pose)
