@@ -266,6 +266,29 @@ SACCEL SPATIAL_AB_INERTIA::inverse_mult(const SFORCE& w) const
   return SACCEL(ttop, tbot, pose);
 }
 
+/// Multiplies the inverse of this spatial RB inertia by a momentum to yield a velocity 
+SVELOCITY SPATIAL_AB_INERTIA::inverse_mult(const SMOMENTUM& w) const
+{
+  #ifndef NEXCEPT
+  if (pose != w.pose)
+    throw FrameException();
+  #endif
+
+  MATRIX3 nMinv = -MATRIX3::invert(M);
+  MATRIX3 UR = MATRIX3::invert((H * nMinv.mult_transpose(H)) + J);
+  MATRIX3 UL = UR * H * nMinv;
+  MATRIX3 LL = nMinv * (H.transpose_mult(UL) - MATRIX3::identity());
+
+  // get the components of the momentum 
+  ORIGIN3 top(w.get_linear());
+  ORIGIN3 bot(w.get_angular());
+  VECTOR3 ttop(UL*top + UR*bot, pose);
+  VECTOR3 tbot(LL*top + UL.transpose_mult(bot), pose); 
+
+  // do the arithmetic
+  return SVELOCITY(ttop, tbot, pose);
+}
+
 /// Multiplies the inverse of this spatial AB inertia by a force to yield an accel 
 vector<SACCEL>& SPATIAL_AB_INERTIA::inverse_mult(const std::vector<SFORCE>& w, vector<SACCEL>& result) const
 {
@@ -295,6 +318,40 @@ vector<SACCEL>& SPATIAL_AB_INERTIA::inverse_mult(const std::vector<SFORCE>& w, v
 
     // do the arithmetic
     result[i] = SACCEL(ttop, tbot, pose);
+  }
+
+  return result;
+}
+
+/// Multiplies the inverse of this spatial AB inertia by a force to yield an accel 
+vector<SVELOCITY>& SPATIAL_AB_INERTIA::inverse_mult(const std::vector<SMOMENTUM>& w, vector<SVELOCITY>& result) const
+{
+  result.resize(w.size());
+  if (result.empty())
+    return result;
+
+  // do precomputation
+  MATRIX3 nMinv = -MATRIX3::invert(M);
+  MATRIX3 UR = MATRIX3::invert((H * nMinv.mult_transpose(H)) + J);
+  MATRIX3 UL = UR * H * nMinv;
+  MATRIX3 LL = nMinv * (H.transpose_mult(UL) - MATRIX3::identity());
+
+  // loop
+  for (unsigned i=0; i< w.size(); i++)
+  {
+    #ifndef NEXCEPT
+    if (pose != w[i].pose)
+      throw FrameException();
+    #endif
+
+    // get the components of the force 
+    ORIGIN3 top(w[i].get_linear());
+    ORIGIN3 bot(w[i].get_angular());
+    VECTOR3 ttop(UL*top + UR*bot, pose);
+    VECTOR3 tbot(LL*top + UL.transpose_mult(bot), pose);
+
+    // do the arithmetic
+    result[i] = SVELOCITY(ttop, tbot, pose);
   }
 
   return result;

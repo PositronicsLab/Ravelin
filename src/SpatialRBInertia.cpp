@@ -70,6 +70,35 @@ SACCEL SPATIAL_RB_INERTIA::inverse_mult(const SFORCE& w) const
   return SACCEL(ttop, tbot, pose);
 }
 
+/// Multiplies the inverse of this spatial matrix by a momentum 
+SVELOCITY SPATIAL_RB_INERTIA::inverse_mult(const SMOMENTUM& w) const
+{
+  #ifndef NEXCEPT
+  if (pose != w.pose)
+    throw FrameException();
+  #endif
+
+  // compute the skew symmetric version of h
+  MATRIX3 hx = MATRIX3::skew_symmetric(h);
+
+  // compute inverse mass
+  REAL inv_m = (REAL) 1.0/m;
+
+  // compute the components of the matrix
+  MATRIX3 UR = MATRIX3::invert((hx * hx * inv_m) + J);
+  MATRIX3 UL = UR * hx * -inv_m;
+  MATRIX3 LL = ((hx * UL) - MATRIX3::identity()) * inv_m;
+
+  // get the components of the momentum
+  ORIGIN3 top(w.get_linear());
+  ORIGIN3 bot(w.get_angular());
+  VECTOR3 ttop(UL*top + UR*bot, pose); 
+  VECTOR3 tbot(LL*top + UL.transpose_mult(bot), pose); 
+
+  // do the arithmetic
+  return SVELOCITY(ttop, tbot, pose);
+}
+
 /// Multiplies the inverse of this spatial matrix by a force 
 std::vector<SACCEL>& SPATIAL_RB_INERTIA::inverse_mult(const std::vector<SFORCE>& w, std::vector<SACCEL>& result) const
 {
@@ -102,6 +131,43 @@ std::vector<SACCEL>& SPATIAL_RB_INERTIA::inverse_mult(const std::vector<SFORCE>&
     VECTOR3 ttop(UL*top + UR*bot, pose); 
     VECTOR3 tbot(LL*top + UL.transpose_mult(bot), pose); 
     result[i] = SACCEL(ttop, tbot, pose);
+  }
+
+  return result;
+}
+
+/// Multiplies the inverse of this spatial matrix by a momentum 
+std::vector<SVELOCITY>& SPATIAL_RB_INERTIA::inverse_mult(const std::vector<SMOMENTUM>& w, std::vector<SVELOCITY>& result) const
+{
+  result.resize(w.size());
+  if (result.empty())
+    return result;
+
+  // compute the skew symmetric version of h
+  MATRIX3 hx = MATRIX3::skew_symmetric(h);
+
+  // compute inverse mass
+  REAL inv_m = (REAL) 1.0/m;
+
+  // compute the components of the matrix
+  MATRIX3 UR = MATRIX3::invert((hx * hx * inv_m) + J);
+  MATRIX3 UL = UR * hx * -inv_m;
+  MATRIX3 LL = ((hx * UL) - MATRIX3::identity()) * inv_m;
+
+  // get the components of the force 
+  for (unsigned i=0; i< w.size(); i++)
+  {
+    #ifndef NEXCEPT
+    if (pose != w[i].pose)
+      throw FrameException();
+    #endif
+
+    // do the arithmetic
+    ORIGIN3 top(w[i].get_linear());
+    ORIGIN3 bot(w[i].get_angular());
+    VECTOR3 ttop(UL*top + UR*bot, pose); 
+    VECTOR3 tbot(LL*top + UL.transpose_mult(bot), pose); 
+    result[i] = SVELOCITY(ttop, tbot, pose);
   }
 
   return result;

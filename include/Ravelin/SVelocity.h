@@ -57,6 +57,7 @@ class SVELOCITY : public SVECTOR6
       return t;
     }
 
+    SVELOCITY cross(const SVELOCITY& v) const { return SVELOCITY(spatial_cross(*this, v)); }
     SACCEL cross(const SMOMENTUM& m) const { return SACCEL(spatial_cross(*this, m)); }
     void set_linear(const VECTOR3& lin) { set_lower(lin); }
     void set_angular(const VECTOR3& ang) { set_upper(ang); }

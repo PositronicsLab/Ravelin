@@ -27,7 +27,9 @@ class SPATIAL_RB_INERTIA
     void set_zero();
     static SPATIAL_RB_INERTIA zero() { SPATIAL_RB_INERTIA m; m.set_zero(); return m; }
     SACCEL inverse_mult(const SFORCE& v) const;
+    SVELOCITY inverse_mult(const SMOMENTUM& m) const;
     std::vector<SACCEL>& inverse_mult(const std::vector<SFORCE>& v, std::vector<SACCEL>& result) const;
+    std::vector<SVELOCITY>& inverse_mult(const std::vector<SMOMENTUM>& m, std::vector<SVELOCITY>& result) const;
     SPATIAL_RB_INERTIA& operator=(const SPATIAL_RB_INERTIA& source);
     SPATIAL_RB_INERTIA& operator+=(const SPATIAL_RB_INERTIA& m);
     SPATIAL_RB_INERTIA& operator-=(const SPATIAL_RB_INERTIA& m);
