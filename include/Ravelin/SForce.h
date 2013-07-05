@@ -8,6 +8,8 @@
 #error This class is not to be included by the user directly. Use SForced.h or SForcef.h instead.
 #endif
 
+class SAXIS;
+
 class SFORCE : public SVECTOR6 
 {
   public:
@@ -42,6 +44,7 @@ class SFORCE : public SVECTOR6
       return w;
     }
 
+    REAL dot(const SAXIS& s) const;
     void set_force(const VECTOR3& f) { set_upper(f); }
     void set_torque(const VECTOR3& t) { set_lower(t); }
     VECTOR3 get_force() const { return get_upper(); }

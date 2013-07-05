@@ -114,6 +114,7 @@ class SAXIS : public SVECTOR6
     }
 
     REAL dot(const SMOMENTUM& m) const;
+    REAL dot(const SFORCE& f) const;
     SAXIS operator+(const SAXIS& v) const { SAXIS x = *this; x += v; return x; }
     SAXIS operator-(const SAXIS& v) const { SAXIS x = *this; x -= v; return x; }
     SAXIS operator*(REAL scalar) const { SAXIS v = *this; v*= scalar; return v; }

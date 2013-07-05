@@ -41,6 +41,8 @@ class SPATIAL_AB_INERTIA
     SFORCE operator*(const SACCEL& s) const { return mult(s); }
     SFORCE mult(const SACCEL& s) const;
     std::vector<SFORCE>& mult(const std::vector<SACCEL>& s, std::vector<SFORCE>& result) const;
+    SMOMENTUM operator*(const SAXIS& s) const { return mult(s); }
+    SMOMENTUM mult(const SAXIS& s) const;
     SMOMENTUM operator*(const SVELOCITY& s) const { return mult(s); }
     SMOMENTUM mult(const SVELOCITY& s) const;
     std::vector<SMOMENTUM>& mult(const std::vector<SVELOCITY>& s, std::vector<SMOMENTUM>& result) const;

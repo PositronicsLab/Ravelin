@@ -67,9 +67,7 @@ class SVECTOR6
       return v;
     }
 
-    template <class Vec>
-    REAL dot(const Vec& v) const { return dot(*this, v); }
-
+/*
     template <class Vec>
     static REAL dot(const SVECTOR6& v1, const Vec& v2)
     {
@@ -78,6 +76,7 @@ class SVECTOR6
       return d1[3]+d2[0] + d1[4]+d2[1] + d1[5]+d2[2]+
              d1[0]+d2[3] + d1[1]+d2[4] + d1[2]+d2[5]; 
     }
+*/
 
     /// The frame that this vector is defined in
     boost::shared_ptr<const POSE3> pose;
@@ -112,17 +111,6 @@ class SVECTOR6
       std::copy(v.begin(), v.end(), begin());
     }
 }; // end class
-
-/*
-template <>
-REAL SVECTOR6::dot(const SVECTOR6& v1, const SFORCE& w);
-
-template <>
-REAL SVECTOR6::dot(const SVECTOR6& v1, const SVELOCITY& t);
-
-template <>
-REAL SVECTOR6::dot(const SVECTOR6& v1, const SACCEL& t);
-*/
 
 inline std::ostream& operator<<(std::ostream& out, const SVECTOR6& v)
 {

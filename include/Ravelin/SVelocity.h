@@ -64,7 +64,7 @@ class SVELOCITY : public SVECTOR6
     SVELOCITY& operator=(const SVELOCITY& source) { SVECTOR6::operator=(source); return *this; }
     SVELOCITY& operator=(const SVECTOR6& source) { SVECTOR6::operator=(source); return *this; }
     SVELOCITY cross(const SVELOCITY& v) const;
-    SACCEL cross(const SMOMENTUM& m) const;
+    SFORCE cross(const SMOMENTUM& m) const;
 
     /// Returns the negation of this vector
     SVELOCITY operator-() const
