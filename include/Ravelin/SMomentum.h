@@ -8,6 +8,8 @@
 #error This class is not to be included by the user directly. Use SMomentumd.h or SMomentumf.h instead.
 #endif
 
+class SAXIS;
+
 class SMOMENTUM : public SVECTOR6 
 {
   public:
@@ -15,7 +17,7 @@ class SMOMENTUM : public SVECTOR6
     SMOMENTUM(boost::shared_ptr<const POSE3> pose = boost::shared_ptr<const POSE3>()) : SVECTOR6(pose) {} 
 
     /// Constructs a spatial momentum from the SVector6 
-    SMOMENTUM(const SVECTOR6& w) : SVECTOR6(w.get_upper(), w.get_lower(), w.pose) { }
+    explicit SMOMENTUM(const SVECTOR6& w) : SVECTOR6(w.get_upper(), w.get_lower(), w.pose) { }
 
     /// Constructs a spatial momentum using six values- first three linear, second three angular- and a pose
     SMOMENTUM(REAL lx, REAL ly, REAL lz, REAL ax, REAL ay, REAL az, boost::shared_ptr<const POSE3> pose = boost::shared_ptr<const POSE3>()) : SVECTOR6(lx, ly, lz, ax, ay, az, pose) {};
@@ -48,17 +50,62 @@ class SMOMENTUM : public SVECTOR6
     VECTOR3 get_angular() const { return get_lower(); }
     SMOMENTUM& operator=(const SMOMENTUM& source) { SVECTOR6::operator=(source); return *this; } 
     SMOMENTUM& operator=(const SVECTOR6& source) { SVECTOR6::operator=(source); return *this; } 
-    SMOMENTUM operator-() const { SMOMENTUM w = *this; w.negate(); return w; }
-    SMOMENTUM operator+(const SMOMENTUM& w) const { SMOMENTUM result = *this; result += w; return result; }
-    SMOMENTUM operator-(const SMOMENTUM& w) const { SMOMENTUM result = *this; result -= w; return result; }
+    REAL dot(const SAXIS& s) const;
+
+    /// Returns the negation of this vector
+    SMOMENTUM operator-() const
+    {
+      SMOMENTUM v;
+      v._data[0] = -_data[0]; 
+      v._data[1] = -_data[1]; 
+      v._data[2] = -_data[2]; 
+      v._data[3] = -_data[3]; 
+      v._data[4] = -_data[4]; 
+      v._data[5] = -_data[5]; 
+      v.pose = pose;
+
+      return v;
+    }
+
+    SMOMENTUM& operator-=(const SMOMENTUM& v)
+    {
+      #ifndef NEXCEPT
+      if (pose != v.pose)
+        throw FrameException();
+      #endif
+
+      _data[0] -= v._data[0];
+      _data[1] -= v._data[1];
+      _data[2] -= v._data[2];
+      _data[3] -= v._data[3];
+      _data[4] -= v._data[4];
+      _data[5] -= v._data[5];
+     
+      return *this;
+    }
+
+    SMOMENTUM& operator+=(const SMOMENTUM& v)
+    {
+      #ifndef NEXCEPT
+      if (pose != v.pose)
+        throw FrameException();
+      #endif
+
+      _data[0] += v._data[0];
+      _data[1] += v._data[1];
+      _data[2] += v._data[2];
+      _data[3] += v._data[3];
+      _data[4] += v._data[4];
+      _data[5] += v._data[5];
+     
+      return *this;
+    }
+
+    SMOMENTUM operator+(const SMOMENTUM& v) const { SMOMENTUM x = *this; x += v; return x; }
+    SMOMENTUM operator-(const SMOMENTUM& v) const { SMOMENTUM x = *this; x -= v; return x; }
+    SMOMENTUM operator*(REAL scalar) const { SMOMENTUM v = *this; v*= scalar; return v; }
+    SMOMENTUM operator/(REAL scalar) const { SMOMENTUM v = *this; v/= scalar; return v; }
 /*
-    SMOMENTUM operator-() const;
-    SMOMENTUM operator*(REAL scalar) const { SMOMENTUM v = *this; return v*= scalar; }
-    SMOMENTUM operator/(REAL scalar) const { SMOMENTUM v = *this; return v/= scalar; }
-    SMOMENTUM& operator/=(REAL scalar) { return operator*=((REAL) 1.0/scalar); }
-    SMOMENTUM& operator*=(REAL scalar);
-    SMOMENTUM& operator-=(const SMOMENTUM& v);
-    SMOMENTUM& operator+=(const SMOMENTUM& v);
     SMOMENTUM& resize(unsigned rows, unsigned columns) { assert (rows == 6 && columns == 1); return *this; } 
     SMOMENTUM& resize(unsigned rows) { assert (rows == 6); return *this; } 
 */

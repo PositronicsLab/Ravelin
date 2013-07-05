@@ -15,7 +15,7 @@ class SFORCE : public SVECTOR6
     SFORCE(boost::shared_ptr<const POSE3> pose = boost::shared_ptr<const POSE3>()) : SVECTOR6(pose) {} 
 
     /// Constructs a spatial force from the SVector6 
-    SFORCE(const SVECTOR6& w) : SVECTOR6(w.get_upper(), w.get_lower(), w.pose) { }
+    explicit SFORCE(const SVECTOR6& w) : SVECTOR6(w.get_upper(), w.get_lower(), w.pose) { }
 
     /// Constructs a spatial force using six values- first three force, second three torque- and a pose
     SFORCE(REAL fx, REAL fy, REAL fz, REAL tx, REAL ty, REAL tz, boost::shared_ptr<const POSE3> pose = boost::shared_ptr<const POSE3>()) : SVECTOR6(fx, fy, fz, tx, ty, tz, pose) {};
@@ -48,17 +48,61 @@ class SFORCE : public SVECTOR6
     VECTOR3 get_torque() const { return get_lower(); }
     SFORCE& operator=(const SFORCE& source) { SVECTOR6::operator=(source); return *this; } 
     SFORCE& operator=(const SVECTOR6& source) { SVECTOR6::operator=(source); return *this; } 
-    SFORCE operator-() const { SFORCE w = *this; w.negate(); return w; }
-    SFORCE operator+(const SFORCE& w) const { SFORCE result = *this; result += w; return result; }
-    SFORCE operator-(const SFORCE& w) const { SFORCE result = *this; result -= w; return result; }
+
+    /// Returns the negation of this vector
+    SFORCE operator-() const
+    {
+      SFORCE v;
+      v._data[0] = -_data[0]; 
+      v._data[1] = -_data[1]; 
+      v._data[2] = -_data[2]; 
+      v._data[3] = -_data[3]; 
+      v._data[4] = -_data[4]; 
+      v._data[5] = -_data[5]; 
+      v.pose = pose;
+
+      return v;
+    }
+
+    SFORCE& operator-=(const SFORCE& v)
+    {
+      #ifndef NEXCEPT
+      if (pose != v.pose)
+        throw FrameException();
+      #endif
+
+      _data[0] -= v._data[0];
+      _data[1] -= v._data[1];
+      _data[2] -= v._data[2];
+      _data[3] -= v._data[3];
+      _data[4] -= v._data[4];
+      _data[5] -= v._data[5];
+     
+      return *this;
+    }
+
+    SFORCE& operator+=(const SFORCE& v)
+    {
+      #ifndef NEXCEPT
+      if (pose != v.pose)
+        throw FrameException();
+      #endif
+
+      _data[0] += v._data[0];
+      _data[1] += v._data[1];
+      _data[2] += v._data[2];
+      _data[3] += v._data[3];
+      _data[4] += v._data[4];
+      _data[5] += v._data[5];
+     
+      return *this;
+    }
+
+    SFORCE operator+(const SFORCE& v) const { SFORCE x = *this; x += v; return x; }
+    SFORCE operator-(const SFORCE& v) const { SFORCE x = *this; x -= v; return x; }
+    SFORCE operator*(REAL scalar) const { SFORCE v = *this; v*= scalar; return v;}
+    SFORCE operator/(REAL scalar) const { SFORCE v = *this; v/= scalar; return v;}
 /*
-    SFORCE operator-() const;
-    SFORCE operator*(REAL scalar) const { SFORCE v = *this; return v*= scalar; }
-    SFORCE operator/(REAL scalar) const { SFORCE v = *this; return v/= scalar; }
-    SFORCE& operator/=(REAL scalar) { return operator*=((REAL) 1.0/scalar); }
-    SFORCE& operator*=(REAL scalar);
-    SFORCE& operator-=(const SFORCE& v);
-    SFORCE& operator+=(const SFORCE& v);
     SFORCE& resize(unsigned rows, unsigned columns) { assert (rows == 6 && columns == 1); return *this; } 
     SFORCE& resize(unsigned rows) { assert (rows == 6); return *this; } 
 */

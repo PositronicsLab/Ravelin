@@ -31,7 +31,6 @@ class SVECTOR6
     SVECTOR6(const VECTOR3& upper, const VECTOR3& lower);
     SVECTOR6(const VECTOR3& upper, const VECTOR3& lower, boost::shared_ptr<const POSE3> pose);
     unsigned size() const { return 6; }
-    static SVECTOR6 spatial_cross(const SVECTOR6& v1, const SVECTOR6& v2);
     static SVECTOR6 zero() { return SVECTOR6(0,0,0,0,0,0); }
     void set_zero() { std::fill_n(_data, 6, (REAL) 0.0); }
     void set_lower(const VECTOR3& lower);
@@ -44,14 +43,8 @@ class SVECTOR6
     REAL* data() { return _data; }
     const REAL* data() const { return _data; }
     SVECTOR6 operator-() const;
-    SVECTOR6 operator*(REAL scalar) const { SVECTOR6 v = *this; return v*= scalar; }
-    SVECTOR6 operator/(REAL scalar) const { SVECTOR6 v = *this; return v/= scalar; }
     SVECTOR6& operator/=(REAL scalar) { return operator*=((REAL) 1.0/scalar); }
     SVECTOR6& operator*=(REAL scalar);
-    SVECTOR6& operator-=(const SVECTOR6& v);
-    SVECTOR6& operator+=(const SVECTOR6& v);
-    SVECTOR6 operator+(const SVECTOR6& v) const;
-    SVECTOR6 operator-(const SVECTOR6& v) const;
     unsigned rows() const { return 6; }
     unsigned columns() const { return 1; }
     SVECTOR6& resize(unsigned rows, unsigned columns) { assert (rows == 6 && columns == 1); return *this; } 
@@ -102,7 +95,7 @@ class SVECTOR6
       return s;
     }
 
-  private:
+  protected:
     REAL _data[6];
 
   public:
@@ -120,6 +113,7 @@ class SVECTOR6
     }
 }; // end class
 
+/*
 template <>
 REAL SVECTOR6::dot(const SVECTOR6& v1, const SFORCE& w);
 
@@ -128,6 +122,7 @@ REAL SVECTOR6::dot(const SVECTOR6& v1, const SVELOCITY& t);
 
 template <>
 REAL SVECTOR6::dot(const SVECTOR6& v1, const SACCEL& t);
+*/
 
 inline std::ostream& operator<<(std::ostream& out, const SVECTOR6& v)
 {

@@ -17,7 +17,7 @@ class SACCEL : public SVECTOR6
     SACCEL(boost::shared_ptr<const POSE3> pose = boost::shared_ptr<const POSE3>()) : SVECTOR6(pose) {}
 
     /// Constructs a acceleration from a SVector6
-    SACCEL(const SVECTOR6& v) : SVECTOR6(v.get_upper(), v.get_lower(), v.pose) {} 
+    explicit SACCEL(const SVECTOR6& v) : SVECTOR6(v.get_upper(), v.get_lower(), v.pose) {} 
 
     /// Constructs a acceleration from six values (first three linear, next three angular) and a pose
     SACCEL(REAL lx, REAL ly, REAL lz, REAL ax, REAL ay, REAL az, boost::shared_ptr<const POSE3> pose = boost::shared_ptr<const POSE3>()) : SVECTOR6(ax, ay, az, lx, ly, lz, pose) {};
@@ -62,20 +62,63 @@ class SACCEL : public SVECTOR6
     VECTOR3 get_linear() const { return get_lower(); }
     SACCEL& operator=(const SACCEL& source) { SVECTOR6::operator=(source); return *this; }
     SACCEL& operator=(const SVECTOR6& source) { SVECTOR6::operator=(source); return *this; }
-    SACCEL operator-() const { SACCEL w = *this; w.negate(); return w; }
-    SACCEL operator+(const SACCEL& t) const { SACCEL result = *this; result += t; return result; }
-    SACCEL operator-(const SACCEL& t) const { SACCEL result = *this; result -= t; return result; }
+
+    /// Returns the negation of this vector
+    SACCEL operator-() const
+    {
+      SACCEL v;
+      v._data[0] = -_data[0]; 
+      v._data[1] = -_data[1]; 
+      v._data[2] = -_data[2]; 
+      v._data[3] = -_data[3]; 
+      v._data[4] = -_data[4]; 
+      v._data[5] = -_data[5]; 
+      v.pose = pose;
+
+      return v;
+    }
+
+    SACCEL& operator-=(const SACCEL& v)
+    {
+      #ifndef NEXCEPT
+      if (pose != v.pose)
+        throw FrameException();
+      #endif
+
+      _data[0] -= v._data[0];
+      _data[1] -= v._data[1];
+      _data[2] -= v._data[2];
+      _data[3] -= v._data[3];
+      _data[4] -= v._data[4];
+      _data[5] -= v._data[5];
+     
+      return *this;
+    }
+
+    SACCEL& operator+=(const SACCEL& v)
+    {
+      #ifndef NEXCEPT
+      if (pose != v.pose)
+        throw FrameException();
+      #endif
+
+      _data[0] += v._data[0];
+      _data[1] += v._data[1];
+      _data[2] += v._data[2];
+      _data[3] += v._data[3];
+      _data[4] += v._data[4];
+      _data[5] += v._data[5];
+     
+      return *this;
+    }
+
+    SACCEL operator+(const SACCEL& v) const { SACCEL x = *this; x += v; return x; }
+    SACCEL operator-(const SACCEL& v) const { SACCEL x = *this; x -= v; return x; }
+    SACCEL operator*(REAL scalar) const { SACCEL v = *this; v*= scalar; return v;}
+    SACCEL operator/(REAL scalar) const { SACCEL v = *this; v/= scalar; return v;}
 /*
-    SACCEL operator*(REAL scalar) const { SACCEL v = *this; return v*= scalar; }
-    SACCEL operator/(REAL scalar) const { SACCEL v = *this; return v/= scalar; }
-    SACCEL& operator/=(REAL scalar) { return operator*=((REAL) 1.0/scalar); }
-    SACCEL& operator*=(REAL scalar);
     SACCEL& resize(unsigned rows, unsigned columns) { assert (rows == 6 && columns == 1); return *this; } 
     SACCEL& resize(unsigned rows) { assert (rows == 6); return *this; } 
-    SACCEL& operator-=(const SACCEL& v);
-    SACCEL& operator+=(const SACCEL& v);
-    SACCEL operator+(const SACCEL& v) const;
-    SACCEL operator-(const SACCEL& v) const;
 */
 }; // end class
 

@@ -18,7 +18,7 @@ class SVELOCITY : public SVECTOR6
     SVELOCITY(boost::shared_ptr<const POSE3> pose = boost::shared_ptr<const POSE3>()) : SVECTOR6(pose) {}
 
     /// Constructs a velocity from a SVector6
-    SVELOCITY(const SVECTOR6& v) : SVECTOR6(v.get_upper(), v.get_lower(), v.pose) {} 
+    explicit SVELOCITY(const SVECTOR6& v) : SVECTOR6(v.get_upper(), v.get_lower(), v.pose) {} 
 
     /// Constructs a velocity from six values (first three linear, next three angular) and a pose
     SVELOCITY(REAL lx, REAL ly, REAL lz, REAL ax, REAL ay, REAL az, boost::shared_ptr<const POSE3> pose = boost::shared_ptr<const POSE3>()) : SVECTOR6(ax, ay, az, lx, ly, lz, pose) {};
@@ -57,28 +57,73 @@ class SVELOCITY : public SVECTOR6
       return t;
     }
 
-    SVELOCITY cross(const SVELOCITY& v) const { return SVELOCITY(spatial_cross(*this, v)); }
-    SACCEL cross(const SMOMENTUM& m) const { return SACCEL(spatial_cross(*this, m)); }
     void set_linear(const VECTOR3& lin) { set_lower(lin); }
     void set_angular(const VECTOR3& ang) { set_upper(ang); }
     VECTOR3 get_angular() const { return get_upper(); }
     VECTOR3 get_linear() const { return get_lower(); }
     SVELOCITY& operator=(const SVELOCITY& source) { SVECTOR6::operator=(source); return *this; }
     SVELOCITY& operator=(const SVECTOR6& source) { SVECTOR6::operator=(source); return *this; }
-    SVELOCITY operator-() const { SVELOCITY w = *this; w.negate(); return w; }
-    SVELOCITY operator+(const SVELOCITY& t) const { SVELOCITY result = *this; result += t; return result; }
-    SVELOCITY operator-(const SVELOCITY& t) const { SVELOCITY result = *this; result -= t; return result; }
+    SVELOCITY cross(const SVELOCITY& v) const;
+    SACCEL cross(const SMOMENTUM& m) const;
+
+    /// Returns the negation of this vector
+    SVELOCITY operator-() const
+    {
+      SVELOCITY v;
+      v._data[0] = -_data[0]; 
+      v._data[1] = -_data[1]; 
+      v._data[2] = -_data[2]; 
+      v._data[3] = -_data[3]; 
+      v._data[4] = -_data[4]; 
+      v._data[5] = -_data[5]; 
+      v.pose = pose;
+
+      return v;
+    }
+
+    SVELOCITY& operator-=(const SVELOCITY& v)
+    {
+      #ifndef NEXCEPT
+      if (pose != v.pose)
+        throw FrameException();
+      #endif
+
+      _data[0] -= v._data[0];
+      _data[1] -= v._data[1];
+      _data[2] -= v._data[2];
+      _data[3] -= v._data[3];
+      _data[4] -= v._data[4];
+      _data[5] -= v._data[5];
+     
+      return *this;
+    }
+
+    SVELOCITY& operator+=(const SVELOCITY& v)
+    {
+      #ifndef NEXCEPT
+      if (pose != v.pose)
+        throw FrameException();
+      #endif
+
+      _data[0] += v._data[0];
+      _data[1] += v._data[1];
+      _data[2] += v._data[2];
+      _data[3] += v._data[3];
+      _data[4] += v._data[4];
+      _data[5] += v._data[5];
+     
+      return *this;
+    }
+
+    SVELOCITY operator+(const SVELOCITY& v) const { SVELOCITY x = *this; x += v; return x; }
+    SVELOCITY operator-(const SVELOCITY& v) const { SVELOCITY x = *this; x -= v; return x; }
+    SVELOCITY operator*(REAL scalar) const { SVELOCITY v = *this; v*= scalar; return v; }
+    SVELOCITY operator/(REAL scalar) const { SVELOCITY v = *this; v/= scalar; return v; }
 /*
-    SVELOCITY operator*(REAL scalar) const { SVELOCITY v = *this; return v*= scalar; }
-    SVELOCITY operator/(REAL scalar) const { SVELOCITY v = *this; return v/= scalar; }
     SVELOCITY& operator/=(REAL scalar) { return operator*=((REAL) 1.0/scalar); }
     SVELOCITY& operator*=(REAL scalar);
     SVELOCITY& resize(unsigned rows, unsigned columns) { assert (rows == 6 && columns == 1); return *this; } 
     SVELOCITY& resize(unsigned rows) { assert (rows == 6); return *this; } 
-    SVELOCITY& operator-=(const SVELOCITY& v);
-    SVELOCITY& operator+=(const SVELOCITY& v);
-    SVELOCITY operator+(const SVELOCITY& v) const;
-    SVELOCITY operator-(const SVELOCITY& v) const;
 */
 }; // end class
 

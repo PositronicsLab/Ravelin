@@ -25,6 +25,7 @@
 #define SMOMENTUM SMomentumd
 #define SFORCE SForced 
 #define SVELOCITY SVelocityd
+#define SJACOBIAN SJacobiand
 #define SACCEL SAcceld
 #define SPATIAL_AB_INERTIA SpatialABInertiad
 #define SPATIAL_RB_INERTIA SpatialRBInertiad

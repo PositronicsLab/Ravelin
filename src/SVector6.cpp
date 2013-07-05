@@ -117,26 +117,6 @@ ITERATOR SVECTOR6::end()
   return i;
 }
 
-/// Computes the spatial cross product between two vectors
-SVECTOR6 SVECTOR6::spatial_cross(const SVECTOR6& v1, const SVECTOR6& v2)
-{
-  // verify that both vectors are defined in the same frame
-  #ifndef NEXCEPT
-  if (v1.pose != v2.pose)
-    throw FrameException();
-  #endif
-
-  VECTOR3 ax = v1.get_upper();
-  VECTOR3 bx = v1.get_lower();
-
-  // multiply
-  VECTOR3 v2top = v2.get_upper();
-  VECTOR3 v2bot = v2.get_lower();
-  VECTOR3 top = VECTOR3::cross(ax, v2top);
-  VECTOR3 bot = VECTOR3::cross(bx, v2top) + VECTOR3::cross(ax, v2bot);
-  return SVECTOR6(top, bot);
-}
-
 /// Gets the lower 3-dimensional vector
 VECTOR3 SVECTOR6::get_lower() const
 {
@@ -178,21 +158,6 @@ SVECTOR6& SVECTOR6::operator=(const SVECTOR6& v)
   return *this;
 }
 
-/// Returns the negation of this vector
-SVECTOR6 SVECTOR6::operator-() const
-{
-  SVECTOR6 v;
-  v._data[0] = -_data[0]; 
-  v._data[1] = -_data[1]; 
-  v._data[2] = -_data[2]; 
-  v._data[3] = -_data[3]; 
-  v._data[4] = -_data[4]; 
-  v._data[5] = -_data[5]; 
-  v.pose = pose;
-
-  return v;
-}
-
 /// Multiplies this vector by a scalar in place
 SVECTOR6& SVECTOR6::operator*=(REAL scalar)
 {
@@ -206,70 +171,7 @@ SVECTOR6& SVECTOR6::operator*=(REAL scalar)
   return *this;
 }
 
-/// Adds another vector to this one in place
-SVECTOR6& SVECTOR6::operator+=(const SVECTOR6& v)
-{
-  #ifndef NEXCEPT
-  if (pose != v.pose)
-    throw FrameException();
-  #endif
-
-  _data[0] += v._data[0];
-  _data[1] += v._data[1];
-  _data[2] += v._data[2];
-  _data[3] += v._data[3];
-  _data[4] += v._data[4];
-  _data[5] += v._data[5];
-
-  return *this;
-}
-
-/// Subtracts another vector from this one in place
-SVECTOR6& SVECTOR6::operator-=(const SVECTOR6& v)
-{
-  #ifndef NEXCEPT
-  if (pose != v.pose)
-    throw FrameException();
-  #endif
-
-  _data[0] -= v._data[0];
-  _data[1] -= v._data[1];
-  _data[2] -= v._data[2];
-  _data[3] -= v._data[3];
-  _data[4] -= v._data[4];
-  _data[5] -= v._data[5];
-
-  return *this;
-}
-
-/// Adds this vector to another and returns the result in a new vector
-SVECTOR6 SVECTOR6::operator+(const SVECTOR6& v) const
-{
-  #ifndef NEXCEPT
-  if (pose != v.pose)
-    throw FrameException();
-  #endif
-
-  SVECTOR6 result;
-  std::transform(begin(), end(), v.begin(), result.begin(), std::plus<REAL>());
-  result.pose = pose;
-  return result;
-}
-
-/// Subtracts another vector from this vector and returns the result in a new vector
-SVECTOR6 SVECTOR6::operator-(const SVECTOR6& v) const
-{
-  #ifndef NEXCEPT
-  if (pose != v.pose)
-    throw FrameException();
-  #endif
-
-  SVECTOR6 result;
-  std::transform(begin(), end(), v.begin(), result.begin(), std::minus<REAL>());
-  result.pose = pose;
-  return result;
-}
-
+/*
 /// Template specialization for dot product
 template <>
 REAL SVECTOR6::dot(const SVECTOR6& v, const SFORCE& w)
@@ -314,4 +216,5 @@ REAL SVECTOR6::dot(const SVECTOR6& v, const SVELOCITY& t)
   return d1[3]+d2[0] + d1[4]+d2[1] + d1[5]+d2[2]+ 
          d1[0]+d2[3] + d1[1]+d2[4] + d1[2]+d2[5];
 }
+*/
 
