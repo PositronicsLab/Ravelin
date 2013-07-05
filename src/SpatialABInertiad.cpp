@@ -6,6 +6,7 @@
 
 #include <Ravelin/Constants.h>
 #include <Ravelin/FrameException.h>
+#include <Ravelin/SAxisd.h>
 #include <Ravelin/SpatialABInertiad.h>
 
 using namespace Ravelin;

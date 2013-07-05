@@ -89,7 +89,7 @@ class POSE3 : public boost::enable_shared_from_this<POSE3>
 
   private:
     void get_r_E(ORIGIN3& r, MATRIX3& E, bool inverse) const;
-    TRANSFORM3 calc_transform(boost::shared_ptr<const POSE3> p) const;
+    TRANSFORM3 calc_transform(boost::shared_ptr<const POSE3> p) const { return calc_transform(shared_from_this(), p); }
     static TRANSFORM3 calc_transform(boost::shared_ptr<const POSE3> source, boost::shared_ptr<const POSE3> target);
     static bool is_common(boost::shared_ptr<const POSE3> source, boost::shared_ptr<const POSE3> p, unsigned& i);
 }; // end class

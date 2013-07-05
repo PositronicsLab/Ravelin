@@ -53,6 +53,25 @@ void SPATIAL_AB_INERTIA::set_zero()
   J.set_zero();
 }
 
+/// Multiplies this matrix by an axis and returns the result in a momentum 
+SMOMENTUM SPATIAL_AB_INERTIA::mult(const SAXIS& t) const
+{
+  #ifndef NEXCEPT
+  if (pose != t.pose)
+    throw FrameException();
+  #endif
+
+  // get necessary components of the acceleration 
+  ORIGIN3 top(t.get_angular());
+  ORIGIN3 bot(t.get_linear());
+
+  // compute top part of result
+  VECTOR3 rtop(H.transpose_mult(top) + (M * bot), pose);
+  VECTOR3 rbot((J * top) + (H * bot), pose);
+
+  return SMOMENTUM(rtop, rbot, pose); 
+}
+
 /// Multiplies this matrix by an acceleration and returns the result in a force 
 SFORCE SPATIAL_AB_INERTIA::mult(const SACCEL& t) const
 {
