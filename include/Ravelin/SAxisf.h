@@ -7,6 +7,8 @@
 #ifndef _SAXISF_H
 #define _SAXISF_H
 
+#include <Ravelin/SVector6f.h>
+
 namespace Ravelin {
 
 #include "fdefs.h"

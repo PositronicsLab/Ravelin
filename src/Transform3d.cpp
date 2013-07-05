@@ -12,6 +12,7 @@
 #include <Ravelin/Quatd.h>
 #include <Ravelin/AAngled.h>
 #include <Ravelin/Matrix3d.h>
+#include <Ravelin/SAxisd.h>
 #include <Ravelin/Opsd.h>
 #include <Ravelin/Pose3d.h>
 #include <Ravelin/Transform3d.h>

@@ -418,8 +418,8 @@ SVELOCITY TRANSFORM3::inverse_transform(const SVELOCITY& t) const
   const MATRIX3 ET = MATRIX3::transpose(E);
 
   // get the components of t 
-  ORIGIN3 top(t.get_angular());
-  ORIGIN3 bottom(t.get_linear());
+  ORIGIN3 top(t.get_linear());
+  ORIGIN3 bottom(t.get_angular());
 
   // do the calculations
   VECTOR3 Etop(E * top, source);
@@ -442,8 +442,8 @@ SMOMENTUM TRANSFORM3::transform(const SMOMENTUM& t) const
   const MATRIX3 ET = MATRIX3::transpose(E);
 
   // get the components of t 
-  ORIGIN3 top(t.get_angular());
-  ORIGIN3 bottom(t.get_linear());
+  ORIGIN3 top(t.get_linear());
+  ORIGIN3 bottom(t.get_angular());
 
   // do the calculations
   VECTOR3 Etop(E * top, target);
@@ -472,6 +472,53 @@ SMOMENTUM TRANSFORM3::inverse_transform(const SMOMENTUM& t) const
   VECTOR3 Etop(E * top, source);
   VECTOR3 cross = VECTOR3::cross(r, Etop);
   return SMOMENTUM(Etop, (E * bottom) - cross, source);
+}
+
+/// Transforms an axis from one pose to another 
+SAXIS TRANSFORM3::transform(const SAXIS& t) const
+{
+  #ifndef NEXCEPT
+  if (t.pose != source)
+    throw FrameException();
+  #endif
+
+  // setup r and E
+  ORIGIN3 r = -x;
+  MATRIX3 E = q;
+  VECTOR3 rv(r, target);
+  const MATRIX3 ET = MATRIX3::transpose(E);
+
+  // get the components of t 
+  ORIGIN3 top(t.get_angular());
+  ORIGIN3 bottom(t.get_linear());
+
+  // do the calculations
+  VECTOR3 Etop(E * top, target);
+  VECTOR3 cross = VECTOR3::cross(rv, Etop);
+  return SAXIS(Etop, (E * bottom) - cross, target);
+}
+
+/// Transforms an axis from one pose to another 
+SAXIS TRANSFORM3::inverse_transform(const SAXIS& t) const
+{
+  #ifndef NEXCEPT
+  if (t.pose != target)
+    throw FrameException();
+  #endif
+
+  // setup r and E
+  MATRIX3 E = QUAT::invert(q);
+  VECTOR3 r(E * x, source);
+  const MATRIX3 ET = MATRIX3::transpose(E);
+
+  // get the components of t 
+  ORIGIN3 top(t.get_angular());
+  ORIGIN3 bottom(t.get_linear());
+
+  // do the calculations
+  VECTOR3 Etop(E * top, source);
+  VECTOR3 cross = VECTOR3::cross(r, Etop);
+  return SAXIS(Etop, (E * bottom) - cross, source);
 }
 
 /// Transforms an acceleration from one pose to another 
