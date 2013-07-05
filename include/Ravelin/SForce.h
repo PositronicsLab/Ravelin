@@ -44,6 +44,7 @@ class SFORCE : public SVECTOR6
       return w;
     }
 
+    REAL dot(const SVELOCITY& v) const;
     REAL dot(const SAXIS& s) const;
     void set_force(const VECTOR3& f) { set_upper(f); }
     void set_torque(const VECTOR3& t) { set_lower(t); }
