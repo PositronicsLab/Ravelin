@@ -32,8 +32,9 @@ class POINT3
     REAL norm_sq() const { return sqr(_data[0]) + sqr(_data[1]) + sqr(_data[2]); }
     static REAL norm(const POINT3& v) { return std::sqrt(norm_sq(v)); }
     static REAL norm_sq(const POINT3& v) { return v.norm_sq(); }
-    void set_zero() { _data[0] = _data[1] = _data[2] = 0.0; }
-    static POINT3 zero() { return POINT3(0.0, 0.0, 0.0); }
+    POINT3& set_zero() { _data[0] = _data[1] = _data[2] = 0.0; return *this; }
+    POINT3& set_zero(boost::shared_ptr<const POSE3> pose) { _data[0] = _data[1] = _data[2] = 0.0; this->pose = pose; return *this; }
+    static POINT3 zero(boost::shared_ptr<const POSE3> pose = boost::shared_ptr<const POSE3>()) { return POINT3(0.0, 0.0, 0.0, pose); }
     bool operator<(const POINT3& v) const;
     POINT3& operator=(const ORIGIN3& o);
     POINT3& operator=(const VECTOR3& v);

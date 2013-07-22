@@ -31,9 +31,11 @@ class VECTOR2
     unsigned size() const { return 2; }
     static REAL norm(const VECTOR2& v) { return std::sqrt(norm_sq(v)); }
     static REAL norm_sq(const VECTOR2& v) { return v.dot(v); }
-    void set_zero() { _data[0] = _data[1] = 0.0; }
-    void set_one() { _data[0] = _data[1] = 1.0; }
-    static VECTOR2 zero() { return VECTOR2(0.0, 0.0); }
+    VECTOR2& set_zero() { _data[0] = _data[1] = 0.0; return *this; }
+    VECTOR2& set_one() { _data[0] = _data[1] = 1.0; return *this; }
+    VECTOR2& set_zero(boost::shared_ptr<const POSE2> pose) { _data[0] = _data[1] = 0.0; this->pose = pose; return *this; }
+    VECTOR2& set_one(boost::shared_ptr<const POSE2> pose) { _data[0] = _data[1] = 1.0; this->pose = pose; return *this; }
+    static VECTOR2 zero(boost::shared_ptr<const POSE2> pose = boost::shared_ptr<const POSE2>()) { return VECTOR2(0.0, 0.0, pose); }
     VECTOR2& operator=(const VECTOR2& v) { _data[0] = v[0]; _data[1] = v[1]; pose = v.pose; return *this; }
     VECTOR2& operator=(const POINT2& p);
     VECTOR2& operator=(const ORIGIN2& o);

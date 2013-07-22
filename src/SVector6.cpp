@@ -4,6 +4,21 @@
  * License (found in COPYING).
  ****************************************************************************/
 
+/// Constructs a zero vector
+SVECTOR6::SVECTOR6()
+{
+  _data[0] = _data[1] = _data[2] = 0.0;
+  _data[3] = _data[4] = _data[5] = 0.0;
+}
+
+/// Constructs a zero vector relative to the given pose
+SVECTOR6::SVECTOR6(boost::shared_ptr<const POSE3> pose) 
+{ 
+  _data[0] = _data[1] = _data[2] = 0.0;
+  _data[3] = _data[4] = _data[5] = 0.0;
+  this->pose = pose; 
+}
+
 /// Constructs this vector with the given values
 SVECTOR6::SVECTOR6(REAL x, REAL y, REAL z, REAL a, REAL b, REAL c)
 {

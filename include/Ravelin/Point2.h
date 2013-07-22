@@ -26,8 +26,9 @@ class POINT2
     REAL norm_sq() const { return sqr(_data[0]) + sqr(_data[1]); }
     static REAL norm(const POINT2& v) { return std::sqrt(norm_sq(v)); }
     static REAL norm_sq(const POINT2& v) { return v.norm_sq(); }
-    void set_zero() { _data[0] = _data[1] = 0.0; }
-    static POINT2 zero() { return POINT2(0.0, 0.0); }
+    POINT2& set_zero() { _data[0] = _data[1] = 0.0; return *this; }
+    POINT2& set_zero(boost::shared_ptr<const POSE2> pose) { _data[0] = _data[1] = 0.0; this->pose = pose; return *this; }
+    static POINT2 zero(boost::shared_ptr<const POSE2> pose = boost::shared_ptr<const POSE2>()) { return POINT2(0.0, 0.0, pose); }
     POINT2& operator=(const ORIGIN2& o);
     POINT2& operator=(const POINT2& v);
     POINT2& operator=(const VECTOR2& v);

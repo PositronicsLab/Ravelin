@@ -36,10 +36,12 @@ class VECTOR3
     REAL norm_sq() const { return dot(*this, *this); }
     static REAL norm(const VECTOR3& v) { return std::sqrt(norm_sq(v)); }
     static REAL norm_sq(const VECTOR3& v) { return v.dot(v); }
-    void set_zero() { _data[0] = _data[1] = _data[2] = 0.0; }
-    void set_one() { _data[0] = _data[1] = _data[2] = 1.0; }
-    static VECTOR3 zero() { return VECTOR3(0.0, 0.0, 0.0); }
-    static VECTOR3 one() { return VECTOR3(1.0, 1.0, 1.0); }
+    VECTOR3& set_zero() { _data[0] = _data[1] = _data[2] = 0.0; return *this; }
+    VECTOR3& set_one() { _data[0] = _data[1] = _data[2] = 1.0; return *this; }
+    VECTOR3& set_zero(boost::shared_ptr<const POSE3> pose) { _data[0] = _data[1] = _data[2] = 0.0; this->pose = pose; return *this; }
+    VECTOR3& set_one(boost::shared_ptr<const POSE3> pose) { _data[0] = _data[1] = _data[2] = 1.0; this->pose = pose; return *this; }
+    static VECTOR3 zero(boost::shared_ptr<const POSE3> pose = boost::shared_ptr<const POSE3>()) { return VECTOR3(0.0, 0.0, 0.0, pose); }
+    static VECTOR3 one(boost::shared_ptr<const POSE3> pose = boost::shared_ptr<const POSE3>()) { return VECTOR3(1.0, 1.0, 1.0, pose); }
     bool operator<(const VECTOR3& v) const;
     VECTOR3& operator=(const ORIGIN3& o) { pose.reset(); x() = o.x(); y() = o.y(); z() = o.z(); return *this; }
     VECTOR3& operator=(const VECTOR3& v) { pose = v.pose; x() = v.x(); y() = v.y(); z() = v.z(); return *this; }

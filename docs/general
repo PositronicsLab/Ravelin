@@ -1,0 +1,12 @@
+Q: When is it appropriate to pass a pose to a function and when is it 
+better to pass a *pointer* to a pose?
+
+A: The two have different semantics. Functions for objects that define their 
+   own pose, like a rigid body, should take a pose, rather than a pointer.
+   The former means that you can change the current pose, but you cannot
+   _own_ it (the difference is that if you pass in a pointer to a pose, that
+   pose can change at any time). The latter restricts the ways that pose can
+   be changed (e.g., only through a set_pose() method), _in particular if the
+   function validates that the passed pose's is set relative to some other
+   desired pose).
+
