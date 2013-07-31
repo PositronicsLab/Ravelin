@@ -43,7 +43,7 @@ class VECTOR3
     static VECTOR3 zero(boost::shared_ptr<const POSE3> pose = boost::shared_ptr<const POSE3>()) { return VECTOR3(0.0, 0.0, 0.0, pose); }
     static VECTOR3 one(boost::shared_ptr<const POSE3> pose = boost::shared_ptr<const POSE3>()) { return VECTOR3(1.0, 1.0, 1.0, pose); }
     bool operator<(const VECTOR3& v) const;
-    VECTOR3& operator=(const ORIGIN3& o) { pose.reset(); x() = o.x(); y() = o.y(); z() = o.z(); return *this; }
+    VECTOR3& operator=(const ORIGIN3& o) { x() = o.x(); y() = o.y(); z() = o.z(); return *this; }
     VECTOR3& operator=(const VECTOR3& v) { pose = v.pose; x() = v.x(); y() = v.y(); z() = v.z(); return *this; }
     VECTOR3& operator=(const POINT3& p);
     VECTOR3 operator+(const VECTOR3& v) const { VECTOR3 result = *this; result += v; return result; }

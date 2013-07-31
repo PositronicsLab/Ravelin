@@ -19,14 +19,14 @@ class SACCEL : public SVECTOR6
     /// Constructs a acceleration from a SVector6
     explicit SACCEL(const SVECTOR6& v) : SVECTOR6(v.get_upper(), v.get_lower(), v.pose) {} 
 
-    /// Constructs a acceleration from six values (first three linear, next three angular) and a pose
-    SACCEL(REAL lx, REAL ly, REAL lz, REAL ax, REAL ay, REAL az, boost::shared_ptr<const POSE3> pose = boost::shared_ptr<const POSE3>()) : SVECTOR6(ax, ay, az, lx, ly, lz, pose) {};
+    /// Constructs a acceleration from six values (first three angualr, next three linear) and a pose
+    SACCEL(REAL ax, REAL ay, REAL az, REAL lx, REAL ly, REAL lz, boost::shared_ptr<const POSE3> pose = boost::shared_ptr<const POSE3>()) : SVECTOR6(ax, ay, az, lx, ly, lz, pose) {};
 
-    /// Constructs a acceleration from six values (first three linear, next three angular) and a pose
-    SACCEL(const REAL* array, boost::shared_ptr<const POSE3> pose = boost::shared_ptr<const POSE3>()) : SVECTOR6(array[3], array[4], array[5], array[0], array[1], array[2], pose) {}
+    /// Constructs a acceleration from six values (first three angular, next three linear) and a pose
+    SACCEL(const REAL* array, boost::shared_ptr<const POSE3> pose = boost::shared_ptr<const POSE3>()) : SVECTOR6(array[0], array[1], array[2], array[3], array[4], array[5], pose) {}
 
     /// Constructs a acceleration from linear and angular components and a pose
-    SACCEL(const VECTOR3& linear, const VECTOR3& angular, boost::shared_ptr<const POSE3> pose = boost::shared_ptr<const POSE3>()) : SVECTOR6(angular, linear, pose) {}
+    SACCEL(const VECTOR3& angular, const VECTOR3& linear, boost::shared_ptr<const POSE3> pose = boost::shared_ptr<const POSE3>()) : SVECTOR6(angular, linear, pose) {}
 
     /// Returns a zero acceleration
     static SACCEL zero(boost::shared_ptr<const POSE3> pose = boost::shared_ptr<const POSE3>()) { SACCEL t(pose); t.set_zero(); return t; }

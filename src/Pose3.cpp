@@ -140,6 +140,54 @@ POINT3 POSE3::interpolate_transform_point(const POSE3& P1, const POSE3& P2, REAL
   return POINT3(x+q*o, P1.rpose);
 }
 
+/// Multiplies the quaternion derivative
+VECTOR3 POSE3::qG_mult(REAL qdw, REAL qdx, REAL qdy, REAL qdz) const
+{
+  const shared_ptr<const POSE3> GLOBAL;
+
+  // this will put everything into the global frame
+  TRANSFORM3 T = calc_relative_pose(shared_from_this(), GLOBAL);
+
+  // use the resulting q
+  return T.q.G_mult(qdw, qdx, qdy, qdz);
+}
+
+/// Multiplies the quaternion derivative
+VECTOR3 POSE3::qL_mult(REAL qdw, REAL qdx, REAL qdy, REAL qdz) const
+{
+  const shared_ptr<const POSE3> GLOBAL;
+
+  // this will put everything into the global frame
+  TRANSFORM3 T = calc_relative_pose(shared_from_this(), GLOBAL);
+
+  // use the resulting q
+  return T.q.L_mult(qdw, qdx, qdy, qdz);
+}
+
+/// Multiplies the quaternion derivative
+QUAT POSE3::qG_transpose_mult(const VECTOR3& omega) const
+{
+  const shared_ptr<const POSE3> GLOBAL;
+
+  // this will put everything into the global frame
+  TRANSFORM3 T = calc_relative_pose(shared_from_this(), GLOBAL);
+
+  // use the resulting q
+  return T.q.G_transpose_mult(omega);
+}
+
+/// Multiplies the quaternion derivative
+QUAT POSE3::qL_transpose_mult(const VECTOR3& omega) const
+{
+  const shared_ptr<const POSE3> GLOBAL;
+
+  // this will put everything into the global frame
+  TRANSFORM3 T = calc_relative_pose(shared_from_this(), GLOBAL);
+
+  // use the resulting q
+  return T.q.L_transpose_mult(omega);
+}
+
 // Sets the pose from an axis-angle representation and a translation vector
 /**
  * \note relative pose will be unaltered
@@ -403,7 +451,7 @@ SFORCE POSE3::inverse_transform(const SFORCE& w) const
 }
 
 /// Transforms a vector of forcees 
-std::vector<SFORCE>& POSE3::transform(boost::shared_ptr<const POSE3> source, boost::shared_ptr<const POSE3> target, const std::vector<SFORCE>& w, std::vector<SFORCE>& result)
+std::vector<SFORCE>& POSE3::transform(boost::shared_ptr<const POSE3> target, const std::vector<SFORCE>& w, std::vector<SFORCE>& result)
 {
   // look for empty vector (easy case)
   if (w.empty())
@@ -412,11 +460,18 @@ std::vector<SFORCE>& POSE3::transform(boost::shared_ptr<const POSE3> source, boo
     return result;
   }
 
+  // setup the source pose
+  boost::shared_ptr<const POSE3> source = w[0].pose; 
+
   #ifndef NEXCEPT
-  for (unsigned i=0; i< w.size(); i++)
+  for (unsigned i=1; i< w.size(); i++)
     if (source != w[i].pose)
       throw FrameException();
   #endif
+
+  // quick check
+  if (source == target)
+    return (result = w);
 
   // compute the relative transform
   TRANSFORM3 Tx = calc_transform(source, target);
@@ -447,12 +502,14 @@ std::vector<SFORCE>& POSE3::transform(boost::shared_ptr<const POSE3> source, boo
 }
 
 /// Transforms the force 
-SFORCE POSE3::transform(boost::shared_ptr<const POSE3> source, boost::shared_ptr<const POSE3> target, const SFORCE& v)
+SFORCE POSE3::transform(boost::shared_ptr<const POSE3> target, const SFORCE& v)
 {
-  #ifndef NEXCEPT
-  if (source != v.pose)
-    throw FrameException();
-  #endif
+  // setup the source pose 
+  boost::shared_ptr<const POSE3> source = v.pose;
+
+  // quick check
+  if (source == target)
+    return v;
 
   // compute the relative transform
   TRANSFORM3 Tx = calc_transform(source, target);
@@ -540,12 +597,14 @@ SACCEL POSE3::inverse_transform(const SACCEL& t) const
 }
 
 /// Transforms the acceleration 
-SACCEL POSE3::transform(boost::shared_ptr<const POSE3> source, boost::shared_ptr<const POSE3> target, const SACCEL& t)
+SACCEL POSE3::transform(boost::shared_ptr<const POSE3> target, const SACCEL& t)
 {
-  #ifndef NEXCEPT
-  if (source != t.pose)
-    throw FrameException();
-  #endif
+  // setup the source pose 
+  boost::shared_ptr<const POSE3> source = t.pose;
+
+  // quick check
+  if (source == target)
+    return t;
 
   // compute the relative transform
   TRANSFORM3 Tx = calc_transform(source, target);
@@ -566,7 +625,7 @@ SACCEL POSE3::transform(boost::shared_ptr<const POSE3> source, boost::shared_ptr
 }
 
 /// Transforms a vector of accelerations 
-std::vector<SACCEL>& POSE3::transform(boost::shared_ptr<const POSE3> source, boost::shared_ptr<const POSE3> target, const std::vector<SACCEL>& t, std::vector<SACCEL>& result)
+std::vector<SACCEL>& POSE3::transform(boost::shared_ptr<const POSE3> target, const std::vector<SACCEL>& t, std::vector<SACCEL>& result)
 {
   // look for empty vector (easy case)
   if (t.empty())
@@ -575,11 +634,18 @@ std::vector<SACCEL>& POSE3::transform(boost::shared_ptr<const POSE3> source, boo
     return result;
   }
 
+  // setup the source pose
+  boost::shared_ptr<const POSE3> source = t[0].pose; 
+
   #ifndef NEXCEPT
-  for (unsigned i=0; i< t.size(); i++)
+  for (unsigned i=1; i< t.size(); i++)
     if (source != t[i].pose)
       throw FrameException();
   #endif
+
+  // quick check
+  if (source == target)
+    return (result = t);
 
   // compute the relative transform
   TRANSFORM3 Tx = calc_transform(source, target);
@@ -676,12 +742,14 @@ SVELOCITY POSE3::inverse_transform(const SVELOCITY& t) const
 }
 
 /// Transforms the velocity  
-SVELOCITY POSE3::transform(boost::shared_ptr<const POSE3> source, boost::shared_ptr<const POSE3> target, const SVELOCITY& t)
+SVELOCITY POSE3::transform(boost::shared_ptr<const POSE3> target, const SVELOCITY& t)
 {
-  #ifndef NEXCEPT
-  if (source != t.pose)
-    throw FrameException();
-  #endif
+  // setup the source pose 
+  boost::shared_ptr<const POSE3> source = t.pose;
+
+  // quick check
+  if (source == target)
+    return t;
 
   // compute the relative transform
   TRANSFORM3 Tx = calc_transform(source, target);
@@ -689,7 +757,7 @@ SVELOCITY POSE3::transform(boost::shared_ptr<const POSE3> source, boost::shared_
   // setup r and E
   const ORIGIN3& r = Tx.x;
   const MATRIX3 E = Tx.q;
-  VECTOR3 rv(r, target);
+  VECTOR3 rv(r, t.pose);
 
   // get the components of t 
   VECTOR3 top = t.get_angular();
@@ -697,12 +765,12 @@ SVELOCITY POSE3::transform(boost::shared_ptr<const POSE3> source, boost::shared_
 
   // do the calculations
   VECTOR3 Etop(E * ORIGIN3(top), target);
-  VECTOR3 cross = VECTOR3::cross(rv, Etop);
-  return SVELOCITY(Etop, (E * ORIGIN3(bottom)) - cross, target);
+  VECTOR3 cross = VECTOR3::cross(rv, top);
+  return SVELOCITY(Etop, VECTOR3(E * ORIGIN3(bottom - cross), target), target);
 }
 
 /// Transforms a vector of velocities 
-std::vector<SVELOCITY>& POSE3::transform(boost::shared_ptr<const POSE3> source, boost::shared_ptr<const POSE3> target, const std::vector<SVELOCITY>& t, std::vector<SVELOCITY>& result)
+std::vector<SVELOCITY>& POSE3::transform(boost::shared_ptr<const POSE3> target, const std::vector<SVELOCITY>& t, std::vector<SVELOCITY>& result)
 {
   // look for empty vector (easy case)
   if (t.empty())
@@ -711,11 +779,18 @@ std::vector<SVELOCITY>& POSE3::transform(boost::shared_ptr<const POSE3> source, 
     return result;
   }
 
+  // setup the source pose
+  boost::shared_ptr<const POSE3> source = t[0].pose; 
+
   #ifndef NEXCEPT
-  for (unsigned i=0; i< t.size(); i++)
+  for (unsigned i=1; i< t.size(); i++)
     if (source != t[i].pose)
       throw FrameException();
   #endif
+
+  // quick check
+  if (source == target)
+    return (result = t);
 
   // compute the relative transform
   TRANSFORM3 Tx = calc_transform(source, target);
@@ -812,12 +887,14 @@ SAXIS POSE3::inverse_transform(const SAXIS& t) const
 }
 
 /// Transforms the axis 
-SAXIS POSE3::transform(boost::shared_ptr<const POSE3> source, boost::shared_ptr<const POSE3> target, const SAXIS& t)
+SAXIS POSE3::transform(boost::shared_ptr<const POSE3> target, const SAXIS& t)
 {
-  #ifndef NEXCEPT
-  if (source != t.pose)
-    throw FrameException();
-  #endif
+  // setup source pose 
+  boost::shared_ptr<const POSE3> source = t.pose;
+
+  // quick check
+  if (source == target)
+    return t;
 
   // compute the relative transform
   TRANSFORM3 Tx = calc_transform(source, target);
@@ -838,7 +915,7 @@ SAXIS POSE3::transform(boost::shared_ptr<const POSE3> source, boost::shared_ptr<
 }
 
 /// Transforms a vector of axes 
-std::vector<SAXIS>& POSE3::transform(boost::shared_ptr<const POSE3> source, boost::shared_ptr<const POSE3> target, const std::vector<SAXIS>& t, std::vector<SAXIS>& result)
+std::vector<SAXIS>& POSE3::transform(boost::shared_ptr<const POSE3> target, const std::vector<SAXIS>& t, std::vector<SAXIS>& result)
 {
   // look for empty vector (easy case)
   if (t.empty())
@@ -847,11 +924,18 @@ std::vector<SAXIS>& POSE3::transform(boost::shared_ptr<const POSE3> source, boos
     return result;
   }
 
+  // setup the source pose
+  boost::shared_ptr<const POSE3> source = t[0].pose; 
+
   #ifndef NEXCEPT
-  for (unsigned i=0; i< t.size(); i++)
+  for (unsigned i=1; i< t.size(); i++)
     if (source != t[i].pose)
       throw FrameException();
   #endif
+
+  // quick check
+  if (source == target)
+    return (result = t);
 
   // compute the relative transform
   TRANSFORM3 Tx = calc_transform(source, target);
@@ -948,12 +1032,14 @@ SMOMENTUM POSE3::transform(const SMOMENTUM& t) const
 }
 
 /// Transforms the momentum 
-SMOMENTUM POSE3::transform(boost::shared_ptr<const POSE3> source, boost::shared_ptr<const POSE3> target, const SMOMENTUM& t)
+SMOMENTUM POSE3::transform(boost::shared_ptr<const POSE3> target, const SMOMENTUM& t)
 {
-  #ifndef NEXCEPT
-  if (source != t.pose)
-    throw FrameException();
-  #endif
+  // setup source pose 
+  boost::shared_ptr<const POSE3> source = t.pose;
+
+  // quick check
+  if (source == target)
+    return t;
 
   // compute the relative transform
   TRANSFORM3 Tx = calc_transform(source, target);
@@ -974,7 +1060,7 @@ SMOMENTUM POSE3::transform(boost::shared_ptr<const POSE3> source, boost::shared_
 }
 
 /// Transforms a vector of momenta 
-std::vector<SMOMENTUM>& POSE3::transform(boost::shared_ptr<const POSE3> source, boost::shared_ptr<const POSE3> target, const std::vector<SMOMENTUM>& t, std::vector<SMOMENTUM>& result)
+std::vector<SMOMENTUM>& POSE3::transform(boost::shared_ptr<const POSE3> target, const std::vector<SMOMENTUM>& t, std::vector<SMOMENTUM>& result)
 {
   // look for empty vector (easy case)
   if (t.empty())
@@ -983,8 +1069,15 @@ std::vector<SMOMENTUM>& POSE3::transform(boost::shared_ptr<const POSE3> source, 
     return result;
   }
 
+  // setup the source pose
+  boost::shared_ptr<const POSE3> source = t[0].pose; 
+
+  // quick check
+  if (source == target)
+    return (result = t);
+
   #ifndef NEXCEPT
-  for (unsigned i=0; i< t.size(); i++)
+  for (unsigned i=1; i< t.size(); i++)
     if (source != t[i].pose)
       throw FrameException();
   #endif
@@ -1196,12 +1289,14 @@ void POSE3::get_r_E(ORIGIN3& r, MATRIX3& E, bool inverse) const
 }
 
 /// Applies this pose to a vector 
-VECTOR3 POSE3::transform(boost::shared_ptr<const POSE3> source, boost::shared_ptr<const POSE3> target, const VECTOR3& v) 
+VECTOR3 POSE3::transform(boost::shared_ptr<const POSE3> target, const VECTOR3& v) 
 {
-  #ifndef NEXCEPT
-  if (source != v.pose)
-    throw FrameException();
-  #endif
+  // setup source pose 
+  boost::shared_ptr<const POSE3> source = v.pose;
+
+  // quick check
+  if (source == target)
+    return v;
 
   // compute the relative transform
   TRANSFORM3 Tx = calc_transform(source, target);
@@ -1210,12 +1305,19 @@ VECTOR3 POSE3::transform(boost::shared_ptr<const POSE3> source, boost::shared_pt
 }
 
 /// Transforms a point from one pose to another 
-POINT3 POSE3::transform(boost::shared_ptr<const POSE3> source, boost::shared_ptr<const POSE3> target, const POINT3& point)
+POINT3 POSE3::transform(boost::shared_ptr<const POSE3> target, const POINT3& point)
 {
+  // setup source pose 
+  boost::shared_ptr<const POSE3> source = point.pose;
+
   #ifndef NEXCEPT
   if (source != point.pose)
     throw FrameException();
   #endif
+
+  // quick check
+  if (source == target)
+    return point;
 
   // compute the relative transform
   TRANSFORM3 Tx = calc_transform(source, target);
@@ -1225,12 +1327,14 @@ POINT3 POSE3::transform(boost::shared_ptr<const POSE3> source, boost::shared_ptr
 }
 
 /// Transforms a spatial articulated body inertia 
-SPATIAL_AB_INERTIA POSE3::transform(boost::shared_ptr<const POSE3> source, boost::shared_ptr<const POSE3> target, const SPATIAL_AB_INERTIA& m)
+SPATIAL_AB_INERTIA POSE3::transform(boost::shared_ptr<const POSE3> target, const SPATIAL_AB_INERTIA& m)
 {
-  #ifndef NEXCEPT
-  if (source != m.pose)
-    throw FrameException();
-  #endif
+  // setup source pose 
+  boost::shared_ptr<const POSE3> source = m.pose;
+
+  // quick check
+  if (source == target)
+    return m;
 
   // compute the relative transform
   TRANSFORM3 Tx = calc_transform(source, target);
@@ -1259,12 +1363,14 @@ SPATIAL_AB_INERTIA POSE3::transform(boost::shared_ptr<const POSE3> source, boost
 }
 
 /// Transforms a spatial RB inertia to the given pose
-SPATIAL_RB_INERTIA POSE3::transform(boost::shared_ptr<const POSE3> source, boost::shared_ptr<const POSE3> target, const SPATIAL_RB_INERTIA& J)
+SPATIAL_RB_INERTIA POSE3::transform(boost::shared_ptr<const POSE3> target, const SPATIAL_RB_INERTIA& J)
 {
-  #ifndef NEXCEPT
-  if (source != J.pose)
-    throw FrameException();
-  #endif
+  // setup source pose 
+  boost::shared_ptr<const POSE3> source = J.pose;
+
+  // quick check
+  if (source == target)
+    return J;
 
   // compute the relative transform
   TRANSFORM3 Tx = calc_transform(source, target);
@@ -1296,15 +1402,15 @@ bool POSE3::is_common(boost::shared_ptr<const POSE3> x, boost::shared_ptr<const 
   // reset i
   i = 0;
 
-  while (x)
+  while (true)
   {
     if (x == p)
       return true;
+    if (!x)
+      return false;
     x = x->rpose;
     i++;
   }
-
-  return false;
 }
 
 /// Computes the relative transformation from this pose to another
@@ -1398,6 +1504,8 @@ TRANSFORM3 POSE3::calc_transform(boost::shared_ptr<const POSE3> source, boost::s
     for (unsigned j=0; j < i; j++)
     {
       s = s->rpose;
+      if (!s)
+        break;
       left_x = s->x + s->q * left_x;
       left_q = s->q * left_q;
     }
@@ -1408,6 +1516,8 @@ TRANSFORM3 POSE3::calc_transform(boost::shared_ptr<const POSE3> source, boost::s
     while (target != r)
     {
       target = target->rpose;
+      if (!target)
+        break;
       right_x = target->x + target->q * right_x; 
       right_q = target->q * right_q;
     }

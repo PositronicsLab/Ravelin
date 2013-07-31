@@ -20,14 +20,14 @@ class SAXIS : public SVECTOR6
     /// Constructs a axis from a SVector6
     explicit SAXIS(const SVECTOR6& v) : SVECTOR6(v.get_upper(), v.get_lower(), v.pose) {} 
 
-    /// Constructs a axis from six values (first three linear, next three angular) and a pose
-    SAXIS(REAL lx, REAL ly, REAL lz, REAL ax, REAL ay, REAL az, boost::shared_ptr<const POSE3> pose = boost::shared_ptr<const POSE3>()) : SVECTOR6(ax, ay, az, lx, ly, lz, pose) {};
+    /// Constructs a axis from six values (first three angular, next three linear) and a pose
+    SAXIS(REAL ax, REAL ay, REAL az, REAL lx, REAL ly, REAL lz, boost::shared_ptr<const POSE3> pose = boost::shared_ptr<const POSE3>()) : SVECTOR6(ax, ay, az, lx, ly, lz, pose) {};
 
-    /// Constructs a axis from six values (first three linear, next three angular) and a pose
-    SAXIS(const REAL* array, boost::shared_ptr<const POSE3> pose = boost::shared_ptr<const POSE3>()) : SVECTOR6(array[3], array[4], array[5], array[0], array[1], array[2], pose) {}
+    /// Constructs a axis from six values (first three angular, next three linear) and a pose
+    SAXIS(const REAL* array, boost::shared_ptr<const POSE3> pose = boost::shared_ptr<const POSE3>()) : SVECTOR6(array[0], array[1], array[2], array[3], array[4], array[5], pose) {}
 
     /// Constructs a axis from linear and angular components and a pose
-    SAXIS(const VECTOR3& linear, const VECTOR3& angular, boost::shared_ptr<const POSE3> pose = boost::shared_ptr<const POSE3>()) : SVECTOR6(angular, linear, pose) {}
+    SAXIS(const VECTOR3& angular, const VECTOR3& linear, boost::shared_ptr<const POSE3> pose = boost::shared_ptr<const POSE3>()) : SVECTOR6(angular, linear, pose) {}
 
     /// Returns a zero axis
     static SAXIS zero(boost::shared_ptr<const POSE3> pose = boost::shared_ptr<const POSE3>()) { SAXIS t(pose); t.set_zero(); return t; }

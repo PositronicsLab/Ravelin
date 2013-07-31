@@ -135,13 +135,13 @@ ITERATOR SVECTOR6::end()
 /// Gets the lower 3-dimensional vector
 VECTOR3 SVECTOR6::get_lower() const
 {
-  return VECTOR3(_data[3], _data[4], _data[5]);
+  return VECTOR3(_data[3], _data[4], _data[5], pose);
 }
 
 /// Gets the upper 3-dimensional vector
 VECTOR3 SVECTOR6::get_upper() const
 {
-  return VECTOR3(_data[0], _data[1], _data[2]);
+  return VECTOR3(_data[0], _data[1], _data[2], pose);
 }
  
 /// Sets the lower 3-dimensional vector
