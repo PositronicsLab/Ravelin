@@ -15,8 +15,9 @@ class POSE3;
  * The matrix is represented by:
  * | -hx*m        I*m  |
  * | J - hx*hx*m  hx*m |
- * where hx is the skew symmetric matrix determined by h and I is the identity
- * matrix.
+ * where hx is the skew symmetric matrix determined by h (h is the vector from
+ * the origin of the reference frame to the center of mass) and I is the 
+ * identity matrix.
  */
 class SPATIAL_RB_INERTIA
 {
@@ -76,10 +77,10 @@ class SPATIAL_RB_INERTIA
       MATRIX3 hxhxm = MATRIX3::skew_symmetric(h)*hxm;
 
       // setup the 3x3 blocks
-      M.set_sub_mat(0,0, hxm);
+      M.set_sub_mat(0,0, hxm, eTranspose);
       M.set_sub_mat(3,0, J - hxhxm);
       M.set_sub_mat(0,3, MATRIX3(m, 0, 0, 0, m, 0, 0, 0, m));
-      M.set_sub_mat(3,3, hxm, eTranspose);
+      M.set_sub_mat(3,3, hxm);
 
       return M;
     }

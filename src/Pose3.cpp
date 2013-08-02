@@ -412,8 +412,8 @@ SFORCE POSE3::transform(const SFORCE& w) const
 
   // do the calculations
   VECTOR3 Etop(E * ORIGIN3(top), rpose);
-  VECTOR3 cross = VECTOR3::cross(VECTOR3(r, rpose), Etop);
-  return SFORCE(Etop, (E * ORIGIN3(bottom)) - cross, rpose);
+  VECTOR3 cross = VECTOR3::cross(VECTOR3(r, rpose), top);
+  return SFORCE(Etop, VECTOR3(E * ORIGIN3(bottom - cross), rpose), rpose);
 }
 
 /// Transforms a point from one pose to another 
@@ -446,8 +446,8 @@ SFORCE POSE3::inverse_transform(const SFORCE& w) const
 
   // do the calculations
   VECTOR3 Etop(E * ORIGIN3(top), pose);
-  VECTOR3 cross = VECTOR3::cross(VECTOR3(r, pose), Etop);
-  return SFORCE(Etop, (E * ORIGIN3(bottom) - cross), pose);
+  VECTOR3 cross = VECTOR3::cross(VECTOR3(r, pose), top);
+  return SFORCE(Etop, VECTOR3(E * ORIGIN3(bottom - cross), pose), pose);
 }
 
 /// Transforms a vector of forcees 
@@ -479,7 +479,7 @@ std::vector<SFORCE>& POSE3::transform(boost::shared_ptr<const POSE3> target, con
   // setup r and E
   const ORIGIN3& r = Tx.x;
   const MATRIX3 E = Tx.q;
-  VECTOR3 rv(r, target);
+  VECTOR3 rv(r, w[0].pose);
 
   // resize the result vector
   result.resize(w.size());
@@ -493,9 +493,8 @@ std::vector<SFORCE>& POSE3::transform(boost::shared_ptr<const POSE3> target, con
 
     // do the calculations
     VECTOR3 Etop(E * ORIGIN3(top), target);
-    VECTOR3 cross = VECTOR3::cross(rv, Etop);
-    result[i] = SFORCE(Etop, (E * ORIGIN3(bottom)) - cross);
-    result[i].pose = target;
+    VECTOR3 cross = VECTOR3::cross(rv, top);
+    result[i] = SFORCE(Etop, VECTOR3(E * ORIGIN3(bottom - cross), target), target);
   }
 
   return result;
@@ -517,7 +516,7 @@ SFORCE POSE3::transform(boost::shared_ptr<const POSE3> target, const SFORCE& v)
   // setup r and E
   const ORIGIN3& r = Tx.x;
   const MATRIX3 E = Tx.q;
-  VECTOR3 rv(r, target);
+  VECTOR3 rv(r, v.pose);
 
   // get the components of v
   VECTOR3 top = v.get_force();
@@ -525,8 +524,8 @@ SFORCE POSE3::transform(boost::shared_ptr<const POSE3> target, const SFORCE& v)
 
   // do the calculations
   VECTOR3 Etop(E * ORIGIN3(top), target);
-  VECTOR3 cross = VECTOR3::cross(rv, Etop);
-  return SFORCE(Etop, (E * ORIGIN3(bottom)) - cross, target);
+  VECTOR3 cross = VECTOR3::cross(rv, top);
+  return SFORCE(Etop, VECTOR3(E * ORIGIN3(bottom - cross), target), target);
 }
 
 /// Transforms an acceleration from one pose to another 
@@ -550,7 +549,10 @@ SACCEL POSE3::transform(const SACCEL& t) const
   ORIGIN3 r;
   MATRIX3 E;
   get_r_E(r, E, false);
-  const MATRIX3 ET = MATRIX3::transpose(E);
+
+  // the spatial transformation is:
+  // | E    0 |
+  // | Erx' E |
 
   // get the components of t 
   VECTOR3 top = t.get_angular();
@@ -558,8 +560,8 @@ SACCEL POSE3::transform(const SACCEL& t) const
 
   // do the calculations
   VECTOR3 Etop(E * ORIGIN3(top), rpose);
-  VECTOR3 cross = VECTOR3::cross(VECTOR3(r, rpose), Etop);
-  return SACCEL(Etop, (E * ORIGIN3(bottom)) - cross, rpose);
+  VECTOR3 cross = VECTOR3::cross(VECTOR3(r, rpose), top);
+  return SACCEL(Etop, VECTOR3(E * ORIGIN3(bottom - cross), rpose), rpose);
 }
 
 /// Transforms an acceleration from one pose to another 
@@ -580,6 +582,10 @@ SACCEL POSE3::inverse_transform(const SACCEL& t) const
     throw FrameException();
   #endif
 
+  // the spatial transformation is:
+  // | E'    0  |
+  // | rx'E' E' |
+
   // setup r and E
   ORIGIN3 r;
   MATRIX3 E;
@@ -591,9 +597,9 @@ SACCEL POSE3::inverse_transform(const SACCEL& t) const
   VECTOR3 bottom = t.get_linear();
 
   // do the calculations
-  VECTOR3 Etop(E * ORIGIN3(top), pose);
+  VECTOR3 Etop(ET * ORIGIN3(top), pose);
   VECTOR3 cross = VECTOR3::cross(VECTOR3(r, pose), Etop);
-  return SACCEL(Etop, (E * ORIGIN3(bottom)) - cross, pose);
+  return SACCEL(Etop, cross + ET*ORIGIN3(bottom), pose);
 }
 
 /// Transforms the acceleration 
@@ -612,7 +618,11 @@ SACCEL POSE3::transform(boost::shared_ptr<const POSE3> target, const SACCEL& t)
   // setup r and E
   const ORIGIN3& r = Tx.x;
   const MATRIX3 E = Tx.q;
-  VECTOR3 rv(r, target);
+  VECTOR3 rv(r, t.pose);
+
+  // the spatial transformation is:
+  // | E    0 |
+  // | Erx' E |
 
   // get the components of t 
   VECTOR3 top = t.get_angular();
@@ -620,8 +630,8 @@ SACCEL POSE3::transform(boost::shared_ptr<const POSE3> target, const SACCEL& t)
 
   // do the calculations
   VECTOR3 Etop(E * ORIGIN3(top), target);
-  VECTOR3 cross = VECTOR3::cross(rv, Etop);
-  return SACCEL(Etop, (E * ORIGIN3(bottom)) - cross, target);
+  VECTOR3 cross = VECTOR3::cross(rv, top);
+  return SACCEL(Etop, VECTOR3(E * ORIGIN3(bottom - cross), target), target);
 }
 
 /// Transforms a vector of accelerations 
@@ -653,7 +663,11 @@ std::vector<SACCEL>& POSE3::transform(boost::shared_ptr<const POSE3> target, con
   // setup r and E
   const ORIGIN3& r = Tx.x;
   const MATRIX3 E = Tx.q;
-  VECTOR3 rv(r, target);
+  VECTOR3 rv(r, t[0].pose);
+
+  // the spatial transformation is:
+  // | E    0 |
+  // | Erx' E |
 
   // resize the result vector
   result.resize(t.size());
@@ -667,8 +681,8 @@ std::vector<SACCEL>& POSE3::transform(boost::shared_ptr<const POSE3> target, con
 
     // do the calculations
     VECTOR3 Etop(E * ORIGIN3(top), target);
-    VECTOR3 cross = VECTOR3::cross(rv, Etop);
-    result[i] = SACCEL(Etop, (E * ORIGIN3(bottom)) - cross, target);
+    VECTOR3 cross = VECTOR3::cross(rv, top);
+    result[i] = SACCEL(Etop, VECTOR3(E * ORIGIN3(bottom- cross), target), target);
   }
 
   return result;
@@ -704,7 +718,7 @@ SVELOCITY POSE3::transform(const SVELOCITY& t) const
   // do the calculations
   VECTOR3 Etop(E * ORIGIN3(top), rpose);
   VECTOR3 cross = VECTOR3::cross(VECTOR3(r, rpose), Etop);
-  return SVELOCITY(Etop, (E * ORIGIN3(bottom)) - cross, rpose);
+  return SVELOCITY(Etop, VECTOR3(E * ORIGIN3(bottom - cross), rpose), rpose);
 }
 
 /// Transforms a velocity from one pose to another 
@@ -738,7 +752,7 @@ SVELOCITY POSE3::inverse_transform(const SVELOCITY& t) const
   // do the calculations
   VECTOR3 Etop(E * ORIGIN3(top), pose);
   VECTOR3 cross = VECTOR3::cross(VECTOR3(r, pose), Etop);
-  return SVELOCITY(Etop, (E * ORIGIN3(bottom)) - cross, pose);
+  return SVELOCITY(Etop, VECTOR3(E * ORIGIN3(bottom - cross), pose), pose);
 }
 
 /// Transforms the velocity  
@@ -798,7 +812,7 @@ std::vector<SVELOCITY>& POSE3::transform(boost::shared_ptr<const POSE3> target, 
   // setup r and E
   const ORIGIN3& r = Tx.x;
   const MATRIX3 E = Tx.q;
-  VECTOR3 rv(r, target);
+  VECTOR3 rv(r, t[0].pose);
 
   // resize the result vector
   result.resize(t.size());
@@ -812,8 +826,8 @@ std::vector<SVELOCITY>& POSE3::transform(boost::shared_ptr<const POSE3> target, 
 
     // do the calculations
     VECTOR3 Etop(E * ORIGIN3(top), target);
-    VECTOR3 cross = VECTOR3::cross(rv, Etop);
-    result[i] = SVELOCITY(Etop, (E * ORIGIN3(bottom)) - cross, target);
+    VECTOR3 cross = VECTOR3::cross(rv, top);
+    result[i] = SVELOCITY(Etop, VECTOR3(E * ORIGIN3(bottom - cross), target), target);
   }
 
   return result;
@@ -848,8 +862,8 @@ SAXIS POSE3::transform(const SAXIS& t) const
 
   // do the calculations
   VECTOR3 Etop(E * ORIGIN3(top), rpose);
-  VECTOR3 cross = VECTOR3::cross(VECTOR3(r, rpose), Etop);
-  return SAXIS(Etop, (E * ORIGIN3(bottom)) - cross, rpose);
+  VECTOR3 cross = VECTOR3::cross(VECTOR3(r, rpose), top);
+  return SAXIS(Etop, VECTOR3(E * ORIGIN3(bottom - cross), rpose), rpose);
 }
 
 /// Transforms an axis from one pose to another 
@@ -882,8 +896,8 @@ SAXIS POSE3::inverse_transform(const SAXIS& t) const
 
   // do the calculations
   VECTOR3 Etop(E * ORIGIN3(top), pose);
-  VECTOR3 cross = VECTOR3::cross(VECTOR3(r, pose), Etop);
-  return SAXIS(Etop, (E * ORIGIN3(bottom)) - cross, pose);
+  VECTOR3 cross = VECTOR3::cross(VECTOR3(r, pose), top);
+  return SAXIS(Etop, VECTOR3(E * ORIGIN3(bottom - cross), pose), pose);
 }
 
 /// Transforms the axis 
@@ -902,7 +916,7 @@ SAXIS POSE3::transform(boost::shared_ptr<const POSE3> target, const SAXIS& t)
   // setup r and E
   const ORIGIN3& r = Tx.x;
   const MATRIX3 E = Tx.q;
-  VECTOR3 rv(r, target);
+  VECTOR3 rv(r, t.pose);
 
   // get the components of t 
   VECTOR3 top = t.get_angular();
@@ -910,8 +924,8 @@ SAXIS POSE3::transform(boost::shared_ptr<const POSE3> target, const SAXIS& t)
 
   // do the calculations
   VECTOR3 Etop(E * ORIGIN3(top), target);
-  VECTOR3 cross = VECTOR3::cross(rv, Etop);
-  return SAXIS(Etop, (E * ORIGIN3(bottom)) - cross, target);
+  VECTOR3 cross = VECTOR3::cross(rv, top);
+  return SAXIS(Etop, VECTOR3(E * ORIGIN3(bottom - cross), target), target);
 }
 
 /// Transforms a vector of axes 
@@ -943,7 +957,7 @@ std::vector<SAXIS>& POSE3::transform(boost::shared_ptr<const POSE3> target, cons
   // setup r and E
   const ORIGIN3& r = Tx.x;
   const MATRIX3 E = Tx.q;
-  VECTOR3 rv(r, target);
+  VECTOR3 rv(r, t[0].pose);
 
   // resize the result vector
   result.resize(t.size());
@@ -957,8 +971,8 @@ std::vector<SAXIS>& POSE3::transform(boost::shared_ptr<const POSE3> target, cons
 
     // do the calculations
     VECTOR3 Etop(E * ORIGIN3(top), target);
-    VECTOR3 cross = VECTOR3::cross(rv, Etop);
-    result[i] = SAXIS(Etop, (E * ORIGIN3(bottom)) - cross, target);
+    VECTOR3 cross = VECTOR3::cross(rv, top);
+    result[i] = SAXIS(Etop, VECTOR3(E * ORIGIN3(bottom - cross), target), target);
   }
 
   return result;
@@ -994,8 +1008,8 @@ SMOMENTUM POSE3::inverse_transform(const SMOMENTUM& t) const
 
   // do the calculations
   VECTOR3 Etop(E * ORIGIN3(top), pose);
-  VECTOR3 cross = VECTOR3::cross(VECTOR3(r, pose), Etop);
-  return SMOMENTUM(Etop, (E * ORIGIN3(bottom)) - cross, pose);
+  VECTOR3 cross = VECTOR3::cross(VECTOR3(r, pose), top);
+  return SMOMENTUM(Etop, VECTOR3(E * ORIGIN3(bottom - cross), pose), pose);
 }
 
 /// Transforms a momentum from one pose to another 
@@ -1027,8 +1041,8 @@ SMOMENTUM POSE3::transform(const SMOMENTUM& t) const
 
   // do the calculations
   VECTOR3 Etop(E * ORIGIN3(top), rpose);
-  VECTOR3 cross = VECTOR3::cross(VECTOR3(r, rpose), Etop);
-  return SMOMENTUM(Etop, (E * ORIGIN3(bottom)) - cross, rpose);
+  VECTOR3 cross = VECTOR3::cross(VECTOR3(r, rpose), top);
+  return SMOMENTUM(Etop, VECTOR3(E * ORIGIN3(bottom - cross), rpose), rpose);
 }
 
 /// Transforms the momentum 
@@ -1047,7 +1061,7 @@ SMOMENTUM POSE3::transform(boost::shared_ptr<const POSE3> target, const SMOMENTU
   // setup r and E
   const ORIGIN3& r = Tx.x;
   const MATRIX3 E = Tx.q;
-  VECTOR3 rv(r, target);
+  VECTOR3 rv(r, t.pose);
 
   // get the components of t 
   VECTOR3 top = t.get_linear();
@@ -1055,8 +1069,8 @@ SMOMENTUM POSE3::transform(boost::shared_ptr<const POSE3> target, const SMOMENTU
 
   // do the calculations
   VECTOR3 Etop(E * ORIGIN3(top), target);
-  VECTOR3 cross = VECTOR3::cross(rv, Etop);
-  return SMOMENTUM(Etop, (E * ORIGIN3(bottom)) - cross, target);
+  VECTOR3 cross = VECTOR3::cross(rv, top);
+  return SMOMENTUM(Etop, VECTOR3(E * ORIGIN3(bottom - cross), target), target);
 }
 
 /// Transforms a vector of momenta 
@@ -1088,7 +1102,7 @@ std::vector<SMOMENTUM>& POSE3::transform(boost::shared_ptr<const POSE3> target, 
   // setup r and E
   const ORIGIN3& r = Tx.x;
   const MATRIX3 E = Tx.q;
-  VECTOR3 rv(r, target);
+  VECTOR3 rv(r, t[0].pose);
 
   // resize the result vector
   result.resize(t.size());
@@ -1102,8 +1116,8 @@ std::vector<SMOMENTUM>& POSE3::transform(boost::shared_ptr<const POSE3> target, 
 
     // do the calculations
     VECTOR3 Etop(E * ORIGIN3(top), target);
-    VECTOR3 cross = VECTOR3::cross(rv, Etop);
-    result[i] = SMOMENTUM(Etop, (E * ORIGIN3(bottom)) - cross, target);
+    VECTOR3 cross = VECTOR3::cross(rv, top);
+    result[i] = SMOMENTUM(Etop, VECTOR3(E * ORIGIN3(bottom - cross), target), target);
   }
 
   return result;

@@ -49,24 +49,33 @@ SACCEL SPATIAL_RB_INERTIA::inverse_mult(const SFORCE& w) const
     throw FrameException();
   #endif
 
+  // compute the inverse of the inertia matrix
+  MATRIX3 iJ = MATRIX3::invert(J);
+
   // compute the skew symmetric version of h
   MATRIX3 hx = MATRIX3::skew_symmetric(h);
+
+  // compute hx * inv(J)
+  MATRIX3 hxiJ = hx * iJ;
 
   // compute inverse mass
   REAL inv_m = (REAL) 1.0/m;
 
   // compute the components of the matrix
+/*
   MATRIX3 UR = MATRIX3::invert((hx * hx * inv_m) + J);
   MATRIX3 UL = UR * hx * -inv_m;
   MATRIX3 LL = ((hx * UL) - MATRIX3::identity()) * inv_m;
-
+*/
+  
   // get the components of the force 
   ORIGIN3 top(w.get_force());
   ORIGIN3 bot(w.get_torque());
-  VECTOR3 ttop(UL*top + UR*bot, pose); 
-  VECTOR3 tbot(LL*top + UL.transpose_mult(bot), pose); 
 
   // do the arithmetic
+  VECTOR3 ttop(hxiJ.transpose_mult(top) + iJ*bot, pose); 
+  VECTOR3 tbot(hxiJ*hx.transpose_mult(top) + top*m + hxiJ*bot, pose); 
+
   return SACCEL(ttop, tbot, pose);
 }
 
@@ -186,11 +195,12 @@ SFORCE SPATIAL_RB_INERTIA::operator*(const SACCEL& t) const
   ORIGIN3 tbot(t.get_linear());
 
   // do some precomputation
-  MATRIX3 hX = MATRIX3::skew_symmetric(h);
+  MATRIX3 hxm = MATRIX3::skew_symmetric(h*m);
+  MATRIX3 hxhxm = MATRIX3::skew_symmetric(h) * hxm; 
 
   // compute result
-  VECTOR3 rtop((tbot * m) - (hX * ttop), pose);
-  VECTOR3 rbot((J * ttop) + (hX * tbot), pose);
+  VECTOR3 rtop((tbot * m) - (hxm * ttop), pose);
+  VECTOR3 rbot(((J - hxhxm) * ttop) + (hxm * tbot), pose);
   return SFORCE(rtop, rbot, pose); 
 }
 
@@ -207,11 +217,12 @@ SMOMENTUM SPATIAL_RB_INERTIA::operator*(const SVELOCITY& t) const
   ORIGIN3 tbot(t.get_linear());
 
   // do some precomputation
-  MATRIX3 hX = MATRIX3::skew_symmetric(h);
+  MATRIX3 hxm = MATRIX3::skew_symmetric(h*m);
+  MATRIX3 hxhxm = MATRIX3::skew_symmetric(h) * hxm; 
 
   // compute result
-  VECTOR3 rtop((tbot * m) - (hX * ttop), pose);
-  VECTOR3 rbot((J * ttop) + (hX * tbot), pose);
+  VECTOR3 rtop((tbot * m) - (hxm * ttop), pose);
+  VECTOR3 rbot(((J - hxhxm) * ttop) + (hxm * tbot), pose);
   return SMOMENTUM(rtop, rbot, pose); 
 }
 

@@ -347,13 +347,13 @@ SFORCE TRANSFORM3::transform(const SFORCE& w) const
   const MATRIX3 ET = MATRIX3::transpose(E);
 
   // get the components of w
-  ORIGIN3 top(w.get_force());
-  ORIGIN3 bottom(w.get_torque());
+  VECTOR3 top = w.get_force();
+  VECTOR3 bottom = w.get_torque();
 
   // do the calculations
-  VECTOR3 Etop(E * top, target);
-  VECTOR3 cross = VECTOR3::cross(rv, Etop);
-  return SFORCE(Etop, (E * bottom) - cross, target);
+  VECTOR3 Etop(E * ORIGIN3(top), target);
+  VECTOR3 cross = VECTOR3::cross(rv, top);
+  return SFORCE(Etop, VECTOR3(E * ORIGIN3(bottom - cross), target), target);
 }
 
 /// Transforms a point from one pose to another 
@@ -371,13 +371,13 @@ SFORCE TRANSFORM3::inverse_transform(const SFORCE& w) const
   VECTOR3 rv(r, source);
 
   // get the components of w
-  ORIGIN3 top(w.get_force());
-  ORIGIN3 bottom(w.get_torque());
+  VECTOR3 top = w.get_force();
+  VECTOR3 bottom = w.get_torque();
 
   // do the calculations
-  VECTOR3 Etop(E * top, source);
-  VECTOR3 cross = VECTOR3::cross(rv, Etop);
-  return SFORCE(Etop, (E * bottom) - cross, source);
+  VECTOR3 Etop(E * ORIGIN3(top), source);
+  VECTOR3 cross = VECTOR3::cross(rv, top);
+  return SFORCE(Etop, VECTOR3(E * ORIGIN3(bottom - cross), source), source);
 }
 
 /// Transforms a velocity from one pose to another 
@@ -395,13 +395,13 @@ SVELOCITY TRANSFORM3::transform(const SVELOCITY& t) const
   const MATRIX3 ET = MATRIX3::transpose(E);
 
   // get the components of t 
-  ORIGIN3 top(t.get_angular());
-  ORIGIN3 bottom(t.get_linear());
+  VECTOR3 top = t.get_angular();
+  VECTOR3 bottom = t.get_linear();
 
   // do the calculations
-  VECTOR3 Etop(E * top, target);
-  VECTOR3 cross = VECTOR3::cross(rv, Etop);
-  return SVELOCITY(Etop, (E * bottom) - cross, target);
+  VECTOR3 Etop(E * ORIGIN3(top), target);
+  VECTOR3 cross = VECTOR3::cross(rv, top);
+  return SVELOCITY(Etop, VECTOR3(E * ORIGIN3(bottom - cross), target), target);
 }
 
 /// Transforms a velocity from one pose to another 
@@ -418,13 +418,13 @@ SVELOCITY TRANSFORM3::inverse_transform(const SVELOCITY& t) const
   const MATRIX3 ET = MATRIX3::transpose(E);
 
   // get the components of t 
-  ORIGIN3 top(t.get_linear());
-  ORIGIN3 bottom(t.get_angular());
+  VECTOR3 top = t.get_linear();
+  VECTOR3 bottom = t.get_angular();
 
   // do the calculations
-  VECTOR3 Etop(E * top, source);
-  VECTOR3 cross = VECTOR3::cross(r, Etop);
-  return SVELOCITY(Etop, (E * bottom) - cross, source);
+  VECTOR3 Etop(E * ORIGIN3(top), source);
+  VECTOR3 cross = VECTOR3::cross(r, top);
+  return SVELOCITY(Etop, VECTOR3(E * ORIGIN3(bottom - cross), source), source); 
 }
 
 /// Transforms a momentum from one pose to another 
@@ -442,13 +442,13 @@ SMOMENTUM TRANSFORM3::transform(const SMOMENTUM& t) const
   const MATRIX3 ET = MATRIX3::transpose(E);
 
   // get the components of t 
-  ORIGIN3 top(t.get_linear());
-  ORIGIN3 bottom(t.get_angular());
+  VECTOR3 top = t.get_linear();
+  VECTOR3 bottom = t.get_angular();
 
   // do the calculations
-  VECTOR3 Etop(E * top, target);
-  VECTOR3 cross = VECTOR3::cross(rv, Etop);
-  return SMOMENTUM(Etop, (E * bottom) - cross, target);
+  VECTOR3 Etop(E * ORIGIN3(top), target);
+  VECTOR3 cross = VECTOR3::cross(rv, top);
+  return SMOMENTUM(Etop, VECTOR3(E * ORIGIN3(bottom - cross), target), target);
 }
 
 /// Transforms a momentum from one pose to another 
@@ -465,13 +465,13 @@ SMOMENTUM TRANSFORM3::inverse_transform(const SMOMENTUM& t) const
   const MATRIX3 ET = MATRIX3::transpose(E);
 
   // get the components of t 
-  ORIGIN3 top(t.get_angular());
-  ORIGIN3 bottom(t.get_linear());
+  VECTOR3 top = t.get_angular();
+  VECTOR3 bottom = t.get_linear();
 
   // do the calculations
-  VECTOR3 Etop(E * top, source);
-  VECTOR3 cross = VECTOR3::cross(r, Etop);
-  return SMOMENTUM(Etop, (E * bottom) - cross, source);
+  VECTOR3 Etop(E * ORIGIN3(top), source);
+  VECTOR3 cross = VECTOR3::cross(r, top);
+  return SMOMENTUM(Etop, VECTOR3(E * ORIGIN3(bottom - cross), source), source);
 }
 
 /// Transforms an axis from one pose to another 
@@ -489,13 +489,13 @@ SAXIS TRANSFORM3::transform(const SAXIS& t) const
   const MATRIX3 ET = MATRIX3::transpose(E);
 
   // get the components of t 
-  ORIGIN3 top(t.get_angular());
-  ORIGIN3 bottom(t.get_linear());
+  VECTOR3 top = t.get_angular();
+  VECTOR3 bottom = t.get_linear();
 
   // do the calculations
-  VECTOR3 Etop(E * top, target);
-  VECTOR3 cross = VECTOR3::cross(rv, Etop);
-  return SAXIS(Etop, (E * bottom) - cross, target);
+  VECTOR3 Etop(E * ORIGIN3(top), target);
+  VECTOR3 cross = VECTOR3::cross(rv, top);
+  return SAXIS(Etop, VECTOR3(E * ORIGIN3(bottom - cross), target), target);
 }
 
 /// Transforms an axis from one pose to another 
@@ -512,13 +512,13 @@ SAXIS TRANSFORM3::inverse_transform(const SAXIS& t) const
   const MATRIX3 ET = MATRIX3::transpose(E);
 
   // get the components of t 
-  ORIGIN3 top(t.get_angular());
-  ORIGIN3 bottom(t.get_linear());
+  VECTOR3 top = t.get_angular();
+  VECTOR3 bottom = t.get_linear();
 
   // do the calculations
-  VECTOR3 Etop(E * top, source);
-  VECTOR3 cross = VECTOR3::cross(r, Etop);
-  return SAXIS(Etop, (E * bottom) - cross, source);
+  VECTOR3 Etop(E * ORIGIN3(top), source);
+  VECTOR3 cross = VECTOR3::cross(r, top);
+  return SAXIS(Etop, VECTOR3(E * ORIGIN3(bottom - cross), source), source);
 }
 
 /// Transforms an acceleration from one pose to another 
@@ -533,16 +533,15 @@ SACCEL TRANSFORM3::transform(const SACCEL& t) const
   ORIGIN3 r = -x;
   MATRIX3 E = q;
   VECTOR3 rv(r, target);
-  const MATRIX3 ET = MATRIX3::transpose(E);
 
   // get the components of t 
-  ORIGIN3 top(t.get_angular());
-  ORIGIN3 bottom(t.get_linear());
+  VECTOR3 top = t.get_angular();
+  VECTOR3 bottom = t.get_linear();
 
   // do the calculations
-  VECTOR3 Etop(E * top, target);
-  VECTOR3 cross = VECTOR3::cross(rv, Etop);
-  return SACCEL(Etop, (E * bottom) - cross, target);
+  VECTOR3 Etop(E * ORIGIN3(top), target);
+  VECTOR3 cross = VECTOR3::cross(rv, top);
+  return SACCEL(Etop, VECTOR3(E * ORIGIN3(bottom - cross), target), target);
 }
 
 /// Transforms an acceleration from one pose to another 
@@ -559,13 +558,13 @@ SACCEL TRANSFORM3::inverse_transform(const SACCEL& t) const
   const MATRIX3 ET = MATRIX3::transpose(E);
 
   // get the components of t 
-  ORIGIN3 top(t.get_angular());
-  ORIGIN3 bottom(t.get_linear());
+  VECTOR3 top = t.get_angular();
+  VECTOR3 bottom = t.get_linear();
 
   // do the calculations
-  VECTOR3 Etop(E * top, source);
-  VECTOR3 cross = VECTOR3::cross(r, Etop);
-  return SACCEL(Etop, (E * bottom) - cross, source);
+  VECTOR3 Etop(E * ORIGIN3(top), source);
+  VECTOR3 cross = VECTOR3::cross(r, top);
+  return SACCEL(Etop, VECTOR3(E * ORIGIN3(bottom - cross), target), source);
 }
 
 /// Transforms a rigid body inertia from one pose to another 
