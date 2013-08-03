@@ -404,7 +404,6 @@ SFORCE POSE3::transform(const SFORCE& w) const
   ORIGIN3 r;
   MATRIX3 E;
   get_r_E(r, E, false);
-  const MATRIX3 ET = MATRIX3::transpose(E);
 
   // get the components of w
   VECTOR3 top = w.get_force();
@@ -438,7 +437,6 @@ SFORCE POSE3::inverse_transform(const SFORCE& w) const
   ORIGIN3 r;
   MATRIX3 E;
   get_r_E(r, E, true);
-  const MATRIX3 ET = MATRIX3::transpose(E);
 
   // get the components of w
   VECTOR3 top = w.get_force();
@@ -477,8 +475,9 @@ std::vector<SFORCE>& POSE3::transform(boost::shared_ptr<const POSE3> target, con
   TRANSFORM3 Tx = calc_transform(source, target);
 
   // setup r and E
-  const ORIGIN3& r = Tx.x;
-  const MATRIX3 E = Tx.q;
+  ORIGIN3 r;
+  MATRIX3 E;
+  get_r_E(Tx, r, E);
   VECTOR3 rv(r, w[0].pose);
 
   // resize the result vector
@@ -514,8 +513,9 @@ SFORCE POSE3::transform(boost::shared_ptr<const POSE3> target, const SFORCE& v)
   TRANSFORM3 Tx = calc_transform(source, target);
 
   // setup r and E
-  const ORIGIN3& r = Tx.x;
-  const MATRIX3 E = Tx.q;
+  ORIGIN3 r;
+  MATRIX3 E;
+  get_r_E(Tx, r, E);
   VECTOR3 rv(r, v.pose);
 
   // get the components of v
@@ -616,8 +616,9 @@ SACCEL POSE3::transform(boost::shared_ptr<const POSE3> target, const SACCEL& t)
   TRANSFORM3 Tx = calc_transform(source, target);
 
   // setup r and E
-  const ORIGIN3& r = Tx.x;
-  const MATRIX3 E = Tx.q;
+  ORIGIN3 r;
+  MATRIX3 E;
+  get_r_E(Tx, r, E);
   VECTOR3 rv(r, t.pose);
 
   // the spatial transformation is:
@@ -661,8 +662,9 @@ std::vector<SACCEL>& POSE3::transform(boost::shared_ptr<const POSE3> target, con
   TRANSFORM3 Tx = calc_transform(source, target);
 
   // setup r and E
-  const ORIGIN3& r = Tx.x;
-  const MATRIX3 E = Tx.q;
+  ORIGIN3 r;
+  MATRIX3 E;
+  get_r_E(Tx, r, E);
   VECTOR3 rv(r, t[0].pose);
 
   // the spatial transformation is:
@@ -709,7 +711,6 @@ SVELOCITY POSE3::transform(const SVELOCITY& t) const
   ORIGIN3 r;
   MATRIX3 E;
   get_r_E(r, E, false);
-  const MATRIX3 ET = MATRIX3::transpose(E);
 
   // get the components of t 
   VECTOR3 top = t.get_angular();
@@ -743,7 +744,6 @@ SVELOCITY POSE3::inverse_transform(const SVELOCITY& t) const
   ORIGIN3 r;
   MATRIX3 E;
   get_r_E(r, E, true);
-  const MATRIX3 ET = MATRIX3::transpose(E);
 
   // get the components of t 
   VECTOR3 top = t.get_angular();
@@ -769,8 +769,9 @@ SVELOCITY POSE3::transform(boost::shared_ptr<const POSE3> target, const SVELOCIT
   TRANSFORM3 Tx = calc_transform(source, target);
 
   // setup r and E
-  const ORIGIN3& r = Tx.x;
-  const MATRIX3 E = Tx.q;
+  ORIGIN3 r;
+  MATRIX3 E;
+  get_r_E(Tx, r, E);
   VECTOR3 rv(r, t.pose);
 
   // get the components of t 
@@ -810,8 +811,9 @@ std::vector<SVELOCITY>& POSE3::transform(boost::shared_ptr<const POSE3> target, 
   TRANSFORM3 Tx = calc_transform(source, target);
 
   // setup r and E
-  const ORIGIN3& r = Tx.x;
-  const MATRIX3 E = Tx.q;
+  ORIGIN3 r;
+  MATRIX3 E;
+  get_r_E(Tx, r, E);
   VECTOR3 rv(r, t[0].pose);
 
   // resize the result vector
@@ -854,7 +856,6 @@ SAXIS POSE3::transform(const SAXIS& t) const
   ORIGIN3 r;
   MATRIX3 E;
   get_r_E(r, E, false);
-  const MATRIX3 ET = MATRIX3::transpose(E);
 
   // get the components of t 
   VECTOR3 top = t.get_angular();
@@ -888,7 +889,6 @@ SAXIS POSE3::inverse_transform(const SAXIS& t) const
   ORIGIN3 r;
   MATRIX3 E;
   get_r_E(r, E, true);
-  const MATRIX3 ET = MATRIX3::transpose(E);
 
   // get the components of t 
   VECTOR3 top = t.get_angular();
@@ -914,8 +914,9 @@ SAXIS POSE3::transform(boost::shared_ptr<const POSE3> target, const SAXIS& t)
   TRANSFORM3 Tx = calc_transform(source, target);
 
   // setup r and E
-  const ORIGIN3& r = Tx.x;
-  const MATRIX3 E = Tx.q;
+  ORIGIN3 r;
+  MATRIX3 E;
+  get_r_E(Tx, r, E);
   VECTOR3 rv(r, t.pose);
 
   // get the components of t 
@@ -955,8 +956,9 @@ std::vector<SAXIS>& POSE3::transform(boost::shared_ptr<const POSE3> target, cons
   TRANSFORM3 Tx = calc_transform(source, target);
 
   // setup r and E
-  const ORIGIN3& r = Tx.x;
-  const MATRIX3 E = Tx.q;
+  ORIGIN3 r;
+  MATRIX3 E;
+  get_r_E(Tx, r, E);
   VECTOR3 rv(r, t[0].pose);
 
   // resize the result vector
@@ -1000,7 +1002,6 @@ SMOMENTUM POSE3::inverse_transform(const SMOMENTUM& t) const
   ORIGIN3 r;
   MATRIX3 E;
   get_r_E(r, E, true);
-  const MATRIX3 ET = MATRIX3::transpose(E);
 
   // get the components of t 
   VECTOR3 top = t.get_linear();
@@ -1033,7 +1034,6 @@ SMOMENTUM POSE3::transform(const SMOMENTUM& t) const
   ORIGIN3 r;
   MATRIX3 E;
   get_r_E(r, E, false);
-  const MATRIX3 ET = MATRIX3::transpose(E);
 
   // get the components of t 
   VECTOR3 top = t.get_linear();
@@ -1059,8 +1059,9 @@ SMOMENTUM POSE3::transform(boost::shared_ptr<const POSE3> target, const SMOMENTU
   TRANSFORM3 Tx = calc_transform(source, target);
 
   // setup r and E
-  const ORIGIN3& r = Tx.x;
-  const MATRIX3 E = Tx.q;
+  ORIGIN3 r;
+  MATRIX3 E;
+  get_r_E(Tx, r, E);
   VECTOR3 rv(r, t.pose);
 
   // get the components of t 
@@ -1100,8 +1101,9 @@ std::vector<SMOMENTUM>& POSE3::transform(boost::shared_ptr<const POSE3> target, 
   TRANSFORM3 Tx = calc_transform(source, target);
 
   // setup r and E
-  const ORIGIN3& r = Tx.x;
-  const MATRIX3 E = Tx.q;
+  ORIGIN3 r;
+  MATRIX3 E;
+  get_r_E(Tx, r, E);
   VECTOR3 rv(r, t[0].pose);
 
   // resize the result vector
@@ -1287,18 +1289,44 @@ SPATIAL_AB_INERTIA POSE3::inverse_transform(const SPATIAL_AB_INERTIA& J) const
   return result;
 }
 
+/// Gets r and E from a transform 
+/**
+ * \param T a transformation from frame A to frame B
+ * \param r on return, the vector from A's origin to B's origin in A frame 
+ * \param E rotates vectors in A's orientation to vectors in B's orientation 
+ */ 
+void POSE3::get_r_E(const TRANSFORM3& T, ORIGIN3& r, MATRIX3& E)
+{
+  // x is the translation from frame A to frame B
+
+  // p_a
+  // bTa * p_a = bQa * p_a + bXa
+
+  // note that x is translation from relative pose to this pose
+  // q is rotation from vectors in this pose to relative pose 
+  E = T.q;
+  r = E.transpose_mult(-T.x);
+}
+
 /// Gets r and E from the current pose only
+/**
+ * Assume the current pose is frame A and the relative pose is frame B.
+ * \param r on return, the vector from A's origin to B's origin in A frame 
+ * \param E rotates vectors in A's orientation to vectors in B's orientation 
+ */ 
 void POSE3::get_r_E(ORIGIN3& r, MATRIX3& E, bool inverse) const
 {
+  // note that x is translation from relative pose to this pose
+  // q is rotation from vectors in this pose to relative pose 
   if (!inverse)
   {
     E = q;
-    r = -x;
+    r = E.transpose_mult(-x);
   }
   else
   {
     E = QUAT::invert(q);
-    r = E * x;
+    r = x;
   } 
 }
 
@@ -1354,8 +1382,9 @@ SPATIAL_AB_INERTIA POSE3::transform(boost::shared_ptr<const POSE3> target, const
   TRANSFORM3 Tx = calc_transform(source, target);
 
   // setup r and E
-  const ORIGIN3& r = Tx.x;
-  const MATRIX3 E = Tx.q;
+  ORIGIN3 r;
+  MATRIX3 E;
+  get_r_E(Tx, r, E);
   const MATRIX3 ET = MATRIX3::transpose(E);
 
   // precompute some things we'll need
@@ -1390,8 +1419,9 @@ SPATIAL_RB_INERTIA POSE3::transform(boost::shared_ptr<const POSE3> target, const
   TRANSFORM3 Tx = calc_transform(source, target);
 
   // setup r and E
-  const ORIGIN3& r = Tx.x;
-  const MATRIX3 E = Tx.q;
+  ORIGIN3 r;
+  MATRIX3 E;
+  get_r_E(Tx, r, E);
   const MATRIX3 ET = MATRIX3::transpose(E);
   VECTOR3 rv(r, target);
 

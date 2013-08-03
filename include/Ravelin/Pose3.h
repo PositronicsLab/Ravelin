@@ -60,7 +60,7 @@ class POSE3 : public boost::enable_shared_from_this<POSE3>
     SPATIAL_AB_INERTIA transform(const SPATIAL_AB_INERTIA& j) const;
     SPATIAL_AB_INERTIA inverse_transform(const SPATIAL_AB_INERTIA& j) const;
     static SPATIAL_AB_INERTIA transform(boost::shared_ptr<const POSE3> target, const SPATIAL_AB_INERTIA& j);
-    static TRANSFORM3 calc_relative_pose(boost::shared_ptr<const POSE3> source, boost::shared_ptr<const POSE3> target) { return source->calc_transform(target); }
+    static TRANSFORM3 calc_relative_pose(boost::shared_ptr<const POSE3> source, boost::shared_ptr<const POSE3> target) { return calc_transform(source, target); }
     VECTOR3 qG_mult(REAL qdw, REAL qdx, REAL qdy, REAL qdz) const;
     VECTOR3 qL_mult(REAL qdw, REAL qdx, REAL qdy, REAL qdz) const;
     QUAT qG_transpose_mult(const VECTOR3& omega) const;
@@ -93,6 +93,7 @@ class POSE3 : public boost::enable_shared_from_this<POSE3>
 
   private:
     void get_r_E(ORIGIN3& r, MATRIX3& E, bool inverse) const;
+    static void get_r_E(const TRANSFORM3& T, ORIGIN3& r, MATRIX3& E);
     TRANSFORM3 calc_transform(boost::shared_ptr<const POSE3> p) const { return calc_transform(shared_from_this(), p); }
     static TRANSFORM3 calc_transform(boost::shared_ptr<const POSE3> source, boost::shared_ptr<const POSE3> target);
     static bool is_common(boost::shared_ptr<const POSE3> source, boost::shared_ptr<const POSE3> p, unsigned& i);

@@ -341,10 +341,9 @@ SFORCE TRANSFORM3::transform(const SFORCE& w) const
   #endif
 
   // setup r and E
-  ORIGIN3 r = -x;
   MATRIX3 E = q;
+  ORIGIN3 r = E.transpose_mult(-x);
   VECTOR3 rv(r, target);
-  const MATRIX3 ET = MATRIX3::transpose(E);
 
   // get the components of w
   VECTOR3 top = w.get_force();
@@ -366,8 +365,7 @@ SFORCE TRANSFORM3::inverse_transform(const SFORCE& w) const
 
   // setup r and E
   MATRIX3 E = QUAT::invert(q);
-  ORIGIN3 r = E * x;
-  const MATRIX3 ET = MATRIX3::transpose(E);
+  const ORIGIN3& r = x;
   VECTOR3 rv(r, source);
 
   // get the components of w
@@ -389,10 +387,9 @@ SVELOCITY TRANSFORM3::transform(const SVELOCITY& t) const
   #endif
 
   // setup r and E
-  ORIGIN3 r = -x;
   MATRIX3 E = q;
+  ORIGIN3 r = E.transpose_mult(-x);
   VECTOR3 rv(r, target);
-  const MATRIX3 ET = MATRIX3::transpose(E);
 
   // get the components of t 
   VECTOR3 top = t.get_angular();
@@ -415,7 +412,6 @@ SVELOCITY TRANSFORM3::inverse_transform(const SVELOCITY& t) const
   // setup r and E
   MATRIX3 E = QUAT::invert(q);
   VECTOR3 r(E * x, source);
-  const MATRIX3 ET = MATRIX3::transpose(E);
 
   // get the components of t 
   VECTOR3 top = t.get_linear();
@@ -436,10 +432,9 @@ SMOMENTUM TRANSFORM3::transform(const SMOMENTUM& t) const
   #endif
 
   // setup r and E
-  ORIGIN3 r = -x;
   MATRIX3 E = q;
+  ORIGIN3 r = E.transpose_mult(-x);
   VECTOR3 rv(r, target);
-  const MATRIX3 ET = MATRIX3::transpose(E);
 
   // get the components of t 
   VECTOR3 top = t.get_linear();
@@ -462,7 +457,6 @@ SMOMENTUM TRANSFORM3::inverse_transform(const SMOMENTUM& t) const
   // setup r and E
   MATRIX3 E = QUAT::invert(q);
   VECTOR3 r(E * x, source);
-  const MATRIX3 ET = MATRIX3::transpose(E);
 
   // get the components of t 
   VECTOR3 top = t.get_angular();
@@ -483,10 +477,9 @@ SAXIS TRANSFORM3::transform(const SAXIS& t) const
   #endif
 
   // setup r and E
-  ORIGIN3 r = -x;
   MATRIX3 E = q;
+  ORIGIN3 r = E.transpose_mult(-x);
   VECTOR3 rv(r, target);
-  const MATRIX3 ET = MATRIX3::transpose(E);
 
   // get the components of t 
   VECTOR3 top = t.get_angular();
@@ -509,7 +502,6 @@ SAXIS TRANSFORM3::inverse_transform(const SAXIS& t) const
   // setup r and E
   MATRIX3 E = QUAT::invert(q);
   VECTOR3 r(E * x, source);
-  const MATRIX3 ET = MATRIX3::transpose(E);
 
   // get the components of t 
   VECTOR3 top = t.get_angular();
@@ -530,9 +522,9 @@ SACCEL TRANSFORM3::transform(const SACCEL& t) const
   #endif
 
   // setup r and E
-  ORIGIN3 r = -x;
   MATRIX3 E = q;
-  VECTOR3 rv(r, target);
+  ORIGIN3 r = E.transpose_mult(-x);
+  VECTOR3 rv(r, t.pose);
 
   // get the components of t 
   VECTOR3 top = t.get_angular();
@@ -555,7 +547,6 @@ SACCEL TRANSFORM3::inverse_transform(const SACCEL& t) const
   // setup r and E
   MATRIX3 E = QUAT::invert(q);
   VECTOR3 r(E * x, source);
-  const MATRIX3 ET = MATRIX3::transpose(E);
 
   // get the components of t 
   VECTOR3 top = t.get_angular();
@@ -576,8 +567,8 @@ SPATIAL_RB_INERTIA TRANSFORM3::transform(const SPATIAL_RB_INERTIA& J) const
   #endif
 
   // setup r and E
-  ORIGIN3 r = -x;
   MATRIX3 E = q;
+  ORIGIN3 r = E.transpose_mult(-x);
   VECTOR3 rv(r, target);
   const MATRIX3 ET = MATRIX3::transpose(E);
 
@@ -607,7 +598,7 @@ SPATIAL_RB_INERTIA TRANSFORM3::inverse_transform(const SPATIAL_RB_INERTIA& J) co
 
   // setup r and E
   MATRIX3 E = QUAT::invert(q);
-  ORIGIN3 r = E * x;
+  const ORIGIN3& r = x;
   VECTOR3 rv(r, target);
   const MATRIX3 ET = MATRIX3::transpose(E);
 
@@ -636,9 +627,9 @@ SPATIAL_AB_INERTIA TRANSFORM3::transform(const SPATIAL_AB_INERTIA& J) const
   #endif
 
   // setup r and E
-  ORIGIN3 r = -x;
   MATRIX3 E = q;
   const MATRIX3 ET = MATRIX3::transpose(E);
+  ORIGIN3 r = ET.mult(-x);
   VECTOR3 rv(r, target);
 
   // precompute some things we'll need
@@ -668,7 +659,7 @@ SPATIAL_AB_INERTIA TRANSFORM3::inverse_transform(const SPATIAL_AB_INERTIA& J) co
 
   // setup r and E
   MATRIX3 E = QUAT::invert(q);
-  ORIGIN3 r = E * x;
+  const ORIGIN3& r = x;
   const MATRIX3 ET = MATRIX3::transpose(E);
   VECTOR3 rv(r, source);
 
