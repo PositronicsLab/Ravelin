@@ -27,6 +27,7 @@ SPATIAL_RB_INERTIA::SPATIAL_RB_INERTIA(REAL m, const VECTOR3& h, const MATRIX3& 
 /// Copies a spatial matrix to this one 
 SPATIAL_RB_INERTIA& SPATIAL_RB_INERTIA::operator=(const SPATIAL_RB_INERTIA& m)
 {
+  this->pose = m.pose;
   this->m = m.m;
   this->h = m.h;
   this->J = m.J;
