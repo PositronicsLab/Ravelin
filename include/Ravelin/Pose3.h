@@ -28,8 +28,8 @@ class POSE3 : public boost::enable_shared_from_this<POSE3>
     static VECTOR3 interpolate_vector(const POSE3& m1, const POSE3& m2, REAL t, const ORIGIN3& o);
     static POINT3 interpolate_point(const POSE3& m1, const POSE3& m2, REAL t, const ORIGIN3& o);
     static bool rel_equal(const POSE3& p1, const POSE3& p2, REAL tol = EPS);
-    POINT3 transform(const POINT3& p) const;
-    VECTOR3 transform(const VECTOR3& v) const;
+    POINT3 transform(const POINT3& p) const { return transform(rpose, p); }
+    VECTOR3 transform(const VECTOR3& v) const { return transform(rpose, v); }
     POINT3 inverse_transform(const POINT3& p) const;
     VECTOR3 inverse_transform(const VECTOR3& v) const;
     static POINT3 transform(boost::shared_ptr<const POSE3> target, const POINT3& v);
@@ -54,10 +54,10 @@ class POSE3 : public boost::enable_shared_from_this<POSE3>
     SACCEL inverse_transform(const SACCEL& t) const;
     static SACCEL transform(boost::shared_ptr<const POSE3> target, const SACCEL& t);
     static std::vector<SACCEL>& transform(boost::shared_ptr<const POSE3> target, const std::vector<SACCEL>& t, std::vector<SACCEL>& result);
-    SPATIAL_RB_INERTIA transform(const SPATIAL_RB_INERTIA& j) const;
+    SPATIAL_RB_INERTIA transform(const SPATIAL_RB_INERTIA& j) const { return transform(rpose, j); }
     SPATIAL_RB_INERTIA inverse_transform(const SPATIAL_RB_INERTIA& j) const;
     static SPATIAL_RB_INERTIA transform(boost::shared_ptr<const POSE3> target, const SPATIAL_RB_INERTIA& j);
-    SPATIAL_AB_INERTIA transform(const SPATIAL_AB_INERTIA& j) const;
+    SPATIAL_AB_INERTIA transform(const SPATIAL_AB_INERTIA& j) const { return transform(rpose, j); }
     SPATIAL_AB_INERTIA inverse_transform(const SPATIAL_AB_INERTIA& j) const;
     static SPATIAL_AB_INERTIA transform(boost::shared_ptr<const POSE3> target, const SPATIAL_AB_INERTIA& j);
     static TRANSFORM3 calc_relative_pose(boost::shared_ptr<const POSE3> source, boost::shared_ptr<const POSE3> target) { return calc_transform(source, target); }
@@ -92,6 +92,8 @@ class POSE3 : public boost::enable_shared_from_this<POSE3>
     boost::shared_ptr<const POSE3> rpose; 
 
   private:
+    static void transform_spatial(boost::shared_ptr<const POSE3> target, const SVECTOR6& v, SVECTOR6& result);
+    static void transform_spatial(boost::shared_ptr<const POSE3> target, const SVECTOR6& v, const VECTOR3& rv, const MATRIX3& E, SVECTOR6& result);
     void get_r_E(ORIGIN3& r, MATRIX3& E, bool inverse) const;
     static void get_r_E(const TRANSFORM3& T, ORIGIN3& r, MATRIX3& E);
     TRANSFORM3 calc_transform(boost::shared_ptr<const POSE3> p) const { return calc_transform(shared_from_this(), p); }

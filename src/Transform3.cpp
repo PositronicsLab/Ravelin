@@ -335,6 +335,14 @@ POINT3 TRANSFORM3::inverse_transform(const POINT3& p) const
 /// Transforms a force from one pose to another 
 SFORCE TRANSFORM3::transform(const SFORCE& w) const
 {
+  SFORCE result;
+  transform_spatial(w, result);
+  return result;
+}
+
+/// Transforms a spatial vector
+void TRANSFORM3::transform_spatial(const SVECTOR6& w, SVECTOR6& result) const
+{
   #ifndef NEXCEPT
   if (w.pose != source)
     throw FrameException();
@@ -346,17 +354,27 @@ SFORCE TRANSFORM3::transform(const SFORCE& w) const
   VECTOR3 rv(r, target);
 
   // get the components of w
-  VECTOR3 top = w.get_force();
-  VECTOR3 bottom = w.get_torque();
+  VECTOR3 top = w.get_upper();
+  VECTOR3 bottom = w.get_lower();
 
   // do the calculations
   VECTOR3 Etop(E * ORIGIN3(top), target);
   VECTOR3 cross = VECTOR3::cross(rv, top);
-  return SFORCE(Etop, VECTOR3(E * ORIGIN3(bottom - cross), target), target);
+  result.set_upper(Etop);
+  result.set_lower(VECTOR3(E * ORIGIN3(bottom - cross), target));
+  result.pose = target;
 }
 
-/// Transforms a point from one pose to another 
+/// Transforms a force from one pose to another 
 SFORCE TRANSFORM3::inverse_transform(const SFORCE& w) const
+{
+  SFORCE result;
+  inverse_transform_spatial(w, result);
+  return result; 
+}
+
+/// Transforms a spatial vector from one pose to another 
+void TRANSFORM3::inverse_transform_spatial(const SVECTOR6& w, SVECTOR6& result) const
 {
   #ifndef NEXCEPT
   if (w.pose != target)
@@ -369,193 +387,79 @@ SFORCE TRANSFORM3::inverse_transform(const SFORCE& w) const
   VECTOR3 rv(r, source);
 
   // get the components of w
-  VECTOR3 top = w.get_force();
-  VECTOR3 bottom = w.get_torque();
+  VECTOR3 top = w.get_upper();
+  VECTOR3 bottom = w.get_lower();
 
   // do the calculations
   VECTOR3 Etop(E * ORIGIN3(top), source);
   VECTOR3 cross = VECTOR3::cross(rv, top);
-  return SFORCE(Etop, VECTOR3(E * ORIGIN3(bottom - cross), source), source);
+  result.set_upper(Etop);
+  result.set_lower(VECTOR3(E * ORIGIN3(bottom - cross), source));
+  result.pose = source;
 }
 
 /// Transforms a velocity from one pose to another 
 SVELOCITY TRANSFORM3::transform(const SVELOCITY& t) const
 {
-  #ifndef NEXCEPT
-  if (t.pose != source)
-    throw FrameException();
-  #endif
-
-  // setup r and E
-  MATRIX3 E = q;
-  ORIGIN3 r = E.transpose_mult(-x);
-  VECTOR3 rv(r, target);
-
-  // get the components of t 
-  VECTOR3 top = t.get_angular();
-  VECTOR3 bottom = t.get_linear();
-
-  // do the calculations
-  VECTOR3 Etop(E * ORIGIN3(top), target);
-  VECTOR3 cross = VECTOR3::cross(rv, top);
-  return SVELOCITY(Etop, VECTOR3(E * ORIGIN3(bottom - cross), target), target);
+  SVELOCITY result;
+  transform_spatial(t, result);
+  return result;
 }
 
 /// Transforms a velocity from one pose to another 
 SVELOCITY TRANSFORM3::inverse_transform(const SVELOCITY& t) const
 {
-  #ifndef NEXCEPT
-  if (t.pose != target)
-    throw FrameException();
-  #endif
-
-  // setup r and E
-  MATRIX3 E = QUAT::invert(q);
-  VECTOR3 r(E * x, source);
-
-  // get the components of t 
-  VECTOR3 top = t.get_linear();
-  VECTOR3 bottom = t.get_angular();
-
-  // do the calculations
-  VECTOR3 Etop(E * ORIGIN3(top), source);
-  VECTOR3 cross = VECTOR3::cross(r, top);
-  return SVELOCITY(Etop, VECTOR3(E * ORIGIN3(bottom - cross), source), source); 
+  SVELOCITY result;
+  inverse_transform_spatial(t, result);
+  return result;
 }
 
 /// Transforms a momentum from one pose to another 
 SMOMENTUM TRANSFORM3::transform(const SMOMENTUM& t) const
 {
-  #ifndef NEXCEPT
-  if (t.pose != source)
-    throw FrameException();
-  #endif
-
-  // setup r and E
-  MATRIX3 E = q;
-  ORIGIN3 r = E.transpose_mult(-x);
-  VECTOR3 rv(r, target);
-
-  // get the components of t 
-  VECTOR3 top = t.get_linear();
-  VECTOR3 bottom = t.get_angular();
-
-  // do the calculations
-  VECTOR3 Etop(E * ORIGIN3(top), target);
-  VECTOR3 cross = VECTOR3::cross(rv, top);
-  return SMOMENTUM(Etop, VECTOR3(E * ORIGIN3(bottom - cross), target), target);
+  SMOMENTUM result;
+  transform_spatial(t, result);
+  return result;
 }
 
 /// Transforms a momentum from one pose to another 
 SMOMENTUM TRANSFORM3::inverse_transform(const SMOMENTUM& t) const
 {
-  #ifndef NEXCEPT
-  if (t.pose != target)
-    throw FrameException();
-  #endif
-
-  // setup r and E
-  MATRIX3 E = QUAT::invert(q);
-  VECTOR3 r(E * x, source);
-
-  // get the components of t 
-  VECTOR3 top = t.get_angular();
-  VECTOR3 bottom = t.get_linear();
-
-  // do the calculations
-  VECTOR3 Etop(E * ORIGIN3(top), source);
-  VECTOR3 cross = VECTOR3::cross(r, top);
-  return SMOMENTUM(Etop, VECTOR3(E * ORIGIN3(bottom - cross), source), source);
+  SMOMENTUM result;
+  inverse_transform_spatial(t, result);
+  return result;
 }
 
 /// Transforms an axis from one pose to another 
 SAXIS TRANSFORM3::transform(const SAXIS& t) const
 {
-  #ifndef NEXCEPT
-  if (t.pose != source)
-    throw FrameException();
-  #endif
-
-  // setup r and E
-  MATRIX3 E = q;
-  ORIGIN3 r = E.transpose_mult(-x);
-  VECTOR3 rv(r, target);
-
-  // get the components of t 
-  VECTOR3 top = t.get_angular();
-  VECTOR3 bottom = t.get_linear();
-
-  // do the calculations
-  VECTOR3 Etop(E * ORIGIN3(top), target);
-  VECTOR3 cross = VECTOR3::cross(rv, top);
-  return SAXIS(Etop, VECTOR3(E * ORIGIN3(bottom - cross), target), target);
+  SAXIS result;
+  transform_spatial(t, result);
+  return result;
 }
 
 /// Transforms an axis from one pose to another 
 SAXIS TRANSFORM3::inverse_transform(const SAXIS& t) const
 {
-  #ifndef NEXCEPT
-  if (t.pose != target)
-    throw FrameException();
-  #endif
-
-  // setup r and E
-  MATRIX3 E = QUAT::invert(q);
-  VECTOR3 r(E * x, source);
-
-  // get the components of t 
-  VECTOR3 top = t.get_angular();
-  VECTOR3 bottom = t.get_linear();
-
-  // do the calculations
-  VECTOR3 Etop(E * ORIGIN3(top), source);
-  VECTOR3 cross = VECTOR3::cross(r, top);
-  return SAXIS(Etop, VECTOR3(E * ORIGIN3(bottom - cross), source), source);
+  SAXIS result;
+  inverse_transform_spatial(t, result);
+  return result;
 }
 
 /// Transforms an acceleration from one pose to another 
 SACCEL TRANSFORM3::transform(const SACCEL& t) const
 {
-  #ifndef NEXCEPT
-  if (t.pose != source)
-    throw FrameException();
-  #endif
-
-  // setup r and E
-  MATRIX3 E = q;
-  ORIGIN3 r = E.transpose_mult(-x);
-  VECTOR3 rv(r, t.pose);
-
-  // get the components of t 
-  VECTOR3 top = t.get_angular();
-  VECTOR3 bottom = t.get_linear();
-
-  // do the calculations
-  VECTOR3 Etop(E * ORIGIN3(top), target);
-  VECTOR3 cross = VECTOR3::cross(rv, top);
-  return SACCEL(Etop, VECTOR3(E * ORIGIN3(bottom - cross), target), target);
+  SACCEL result;
+  transform_spatial(t, result);
+  return result;
 }
 
 /// Transforms an acceleration from one pose to another 
 SACCEL TRANSFORM3::inverse_transform(const SACCEL& t) const
 {
-  #ifndef NEXCEPT
-  if (t.pose != target)
-    throw FrameException();
-  #endif
-
-  // setup r and E
-  MATRIX3 E = QUAT::invert(q);
-  VECTOR3 r(E * x, source);
-
-  // get the components of t 
-  VECTOR3 top = t.get_angular();
-  VECTOR3 bottom = t.get_linear();
-
-  // do the calculations
-  VECTOR3 Etop(E * ORIGIN3(top), source);
-  VECTOR3 cross = VECTOR3::cross(r, top);
-  return SACCEL(Etop, VECTOR3(E * ORIGIN3(bottom - cross), target), source);
+  SACCEL result;
+  inverse_transform_spatial(t, result);
+  return result;
 }
 
 /// Transforms a rigid body inertia from one pose to another 

@@ -73,6 +73,10 @@ class TRANSFORM3
 
     /// the "target" pose
     boost::shared_ptr<const POSE3> target; 
+
+  private:
+    void transform_spatial(const SVECTOR6& w, SVECTOR6& result) const;
+    void inverse_transform_spatial(const SVECTOR6& w, SVECTOR6& result) const;
 }; // end class
 
 std::ostream& operator<<(std::ostream& out, const TRANSFORM3& m);

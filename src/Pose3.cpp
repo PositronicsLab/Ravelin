@@ -304,26 +304,6 @@ POSE3 POSE3::operator*(const POSE3& p) const
 }
 
 /// Transforms a vector from one pose to another 
-VECTOR3 POSE3::transform(const VECTOR3& v) const
-{
-  #ifndef NEXCEPT
-  boost::shared_ptr<const POSE3> pose;
-  try
-  {
-    pose = shared_from_this();
-  }
-  catch (boost::bad_weak_ptr e)
-  {
-    std::cerr << "Pose3::transform() - pose allocated on stack!" << std::endl;
-  }
-  if (v.pose != pose)
-    throw FrameException();
-  #endif
-
-  return VECTOR3(q * ORIGIN3(v), rpose);
-}
-
-/// Transforms a vector from one pose to another 
 VECTOR3 POSE3::inverse_transform(const VECTOR3& v) const
 {
   boost::shared_ptr<const POSE3> pose;
@@ -340,27 +320,7 @@ VECTOR3 POSE3::inverse_transform(const VECTOR3& v) const
     throw FrameException();
   #endif
 
-  return VECTOR3(QUAT::invert(q) * ORIGIN3(v), pose);
-}
-
-/// Transforms a point from one pose to another 
-POINT3 POSE3::transform(const POINT3& p) const
-{
-  #ifndef NEXCEPT
-  boost::shared_ptr<const POSE3> pose;
-  try
-  {
-    pose = shared_from_this();
-  }
-  catch (boost::bad_weak_ptr e)
-  {
-    std::cerr << "Pose3::transform() - pose allocated on stack!" << std::endl;
-  }
-  if (p.pose != pose)
-    throw FrameException();
-  #endif
-
-  return POINT3(q * ORIGIN3(p) + x, rpose);
+  return transform(pose, v);
 }
 
 /// Transforms a point from one pose to another 
@@ -380,39 +340,7 @@ POINT3 POSE3::inverse_transform(const POINT3& p) const
     throw FrameException();
   #endif
 
-  return POINT3(QUAT::invert(q) * ORIGIN3(p - x), pose);
-}
-
-/// Transforms a force from one pose to another 
-SFORCE POSE3::transform(const SFORCE& w) const
-{
-  #ifndef NEXCEPT
-  boost::shared_ptr<const POSE3> pose;
-  try
-  {
-    pose = shared_from_this();
-  }
-  catch (boost::bad_weak_ptr e)
-  {
-    std::cerr << "Pose3::transform() - pose allocated on stack!" << std::endl;
-  }
-  if (w.pose != pose)
-    throw FrameException();
-  #endif
-
-  // setup r and E
-  ORIGIN3 r;
-  MATRIX3 E;
-  get_r_E(r, E, false);
-
-  // get the components of w
-  VECTOR3 top = w.get_force();
-  VECTOR3 bottom = w.get_torque();
-
-  // do the calculations
-  VECTOR3 Etop(E * ORIGIN3(top), rpose);
-  VECTOR3 cross = VECTOR3::cross(VECTOR3(r, rpose), top);
-  return SFORCE(Etop, VECTOR3(E * ORIGIN3(bottom - cross), rpose), rpose);
+  return transform(pose, p); 
 }
 
 /// Transforms a point from one pose to another 
@@ -433,19 +361,7 @@ SFORCE POSE3::inverse_transform(const SFORCE& w) const
     throw FrameException();
   #endif
 
-  // setup r and E
-  ORIGIN3 r;
-  MATRIX3 E;
-  get_r_E(r, E, true);
-
-  // get the components of w
-  VECTOR3 top = w.get_force();
-  VECTOR3 bottom = w.get_torque();
-
-  // do the calculations
-  VECTOR3 Etop(E * ORIGIN3(top), pose);
-  VECTOR3 cross = VECTOR3::cross(VECTOR3(r, pose), top);
-  return SFORCE(Etop, VECTOR3(E * ORIGIN3(bottom - cross), pose), pose);
+  return transform(pose, w);
 }
 
 /// Transforms a vector of forcees 
@@ -485,29 +401,50 @@ std::vector<SFORCE>& POSE3::transform(boost::shared_ptr<const POSE3> target, con
 
   // look over all forcees
   for (unsigned i=0; i< w.size(); i++)
-  {
-    // get the components of w[i] 
-    VECTOR3 top = w[i].get_force();
-    VECTOR3 bottom = w[i].get_torque();
-
-    // do the calculations
-    VECTOR3 Etop(E * ORIGIN3(top), target);
-    VECTOR3 cross = VECTOR3::cross(rv, top);
-    result[i] = SFORCE(Etop, VECTOR3(E * ORIGIN3(bottom - cross), target), target);
-  }
+    transform_spatial(target, w[i], rv, E, result[i]);
 
   return result;
 }
 
+/// transforms a spatial vector using precomputation
+void POSE3::transform_spatial(boost::shared_ptr<const POSE3> target, const SVECTOR6& w, const VECTOR3& rv, const MATRIX3& E, SVECTOR6& result)
+{
+  // get the components of w[i] 
+  VECTOR3 top = w.get_upper();
+  VECTOR3 bottom = w.get_lower();
+
+  // do the calculations
+  VECTOR3 Etop(E * ORIGIN3(top), target);
+  VECTOR3 cross = VECTOR3::cross(rv, top);
+  result.set_upper(Etop);
+  result.set_lower(VECTOR3(E * ORIGIN3(bottom - cross), target));
+  result.pose = target;
+} 
+
 /// Transforms the force 
 SFORCE POSE3::transform(boost::shared_ptr<const POSE3> target, const SFORCE& v)
+{
+  // setup the force
+  SFORCE f;
+
+  // do the transform
+  transform_spatial(target, v, f);
+
+  return f;
+}
+
+/// Transforms a spatial vector
+void POSE3::transform_spatial(boost::shared_ptr<const POSE3> target, const SVECTOR6& v, SVECTOR6& s)
 {
   // setup the source pose 
   boost::shared_ptr<const POSE3> source = v.pose;
 
   // quick check
   if (source == target)
-    return v;
+  {
+    s=v;
+    return;
+  }
 
   // compute the relative transform
   TRANSFORM3 Tx = calc_transform(source, target);
@@ -519,49 +456,15 @@ SFORCE POSE3::transform(boost::shared_ptr<const POSE3> target, const SFORCE& v)
   VECTOR3 rv(r, v.pose);
 
   // get the components of v
-  VECTOR3 top = v.get_force();
-  VECTOR3 bottom = v.get_torque();
+  VECTOR3 top = v.get_upper();
+  VECTOR3 bottom = v.get_lower();
 
   // do the calculations
   VECTOR3 Etop(E * ORIGIN3(top), target);
   VECTOR3 cross = VECTOR3::cross(rv, top);
-  return SFORCE(Etop, VECTOR3(E * ORIGIN3(bottom - cross), target), target);
-}
-
-/// Transforms an acceleration from one pose to another 
-SACCEL POSE3::transform(const SACCEL& t) const
-{
-  #ifndef NEXCEPT
-  boost::shared_ptr<const POSE3> pose;
-  try
-  {
-    pose = shared_from_this();
-  }
-  catch (boost::bad_weak_ptr e)
-  {
-    std::cerr << "Pose3::transform() - pose allocated on stack!" << std::endl;
-  }
-  if (t.pose != pose)
-    throw FrameException();
-  #endif
-
-  // setup r and E
-  ORIGIN3 r;
-  MATRIX3 E;
-  get_r_E(r, E, false);
-
-  // the spatial transformation is:
-  // | E    0 |
-  // | Erx' E |
-
-  // get the components of t 
-  VECTOR3 top = t.get_angular();
-  VECTOR3 bottom = t.get_linear();
-
-  // do the calculations
-  VECTOR3 Etop(E * ORIGIN3(top), rpose);
-  VECTOR3 cross = VECTOR3::cross(VECTOR3(r, rpose), top);
-  return SACCEL(Etop, VECTOR3(E * ORIGIN3(bottom - cross), rpose), rpose);
+  s.set_upper(Etop);
+  s.set_lower(VECTOR3(E * ORIGIN3(bottom - cross), target));
+  s.pose = target;
 }
 
 /// Transforms an acceleration from one pose to another 
@@ -582,57 +485,19 @@ SACCEL POSE3::inverse_transform(const SACCEL& t) const
     throw FrameException();
   #endif
 
-  // the spatial transformation is:
-  // | E'    0  |
-  // | rx'E' E' |
-
-  // setup r and E
-  ORIGIN3 r;
-  MATRIX3 E;
-  get_r_E(r, E, true);
-  const MATRIX3 ET = MATRIX3::transpose(E);
-
-  // get the components of t 
-  VECTOR3 top = t.get_angular();
-  VECTOR3 bottom = t.get_linear();
-
-  // do the calculations
-  VECTOR3 Etop(ET * ORIGIN3(top), pose);
-  VECTOR3 cross = VECTOR3::cross(VECTOR3(r, pose), Etop);
-  return SACCEL(Etop, cross + ET*ORIGIN3(bottom), pose);
+  return transform(pose, t); 
 }
 
 /// Transforms the acceleration 
 SACCEL POSE3::transform(boost::shared_ptr<const POSE3> target, const SACCEL& t)
 {
-  // setup the source pose 
-  boost::shared_ptr<const POSE3> source = t.pose;
+  // setup the acceleration 
+  SACCEL a;
 
-  // quick check
-  if (source == target)
-    return t;
+  // do the transform
+  transform_spatial(target, t, a);
 
-  // compute the relative transform
-  TRANSFORM3 Tx = calc_transform(source, target);
-
-  // setup r and E
-  ORIGIN3 r;
-  MATRIX3 E;
-  get_r_E(Tx, r, E);
-  VECTOR3 rv(r, t.pose);
-
-  // the spatial transformation is:
-  // | E    0 |
-  // | Erx' E |
-
-  // get the components of t 
-  VECTOR3 top = t.get_angular();
-  VECTOR3 bottom = t.get_linear();
-
-  // do the calculations
-  VECTOR3 Etop(E * ORIGIN3(top), target);
-  VECTOR3 cross = VECTOR3::cross(rv, top);
-  return SACCEL(Etop, VECTOR3(E * ORIGIN3(bottom - cross), target), target);
+  return a;
 }
 
 /// Transforms a vector of accelerations 
@@ -674,52 +539,11 @@ std::vector<SACCEL>& POSE3::transform(boost::shared_ptr<const POSE3> target, con
   // resize the result vector
   result.resize(t.size());
 
-  // look over all forcees
+  // transform 
   for (unsigned i=0; i< t.size(); i++)
-  {
-    // get the components of t[i] 
-    VECTOR3 top = t[i].get_angular();
-    VECTOR3 bottom = t[i].get_linear();
-
-    // do the calculations
-    VECTOR3 Etop(E * ORIGIN3(top), target);
-    VECTOR3 cross = VECTOR3::cross(rv, top);
-    result[i] = SACCEL(Etop, VECTOR3(E * ORIGIN3(bottom- cross), target), target);
-  }
+    transform_spatial(target, t[i], rv, E, result[i]);
 
   return result;
-}
-
-/// Transforms a velocity from one pose to another 
-SVELOCITY POSE3::transform(const SVELOCITY& t) const
-{
-  #ifndef NEXCEPT
-  boost::shared_ptr<const POSE3> pose;
-  try
-  {
-    pose = shared_from_this();
-  }
-  catch (boost::bad_weak_ptr e)
-  {
-    std::cerr << "Pose3::transform() - pose allocated on stack!" << std::endl;
-  }
-  if (t.pose != pose)
-    throw FrameException();
-  #endif
-
-  // setup r and E
-  ORIGIN3 r;
-  MATRIX3 E;
-  get_r_E(r, E, false);
-
-  // get the components of t 
-  VECTOR3 top = t.get_angular();
-  VECTOR3 bottom = t.get_linear();
-
-  // do the calculations
-  VECTOR3 Etop(E * ORIGIN3(top), rpose);
-  VECTOR3 cross = VECTOR3::cross(VECTOR3(r, rpose), Etop);
-  return SVELOCITY(Etop, VECTOR3(E * ORIGIN3(bottom - cross), rpose), rpose);
 }
 
 /// Transforms a velocity from one pose to another 
@@ -740,48 +564,15 @@ SVELOCITY POSE3::inverse_transform(const SVELOCITY& t) const
     throw FrameException();
   #endif
 
-  // setup r and E
-  ORIGIN3 r;
-  MATRIX3 E;
-  get_r_E(r, E, true);
-
-  // get the components of t 
-  VECTOR3 top = t.get_angular();
-  VECTOR3 bottom = t.get_linear();
-
-  // do the calculations
-  VECTOR3 Etop(E * ORIGIN3(top), pose);
-  VECTOR3 cross = VECTOR3::cross(VECTOR3(r, pose), Etop);
-  return SVELOCITY(Etop, VECTOR3(E * ORIGIN3(bottom - cross), pose), pose);
+  return transform(pose, t);
 }
 
 /// Transforms the velocity  
 SVELOCITY POSE3::transform(boost::shared_ptr<const POSE3> target, const SVELOCITY& t)
 {
-  // setup the source pose 
-  boost::shared_ptr<const POSE3> source = t.pose;
-
-  // quick check
-  if (source == target)
-    return t;
-
-  // compute the relative transform
-  TRANSFORM3 Tx = calc_transform(source, target);
-
-  // setup r and E
-  ORIGIN3 r;
-  MATRIX3 E;
-  get_r_E(Tx, r, E);
-  VECTOR3 rv(r, t.pose);
-
-  // get the components of t 
-  VECTOR3 top = t.get_angular();
-  VECTOR3 bottom = t.get_linear();
-
-  // do the calculations
-  VECTOR3 Etop(E * ORIGIN3(top), target);
-  VECTOR3 cross = VECTOR3::cross(rv, top);
-  return SVELOCITY(Etop, VECTOR3(E * ORIGIN3(bottom - cross), target), target);
+  SVELOCITY v;
+  transform_spatial(target, t, v);
+  return v;
 }
 
 /// Transforms a vector of velocities 
@@ -819,52 +610,11 @@ std::vector<SVELOCITY>& POSE3::transform(boost::shared_ptr<const POSE3> target, 
   // resize the result vector
   result.resize(t.size());
 
-  // look over all forcees
+  // transform the individual vectors 
   for (unsigned i=0; i< t.size(); i++)
-  {
-    // get the components of t[i] 
-    VECTOR3 top = t[i].get_angular();
-    VECTOR3 bottom = t[i].get_linear();
-
-    // do the calculations
-    VECTOR3 Etop(E * ORIGIN3(top), target);
-    VECTOR3 cross = VECTOR3::cross(rv, top);
-    result[i] = SVELOCITY(Etop, VECTOR3(E * ORIGIN3(bottom - cross), target), target);
-  }
+    transform_spatial(target, t[i], rv, E, result[i]);
 
   return result;
-}
-
-/// Transforms an axis from one pose to another 
-SAXIS POSE3::transform(const SAXIS& t) const
-{
-  #ifndef NEXCEPT
-  boost::shared_ptr<const POSE3> pose;
-  try
-  {
-    pose = shared_from_this();
-  }
-  catch (boost::bad_weak_ptr e)
-  {
-    std::cerr << "Pose3::transform() - pose allocated on stack!" << std::endl;
-  }
-  if (t.pose != pose)
-    throw FrameException();
-  #endif
-
-  // setup r and E
-  ORIGIN3 r;
-  MATRIX3 E;
-  get_r_E(r, E, false);
-
-  // get the components of t 
-  VECTOR3 top = t.get_angular();
-  VECTOR3 bottom = t.get_linear();
-
-  // do the calculations
-  VECTOR3 Etop(E * ORIGIN3(top), rpose);
-  VECTOR3 cross = VECTOR3::cross(VECTOR3(r, rpose), top);
-  return SAXIS(Etop, VECTOR3(E * ORIGIN3(bottom - cross), rpose), rpose);
 }
 
 /// Transforms an axis from one pose to another 
@@ -885,48 +635,15 @@ SAXIS POSE3::inverse_transform(const SAXIS& t) const
     throw FrameException();
   #endif
 
-  // setup r and E
-  ORIGIN3 r;
-  MATRIX3 E;
-  get_r_E(r, E, true);
-
-  // get the components of t 
-  VECTOR3 top = t.get_angular();
-  VECTOR3 bottom = t.get_linear();
-
-  // do the calculations
-  VECTOR3 Etop(E * ORIGIN3(top), pose);
-  VECTOR3 cross = VECTOR3::cross(VECTOR3(r, pose), top);
-  return SAXIS(Etop, VECTOR3(E * ORIGIN3(bottom - cross), pose), pose);
+  return transform(pose, t);
 }
 
 /// Transforms the axis 
 SAXIS POSE3::transform(boost::shared_ptr<const POSE3> target, const SAXIS& t)
 {
-  // setup source pose 
-  boost::shared_ptr<const POSE3> source = t.pose;
-
-  // quick check
-  if (source == target)
-    return t;
-
-  // compute the relative transform
-  TRANSFORM3 Tx = calc_transform(source, target);
-
-  // setup r and E
-  ORIGIN3 r;
-  MATRIX3 E;
-  get_r_E(Tx, r, E);
-  VECTOR3 rv(r, t.pose);
-
-  // get the components of t 
-  VECTOR3 top = t.get_angular();
-  VECTOR3 bottom = t.get_linear();
-
-  // do the calculations
-  VECTOR3 Etop(E * ORIGIN3(top), target);
-  VECTOR3 cross = VECTOR3::cross(rv, top);
-  return SAXIS(Etop, VECTOR3(E * ORIGIN3(bottom - cross), target), target);
+  SAXIS result;
+  transform_spatial(target, t, result);
+  return result;
 }
 
 /// Transforms a vector of axes 
@@ -966,16 +683,7 @@ std::vector<SAXIS>& POSE3::transform(boost::shared_ptr<const POSE3> target, cons
 
   // look over all forcees
   for (unsigned i=0; i< t.size(); i++)
-  {
-    // get the components of t[i] 
-    VECTOR3 top = t[i].get_angular();
-    VECTOR3 bottom = t[i].get_linear();
-
-    // do the calculations
-    VECTOR3 Etop(E * ORIGIN3(top), target);
-    VECTOR3 cross = VECTOR3::cross(rv, top);
-    result[i] = SAXIS(Etop, VECTOR3(E * ORIGIN3(bottom - cross), target), target);
-  }
+    transform_spatial(target, t[i], rv, E, result[i]);
 
   return result;
 }
@@ -998,80 +706,15 @@ SMOMENTUM POSE3::inverse_transform(const SMOMENTUM& t) const
     throw FrameException();
   #endif
 
-  // setup r and E
-  ORIGIN3 r;
-  MATRIX3 E;
-  get_r_E(r, E, true);
-
-  // get the components of t 
-  VECTOR3 top = t.get_linear();
-  VECTOR3 bottom = t.get_angular();
-
-  // do the calculations
-  VECTOR3 Etop(E * ORIGIN3(top), pose);
-  VECTOR3 cross = VECTOR3::cross(VECTOR3(r, pose), top);
-  return SMOMENTUM(Etop, VECTOR3(E * ORIGIN3(bottom - cross), pose), pose);
-}
-
-/// Transforms a momentum from one pose to another 
-SMOMENTUM POSE3::transform(const SMOMENTUM& t) const
-{
-  #ifndef NEXCEPT
-  boost::shared_ptr<const POSE3> pose;
-  try
-  {
-    pose = shared_from_this();
-  }
-  catch (boost::bad_weak_ptr e)
-  {
-    std::cerr << "Pose3::transform() - pose allocated on stack!" << std::endl;
-  }
-  if (t.pose != pose)
-    throw FrameException();
-  #endif
-
-  // setup r and E
-  ORIGIN3 r;
-  MATRIX3 E;
-  get_r_E(r, E, false);
-
-  // get the components of t 
-  VECTOR3 top = t.get_linear();
-  VECTOR3 bottom = t.get_angular();
-
-  // do the calculations
-  VECTOR3 Etop(E * ORIGIN3(top), rpose);
-  VECTOR3 cross = VECTOR3::cross(VECTOR3(r, rpose), top);
-  return SMOMENTUM(Etop, VECTOR3(E * ORIGIN3(bottom - cross), rpose), rpose);
+  return transform(pose, t); 
 }
 
 /// Transforms the momentum 
 SMOMENTUM POSE3::transform(boost::shared_ptr<const POSE3> target, const SMOMENTUM& t)
 {
-  // setup source pose 
-  boost::shared_ptr<const POSE3> source = t.pose;
-
-  // quick check
-  if (source == target)
-    return t;
-
-  // compute the relative transform
-  TRANSFORM3 Tx = calc_transform(source, target);
-
-  // setup r and E
-  ORIGIN3 r;
-  MATRIX3 E;
-  get_r_E(Tx, r, E);
-  VECTOR3 rv(r, t.pose);
-
-  // get the components of t 
-  VECTOR3 top = t.get_linear();
-  VECTOR3 bottom = t.get_angular();
-
-  // do the calculations
-  VECTOR3 Etop(E * ORIGIN3(top), target);
-  VECTOR3 cross = VECTOR3::cross(rv, top);
-  return SMOMENTUM(Etop, VECTOR3(E * ORIGIN3(bottom - cross), target), target);
+  SMOMENTUM result;
+  transform_spatial(target, t, result);
+  return result;
 }
 
 /// Transforms a vector of momenta 
@@ -1109,60 +752,11 @@ std::vector<SMOMENTUM>& POSE3::transform(boost::shared_ptr<const POSE3> target, 
   // resize the result vector
   result.resize(t.size());
 
-  // look over all forcees
+  // transform all momenta 
   for (unsigned i=0; i< t.size(); i++)
-  {
-    // get the components of t[i] 
-    VECTOR3 top = t[i].get_angular();
-    VECTOR3 bottom = t[i].get_linear();
-
-    // do the calculations
-    VECTOR3 Etop(E * ORIGIN3(top), target);
-    VECTOR3 cross = VECTOR3::cross(rv, top);
-    result[i] = SMOMENTUM(Etop, VECTOR3(E * ORIGIN3(bottom - cross), target), target);
-  }
+    transform_spatial(target, t[i], rv, E, result[i]);
 
   return result;
-}
-
-/// Transforms a rigid body inertia from one pose to another 
-SPATIAL_RB_INERTIA POSE3::transform(const SPATIAL_RB_INERTIA& J) const
-{
-  #ifndef NEXCEPT
-  boost::shared_ptr<const POSE3> pose;
-  try
-  {
-    pose = shared_from_this();
-  }
-  catch (boost::bad_weak_ptr e)
-  {
-    std::cerr << "Pose3::transform() - pose allocated on stack!" << std::endl;
-  }
-  if (J.pose != pose)
-    throw FrameException();
-  #endif
-
-  // setup r and E
-  ORIGIN3 r;
-  MATRIX3 E;
-  get_r_E(r, E, false);
-  const MATRIX3 ET = MATRIX3::transpose(E);
-
-  // precompute some things
-  VECTOR3 mr(r * J.m, rpose);
-  MATRIX3 rx = MATRIX3::skew_symmetric(VECTOR3(r, rpose));
-  MATRIX3 hx = MATRIX3::skew_symmetric(J.h);
-  MATRIX3 mrxrx = rx * MATRIX3::skew_symmetric(mr);  
-  MATRIX3 EhxETrx = E * hx * ET * rx;
-
-  // setup the new inertia
-  SPATIAL_RB_INERTIA Jx;
-  Jx.m = J.m;
-  Jx.J = EhxETrx + MATRIX3::transpose(EhxETrx) + (E*J.J*ET) - mrxrx; 
-  Jx.h = E * ORIGIN3(J.h) - mr;
-  Jx.pose = rpose;
-
-  return Jx;
 }
 
 /// Transforms a rigid body inertia from one pose to another 
@@ -1182,69 +776,7 @@ SPATIAL_RB_INERTIA POSE3::inverse_transform(const SPATIAL_RB_INERTIA& J) const
     throw FrameException();
   #endif
 
-  // setup r and E
-  ORIGIN3 r;
-  MATRIX3 E;
-  get_r_E(r, E, true);
-  const MATRIX3 ET = MATRIX3::transpose(E);
-
-  // precompute some things
-  VECTOR3 rv(r, pose);
-  VECTOR3 mr = rv * J.m;
-  MATRIX3 rx = MATRIX3::skew_symmetric(rv);
-  MATRIX3 hx = MATRIX3::skew_symmetric(J.h);
-  MATRIX3 mrxrx = rx * MATRIX3::skew_symmetric(mr);  
-  MATRIX3 EhxETrx = E * hx * ET * rx;
-
-  // setup the new inertia
-  SPATIAL_RB_INERTIA Jx(pose);
-  Jx.m = J.m;
-  Jx.J = EhxETrx + MATRIX3::transpose(EhxETrx) + (E*J.J*ET) - mrxrx; 
-  Jx.h = E * ORIGIN3(J.h) - mr;
-
-  return Jx;
-}
-
-/// Transforms an articulated body inertia from one pose to another 
-SPATIAL_AB_INERTIA POSE3::transform(const SPATIAL_AB_INERTIA& J) const
-{
-  #ifndef NEXCEPT
-  boost::shared_ptr<const POSE3> pose;
-  try
-  {
-    pose = shared_from_this();
-  }
-  catch (boost::bad_weak_ptr e)
-  {
-    std::cerr << "Pose3::transform() - pose allocated on stack!" << std::endl;
-  }
-  if (J.pose != pose)
-    throw FrameException();
-  #endif
-
-  // setup r and E
-  ORIGIN3 r;
-  MATRIX3 E;
-  get_r_E(r, E, false);
-  const MATRIX3 ET = MATRIX3::transpose(E);
-  VECTOR3 rv(r, rpose);
-
-  // precompute some things we'll need
-  MATRIX3 rx = MATRIX3::skew_symmetric(rv);
-  MATRIX3 HT = MATRIX3::transpose(J.H);
-  MATRIX3 EJET = E * J.J * ET;
-  MATRIX3 rx_E_HT_ET = rx*E*HT*ET;
-  MATRIX3 EHET = E * J.H * ET;
-  MATRIX3 EMET = E * J.M * ET;
-  MATRIX3 rxEMET = rx * EMET;
-
-  SPATIAL_AB_INERTIA result;
-  result.M = EMET;
-  result.H = EHET - rxEMET;
-  result.J = EJET - rx_E_HT_ET + ((EHET - rxEMET) * rx); 
-  result.pose = rpose;
-
-  return result;
+  return transform(pose, J);
 }
 
 /// Transforms an articulated body inertia from one pose to another 
@@ -1264,29 +796,7 @@ SPATIAL_AB_INERTIA POSE3::inverse_transform(const SPATIAL_AB_INERTIA& J) const
     throw FrameException();
   #endif
 
-  // setup r and E
-  ORIGIN3 r;
-  MATRIX3 E;
-  get_r_E(r, E, true);
-  const MATRIX3 ET = MATRIX3::transpose(E);
-
-  // precompute some things we'll need
-  VECTOR3 rv(r, pose);
-  MATRIX3 rx = MATRIX3::skew_symmetric(rv);
-  MATRIX3 HT = MATRIX3::transpose(J.H);
-  MATRIX3 EJET = E * J.J * ET;
-  MATRIX3 rx_E_HT_ET = rx*E*HT*ET;
-  MATRIX3 EHET = E * J.H * ET;
-  MATRIX3 EMET = E * J.M * ET;
-  MATRIX3 rxEMET = rx * EMET;
-
-  // compute the result
-  SPATIAL_AB_INERTIA result(pose);
-  result.M = EMET;
-  result.H = EHET - rxEMET;
-  result.J = EJET - rx_E_HT_ET + ((EHET - rxEMET) * rx); 
-
-  return result;
+  return transform(pose, J);
 }
 
 /// Gets r and E from a transform 
@@ -1367,6 +877,12 @@ POINT3 POSE3::transform(boost::shared_ptr<const POSE3> target, const POINT3& poi
   // do the transform
   return Tx.transform(point);
 }
+
+SAXIS POSE3::transform(const SAXIS& t) const { return transform(rpose, t); }
+SMOMENTUM POSE3::transform(const SMOMENTUM& t) const { return transform(rpose, t); }
+SFORCE POSE3::transform(const SFORCE& w) const { return transform(rpose, w); }
+SVELOCITY POSE3::transform(const SVELOCITY& t) const { return transform(rpose, t); }
+SACCEL POSE3::transform(const SACCEL& t) const { return transform(rpose, t); }
 
 /// Transforms a spatial articulated body inertia 
 SPATIAL_AB_INERTIA POSE3::transform(boost::shared_ptr<const POSE3> target, const SPATIAL_AB_INERTIA& m)
