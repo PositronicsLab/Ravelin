@@ -323,6 +323,11 @@ REAL QUAT::calc_angle(const QUAT& q1, const QUAT& q2)
 }
 
 /// Sets up the quaternion from roll-pitch-yaw 
+/**
+ * \param roll the rotation around the local x axis
+ * \param pitch the rotation around the local y axis
+ * \param yaw the rotation around the local z axis
+ */
 QUAT QUAT::rpy(REAL roll, REAL pitch, REAL yaw)
 {
   const REAL PHI = roll * (REAL) 0.5;

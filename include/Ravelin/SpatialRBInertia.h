@@ -54,8 +54,8 @@ class SPATIAL_RB_INERTIA
     /// The rigid body mass
     REAL m;
 
-    /// The rigid body offset vector
-    VECTOR3 h;
+    /// The position of the center-of-mass relative to this frame 
+    POINT3 h;
 
     /// The rigid body moment of inertia matrix
     MATRIX3 J;

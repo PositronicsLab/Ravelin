@@ -7,6 +7,12 @@
 /// Computes the dot product between a velocity and a momentum
 REAL SVELOCITY::dot(const SMOMENTUM& v2) const
 {
+  // verify that both vectors are defined in the same frame
+  #ifndef NEXCEPT
+  if (pose != v2.pose)
+    throw FrameException();
+  #endif
+
   const REAL* d1 = data();
   const REAL* d2 = v2.data();
   return d1[3]*d2[0] + d1[4]*d2[1] + d1[5]*d2[2]+
@@ -16,6 +22,12 @@ REAL SVELOCITY::dot(const SMOMENTUM& v2) const
 /// Computes the dot product between a velocity and a force 
 REAL SVELOCITY::dot(const SFORCE& v2) const
 {
+  // verify that both vectors are defined in the same frame
+  #ifndef NEXCEPT
+  if (pose != v2.pose)
+    throw FrameException();
+  #endif
+
   const REAL* d1 = data();
   const REAL* d2 = v2.data();
   return d1[3]*d2[0] + d1[4]*d2[1] + d1[5]*d2[2]+

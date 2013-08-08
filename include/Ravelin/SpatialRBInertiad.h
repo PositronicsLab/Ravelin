@@ -15,6 +15,7 @@
 #include <Ravelin/SAcceld.h> 
 #include <Ravelin/SVelocityd.h>
 #include <Ravelin/Matrix3d.h>
+#include <Ravelin/Point3d.h>
 
 namespace Ravelin {
 

@@ -15,6 +15,7 @@
 #include <Ravelin/SAccelf.h> 
 #include <Ravelin/SVelocityf.h>
 #include <Ravelin/Matrix3f.h>
+#include <Ravelin/Point3f.h>
 
 namespace Ravelin {
 

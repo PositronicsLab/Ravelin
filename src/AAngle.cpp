@@ -126,7 +126,7 @@ void AANGLE::set(const MATRIX3& m, const VECTOR3& axis)
 
   // form the determined axis and verify it points in same or exact opposite
   // direction as axis
-  VECTOR3 determine_axis(x,y,z);
+  VECTOR3 determine_axis(x,y,z, axis.pose);
   
   // reverse the angle, if necessary
   if (VECTOR3::dot(determine_axis, axisn) < 0)

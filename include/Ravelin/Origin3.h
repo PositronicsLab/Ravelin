@@ -75,7 +75,8 @@ inline ORIGIN3 operator*(REAL scalar, const ORIGIN3& v) { return v * scalar; }
 /// Writes a ORIGIN3 to the specified stream
 inline std::ostream& operator<<(std::ostream& out, const ORIGIN3& v)
 {
-  out << '[' << v[0] << ',' << ' ' << v[1] << ' ' << v[2] << ']' << ' ';
+  out << "[" << v[0] << " " << v[1] << " " << v[2] << "] ";
+
   return out;
 };
 

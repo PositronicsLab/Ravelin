@@ -470,24 +470,14 @@ SPATIAL_RB_INERTIA TRANSFORM3::transform(const SPATIAL_RB_INERTIA& J) const
     throw FrameException();
   #endif
 
-  // setup r and E
-  MATRIX3 E = q;
-  ORIGIN3 r = E.transpose_mult(-x);
-  VECTOR3 rv(r, target);
-  const MATRIX3 ET = MATRIX3::transpose(E);
+  // get the rotation
+  MATRIX3 R = q;
 
-  // precompute some things
-  VECTOR3 mr = rv * J.m;
-  MATRIX3 rx = MATRIX3::skew_symmetric(rv);
-  MATRIX3 hx = MATRIX3::skew_symmetric(J.h);
-  MATRIX3 mrxrx = rx * MATRIX3::skew_symmetric(mr);  
-  MATRIX3 EhxETrx = E * hx * ET * rx;
-
-  // setup the new inertia
+  // mass remains the same
   SPATIAL_RB_INERTIA Jx(target);
   Jx.m = J.m;
-  Jx.J = EhxETrx + MATRIX3::transpose(EhxETrx) + (E*J.J*ET) - mrxrx; 
-  Jx.h = E * ORIGIN3(J.h) - mr;
+  Jx.h = POINT3(q * ORIGIN3(J.h) + x, target);
+  Jx.J = R * J.J * MATRIX3::transpose(R);
 
   return Jx;
 }
@@ -588,7 +578,7 @@ SPATIAL_AB_INERTIA TRANSFORM3::inverse_transform(const SPATIAL_AB_INERTIA& J) co
 /// Outputs this matrix to the stream
 std::ostream& Ravelin::operator<<(std::ostream& out, const TRANSFORM3& m)
 {
-  out << "q: " << m.q << " " << m.x << std::endl;
+  out << "orientation: " << AANGLE(m.q) << " origin: " << m.x << std::endl;
    
   return out;
 }

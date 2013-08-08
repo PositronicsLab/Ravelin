@@ -10,7 +10,7 @@ using boost::shared_ptr;
 SPATIAL_RB_INERTIA::SPATIAL_RB_INERTIA(shared_ptr<const POSE3> pose)
 {
   m = (REAL) 0.0;
-  h.set_zero();
+  h.set_zero(pose);
   J.set_zero();
   this->pose = pose;
 }

@@ -94,8 +94,8 @@ class POSE3 : public boost::enable_shared_from_this<POSE3>
   private:
     static void transform_spatial(boost::shared_ptr<const POSE3> target, const SVECTOR6& v, SVECTOR6& result);
     static void transform_spatial(boost::shared_ptr<const POSE3> target, const SVECTOR6& v, const VECTOR3& rv, const MATRIX3& E, SVECTOR6& result);
-    void get_r_E(ORIGIN3& r, MATRIX3& E, bool inverse) const;
-    static void get_r_E(const TRANSFORM3& T, ORIGIN3& r, MATRIX3& E);
+    void get_r_E(VECTOR3& r, MATRIX3& E, bool inverse) const;
+    static void get_r_E(const TRANSFORM3& T, VECTOR3& r, MATRIX3& E);
     TRANSFORM3 calc_transform(boost::shared_ptr<const POSE3> p) const { return calc_transform(shared_from_this(), p); }
     static TRANSFORM3 calc_transform(boost::shared_ptr<const POSE3> source, boost::shared_ptr<const POSE3> target);
     static bool is_common(boost::shared_ptr<const POSE3> source, boost::shared_ptr<const POSE3> p, unsigned& i);
