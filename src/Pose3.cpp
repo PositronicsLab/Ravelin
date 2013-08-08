@@ -926,8 +926,6 @@ SPATIAL_RB_INERTIA POSE3::transform(boost::shared_ptr<const POSE3> target, const
 
   // compute the relative transform
   TRANSFORM3 Tx = calc_transform(source, target);
-std::cout << "inertial transform:" << std::endl;
-std::cout << "  " << Tx << std::endl;
   MATRIX3 E = Tx.q;
 
   // create the new inertia
@@ -935,8 +933,6 @@ std::cout << "  " << Tx << std::endl;
   Jx.m = J.m;
   Jx.h = POINT3(Tx.q * ORIGIN3(J.h) + Tx.x, target); 
   Jx.J = E*J.J*MATRIX3::transpose(E);
-std::cout << "old inertia: " << J << std::endl;
-std::cout << "new inertia: " << Jx << std::endl;
 
   return Jx;
 }
