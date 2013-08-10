@@ -123,7 +123,7 @@ VECTOR3 POSE3::interpolate_transform_vector(const POSE3& P1, const POSE3& P2, RE
  * \param o the point to transform 
  * \return the transformed point 
  */
-POINT3 POSE3::interpolate_transform_point(const POSE3& P1, const POSE3& P2, REAL t, const ORIGIN3& o)
+VECTOR3 POSE3::interpolate_transform_point(const POSE3& P1, const POSE3& P2, REAL t, const ORIGIN3& o)
 {
   #ifndef NEXCEPT
   if (P1.rpose != P2.rpose)
@@ -137,7 +137,7 @@ POINT3 POSE3::interpolate_transform_point(const POSE3& P1, const POSE3& P2, REAL
   QUAT q = QUAT::slerp(P1.q, P2.q, t);
 
   // trnsform the point 
-  return POINT3(x+q*o, P1.rpose);
+  return VECTOR3(x+q*o, P1.rpose);
 }
 
 /// Multiplies the quaternion derivative
@@ -304,7 +304,7 @@ POSE3 POSE3::operator*(const POSE3& p) const
 }
 
 /// Transforms a vector from one pose to another 
-VECTOR3 POSE3::inverse_transform(const VECTOR3& v) const
+VECTOR3 POSE3::inverse_transform_vector(const VECTOR3& v) const
 {
   boost::shared_ptr<const POSE3> pose;
   try
@@ -320,11 +320,11 @@ VECTOR3 POSE3::inverse_transform(const VECTOR3& v) const
     throw FrameException();
   #endif
 
-  return transform(pose, v);
+  return transform_vector(pose, v);
 }
 
 /// Transforms a point from one pose to another 
-POINT3 POSE3::inverse_transform(const POINT3& p) const
+VECTOR3 POSE3::inverse_transform_point(const VECTOR3& p) const
 {
   boost::shared_ptr<const POSE3> pose;
   try
@@ -340,7 +340,7 @@ POINT3 POSE3::inverse_transform(const POINT3& p) const
     throw FrameException();
   #endif
 
-  return transform(pose, p); 
+  return transform_point(pose, p); 
 }
 
 /// Transforms a point from one pose to another 
@@ -835,7 +835,7 @@ void POSE3::get_r_E(VECTOR3& r, MATRIX3& E, bool inverse) const
 }
 
 /// Applies this pose to a vector 
-VECTOR3 POSE3::transform(boost::shared_ptr<const POSE3> target, const VECTOR3& v) 
+VECTOR3 POSE3::transform_vector(boost::shared_ptr<const POSE3> target, const VECTOR3& v) 
 {
   // setup source pose 
   boost::shared_ptr<const POSE3> source = v.pose;
@@ -844,14 +844,12 @@ VECTOR3 POSE3::transform(boost::shared_ptr<const POSE3> target, const VECTOR3& v
   if (source == target)
     return v;
 
-  // compute the relative transform
-  TRANSFORM3 Tx = calc_transform(source, target);
-
-  return Tx.transform(v);
+  // do the transformation
+  return calc_transform(source, target).transform_vector(v);
 }
 
 /// Transforms a point from one pose to another 
-POINT3 POSE3::transform(boost::shared_ptr<const POSE3> target, const POINT3& point)
+VECTOR3 POSE3::transform_point(boost::shared_ptr<const POSE3> target, const VECTOR3& point)
 {
   // setup source pose 
   boost::shared_ptr<const POSE3> source = point.pose;
@@ -865,11 +863,8 @@ POINT3 POSE3::transform(boost::shared_ptr<const POSE3> target, const POINT3& poi
   if (source == target)
     return point;
 
-  // compute the relative transform
-  TRANSFORM3 Tx = calc_transform(source, target);
-
-  // do the transform
-  return Tx.transform(point);
+  // do the transformation
+  return calc_transform(source, target).transform_point(point);
 }
 
 SAXIS POSE3::transform(const SAXIS& t) const { return transform(rpose, t); }
@@ -888,9 +883,10 @@ SPATIAL_AB_INERTIA POSE3::transform(boost::shared_ptr<const POSE3> target, const
   if (source == target)
     return m;
 
-  // compute the relative transform
-  TRANSFORM3 Tx = calc_transform(source, target);
+  // compute the transformation
+  return calc_transform(source, target).transform(m);
 
+/*
   // setup r and E
   VECTOR3 r;
   MATRIX3 E;
@@ -898,12 +894,14 @@ SPATIAL_AB_INERTIA POSE3::transform(boost::shared_ptr<const POSE3> target, const
   const MATRIX3 ET = MATRIX3::transpose(E);
 
   // precompute some things we'll need
+  MATRIX3 EMET = E * m.M * ET;
+
+  // precompute some things we'll need
   MATRIX3 rx = MATRIX3::skew_symmetric(r);
   MATRIX3 HT = MATRIX3::transpose(m.H);
   MATRIX3 EJET = E * m.J * ET;
   MATRIX3 rx_E_HT_ET = rx*E*HT*ET;
   MATRIX3 EHET = E * m.H * ET;
-  MATRIX3 EMET = E * m.M * ET;
   MATRIX3 rxEMET = rx * EMET;
 
   SPATIAL_AB_INERTIA result;
@@ -911,7 +909,7 @@ SPATIAL_AB_INERTIA POSE3::transform(boost::shared_ptr<const POSE3> target, const
   result.M = EMET;
   result.H = EHET - rxEMET;
   result.J = EJET - rx_E_HT_ET + ((EHET - rxEMET) * rx); 
-  return result;
+*/
 }
 
 /// Transforms a spatial RB inertia to the given pose
@@ -924,17 +922,32 @@ SPATIAL_RB_INERTIA POSE3::transform(boost::shared_ptr<const POSE3> target, const
   if (source == target)
     return J;
 
-  // compute the relative transform
-  TRANSFORM3 Tx = calc_transform(source, target);
-  MATRIX3 E = Tx.q;
+  // do the transformation
+  return calc_transform(source, target).transform(J);
+
+/*
+  const ORIGIN3& r = Tx.x;
+
+  // precompute some things we need
+  MATRIX3 rx = MATRIX3::skew_symmetric(r);
+  MATRIX3 hx = MATRIX3::skew_symmetric(J.h);
+  MATRIX3 rxhx = rx*hx;
+  MATRIX3 hmrx = MATRIX3::skew_symmetric(J.h - r*J.m);
+  MATRIX3 hmrx_rx = hmrx*rx; 
 
   // create the new inertia
   SPATIAL_RB_INERTIA Jx(target);
   Jx.m = J.m;
-  Jx.h = POINT3(Tx.q * ORIGIN3(J.h) + Tx.x, target); 
+  Jx.h = VECTOR3(E * ORIGIN3(J.h - r*J.m), target);
+  Jx.J = E*(MATRIX3::identity() + rxhx + hmrx_rx)*ET; 
+
+  SPATIAL_RB_INERTIA Jx(target);
+  Jx.m = J.m;
+  Jx.h = VECTOR3(Tx.q * ORIGIN3(J.h) + Tx.x, target); 
   Jx.J = E*J.J*MATRIX3::transpose(E);
 
   return Jx;
+*/
 }
 
 /// Determines whether pose p exists in the chain of relative poses (and, if so, how far down the chain)

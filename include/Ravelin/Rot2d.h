@@ -8,7 +8,6 @@
 #define _RAVELIN_ROT2D_H
 
 #include <Ravelin/Vector2d.h>
-#include <Ravelin/Point2d.h>
 #include <Ravelin/Origin2d.h>
 
 namespace Ravelin {

@@ -228,7 +228,29 @@ SMOMENTUM SPATIAL_RB_INERTIA::operator*(const SVELOCITY& t) const
   return SMOMENTUM(rtop, rbot, pose); 
 }
 
-/// Multiplies this matrix by a scalar in place
+/// Multiplies this inertia by an axis and returns a momentum 
+SMOMENTUM SPATIAL_RB_INERTIA::operator*(const SAXIS& t) const
+{
+  #ifndef NEXCEPT
+  if (pose != t.pose)
+    throw FrameException();
+  #endif
+
+  // get necessary components of t
+  ORIGIN3 ttop(t.get_angular());
+  ORIGIN3 tbot(t.get_linear());
+
+  // do some precomputation
+  MATRIX3 hxm = MATRIX3::skew_symmetric(h*m);
+  MATRIX3 hxhxm = MATRIX3::skew_symmetric(h) * hxm; 
+
+  // compute result
+  VECTOR3 rtop((tbot * m) - (hxm * ttop), pose);
+  VECTOR3 rbot(((J - hxhxm) * ttop) + (hxm * tbot), pose);
+  return SMOMENTUM(rtop, rbot, pose); 
+}
+
+//// Multiplies this matrix by a scalar in place
 SPATIAL_RB_INERTIA& SPATIAL_RB_INERTIA::operator*=(REAL scalar)
 {
   m *= scalar;

@@ -274,6 +274,18 @@ MATRIX3 MATRIX3::skew_symmetric(const VECTOR3& v)
   return skew_symmetric(v.x(), v.y(), v.z());
 }
 
+/// Constructs a skew-symmetric matrix from the given values
+/**
+ * The skew symmetric matrix generated will be:
+ * |   0     -v.z()   v.y() |
+ * |  v.z()     0    -v.x() |
+ * | -v.y()    v.x()    0   |
+ */
+MATRIX3 MATRIX3::skew_symmetric(const ORIGIN3& v)
+{
+  return skew_symmetric(v.x(), v.y(), v.z());
+}
+
 /// Inverts this matrix 
 MATRIX3& MATRIX3::invert()
 {

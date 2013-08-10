@@ -45,9 +45,9 @@ class SPATIAL_RB_INERTIA
     SFORCE operator*(const SACCEL& s) const;
     std::vector<SFORCE>& mult(const std::vector<SACCEL>& s, std::vector<SFORCE>& result) const;
     SMOMENTUM operator*(const SAXIS& s) const;
-    SMOMENTUM mult(const SAXIS& s) const;
+    SMOMENTUM mult(const SAXIS& s) const { return operator*(s); }
     SMOMENTUM operator*(const SVELOCITY& s) const;
-    SMOMENTUM mult(const SVELOCITY& s) const;
+    SMOMENTUM mult(const SVELOCITY& s) const { return operator*(s); }
     std::vector<SMOMENTUM>& mult(const std::vector<SVELOCITY>& s, std::vector<SMOMENTUM>& result) const;
     SPATIAL_RB_INERTIA operator-() const;
 
@@ -55,7 +55,7 @@ class SPATIAL_RB_INERTIA
     REAL m;
 
     /// The position of the center-of-mass relative to this frame 
-    POINT3 h;
+    VECTOR3 h;
 
     /// The rigid body moment of inertia matrix
     MATRIX3 J;

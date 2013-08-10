@@ -11,7 +11,6 @@
 #include <boost/shared_ptr.hpp>
 #include <Ravelin/FrameException.h>
 #include <Ravelin/Vector3d.h>
-#include <Ravelin/Point3d.h>
 #include <Ravelin/Origin3d.h>
 #include <Ravelin/Quatd.h>
 #include <Ravelin/AAngled.h>

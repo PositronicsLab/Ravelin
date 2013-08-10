@@ -12,7 +12,6 @@
 #include <iostream>
 #include <Ravelin/FrameException.h>
 #include <Ravelin/Vector3f.h>
-#include <Ravelin/Point3f.h>
 #include <Ravelin/Origin3f.h>
 #include <Ravelin/Quatf.h>
 #include <Ravelin/AAnglef.h>

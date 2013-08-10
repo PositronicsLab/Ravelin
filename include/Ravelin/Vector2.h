@@ -10,7 +10,6 @@
 
 class ORIGIN2;
 class POSE2;
-class POINT2;
 
 /// A two-dimensional floating point vector used for computational geometry calculations
 class VECTOR2
@@ -19,7 +18,6 @@ class VECTOR2
     VECTOR2(boost::shared_ptr<const POSE2> pose = boost::shared_ptr<const POSE2>()) { this->pose = pose; }
     VECTOR2(REAL x, REAL y, boost::shared_ptr<const POSE2> pose = boost::shared_ptr<const POSE2>());
     VECTOR2(const REAL* array, boost::shared_ptr<const POSE2> pose = boost::shared_ptr<POSE2>());
-    VECTOR2(const POINT2& p) { operator=(p); }
     VECTOR2(const ORIGIN2& o, boost::shared_ptr<const POSE2> pose) { this->pose = pose; operator=(o); } 
     REAL dot(const VECTOR2& v) const { return v[0]*_data[0] + v[1]*_data[1]; }
     static REAL dot(const VECTOR2& v1, const VECTOR2& v2) { return v1[0]*v2[0] + v1[1]*v2[1]; }
@@ -37,7 +35,6 @@ class VECTOR2
     VECTOR2& set_one(boost::shared_ptr<const POSE2> pose) { _data[0] = _data[1] = 1.0; this->pose = pose; return *this; }
     static VECTOR2 zero(boost::shared_ptr<const POSE2> pose = boost::shared_ptr<const POSE2>()) { return VECTOR2(0.0, 0.0, pose); }
     VECTOR2& operator=(const VECTOR2& v) { _data[0] = v[0]; _data[1] = v[1]; pose = v.pose; return *this; }
-    VECTOR2& operator=(const POINT2& p);
     VECTOR2& operator=(const ORIGIN2& o);
     VECTOR2 operator+(const VECTOR2& v) const { VECTOR2 w = *this; return w += v; }
     VECTOR2 operator-(const VECTOR2& v) const { VECTOR2 w = *this; return w -= v; }

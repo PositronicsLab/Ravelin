@@ -117,7 +117,7 @@ VECTOR2 POSE2::interpolate_transform_vector(const POSE2& P1, const POSE2& P2, RE
  * \param o the point to transform 
  * \return the transformed point 
  */
-POINT2 POSE2::interpolate_transform_point(const POSE2& P1, const POSE2& P2, REAL t, const ORIGIN2& o)
+VECTOR2 POSE2::interpolate_transform_point(const POSE2& P1, const POSE2& P2, REAL t, const ORIGIN2& o)
 {
   #ifndef NEXCEPT
   if (P1.rpose != P2.rpose)
@@ -135,7 +135,7 @@ POINT2 POSE2::interpolate_transform_point(const POSE2& P1, const POSE2& P2, REAL
   ROT2 r = P1.r.theta*(1-t) + P2.r.theta*t;
 
   // trnsform the point 
-  return POINT2(x+r*o, P1.rpose);
+  return VECTOR2(x+r*o, P1.rpose);
 }
 
 /// Sets the pose from a rotation and translation vector
@@ -163,7 +163,7 @@ POSE2& POSE2::set_identity()
 }
 
 /// Transforms a vector from one pose to another 
-VECTOR2 POSE2::transform(const VECTOR2& v) const
+VECTOR2 POSE2::transform_vector(const VECTOR2& v) const
 {
   #ifndef NEXCEPT
   boost::shared_ptr<const POSE2> pose;
@@ -185,7 +185,7 @@ VECTOR2 POSE2::transform(const VECTOR2& v) const
 }
 
 /// Transforms a vector from one pose to another 
-VECTOR2 POSE2::inverse_transform(const VECTOR2& v) const
+VECTOR2 POSE2::inverse_transform_vector(const VECTOR2& v) const
 {
   VECTOR2 result = ROT2::invert(r) * v;
 
@@ -208,7 +208,7 @@ VECTOR2 POSE2::inverse_transform(const VECTOR2& v) const
 }
 
 /// Transforms a point from one pose to another 
-POINT2 POSE2::transform(const POINT2& p) const
+VECTOR2 POSE2::transform_point(const VECTOR2& p) const
 {
   #ifndef NEXCEPT
   boost::shared_ptr<const POSE2> pose;
@@ -224,15 +224,15 @@ POINT2 POSE2::transform(const POINT2& p) const
     throw FrameException();
   #endif
 
-  POINT2 result = r * p + x;
+  VECTOR2 result = r * p + x;
   result.pose = rpose;
   return result;
 }
 
 /// Transforms a point from one pose to another 
-POINT2 POSE2::inverse_transform(const POINT2& p) const
+VECTOR2 POSE2::inverse_transform_point(const VECTOR2& p) const
 {
-  POINT2 result = ROT2::invert(r) * (p - x);
+  VECTOR2 result = ROT2::invert(r) * (p - x);
 
   #ifndef NEXCEPT
   boost::shared_ptr<const POSE2> pose;
@@ -253,32 +253,26 @@ POINT2 POSE2::inverse_transform(const POINT2& p) const
 }
 
 /// Applies this pose to a vector 
-VECTOR2 POSE2::transform(boost::shared_ptr<const POSE2> source, boost::shared_ptr<const POSE2> target, const VECTOR2& v) 
+VECTOR2 POSE2::transform_vector(boost::shared_ptr<const POSE2> target, const VECTOR2& v) 
 {
-  #ifndef NEXCEPT
-  if (source != v.pose)
-    throw FrameException();
-  #endif
+  boost::shared_ptr<const POSE2> source = v.pose;
 
   // compute the relative transform
   TRANSFORM2 Tx = calc_transform(source, target);
 
-  return Tx.transform(v);
+  return Tx.transform_vector(v);
 }
 
 /// Transforms a point from one pose to another 
-POINT2 POSE2::transform(boost::shared_ptr<const POSE2> source, boost::shared_ptr<const POSE2> target, const POINT2& point)
+VECTOR2 POSE2::transform_point(boost::shared_ptr<const POSE2> target, const VECTOR2& point)
 {
-  #ifndef NEXCEPT
-  if (source != point.pose)
-    throw FrameException();
-  #endif
+  boost::shared_ptr<const POSE2> source = point.pose;
 
   // compute the relative transform
   TRANSFORM2 Tx = calc_transform(source, target);
 
   // do the transform
-  return Tx.transform(point);
+  return Tx.transform_point(point);
 }
 
 /// Special method for inverting a 2D pose in place

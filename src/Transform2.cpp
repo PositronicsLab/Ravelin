@@ -225,7 +225,7 @@ TRANSFORM2& TRANSFORM2::set_identity()
 }
 
 /// Transforms a vector from one pose to another 
-VECTOR2 TRANSFORM2::transform(const VECTOR2& v) const
+VECTOR2 TRANSFORM2::transform_vector(const VECTOR2& v) const
 {
   #ifndef NEXCEPT
   if (v.pose != source)
@@ -238,7 +238,7 @@ VECTOR2 TRANSFORM2::transform(const VECTOR2& v) const
 }
 
 /// Transforms a vector from one pose to another 
-VECTOR2 TRANSFORM2::inverse_transform(const VECTOR2& v) const
+VECTOR2 TRANSFORM2::inverse_transform_vector(const VECTOR2& v) const
 {
   #ifndef NEXCEPT
   if (v.pose != target)
@@ -252,27 +252,27 @@ VECTOR2 TRANSFORM2::inverse_transform(const VECTOR2& v) const
 }
 
 /// Transforms a point from one pose to another 
-POINT2 TRANSFORM2::transform(const POINT2& p) const
+VECTOR2 TRANSFORM2::transform_point(const VECTOR2& p) const
 {
   #ifndef NEXCEPT
   if (p.pose != source)
     throw FrameException();
   #endif
 
-  POINT2 result = r * p + x;
+  VECTOR2 result = r * p + x;
   result.pose = target;
   return result;
 }
 
 /// Transforms a point from one pose to another 
-POINT2 TRANSFORM2::inverse_transform(const POINT2& p) const
+VECTOR2 TRANSFORM2::inverse_transform_point(const VECTOR2& p) const
 {
   #ifndef NEXCEPT
   if (p.pose != target)
     throw FrameException();
   #endif
 
-  POINT2 result = ROT2::invert(r) * (p - x);
+  VECTOR2 result = ROT2::invert(r) * (p - x);
   result.pose = source;
   return result;
 }

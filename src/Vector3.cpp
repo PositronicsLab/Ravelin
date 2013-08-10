@@ -112,16 +112,6 @@ bool VECTOR3::operator<(const VECTOR3& v) const
   return false;
 }
 
-/// Constructs a vector from a point
-VECTOR3& VECTOR3::operator=(const POINT3& p)
-{
-  pose = p.pose;
-  x() = p.x();
-  y() = p.y();
-  z() = p.z();
-  return *this;
-}
-
 REAL& VECTOR3::operator[](const unsigned i)
 {
   #ifndef NEXCEPT
@@ -170,16 +160,6 @@ VECTOR3& VECTOR3::resize(unsigned m, unsigned n, bool preserve)
 
 /// Computes the dot product between two vectors
 REAL VECTOR3::dot(const VECTOR3& v1, const VECTOR3& v2)
-{
-  #ifndef NEXCEPT
-  if (v1.pose != v2.pose)
-    throw FrameException();
-  #endif
-  return v1.x()*v2.x() + v1.y()*v2.y() + v1.z()*v2.z();
-}
-
-/// Computes the dot product between two vectors, one of which is given as a Point3 (for convenience)
-REAL VECTOR3::dot(const VECTOR3& v1, const POINT3& v2)
 {
   #ifndef NEXCEPT
   if (v1.pose != v2.pose)

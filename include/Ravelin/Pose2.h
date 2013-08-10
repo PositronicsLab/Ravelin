@@ -20,14 +20,12 @@ class POSE2 : public boost::enable_shared_from_this<POSE2>
     static POSE2 identity() { POSE2 T; T.set_identity(); return T; }
     static REAL wrap(REAL theta);
     static bool rel_equal(const POSE2& p1, const POSE2& p2, REAL tol=EPS);
-    POINT2 transform(const POINT2& v) const;
-    VECTOR2 transform(const VECTOR2& v) const;
-    POINT2 inverse_transform(const POINT2& v) const;
-    VECTOR2 inverse_transform(const VECTOR2& v) const;
-    POINT2 transform(boost::shared_ptr<const POSE2> p, const POINT2& v) const;
-    VECTOR2 transform(boost::shared_ptr<const POSE2> p, const VECTOR2& v) const;
-    static POINT2 transform(boost::shared_ptr<const POSE2> source, boost::shared_ptr<const POSE2> target, const POINT2& v);
-    static VECTOR2 transform(boost::shared_ptr<const POSE2> source, boost::shared_ptr<const POSE2> target, const VECTOR2& v);
+    VECTOR2 transform_point(const VECTOR2& v) const;
+    VECTOR2 transform_vector(const VECTOR2& v) const;
+    VECTOR2 inverse_transform_point(const VECTOR2& v) const;
+    VECTOR2 inverse_transform_vector(const VECTOR2& v) const;
+    static VECTOR2 transform_point(boost::shared_ptr<const POSE2> target, const VECTOR2& v);
+    static VECTOR2 transform_vector(boost::shared_ptr<const POSE2> target, const VECTOR2& v);
     POSE2& set_identity();
     POSE2& invert();
     POSE2 inverse() const { return invert(*this); }
@@ -37,7 +35,7 @@ class POSE2 : public boost::enable_shared_from_this<POSE2>
     POSE2& operator=(const POSE2& source);
     POSE2 operator*(const POSE2& m) const;
     static VECTOR2 interpolate_transform_vector(const POSE2& P1, const POSE2& P2, REAL t, const ORIGIN2& o);
-    static POINT2 interpolate_transform_point(const POSE2& P1, const POSE2& P2, REAL t, const ORIGIN2& o);
+    static VECTOR2 interpolate_transform_point(const POSE2& P1, const POSE2& P2, REAL t, const ORIGIN2& o);
 
     /// the orientation of the pose frame
     ROT2 r;

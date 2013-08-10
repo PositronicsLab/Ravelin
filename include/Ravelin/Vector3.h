@@ -19,13 +19,9 @@ class VECTOR3
     VECTOR3(REAL x, REAL y, REAL z, boost::shared_ptr<const POSE3> pose = boost::shared_ptr<const POSE3>());
     VECTOR3(const REAL* array, boost::shared_ptr<const POSE3> pose = boost::shared_ptr<const POSE3>());
     VECTOR3(const VECTOR3& source) { operator=(source); }
-    VECTOR3(const POINT3& source) { operator=(source); }
     VECTOR3(const ORIGIN3& source, boost::shared_ptr<const POSE3> pose) { this->pose = pose; operator=(source); }
     REAL dot(const VECTOR3& v) const { return dot(*this, v); }
-    REAL dot(const POINT3& p) const { return dot(*this, p); }
     static REAL dot(const VECTOR3& v1, const VECTOR3& v2);
-    static REAL dot(const VECTOR3& v, const POINT3& p);
-    static REAL dot(const POINT3& p, const VECTOR3& v) { return dot(v, p); }
     void normalize() { assert(norm() > std::numeric_limits<REAL>::epsilon()); operator/=(norm()); }
     void normalize_or_zero() { REAL nrm = norm(); if (nrm > std::numeric_limits<REAL>::epsilon()) operator/=(nrm); else _data[0] = _data[1] = _data[2] = (REAL) 0.0; }
     static VECTOR3 normalize(const VECTOR3& v) { VECTOR3 w = v; w.normalize(); return w; }
@@ -45,7 +41,6 @@ class VECTOR3
     bool operator<(const VECTOR3& v) const;
     VECTOR3& operator=(const ORIGIN3& o) { x() = o.x(); y() = o.y(); z() = o.z(); return *this; }
     VECTOR3& operator=(const VECTOR3& v) { pose = v.pose; x() = v.x(); y() = v.y(); z() = v.z(); return *this; }
-    VECTOR3& operator=(const POINT3& p);
     VECTOR3 operator+(const VECTOR3& v) const { VECTOR3 result = *this; result += v; return result; }
     VECTOR3 operator-(const VECTOR3& v) const { VECTOR3 result = *this; result -= v; return result; }
     VECTOR3 operator+(const ORIGIN3& o) const { VECTOR3 result = *this; result += o; return result; }

@@ -45,13 +45,6 @@ class ROT2
       return VECTOR2(cth*o.x() + sth*o.y(), -sth*o.x() + cth*o.y());
     }
 
-    POINT2 operator*(const POINT2& o) const
-    {
-      REAL cth = std::cos(theta);
-      REAL sth = std::sin(theta);
-      return POINT2(cth*o.x() + sth*o.y(), -sth*o.x() + cth*o.y());
-    }
-
     /// angle of rotation 
     REAL theta;
 };

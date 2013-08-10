@@ -10,7 +10,6 @@
 #include <Ravelin/InvalidIndexException.h>
 #include <Ravelin/MissizeException.h>
 #include <Ravelin/AAnglef.h>
-#include <Ravelin/Point3f.h>
 #include <Ravelin/Quatf.h>
 
 using namespace Ravelin;

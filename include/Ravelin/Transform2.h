@@ -24,10 +24,10 @@ class TRANSFORM2
     static REAL wrap(REAL theta);
     POSE2 transform(const POSE2& p) const;
     POSE2 inverse_transform(const POSE2& p) const;
-    POINT2 transform(const POINT2& v) const;
-    VECTOR2 transform(const VECTOR2& v) const;
-    POINT2 inverse_transform(const POINT2& v) const;
-    VECTOR2 inverse_transform(const VECTOR2& v) const;
+    VECTOR2 transform_point(const VECTOR2& v) const;
+    VECTOR2 transform_vector(const VECTOR2& v) const;
+    VECTOR2 inverse_transform_point(const VECTOR2& v) const;
+    VECTOR2 inverse_transform_vector(const VECTOR2& v) const;
     TRANSFORM2& set_identity();
     TRANSFORM2& invert();
     TRANSFORM2 inverse() const { return invert(*this); }

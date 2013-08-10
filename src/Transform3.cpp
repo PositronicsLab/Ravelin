@@ -289,7 +289,7 @@ POSE3 TRANSFORM3::inverse_transform(const POSE3& p) const
 }
 
 /// Transforms a vector from one pose to another 
-VECTOR3 TRANSFORM3::transform(const VECTOR3& v) const
+VECTOR3 TRANSFORM3::transform_vector(const VECTOR3& v) const
 {
   #ifndef NEXCEPT
   if (v.pose != source)
@@ -300,7 +300,7 @@ VECTOR3 TRANSFORM3::transform(const VECTOR3& v) const
 }
 
 /// Transforms a vector from one pose to another 
-VECTOR3 TRANSFORM3::inverse_transform(const VECTOR3& v) const
+VECTOR3 TRANSFORM3::inverse_transform_vector(const VECTOR3& v) const
 {
   #ifndef NEXCEPT
   if (v.pose != target)
@@ -311,25 +311,25 @@ VECTOR3 TRANSFORM3::inverse_transform(const VECTOR3& v) const
 }
 
 /// Transforms a point from one pose to another 
-POINT3 TRANSFORM3::transform(const POINT3& p) const
+VECTOR3 TRANSFORM3::transform_point(const VECTOR3& p) const
 {
   #ifndef NEXCEPT
   if (p.pose != source)
     throw FrameException();
   #endif
 
-  return POINT3(q * ORIGIN3(p) + x, target);
+  return VECTOR3(q * ORIGIN3(p) + x, target);
 }
 
 /// Transforms a point from one pose to another 
-POINT3 TRANSFORM3::inverse_transform(const POINT3& p) const
+VECTOR3 TRANSFORM3::inverse_transform_point(const VECTOR3& p) const
 {
   #ifndef NEXCEPT
   if (p.pose != target)
     throw FrameException();
   #endif
 
-  return POINT3(QUAT::invert(q) * (ORIGIN3(p) - x), source);
+  return VECTOR3(QUAT::invert(q) * (ORIGIN3(p) - x), source);
 }
 
 /// Transforms a force from one pose to another 
@@ -476,7 +476,7 @@ SPATIAL_RB_INERTIA TRANSFORM3::transform(const SPATIAL_RB_INERTIA& J) const
   // mass remains the same
   SPATIAL_RB_INERTIA Jx(target);
   Jx.m = J.m;
-  Jx.h = POINT3(q * ORIGIN3(J.h) + x, target);
+  Jx.h = VECTOR3(q * ORIGIN3(J.h) + x, target);
   Jx.J = R * J.J * MATRIX3::transpose(R);
 
   return Jx;

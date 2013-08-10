@@ -31,10 +31,10 @@ class TRANSFORM3
     static bool rel_equal(const TRANSFORM3& p1, const TRANSFORM3& p2, REAL tol = EPS);
     POSE3 transform(const POSE3& p) const;
     POSE3 inverse_transform(const POSE3& p) const;
-    POINT3 transform(const POINT3& p) const;
-    VECTOR3 transform(const VECTOR3& v) const;
-    POINT3 inverse_transform(const POINT3& p) const;
-    VECTOR3 inverse_transform(const VECTOR3& v) const;
+    VECTOR3 transform_point(const VECTOR3& p) const;
+    VECTOR3 transform_vector(const VECTOR3& v) const;
+    VECTOR3 inverse_transform_point(const VECTOR3& p) const;
+    VECTOR3 inverse_transform_vector(const VECTOR3& v) const;
     SFORCE transform(const SFORCE& w) const;
     SFORCE inverse_transform(const SFORCE& w) const;
     SMOMENTUM transform(const SMOMENTUM& t) const;

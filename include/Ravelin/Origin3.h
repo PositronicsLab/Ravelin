@@ -9,7 +9,6 @@
 #endif
 
 class VECTOR3;
-class POINT3;
 
 /// A two-dimensional floating point vector used for computational geometry calculations
 class ORIGIN3
@@ -18,7 +17,6 @@ class ORIGIN3
     ORIGIN3() {}
     ORIGIN3(REAL x, REAL y, REAL z);
     ORIGIN3(const REAL* array);
-    explicit ORIGIN3(const POINT3& p) { operator=(p); }
     explicit ORIGIN3(const VECTOR3& v) { operator=(v); }
     REAL norm_inf() const { return std::max(std::max(std::fabs(_data[0]), std::fabs(_data[1])), std::fabs(_data[2])); }
     REAL norm() const { return std::sqrt(norm_sq()); }
@@ -27,15 +25,12 @@ class ORIGIN3
     static REAL norm_sq(const ORIGIN3& v) { return v.norm_sq(); }
     void set_zero() { _data[0] = _data[1] = _data[2] = (REAL) 0.0; }
     static ORIGIN3 zero() { return ORIGIN3((REAL) 0.0, (REAL) 0.0, (REAL) 0.0); }
-    ORIGIN3& operator=(const POINT3& p);
     ORIGIN3& operator=(const ORIGIN3& o);
     ORIGIN3& operator=(const VECTOR3& v);
     ORIGIN3 operator+(const ORIGIN3& o) const;
-    POINT3 operator+(const POINT3& o) const;
-    POINT3 operator-(const POINT3& o) const;
-    POINT3 operator+(const VECTOR3& o) const;
-    POINT3 operator-(const VECTOR3& o) const;
+    VECTOR3 operator+(const VECTOR3& v) const;
     ORIGIN3 operator-(const ORIGIN3& v) const;
+    VECTOR3 operator-(const VECTOR3& v) const;
     ORIGIN3& operator+=(const ORIGIN3& v);
     ORIGIN3& operator-=(const ORIGIN3& v);
     ORIGIN3& operator*=(REAL scalar) { _data[0] *= scalar; _data[1] *= scalar; _data[2] *= scalar; return *this; }

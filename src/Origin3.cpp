@@ -25,16 +25,6 @@ ORIGIN3::ORIGIN3(const REAL* array)
   _data[Z] = array[Z];
 }
 
-/// Assigns this origin using the 3D point 
-ORIGIN3& ORIGIN3::operator=(const POINT3& p)
-{
-  const unsigned X = 0, Y = 1, Z = 2;
-  _data[X] = p.x();
-  _data[Y] = p.y();
-  _data[Z] = p.z();
-  return *this;
-}
-
 /// Assigns this origin using the 3D vector 
 ORIGIN3& ORIGIN3::operator=(const VECTOR3& v)
 {
@@ -74,6 +64,16 @@ ORIGIN3 ORIGIN3::operator+(const ORIGIN3& o) const
   return result;
 }
 
+/// Adds a vector to an origin
+VECTOR3 ORIGIN3::operator+(const VECTOR3& v) const
+{
+  VECTOR3 result(v.pose);
+  result.x() = x() + v.x(); 
+  result.y() = y() + v.y();
+  result.z() = z() + v.z();
+  return result;
+}
+
 /// Adds two origins
 ORIGIN3& ORIGIN3::operator+=(const ORIGIN3& o)
 {
@@ -83,28 +83,14 @@ ORIGIN3& ORIGIN3::operator+=(const ORIGIN3& o)
   return *this;
 }
 
-/// Adds an origin and a vector to yield a point 
-POINT3 ORIGIN3::operator+(const VECTOR3& v) const
+/// Subtracts a vector from an origin
+VECTOR3 ORIGIN3::operator-(const VECTOR3& v) const
 {
-  return v + *this;
-}
-
-/// Adds a point and an origin to yield a point
-POINT3 ORIGIN3::operator+(const POINT3& p) const
-{
-  return p + *this;
-}
-
-/// Subtracts a vector from an origin to yield a point 
-POINT3 ORIGIN3::operator-(const VECTOR3& v) const
-{
-  return v - *this;
-}
-
-/// Subtract a point from this origin to yield a point
-POINT3 ORIGIN3::operator-(const POINT3& p) const
-{
-  return -p + *this;
+  VECTOR3 result(v.pose);
+  result.x() = x() - v.x(); 
+  result.y() = y() - v.y();
+  result.z() = z() - v.z();
+  return result;
 }
 
 /// Subtracts one origin from another

@@ -33,8 +33,6 @@
 #undef SPARSEMATRIXN
 #undef SPARSEVECTORN
 #undef POSE2
-#undef POINT2
-#undef POINT3
 #undef ROT2
 #undef ORIGIN2
 #undef ORIGIN3

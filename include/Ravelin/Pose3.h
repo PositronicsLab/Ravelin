@@ -26,14 +26,14 @@ class POSE3 : public boost::enable_shared_from_this<POSE3>
     POSE3(const ORIGIN3& v, boost::shared_ptr<const POSE3> relative_pose = boost::shared_ptr<const POSE3>());
     static POSE3 identity() { POSE3 T; T.set_identity(); return T; }
     static VECTOR3 interpolate_vector(const POSE3& m1, const POSE3& m2, REAL t, const ORIGIN3& o);
-    static POINT3 interpolate_point(const POSE3& m1, const POSE3& m2, REAL t, const ORIGIN3& o);
+    static VECTOR3 interpolate_point(const POSE3& m1, const POSE3& m2, REAL t, const ORIGIN3& o);
     static bool rel_equal(const POSE3& p1, const POSE3& p2, REAL tol = EPS);
-    POINT3 transform(const POINT3& p) const { return transform(rpose, p); }
-    VECTOR3 transform(const VECTOR3& v) const { return transform(rpose, v); }
-    POINT3 inverse_transform(const POINT3& p) const;
-    VECTOR3 inverse_transform(const VECTOR3& v) const;
-    static POINT3 transform(boost::shared_ptr<const POSE3> target, const POINT3& v);
-    static VECTOR3 transform(boost::shared_ptr<const POSE3> target, const VECTOR3& v);
+    VECTOR3 transform_point(const VECTOR3& p) const { return transform_point(rpose, p); }
+    VECTOR3 transform_vector(const VECTOR3& p) const { return transform_vector(rpose, p); }
+    VECTOR3 inverse_transform_point(const VECTOR3& p) const;
+    VECTOR3 inverse_transform_vector(const VECTOR3& v) const;
+    static VECTOR3 transform_point(boost::shared_ptr<const POSE3> target, const VECTOR3& v);
+    static VECTOR3 transform_vector(boost::shared_ptr<const POSE3> target, const VECTOR3& v);
     SFORCE transform(const SFORCE& w) const;
     SFORCE inverse_transform(const SFORCE& w) const;
     static SFORCE transform(boost::shared_ptr<const POSE3> target, const SFORCE& w);
@@ -79,7 +79,7 @@ class POSE3 : public boost::enable_shared_from_this<POSE3>
     POSE3 operator*(const POSE3& m) const;
     void update_relative_pose(boost::shared_ptr<const POSE3> pose);
     static VECTOR3 interpolate_transform_vector(const POSE3& P1, const POSE3& P2, REAL t, const ORIGIN3& o);
-    static POINT3 interpolate_transform_point(const POSE3& P1, const POSE3& P2, REAL t, const ORIGIN3& o);
+    static VECTOR3 interpolate_transform_point(const POSE3& P1, const POSE3& P2, REAL t, const ORIGIN3& o);
     static SVELOCITY diff(const POSE3& P1, const POSE3& P2);
 
     /// the orientation of the pose frame

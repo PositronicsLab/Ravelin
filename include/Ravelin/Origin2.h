@@ -8,7 +8,6 @@
 #error This class is not to be included by the user directly. Use Origin2d.h or Origin2f.h instead.
 #endif
 
-class POINT2;
 class VECTOR2;
 
 /// A two-dimensional floating point vector used for computational geometry calculations
@@ -18,7 +17,6 @@ class ORIGIN2
     ORIGIN2() {}
     ORIGIN2(REAL x, REAL y);
     ORIGIN2(const REAL* array);
-    explicit ORIGIN2(const POINT2& p) { operator=(p); }
     explicit ORIGIN2(const VECTOR2& v) { operator=(v); }
     REAL norm_inf() const { return std::max(std::fabs(_data[0]), std::fabs(_data[1])); }
     REAL norm() const { return std::sqrt(norm_sq()); }
@@ -27,12 +25,9 @@ class ORIGIN2
     static REAL norm_sq(const ORIGIN2& v) { return v.norm_sq(); }
     void set_zero() { _data[0] = _data[1] = 0.0; }
     static ORIGIN2 zero() { return ORIGIN2(0.0, 0.0); }
-    ORIGIN2& operator=(const POINT2& p);
     ORIGIN2& operator=(const VECTOR2& v);
     ORIGIN2& operator=(const ORIGIN2& v) { _data[0] = v[0]; _data[1] = v[1]; return *this; }
     ORIGIN2 operator+(const ORIGIN2& v) const { return ORIGIN2(_data[0] + v[0], _data[1] + v[1]); }
-    VECTOR2 operator+(const POINT2& p) const;
-    VECTOR2 operator-(const POINT2& p) const;
     VECTOR2 operator+(const VECTOR2& p) const;
     VECTOR2 operator-(const VECTOR2& p) const;
     ORIGIN2 operator-(const ORIGIN2& v) const { return ORIGIN2(_data[0] - v[0], _data[1] - v[1]); }

@@ -64,6 +64,7 @@ class MATRIX3
     void set_rot_Z(REAL angle);
     static MATRIX3 rot_Z(REAL angle);
     static MATRIX3 skew_symmetric(REAL a, REAL b, REAL c);
+    static MATRIX3 skew_symmetric(const ORIGIN3& o);
     static MATRIX3 skew_symmetric(const VECTOR3& v);
     static VECTOR3 inverse_skew_symmetric(const MATRIX3& R);
     static MATRIX3 transpose(const MATRIX3& m);

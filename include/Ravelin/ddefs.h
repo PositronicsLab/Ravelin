@@ -33,8 +33,6 @@
 #define SPARSEMATRIXN SparseMatrixNd
 #define SPARSEVECTORN SparseVectorNd
 #define ROT2 Rot2d
-#define POINT2 Point2d
-#define POINT3 Point3d
 #define POSE2 Pose2d
 #define ORIGIN2 Origin2d
 #define ORIGIN3 Origin3d
