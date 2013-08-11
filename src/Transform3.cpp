@@ -491,23 +491,13 @@ SPATIAL_RB_INERTIA TRANSFORM3::inverse_transform(const SPATIAL_RB_INERTIA& J) co
   #endif
 
   // setup r and E
-  MATRIX3 E = QUAT::invert(q);
-  const ORIGIN3& r = x;
-  VECTOR3 rv(r, target);
-  const MATRIX3 ET = MATRIX3::transpose(E);
+  MATRIX3 R = QUAT::invert(q);
 
-  // precompute some things
-  VECTOR3 mr = rv * J.m;
-  MATRIX3 rx = MATRIX3::skew_symmetric(rv);
-  MATRIX3 hx = MATRIX3::skew_symmetric(J.h);
-  MATRIX3 mrxrx = rx * MATRIX3::skew_symmetric(mr);  
-  MATRIX3 EhxETrx = E * hx * ET * rx;
-
-  // setup the new inertia
+  // mass remains the same
   SPATIAL_RB_INERTIA Jx(source);
   Jx.m = J.m;
-  Jx.J = EhxETrx + MATRIX3::transpose(EhxETrx) + (E*J.J*ET) - mrxrx; 
-  Jx.h = E * ORIGIN3(J.h) - mr;
+  Jx.h = VECTOR3(R * ORIGIN3(J.h) - R*x, target);
+  Jx.J = R * J.J * MATRIX3::transpose(R);
 
   return Jx;
 }
@@ -524,21 +514,19 @@ SPATIAL_AB_INERTIA TRANSFORM3::transform(const SPATIAL_AB_INERTIA& J) const
   MATRIX3 E = q;
   const MATRIX3 ET = MATRIX3::transpose(E);
   ORIGIN3 r = ET.mult(-x);
-  VECTOR3 rv(r, target);
 
   // precompute some things we'll need
-  MATRIX3 rx = MATRIX3::skew_symmetric(rv);
+  MATRIX3 rx = MATRIX3::skew_symmetric(r);
+  MATRIX3 Y = J.H - rx*J.M;
+  MATRIX3 EYET = E * Y * ET;
   MATRIX3 HT = MATRIX3::transpose(J.H);
-  MATRIX3 EJET = E * J.J * ET;
-  MATRIX3 rx_E_HT_ET = rx*E*HT*ET;
-  MATRIX3 EHET = E * J.H * ET;
-  MATRIX3 EMET = E * J.M * ET;
-  MATRIX3 rxEMET = rx * EMET;
+  MATRIX3 Z = J.J - rx*HT + Y*rx;
 
+  // setup the spatial inertia
   SPATIAL_AB_INERTIA result(target);
-  result.M = EMET;
-  result.H = EHET - rxEMET;
-  result.J = EJET - rx_E_HT_ET + ((EHET - rxEMET) * rx); 
+  result.M = E*J.M*ET;
+  result.H = Y;
+  result.J = E*Z*ET; 
 
   return result;
 }
@@ -555,22 +543,23 @@ SPATIAL_AB_INERTIA TRANSFORM3::inverse_transform(const SPATIAL_AB_INERTIA& J) co
   MATRIX3 E = QUAT::invert(q);
   const ORIGIN3& r = x;
   const MATRIX3 ET = MATRIX3::transpose(E);
-  VECTOR3 rv(r, source);
 
   // precompute some things we'll need
-  MATRIX3 rx = MATRIX3::skew_symmetric(rv);
+  MATRIX3 rx = MATRIX3::skew_symmetric(r);
   MATRIX3 HT = MATRIX3::transpose(J.H);
   MATRIX3 EJET = E * J.J * ET;
-  MATRIX3 rx_E_HT_ET = rx*E*HT*ET;
   MATRIX3 EHET = E * J.H * ET;
   MATRIX3 EMET = E * J.M * ET;
-  MATRIX3 rxEMET = rx * EMET;
+  MATRIX3 rx_EMET = rx * EMET;
+  MATRIX3 E_rx = E * rx;
+  MATRIX3 E_rx_HT_ET = E_rx * HT * ET;
+  MATRIX3 E_rx_M_rx_ET = E_rx * J.M * rx * ET;
 
-  // compute the result
+  // setup the spatial inertia
   SPATIAL_AB_INERTIA result(source);
   result.M = EMET;
-  result.H = EHET - rxEMET;
-  result.J = EJET - rx_E_HT_ET + ((EHET - rxEMET) * rx); 
+  result.H = EHET - rx_EMET;
+  result.J = EJET - E_rx_HT_ET + EHET - E_rx_M_rx_ET; 
 
   return result;
 }

@@ -90,6 +90,11 @@ class SPATIAL_AB_INERTIA
 
     /// The pose that this inertia is defined in
     boost::shared_ptr<const POSE3> pose;
+
+  private:
+    void mult_spatial(const SVECTOR6& v, SVECTOR6& result) const;
+    void inverse_mult_spatial(const SVECTOR6& v, SVECTOR6& result) const;
+    void inverse_mult_spatial(const SVECTOR6& v, const MATRIX3& UL, const MATRIX3& UR, const MATRIX3& LL, SVECTOR6& result) const;
 }; // end class
 
 std::ostream& operator<<(std::ostream& out, const SPATIAL_AB_INERTIA& m);

@@ -84,6 +84,13 @@ class SPATIAL_RB_INERTIA
 
       return M;
     }
+
+  private:
+    void mult_spatial(const SVECTOR6& t, SVECTOR6& result) const;
+    void mult_spatial(const SVECTOR6& t, const MATRIX3& hxm, const MATRIX3& J_minus_hxhxm, SVECTOR6& result) const;
+    void inverse_mult_spatial(const SVECTOR6& w, SVECTOR6& result) const;
+    void inverse_mult_spatial(const SVECTOR6& w, const MATRIX3& iJ, const MATRIX3& hx, const MATRIX3& hxiJ, REAL m, SVECTOR6& result) const;
+
 }; // end class
 
 std::ostream& operator<<(std::ostream& out, const SPATIAL_RB_INERTIA& m);

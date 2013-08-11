@@ -38,10 +38,14 @@ SPATIAL_AB_INERTIA& SPATIAL_AB_INERTIA::operator=(const SPATIAL_AB_INERTIA& m)
 /// Copies a spatial RB inertia to this one 
 SPATIAL_AB_INERTIA& SPATIAL_AB_INERTIA::operator=(const SPATIAL_RB_INERTIA& m)
 {
+  // precompute some things
+  MATRIX3 hxm = MATRIX3::skew_symmetric(m.h*m.m);
+  MATRIX3 hxhxm = MATRIX3::skew_symmetric(m.h)*hxm;
+
   this->pose = m.pose;
   this->M.set_identity() *= m.m;
-  this->H = MATRIX3::skew_symmetric(m.h);
-  this->J = m.J;
+  this->H = hxm;
+  this->J = m.J - hxhxm;
   return *this;
 }
 
@@ -53,7 +57,47 @@ void SPATIAL_AB_INERTIA::set_zero()
   J.set_zero();
 }
 
+/// Does spatial arithmetic
+void SPATIAL_AB_INERTIA::mult_spatial(const SVECTOR6& t, SVECTOR6& result) const
+{
+  // get necessary components of the acceleration 
+  ORIGIN3 top(t.get_upper());
+  ORIGIN3 bot(t.get_lower());
+
+  // compute top part of result
+  result.pose = pose;
+  result.set_upper(VECTOR3(H.transpose_mult(top) + (M * bot), pose));
+  result.set_lower(VECTOR3((J * top) + (H * bot), pose));
+}
+
+/// Does inverse spatial matrix/vector multiplication
+void SPATIAL_AB_INERTIA::inverse_mult_spatial(const SVECTOR6& w, SVECTOR6& result) const
+{
+  MATRIX3 nMinv = -MATRIX3::invert(M);
+  MATRIX3 UR = MATRIX3::invert((H * nMinv.mult_transpose(H)) + J);
+  MATRIX3 UL = UR * H * nMinv;
+  MATRIX3 LL = nMinv * (H.transpose_mult(UL) - MATRIX3::identity());
+
+  // get the components of the force 
+  ORIGIN3 top(w.get_upper());
+  ORIGIN3 bot(w.get_lower());
+  result.pose = pose;
+  result.set_upper(VECTOR3(UL*top + UR*bot, pose));
+  result.set_lower(VECTOR3(LL*top + UL.transpose_mult(bot), pose)); 
+}
+
 /// Multiplies this matrix by an axis and returns the result in a momentum 
+/// Does inverse spatial matrix/vector multiplication
+void SPATIAL_AB_INERTIA::inverse_mult_spatial(const SVECTOR6& w, const MATRIX3& UL, const MATRIX3& UR, const MATRIX3& LL, SVECTOR6& result) const
+{
+  // get the components of the force 
+  ORIGIN3 top(w.get_upper());
+  ORIGIN3 bot(w.get_lower());
+  result.pose = pose;
+  result.set_upper(VECTOR3(UL*top + UR*bot, pose));
+  result.set_lower(VECTOR3(LL*top + UL.transpose_mult(bot), pose)); 
+}
+
 SMOMENTUM SPATIAL_AB_INERTIA::mult(const SAXIS& t) const
 {
   #ifndef NEXCEPT
@@ -61,15 +105,9 @@ SMOMENTUM SPATIAL_AB_INERTIA::mult(const SAXIS& t) const
     throw FrameException();
   #endif
 
-  // get necessary components of the acceleration 
-  ORIGIN3 top(t.get_angular());
-  ORIGIN3 bot(t.get_linear());
-
-  // compute top part of result
-  VECTOR3 rtop(H.transpose_mult(top) + (M * bot), pose);
-  VECTOR3 rbot((J * top) + (H * bot), pose);
-
-  return SMOMENTUM(rtop, rbot, pose); 
+  SMOMENTUM result;
+  mult_spatial(t, result);
+  return result;
 }
 
 /// Multiplies this matrix by an acceleration and returns the result in a force 
@@ -80,15 +118,9 @@ SFORCE SPATIAL_AB_INERTIA::mult(const SACCEL& t) const
     throw FrameException();
   #endif
 
-  // get necessary components of the acceleration 
-  ORIGIN3 top(t.get_angular());
-  ORIGIN3 bot(t.get_linear());
-
-  // compute top part of result
-  VECTOR3 rtop(H.transpose_mult(top) + (M * bot), pose);
-  VECTOR3 rbot((J * top) + (H * bot), pose);
-
-  return SFORCE(rtop, rbot, pose); 
+  SFORCE result;
+  mult_spatial(t, result);
+  return result;
 }
 
 /// Multiplies this matrix by a velocity and returns the result in a momentum 
@@ -99,15 +131,9 @@ SMOMENTUM SPATIAL_AB_INERTIA::mult(const SVELOCITY& t) const
     throw FrameException();
   #endif
 
-  // get necessary components of the velocity 
-  ORIGIN3 top(t.get_angular());
-  ORIGIN3 bot(t.get_linear());
-
-  // compute top part of result
-  VECTOR3 rtop(H.transpose_mult(top) + (M * bot), pose);
-  VECTOR3 rbot((J * top) + (H * bot), pose);
-
-  return SMOMENTUM(rtop, rbot, pose); 
+  SMOMENTUM result;
+  mult_spatial(t, result);
+  return result;
 }
 
 /// Multiplies this matrix by a vector of accelerations and returns the result in a vector of forces 
@@ -123,11 +149,7 @@ vector<SFORCE>& SPATIAL_AB_INERTIA::mult(const vector<SACCEL>& t, vector<SFORCE>
       throw FrameException();
     #endif
 
-    ORIGIN3 top(t[i].get_angular());
-    ORIGIN3 bot(t[i].get_linear());
-    VECTOR3 wtop(H.transpose_mult(top) + (M * bot), pose);
-    VECTOR3 wbot((J * top) + (H * bot), pose);
-    result[i] = SFORCE(wtop, wbot, pose); 
+    mult_spatial(t[i], result[i]);
   }
 
   return result;
@@ -146,11 +168,7 @@ vector<SMOMENTUM>& SPATIAL_AB_INERTIA::mult(const vector<SVELOCITY>& t, vector<S
       throw FrameException();
     #endif
 
-    ORIGIN3 top(t[i].get_angular());
-    ORIGIN3 bot(t[i].get_linear());
-    VECTOR3 wtop(H.transpose_mult(top) + (M * bot), pose);
-    VECTOR3 wbot((J * top) + (H * bot), pose);
-    result[i] = SMOMENTUM(wtop, wbot, pose); 
+    mult_spatial(t[i], result[i]);
   }
 
   return result;
@@ -186,20 +204,20 @@ SPATIAL_AB_INERTIA SPATIAL_AB_INERTIA::operator+(const SPATIAL_RB_INERTIA& m) co
     throw FrameException();
   #endif
 
+  // precompute some things
+  MATRIX3 hxm = MATRIX3::skew_symmetric(m.h*m.m);
+  MATRIX3 hxhxm = MATRIX3::skew_symmetric(m.h)*hxm;
+
   // do some preliminary calculations
   SPATIAL_AB_INERTIA result(pose);
   result.M = M;
-  result.H = H;
-  result.J = m.J + J;
+  result.H = H + hxm;
+  result.J = J + m.J - hxhxm;
 
   // update M with mass
   result.M(X,X) += m.m;
   result.M(Y,Y) += m.m;
   result.M(Z,Z) += m.m;
-
-  // update H
-  MATRIX3 hx = MATRIX3::skew_symmetric(m.h);
-  result.H += hx;
 
   return result;
 }
@@ -270,19 +288,9 @@ SACCEL SPATIAL_AB_INERTIA::inverse_mult(const SFORCE& w) const
     throw FrameException();
   #endif
 
-  MATRIX3 nMinv = -MATRIX3::invert(M);
-  MATRIX3 UR = MATRIX3::invert((H * nMinv.mult_transpose(H)) + J);
-  MATRIX3 UL = UR * H * nMinv;
-  MATRIX3 LL = nMinv * (H.transpose_mult(UL) - MATRIX3::identity());
-
-  // get the components of the force 
-  ORIGIN3 top(w.get_force());
-  ORIGIN3 bot(w.get_torque());
-  VECTOR3 ttop(UL*top + UR*bot, pose);
-  VECTOR3 tbot(LL*top + UL.transpose_mult(bot), pose); 
-
-  // do the arithmetic
-  return SACCEL(ttop, tbot, pose);
+  SACCEL result;
+  inverse_mult_spatial(w, result);
+  return result;
 }
 
 /// Multiplies the inverse of this spatial RB inertia by a momentum to yield a velocity 
@@ -293,19 +301,9 @@ SVELOCITY SPATIAL_AB_INERTIA::inverse_mult(const SMOMENTUM& w) const
     throw FrameException();
   #endif
 
-  MATRIX3 nMinv = -MATRIX3::invert(M);
-  MATRIX3 UR = MATRIX3::invert((H * nMinv.mult_transpose(H)) + J);
-  MATRIX3 UL = UR * H * nMinv;
-  MATRIX3 LL = nMinv * (H.transpose_mult(UL) - MATRIX3::identity());
-
-  // get the components of the momentum 
-  ORIGIN3 top(w.get_linear());
-  ORIGIN3 bot(w.get_angular());
-  VECTOR3 ttop(UL*top + UR*bot, pose);
-  VECTOR3 tbot(LL*top + UL.transpose_mult(bot), pose); 
-
-  // do the arithmetic
-  return SVELOCITY(ttop, tbot, pose);
+  SVELOCITY result;
+  inverse_mult_spatial(w, result);
+  return result;
 }
 
 /// Multiplies the inverse of this spatial AB inertia by a force to yield an accel 
@@ -329,14 +327,7 @@ vector<SACCEL>& SPATIAL_AB_INERTIA::inverse_mult(const std::vector<SFORCE>& w, v
       throw FrameException();
     #endif
 
-    // get the components of the force 
-    ORIGIN3 top(w[i].get_force());
-    ORIGIN3 bot(w[i].get_torque());
-    VECTOR3 ttop(UL*top + UR*bot, pose);
-    VECTOR3 tbot(LL*top + UL.transpose_mult(bot), pose);
-
-    // do the arithmetic
-    result[i] = SACCEL(ttop, tbot, pose);
+    inverse_mult_spatial(w[i], UL, UR, LL, result[i]); 
   }
 
   return result;
@@ -363,14 +354,8 @@ vector<SVELOCITY>& SPATIAL_AB_INERTIA::inverse_mult(const std::vector<SMOMENTUM>
       throw FrameException();
     #endif
 
-    // get the components of the force 
-    ORIGIN3 top(w[i].get_linear());
-    ORIGIN3 bot(w[i].get_angular());
-    VECTOR3 ttop(UL*top + UR*bot, pose);
-    VECTOR3 tbot(LL*top + UL.transpose_mult(bot), pose);
-
     // do the arithmetic
-    result[i] = SVELOCITY(ttop, tbot, pose);
+    inverse_mult_spatial(w[i], UL, UR, LL, result[i]);
   }
 
   return result;
