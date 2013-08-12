@@ -59,10 +59,9 @@ class SPATIAL_AB_INERTIA
         throw MissizeException();
       #endif
       m.get_sub_mat(3, 6, 3, 6, I.H);
-      #ifndef NDEBUG
-      m.get_sub_mat(0, 3, 0, 3, I.M);   // note: just using M here as a temporary
-      assert((I.H - I.M).norm_inf() < I.H.norm_inf() * EPS);
-      #endif
+      m.get_sub_mat(0, 3, 0, 3, I.M);   // note: using M=H' here temporarily
+      I.H += MATRIX3::transpose(I.M);   //       to compute mean of the two
+      I.H *= (REAL) 0.5;                //       matrices
       m.get_sub_mat(0, 3, 3, 6, I.M);
       m.get_sub_mat(3, 6, 0, 3, I.J);
       return I;
@@ -72,7 +71,7 @@ class SPATIAL_AB_INERTIA
     Mat& to_matrix(Mat& m) const
     {
       m.resize(6,6);
-      m.set_sub_mat(0, 0, H);
+      m.set_sub_mat(0, 0, MATRIX3::transpose(H));
       m.set_sub_mat(0, 3, M);
       m.set_sub_mat(3, 3, H);
       m.set_sub_mat(3, 0, J);

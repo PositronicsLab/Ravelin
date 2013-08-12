@@ -269,61 +269,63 @@ SPATIAL_RB_INERTIA SPATIAL_RB_INERTIA::operator-() const
 }
 
 /// Adds two spatial matrices
-SPATIAL_RB_INERTIA SPATIAL_RB_INERTIA::operator+(const SPATIAL_RB_INERTIA& m) const
+SPATIAL_RB_INERTIA SPATIAL_RB_INERTIA::operator+(const SPATIAL_RB_INERTIA& Jx) const
 {
   #ifndef NEXCEPT
-  if (pose != m.pose)
+  if (pose != Jx.pose)
     throw FrameException();
   #endif
 
   SPATIAL_RB_INERTIA result;
-  result.m = this->m + m.m;
-  result.h = this->h + m.h;
-  result.J = this->J + m.J;
+  result.m = m + Jx.m;
+  result.h = ((h*m) + (Jx.h*Jx.m))/result.m;
+  result.J = J + Jx.J;
   return result;
 }
 
 /// Subtracts two spatial matrices
-SPATIAL_RB_INERTIA SPATIAL_RB_INERTIA::operator-(const SPATIAL_RB_INERTIA& m) const
+SPATIAL_RB_INERTIA SPATIAL_RB_INERTIA::operator-(const SPATIAL_RB_INERTIA& Jx) const
 {
   #ifndef NEXCEPT
-  if (pose != m.pose)
+  if (pose != Jx.pose)
     throw FrameException();
   #endif
 
   SPATIAL_RB_INERTIA result;
-  result.m = this->m - m.m;
-  result.h = this->h - m.h;
-  result.J = this->J - m.J;
+  result.m = m - Jx.m;
+  result.h = (h*m - Jx.h*Jx.m)/result.m;
+  result.J = J - Jx.J;
   result.pose = pose;
   return result;
 }
 
 /// Adds m to this in place
-SPATIAL_RB_INERTIA& SPATIAL_RB_INERTIA::operator+=(const SPATIAL_RB_INERTIA& m)
+SPATIAL_RB_INERTIA& SPATIAL_RB_INERTIA::operator+=(const SPATIAL_RB_INERTIA& Jx)
 {
   #ifndef NEXCEPT
-  if (pose != m.pose)
+  if (pose != Jx.pose)
     throw FrameException();
   #endif
 
-  this->m += m.m;
-  this->h += m.h;
-  this->J += m.J;
+  double new_m = m + Jx.m;
+  h = (h*m + Jx.h*Jx.m)/new_m;
+  m = new_m;
+  J += Jx.J;
   return *this;
 }
 
 /// Subtracts m from this in place
-SPATIAL_RB_INERTIA& SPATIAL_RB_INERTIA::operator-=(const SPATIAL_RB_INERTIA& m)
+SPATIAL_RB_INERTIA& SPATIAL_RB_INERTIA::operator-=(const SPATIAL_RB_INERTIA& Jx)
 {
   #ifndef NEXCEPT
-  if (pose != m.pose)
+  if (pose != Jx.pose)
     throw FrameException();
   #endif
 
-  this->m -= m.m;
-  this->h -= m.h;
-  this->J -= m.J;
+  double new_m = m - Jx.m;
+  h = (h*m - Jx.h*Jx.m)/new_m;
+  m = new_m;
+  J -= Jx.J;
   return *this;
 }
 

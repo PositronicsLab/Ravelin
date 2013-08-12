@@ -1124,7 +1124,7 @@ void POSE3::update_relative_pose(boost::shared_ptr<const POSE3> pose)
 /// Outputs this matrix to the stream
 std::ostream& Ravelin::operator<<(std::ostream& out, const POSE3& m)
 {
-  out << "orientation: " << AANGLE(m.q) << " origin: " << m.x << std::endl;
+  out << "orientation: " << AANGLE(m.q) << " origin: " << m.x;
    
   return out;
 }

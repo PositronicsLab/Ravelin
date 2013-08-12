@@ -567,7 +567,7 @@ SPATIAL_AB_INERTIA TRANSFORM3::inverse_transform(const SPATIAL_AB_INERTIA& J) co
 /// Outputs this matrix to the stream
 std::ostream& Ravelin::operator<<(std::ostream& out, const TRANSFORM3& m)
 {
-  out << "orientation: " << AANGLE(m.q) << " origin: " << m.x << std::endl;
+  out << "orientation: " << AANGLE(m.q) << " origin: " << m.x;
    
   return out;
 }
