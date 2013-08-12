@@ -108,9 +108,9 @@ MATRIX3::MATRIX3(REAL m00, REAL m01, REAL m02, REAL m10, REAL m11, REAL m12, REA
   _data[2] = m20;
   _data[3] = m01;
   _data[4] = m11;
-  _data[5] = m12;
-  _data[6] = m20;
-  _data[7] = m21;
+  _data[5] = m21;
+  _data[6] = m02;
+  _data[7] = m12;
   _data[8] = m22;
 }
 

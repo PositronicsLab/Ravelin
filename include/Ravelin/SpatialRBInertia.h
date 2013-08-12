@@ -54,8 +54,8 @@ class SPATIAL_RB_INERTIA
     /// The rigid body mass
     REAL m;
 
-    /// The position of the center-of-mass relative to this frame 
-    VECTOR3 h;
+    /// The position of the center-of-mass times the mass 
+    ORIGIN3 h;
 
     /// The rigid body moment of inertia matrix
     MATRIX3 J;
@@ -73,21 +73,20 @@ class SPATIAL_RB_INERTIA
       M.resize(SPATIAL_DIM, SPATIAL_DIM);
 
       // precompute matrices
-      MATRIX3 hxm = MATRIX3::skew_symmetric(h*m);
-      MATRIX3 hxhxm = MATRIX3::skew_symmetric(h)*hxm;
+      MATRIX3 hx = MATRIX3::skew_symmetric(h);
 
       // setup the 3x3 blocks
-      M.set_sub_mat(0,0, hxm, eTranspose);
-      M.set_sub_mat(3,0, J - hxhxm);
+      M.set_sub_mat(0,0, hx, eTranspose);
+      M.set_sub_mat(3,0, J);
       M.set_sub_mat(0,3, MATRIX3(m, 0, 0, 0, m, 0, 0, 0, m));
-      M.set_sub_mat(3,3, hxm);
+      M.set_sub_mat(3,3, hx);
 
       return M;
     }
 
   private:
     void mult_spatial(const SVECTOR6& t, SVECTOR6& result) const;
-    void mult_spatial(const SVECTOR6& t, const MATRIX3& hxm, const MATRIX3& J_minus_hxhxm, SVECTOR6& result) const;
+    void mult_spatial(const SVECTOR6& t, const MATRIX3& hx, SVECTOR6& result) const;
     void inverse_mult_spatial(const SVECTOR6& w, SVECTOR6& result) const;
     void inverse_mult_spatial(const SVECTOR6& w, const MATRIX3& iJ, const MATRIX3& hx, const MATRIX3& hxiJ, REAL m, SVECTOR6& result) const;
 

@@ -470,14 +470,22 @@ SPATIAL_RB_INERTIA TRANSFORM3::transform(const SPATIAL_RB_INERTIA& J) const
     throw FrameException();
   #endif
 
-  // get the rotation
-  MATRIX3 R = q;
+  // get r and E 
+  MATRIX3 E = q;
+  ORIGIN3 r = E.transpose_mult(-x);
 
-  // mass remains the same
+  // precompute some things
+  ORIGIN3 y = J.h - r*J.m;
+  MATRIX3 rx = MATRIX3::skew_symmetric(r);
+  MATRIX3 hx = MATRIX3::skew_symmetric(J.h);
+  MATRIX3 yx = MATRIX3::skew_symmetric(y);
+  MATRIX3 Z = J.J + (rx*hx) + (yx*rx);
+
+  // transform the inertia 
   SPATIAL_RB_INERTIA Jx(target);
   Jx.m = J.m;
-  Jx.h = VECTOR3(q * ORIGIN3(J.h) + x, target);
-  Jx.J = R * J.J * MATRIX3::transpose(R);
+  Jx.h = E*y;
+  Jx.J = E*Z*MATRIX3::transpose(E);
 
   return Jx;
 }
@@ -490,14 +498,22 @@ SPATIAL_RB_INERTIA TRANSFORM3::inverse_transform(const SPATIAL_RB_INERTIA& J) co
     throw FrameException();
   #endif
 
-  // setup r and E
-  MATRIX3 R = QUAT::invert(q);
+  // get r and E 
+  MATRIX3 E = QUAT::invert(q);
+  const ORIGIN3& r = x;
 
-  // mass remains the same
+  // precompute some things
+  ORIGIN3 y = J.h - r*J.m;
+  MATRIX3 rx = MATRIX3::skew_symmetric(r);
+  MATRIX3 hx = MATRIX3::skew_symmetric(J.h);
+  MATRIX3 yx = MATRIX3::skew_symmetric(y);
+  MATRIX3 Z = J.J + (rx*hx) + (yx*rx);
+
+  // transform the inertia 
   SPATIAL_RB_INERTIA Jx(source);
   Jx.m = J.m;
-  Jx.h = VECTOR3(R * ORIGIN3(J.h) - R*x, target);
-  Jx.J = R * J.J * MATRIX3::transpose(R);
+  Jx.h = E*y;
+  Jx.J = E*Z*MATRIX3::transpose(E);
 
   return Jx;
 }
@@ -520,7 +536,7 @@ SPATIAL_AB_INERTIA TRANSFORM3::transform(const SPATIAL_AB_INERTIA& J) const
   MATRIX3 Y = J.H - rx*J.M;
   MATRIX3 EYET = E * Y * ET;
   MATRIX3 HT = MATRIX3::transpose(J.H);
-  MATRIX3 Z = J.J - rx*HT + Y*rx;
+  MATRIX3 Z = J.J + rx*HT + Y*rx;
 
   // setup the spatial inertia
   SPATIAL_AB_INERTIA result(target);

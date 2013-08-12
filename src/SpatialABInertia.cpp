@@ -39,13 +39,12 @@ SPATIAL_AB_INERTIA& SPATIAL_AB_INERTIA::operator=(const SPATIAL_AB_INERTIA& m)
 SPATIAL_AB_INERTIA& SPATIAL_AB_INERTIA::operator=(const SPATIAL_RB_INERTIA& m)
 {
   // precompute some things
-  MATRIX3 hxm = MATRIX3::skew_symmetric(m.h*m.m);
-  MATRIX3 hxhxm = MATRIX3::skew_symmetric(m.h)*hxm;
+  MATRIX3 hx = MATRIX3::skew_symmetric(m.h);
 
   this->pose = m.pose;
   this->M.set_identity() *= m.m;
-  this->H = hxm;
-  this->J = m.J - hxhxm;
+  this->H = hx;
+  this->J = m.J;
   return *this;
 }
 
