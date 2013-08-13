@@ -536,7 +536,7 @@ SPATIAL_AB_INERTIA TRANSFORM3::transform(const SPATIAL_AB_INERTIA& J) const
   MATRIX3 Y = J.H - rx*J.M;
   MATRIX3 EYET = E * Y * ET;
   MATRIX3 HT = MATRIX3::transpose(J.H);
-  MATRIX3 Z = J.J + rx*HT + Y*rx;
+  MATRIX3 Z = J.J - rx*HT + Y*rx;
 
   // setup the spatial inertia
   SPATIAL_AB_INERTIA result(target);
