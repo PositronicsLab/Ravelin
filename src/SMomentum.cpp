@@ -4,7 +4,7 @@
  * License (found in COPYING).
  ****************************************************************************/
 
-REAL SMOMENTUM::dot(const SAXIS& v2) const
+REAL SMOMENTUM::dot(const SVELOCITY& v2) const
 {
   // verify that both vectors are defined in the same frame
   #ifndef NEXCEPT

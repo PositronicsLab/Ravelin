@@ -39,8 +39,6 @@ class TRANSFORM3
     SFORCE inverse_transform(const SFORCE& w) const;
     SMOMENTUM transform(const SMOMENTUM& t) const;
     SMOMENTUM inverse_transform(const SMOMENTUM& t) const;
-    SAXIS transform(const SAXIS& t) const;
-    SAXIS inverse_transform(const SAXIS& t) const;
     SVELOCITY transform(const SVELOCITY& t) const;
     SVELOCITY inverse_transform(const SVELOCITY& t) const;
     SACCEL transform(const SACCEL& t) const;

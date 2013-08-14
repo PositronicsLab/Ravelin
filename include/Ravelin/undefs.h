@@ -24,7 +24,6 @@
 #undef SVECTOR6 
 #undef SFORCE
 #undef SMOMENTUM
-#undef SAXIS
 #undef SVELOCITY
 #undef SACCEL 
 #undef SPATIAL_AB_INERTIA

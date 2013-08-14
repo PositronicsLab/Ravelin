@@ -430,22 +430,6 @@ SMOMENTUM TRANSFORM3::inverse_transform(const SMOMENTUM& t) const
   return result;
 }
 
-/// Transforms an axis from one pose to another 
-SAXIS TRANSFORM3::transform(const SAXIS& t) const
-{
-  SAXIS result;
-  transform_spatial(t, result);
-  return result;
-}
-
-/// Transforms an axis from one pose to another 
-SAXIS TRANSFORM3::inverse_transform(const SAXIS& t) const
-{
-  SAXIS result;
-  inverse_transform_spatial(t, result);
-  return result;
-}
-
 /// Transforms an acceleration from one pose to another 
 SACCEL TRANSFORM3::transform(const SACCEL& t) const
 {

@@ -8,8 +8,6 @@
 #error This class is not to be included by the user directly. Use SMomentumd.h or SMomentumf.h instead.
 #endif
 
-class SAXIS;
-
 class SMOMENTUM : public SVECTOR6 
 {
   public:
@@ -50,7 +48,7 @@ class SMOMENTUM : public SVECTOR6
     VECTOR3 get_angular() const { return get_lower(); }
     SMOMENTUM& operator=(const SMOMENTUM& source) { SVECTOR6::operator=(source); return *this; } 
     SMOMENTUM& operator=(const SVECTOR6& source) { SVECTOR6::operator=(source); return *this; } 
-    REAL dot(const SAXIS& s) const;
+    REAL dot(const SVELOCITY& s) const;
 
     /// Returns the negation of this vector
     SMOMENTUM operator-() const

@@ -13,7 +13,6 @@
 #include <Ravelin/SMomentumf.h>
 #include <Ravelin/SVelocityf.h>
 #include <Ravelin/SForcef.h>
-#include <Ravelin/SAxisf.h>
 #include <Ravelin/SVector6f.h>
 
 using namespace Ravelin;

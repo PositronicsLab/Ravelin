@@ -260,20 +260,6 @@ SMOMENTUM SPATIAL_RB_INERTIA::operator*(const SVELOCITY& t) const
   return f;
 }
 
-/// Multiplies this inertia by an axis and returns a momentum 
-SMOMENTUM SPATIAL_RB_INERTIA::operator*(const SAXIS& t) const
-{
-  #ifndef NEXCEPT
-  if (pose != t.pose)
-    throw FrameException();
-  #endif
-
-  // do the spatial arithmetic
-  SMOMENTUM f;
-  mult_spatial(t, f);
-  return f;
-}
-
 //// Multiplies this matrix by a scalar in place
 SPATIAL_RB_INERTIA& SPATIAL_RB_INERTIA::operator*=(REAL scalar)
 {

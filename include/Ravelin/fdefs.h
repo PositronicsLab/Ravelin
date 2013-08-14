@@ -23,7 +23,6 @@
 #define ITERATOR fIterator
 #define SVECTOR6 SVector6f 
 #define SMOMENTUM SMomentumf
-#define SAXIS SAxisf
 #define SFORCE SForcef
 #define SVELOCITY SVelocityf
 #define SACCEL SAccelf

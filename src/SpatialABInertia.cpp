@@ -97,18 +97,6 @@ void SPATIAL_AB_INERTIA::inverse_mult_spatial(const SVECTOR6& w, const MATRIX3& 
   result.set_lower(VECTOR3(LL*top + UL.transpose_mult(bot), pose)); 
 }
 
-SMOMENTUM SPATIAL_AB_INERTIA::mult(const SAXIS& t) const
-{
-  #ifndef NEXCEPT
-  if (pose != t.pose)
-    throw FrameException();
-  #endif
-
-  SMOMENTUM result;
-  mult_spatial(t, result);
-  return result;
-}
-
 /// Multiplies this matrix by an acceleration and returns the result in a force 
 SFORCE SPATIAL_AB_INERTIA::mult(const SACCEL& t) const
 {

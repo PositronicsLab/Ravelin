@@ -613,76 +613,6 @@ std::vector<SVELOCITY>& POSE3::transform(boost::shared_ptr<const POSE3> target, 
   return result;
 }
 
-/// Transforms an axis from one pose to another 
-SAXIS POSE3::inverse_transform(const SAXIS& t) const
-{
-  // determine the resulting frame
-  boost::shared_ptr<const POSE3> pose;
-  try
-  {
-    pose = shared_from_this();
-  }
-  catch (boost::bad_weak_ptr e)
-  {
-    std::cerr << "Pose3::inverse_transform() - pose allocated on stack!" << std::endl;
-  }
-  #ifndef NEXCEPT
-  if (t.pose != rpose)
-    throw FrameException();
-  #endif
-
-  return transform(pose, t);
-}
-
-/// Transforms the axis 
-SAXIS POSE3::transform(boost::shared_ptr<const POSE3> target, const SAXIS& t)
-{
-  SAXIS result;
-  transform_spatial(target, t, result);
-  return result;
-}
-
-/// Transforms a vector of axes 
-std::vector<SAXIS>& POSE3::transform(boost::shared_ptr<const POSE3> target, const std::vector<SAXIS>& t, std::vector<SAXIS>& result)
-{
-  // look for empty vector (easy case)
-  if (t.empty())
-  {
-    result.clear();
-    return result;
-  }
-
-  // setup the source pose
-  boost::shared_ptr<const POSE3> source = t[0].pose; 
-
-  #ifndef NEXCEPT
-  for (unsigned i=1; i< t.size(); i++)
-    if (source != t[i].pose)
-      throw FrameException();
-  #endif
-
-  // quick check
-  if (source == target)
-    return (result = t);
-
-  // compute the relative transform
-  TRANSFORM3 Tx = calc_transform(source, target);
-
-  // setup r and E
-  VECTOR3 r;
-  MATRIX3 E;
-  get_r_E(Tx, r, E);
-
-  // resize the result vector
-  result.resize(t.size());
-
-  // look over all forcees
-  for (unsigned i=0; i< t.size(); i++)
-    transform_spatial(target, t[i], r, E, result[i]);
-
-  return result;
-}
-
 /// Transforms a momentum from one pose to another 
 SMOMENTUM POSE3::inverse_transform(const SMOMENTUM& t) const
 {
@@ -867,7 +797,6 @@ VECTOR3 POSE3::transform_point(boost::shared_ptr<const POSE3> target, const VECT
   return calc_transform(source, target).transform_point(point);
 }
 
-SAXIS POSE3::transform(const SAXIS& t) const { return transform(rpose, t); }
 SMOMENTUM POSE3::transform(const SMOMENTUM& t) const { return transform(rpose, t); }
 SFORCE POSE3::transform(const SFORCE& w) const { return transform(rpose, w); }
 SVELOCITY POSE3::transform(const SVELOCITY& t) const { return transform(rpose, t); }
