@@ -1,0 +1,23 @@
+\documentclass[11pt, letterpaper]{article}
+\usepackage{times}
+\usepackage{url}
+\usepackage{doc}
+\usepackage{fontenc}
+\usepackage{setspace}
+\usepackage{parskip}
+\pagestyle{plain}
+\begin{document}
+\singlespacing
+\noindent
+
+\title{\emph{Ravelin}: a C++ Robotics library for matrix/vector arithmetic and linear algebra}
+\author{Dr. Evan Drumwright (http://robotics.gwu.edu/~drum/)}
+\newline
+\noindent
+
+\section{Motivation for creating this library: an alternative to Eigen}
+- Eigen codes new implementations that have yet to stand the test of time
+  our philosophy: \emph{A $< 1\%$ performance gain is not worth using
+  code that has been fully vetted by time}
+- Robotics code often just spits out numbers that are hard to debug
+- integration with STL
