@@ -55,6 +55,17 @@ TRANSFORM3::TRANSFORM3(const ORIGIN3& v)
   set(QUAT::identity(), v);
 }
 
+/// Determines whether the transform is identity
+bool TRANSFORM3::is_identity() const
+{
+  // first check the rotational component
+  if (std::fabs(std::fabs(q.w) - (REAL) 1.0) > EPS)
+    return false;
+
+  // now check the translational component
+  return x.norm() < EPS;
+}
+
 TRANSFORM3& TRANSFORM3::operator=(const TRANSFORM3& p)
 {
   q = p.q;

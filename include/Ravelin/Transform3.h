@@ -28,6 +28,7 @@ class TRANSFORM3
     static ORIGIN3 interpolate_inverse_transform_vector(const TRANSFORM3& T1, const TRANSFORM3& T2, REAL t, const ORIGIN3& o);
     static ORIGIN3 interpolate_inverse_transform_point(const TRANSFORM3& T1, const TRANSFORM3& T2, REAL t, const ORIGIN3& o);
     static TRANSFORM3 identity() { TRANSFORM3 T; T.set_identity(); return T; }
+    bool is_identity() const;
     static bool rel_equal(const TRANSFORM3& p1, const TRANSFORM3& p2, REAL tol = EPS);
     POSE3 transform(const POSE3& p) const;
     POSE3 inverse_transform(const POSE3& p) const;
