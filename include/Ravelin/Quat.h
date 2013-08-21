@@ -23,10 +23,10 @@ class QUAT
   public:
     QUAT();
     QUAT(REAL x, REAL y, REAL z, REAL w);
-    QUAT(const QUAT& q);
+    QUAT(const QUAT& q) { operator=(q); }
     QUAT(const VECTORN& v);
-    QUAT(const AANGLE& v);
-    QUAT(const MATRIX3& v);
+    QUAT(const AANGLE& v) { operator=(v); }
+    QUAT(const MATRIX3& v) { operator=(v); }
     bool unit() const;
     static QUAT zero();
     void conjugate();
