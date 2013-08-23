@@ -371,7 +371,10 @@ QUAT QUAT::slerp(const QUAT& q1, const QUAT& q2, REAL alpha)
 
   // find the angle between the two
   REAL theta = std::acos(std::fabs(dot));
+  if (theta == 0.0)
+    return q1;
 
+  // do slerp
   REAL sin1at = std::sin((1-alpha)*theta);
   REAL sinat = std::sin(alpha*theta);
   REAL sint_i = (REAL) 1.0/std::sin(theta);
@@ -384,6 +387,7 @@ QUAT QUAT::slerp(const QUAT& q1, const QUAT& q2, REAL alpha)
   qc.y *= sint_i;
   qc.z *= sint_i;
   qc.w *= sint_i;
+
   return qc; 
 }
 
