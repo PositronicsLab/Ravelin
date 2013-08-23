@@ -1034,7 +1034,7 @@ SVELOCITY POSE3::diff(const POSE3& P1, const POSE3& P2)
 }
 
 /// Updates the relative pose for this pose while retaining the same absolute pose
-void POSE3::update_relative_pose(boost::shared_ptr<const POSE3> pose)
+POSE3& POSE3::update_relative_pose(boost::shared_ptr<const POSE3> pose)
 {
   // compute the transform from the current relative pose to the new relative
   // pose
@@ -1048,12 +1048,14 @@ void POSE3::update_relative_pose(boost::shared_ptr<const POSE3> pose)
 
   // update the relative pose
   rpose = pose;
+
+  return *this;
 }
 
 /// Outputs this matrix to the stream
 std::ostream& Ravelin::operator<<(std::ostream& out, const POSE3& m)
 {
-  out << "orientation: " << AANGLE(m.q) << " origin: " << m.x;
+  out << "orientation: " << AANGLE(m.q) << " origin: " << m.x << " relative pose: " << m.rpose;
    
   return out;
 }

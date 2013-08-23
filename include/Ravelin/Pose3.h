@@ -73,7 +73,7 @@ class POSE3 : public boost::enable_shared_from_this<POSE3>
     POSE3& set(const QUAT& q, const ORIGIN3& v);
     POSE3& operator=(const POSE3& source);
     POSE3 operator*(const POSE3& m) const;
-    void update_relative_pose(boost::shared_ptr<const POSE3> pose);
+    POSE3& update_relative_pose(boost::shared_ptr<const POSE3> pose);
     static VECTOR3 interpolate_transform_vector(const POSE3& P1, const POSE3& P2, REAL t, const ORIGIN3& o);
     static VECTOR3 interpolate_transform_point(const POSE3& P1, const POSE3& P2, REAL t, const ORIGIN3& o);
     static SVELOCITY diff(const POSE3& P1, const POSE3& P2);
