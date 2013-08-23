@@ -17,10 +17,22 @@ ITERATOR segment_iterator_begin(unsigned start, unsigned end)
   ITERATOR i;
   i._count = 0;
   i._sz = end - start;
-  i._ld = size();
-  i._rows = i._sz;
-  i._columns = 1;
   i._data_start = i._current_data = data() + start;
+
+  // if the increment is > 1, we have a shared row vector
+  if (inc() > 1)
+  {
+    i._rows = 1;
+    i._columns = i._sz;
+    i._ld = inc();
+  }
+  else
+  {
+    i._rows = i._sz;
+    i._columns = 1;
+    i._ld = size();
+  }
+
   return i;
 }
 
@@ -34,10 +46,22 @@ CONST_ITERATOR segment_iterator_begin(unsigned start, unsigned end) const
   CONST_ITERATOR i;
   i._count = 0;
   i._sz = end - start;
-  i._ld = size();
-  i._rows = i._sz;
-  i._columns = 1;
   i._data_start = i._current_data  = data() + start;
+
+  // if the increment is > 1, we have a shared row vector
+  if (inc() > 1)
+  {
+    i._rows = 1;
+    i._columns = i._sz;
+    i._ld = inc();
+  }
+  else
+  {
+    i._rows = i._sz;
+    i._columns = 1;
+    i._ld = size();
+  }
+
   return i;
 }
 
@@ -51,11 +75,23 @@ ITERATOR segment_iterator_end(unsigned start, unsigned end)
   ITERATOR i;
   i._sz = end - start;
   i._count = i._sz;
-  i._ld = size();
-  i._rows = i._sz;
-  i._columns = 1;
   i._data_start = data() + start;
   i._current_data  = data() + start + i._sz;
+
+  // if the increment is > 1, we have a shared row vector
+  if (inc() > 1)
+  {
+    i._rows = 1;
+    i._columns = i._sz;
+    i._ld = inc();
+  }
+  else
+  {
+    i._rows = i._sz;
+    i._columns = 1;
+    i._ld = size();
+  }
+
   return i;
 }
 
@@ -69,11 +105,23 @@ CONST_ITERATOR segment_iterator_end(unsigned start, unsigned end) const
   CONST_ITERATOR i;
   i._sz = end - start;
   i._count = i._sz;
-  i._ld = size();
-  i._rows = i._sz;
-  i._columns = 1;
   i._data_start = data() + start;
   i._current_data  = data() + start + i._sz;
+
+  // if the increment is > 1, we have a shared row vector
+  if (inc() > 1)
+  {
+    i._rows = 1;
+    i._columns = i._sz;
+    i._ld = inc();
+  }
+  else
+  {
+    i._rows = i._sz;
+    i._columns = 1;
+    i._ld = size();
+  }
+
   return i;
 }
 
@@ -82,10 +130,22 @@ CONST_ITERATOR begin() const
   CONST_ITERATOR i;
   i._count = 0;
   i._sz = size();
-  i._ld = size();
-  i._rows = i._sz;
-  i._columns = 1;
   i._data_start = i._current_data  = data();
+
+  // if the increment is > 1, we have a shared row vector
+  if (inc() > 1)
+  {
+    i._rows = 1;
+    i._columns = i._sz;
+    i._ld = inc();
+  }
+  else
+  {
+    i._rows = i._sz;
+    i._columns = 1;
+    i._ld = size();
+  }
+
   return i;
 }
 
@@ -94,11 +154,23 @@ CONST_ITERATOR end() const
   CONST_ITERATOR i;
   i._count = size();
   i._sz = size();
-  i._ld = size();
-  i._rows = i._sz;
-  i._columns = 1;
   i._data_start = data();
   i._current_data  = data() + size();
+
+  // if the increment is > 1, we have a shared row vector
+  if (inc() > 1)
+  {
+    i._rows = 1;
+    i._columns = i._sz;
+    i._ld = inc();
+  }
+  else
+  {
+    i._rows = i._sz;
+    i._columns = 1;
+    i._ld = size();
+  }
+
   return i;
 }
 
@@ -107,10 +179,22 @@ ITERATOR begin()
   ITERATOR i;
   i._count = 0;
   i._sz = size();
-  i._ld = size();
-  i._rows = i._sz;
-  i._columns = 1;
   i._data_start = i._current_data  = data();
+
+  // if the increment is > 1, we have a shared row vector
+  if (inc() > 1)
+  {
+    i._rows = 1;
+    i._columns = i._sz;
+    i._ld = inc();
+  }
+  else
+  {
+    i._rows = i._sz;
+    i._columns = 1;
+    i._ld = size();
+  }
+
   return i;
 }
 
@@ -119,11 +203,22 @@ ITERATOR end()
   ITERATOR i;
   i._count = size();
   i._sz = size();
-  i._ld = size();
-  i._rows = i._sz;
-  i._columns = 1;
   i._data_start = data();
   i._current_data  = data() + size();
+
+  // if the increment is > 1, we have a shared row vector
+  if (inc() > 1)
+  {
+    i._rows = 1;
+    i._columns = i._sz;
+    i._ld = inc();
+  }
+  else
+  {
+    i._rows = i._sz;
+    i._columns = 1;
+    i._ld = size();
+  }
   return i;
 }
 
