@@ -161,7 +161,7 @@ MATRIXX& set_sub_mat(unsigned row_start, unsigned col_start, const M& m, Transpo
   if (trans == eNoTranspose)
   {
     CONST_COLUMN_ITERATOR mIter = m.column_iterator_begin();
-    COLUMN_ITERATOR tIter = column_iterator_begin();
+    COLUMN_ITERATOR tIter = block_column_iterator_begin(row_start, row_start+m.rows(), col_start, col_start+m.columns());
     while (mIter != mIter.end())
     {
       *tIter = *mIter;
@@ -172,7 +172,7 @@ MATRIXX& set_sub_mat(unsigned row_start, unsigned col_start, const M& m, Transpo
   else
   {
     CONST_ROW_ITERATOR mIter = m.row_iterator_begin();
-    COLUMN_ITERATOR tIter = column_iterator_begin();
+    COLUMN_ITERATOR tIter = block_column_iterator_begin(row_start, row_start+m.rows(), col_start, col_start+m.columns());
     while (mIter != mIter.end())
     {
       *tIter = *mIter;
