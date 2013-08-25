@@ -37,7 +37,7 @@ class CONST_SHAREDMATRIXN
     const REAL& operator()(unsigned i, unsigned j) const;
     const REAL* data() const { return _data.get()+_start; }    
 
-    #include "ConstSharedMatrixN.inl"
+    #include "ConstMatrixCommon.inl"
 
   protected:
     SharedResizable<REAL> _data;
@@ -83,12 +83,12 @@ class SHAREDMATRIXN
     REAL* data() { return _data.get()+_start; }
     const REAL* data() const { return _data.get()+_start; }    
 
-    #define MATRIXX SHAREDMATRIXN
-    #include "MatrixCommon.inl"
-    #undef MATRIXX
     #define XMATRIXN SHAREDMATRIXN
     #include "XMatrixN.inl"
     #undef XMATRIXN
+    #define MATRIXX SHAREDMATRIXN
+    #include "MatrixCommon.inl"
+    #undef MATRIXX
 
   protected:
     SharedResizable<REAL> _data;

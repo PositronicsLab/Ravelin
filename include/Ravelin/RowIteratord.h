@@ -4,15 +4,15 @@
  * License (found in COPYING).
  ****************************************************************************/
 
-#ifndef _FITERATOR_H
-#define _FITERATOR_H
+#ifndef _ROW_ITERATORD_H
+#define _ROW_ITERATORD_H
 
 #include <stdexcept>
 
 namespace Ravelin {
 
-#include "fdefs.h"
-#include "rIterator.h"
+#include "ddefs.h"
+#include "RowIterator.h"
 #include "undefs.h"
 
 } // end namespace

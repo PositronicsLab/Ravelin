@@ -152,9 +152,9 @@ const REAL* ORIGIN3::data(unsigned i) const
   return &_data[i];
 }
 
-ITERATOR ORIGIN3::begin()
+COLUMN_ITERATOR ORIGIN3::column_iterator_begin()
 {
-  ITERATOR i;
+  COLUMN_ITERATOR i;
   i._data_start = i._current_data = _data;
   i._count = 0;
   i._sz = 3;
@@ -164,9 +164,9 @@ ITERATOR ORIGIN3::begin()
   return i;
 }
 
-CONST_ITERATOR ORIGIN3::begin() const
+CONST_COLUMN_ITERATOR ORIGIN3::column_iterator_begin() const
 {
-  CONST_ITERATOR i;
+  CONST_COLUMN_ITERATOR i;
   i._data_start = i._current_data = _data;
   i._count = 0;
   i._sz = 3;
@@ -176,9 +176,9 @@ CONST_ITERATOR ORIGIN3::begin() const
   return i;
 }
 
-ITERATOR ORIGIN3::end()
+COLUMN_ITERATOR ORIGIN3::column_iterator_end()
 {
-  ITERATOR i;
+  COLUMN_ITERATOR i;
   i._data_start = _data;
   i._current_data = _data+3;
   i._count = 3;
@@ -189,9 +189,9 @@ ITERATOR ORIGIN3::end()
   return i;
 }
 
-CONST_ITERATOR ORIGIN3::end() const
+CONST_COLUMN_ITERATOR ORIGIN3::column_iterator_end() const
 {
-  CONST_ITERATOR i;
+  CONST_COLUMN_ITERATOR i;
   i._data_start = _data;
   i._current_data = _data+3;
   i._count = 3;
@@ -201,4 +201,55 @@ CONST_ITERATOR ORIGIN3::end() const
   i._ld = 3;
   return i;
 }
+
+ROW_ITERATOR ORIGIN3::row_iterator_begin()
+{
+  ROW_ITERATOR i;
+  i._data_start = i._current_data = _data;
+  i._count = 0;
+  i._sz = 3;
+  i._rows = 3;
+  i._columns = 1;
+  i._ld = 3;
+  return i;
+}
+
+CONST_ROW_ITERATOR ORIGIN3::row_iterator_begin() const
+{
+  CONST_ROW_ITERATOR i;
+  i._data_start = i._current_data = _data;
+  i._count = 0;
+  i._sz = 3;
+  i._rows = 3;
+  i._columns = 1;
+  i._ld = 3;
+  return i;
+}
+
+ROW_ITERATOR ORIGIN3::row_iterator_end()
+{
+  ROW_ITERATOR i;
+  i._data_start = _data;
+  i._current_data = _data+3;
+  i._count = 3;
+  i._sz = 3;
+  i._rows = 3;
+  i._columns = 1;
+  i._ld = 3;
+  return i;
+}
+
+CONST_ROW_ITERATOR ORIGIN3::row_iterator_end() const
+{
+  CONST_ROW_ITERATOR i;
+  i._data_start = _data;
+  i._current_data = _data+3;
+  i._count = 3;
+  i._sz = 3;
+  i._rows = 3;
+  i._columns = 1;
+  i._ld = 3;
+  return i;
+}
+
 

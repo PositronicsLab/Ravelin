@@ -48,12 +48,16 @@ class SVECTOR6
     SVECTOR6& operator*=(REAL scalar);
     unsigned rows() const { return 6; }
     unsigned columns() const { return 1; }
-    SVECTOR6& resize(unsigned rows, unsigned columns) { assert (rows == 6 && columns == 1); return *this; } 
+    SVECTOR6& resize(unsigned rows, unsigned columns) { assert ((rows == 6 && columns == 1) || (columns == 1 && rows == 6)); return *this; } 
     SVECTOR6& resize(unsigned rows) { assert (rows == 6); return *this; } 
-    ITERATOR begin();
-    CONST_ITERATOR begin() const;
-    ITERATOR end();
-    CONST_ITERATOR end() const;
+    COLUMN_ITERATOR column_iterator_begin();
+    CONST_COLUMN_ITERATOR column_iterator_begin() const;
+    COLUMN_ITERATOR column_iterator_end();
+    CONST_COLUMN_ITERATOR column_iterator_end() const;
+    ROW_ITERATOR row_iterator_begin();
+    CONST_ROW_ITERATOR row_iterator_begin() const;
+    ROW_ITERATOR row_iterator_end();
+    CONST_ROW_ITERATOR row_iterator_end() const;
     SVECTOR6& negate() { std::transform(_data, _data+6, _data, std::negate<REAL>()); return *this; }
     unsigned inc() const { return 1; }
     unsigned leading_dim() const { return 6; }
@@ -109,7 +113,7 @@ class SVECTOR6
         throw MissizeException();
       #endif
 
-      std::copy(v.begin(), v.end(), begin());
+      std::copy(v.column_iterator_begin(), v.column_iterator_end(), column_iterator_begin());
     }
 }; // end class
 

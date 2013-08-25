@@ -13,7 +13,8 @@
 #include <cmath>
 #include <boost/shared_ptr.hpp>
 #include <Ravelin/InvalidIndexException.h>
-#include <Ravelin/dIterator.h>
+#include <Ravelin/ColumnIteratord.h>
+#include <Ravelin/RowIteratord.h>
 
 namespace Ravelin {
 

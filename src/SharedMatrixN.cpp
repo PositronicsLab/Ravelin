@@ -130,7 +130,7 @@ SHAREDMATRIXN& SHAREDMATRIXN::resize(unsigned rows, unsigned columns, bool prese
 /// Sets the matrix to the zero matrix
 SHAREDMATRIXN& SHAREDMATRIXN::set_zero()
 {
-  ITERATOR i = begin();
+  COLUMN_ITERATOR i = column_iterator_begin();
   while (i != i.end())
     *i++ = (REAL) 0.0;
   return *this;

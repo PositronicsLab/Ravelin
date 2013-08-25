@@ -61,7 +61,7 @@ class VECTORN
     const REAL* data() const { return _data.get(); }
     static VECTORN& parse(const std::string& s, VECTORN& v);
     static VECTORN parse(const std::string& s) { VECTORN v; parse(s, v); return v; }
-    VECTORN& resize(unsigned m, unsigned n, bool preserve = false) { assert(n == 1); resize(m, preserve); return *this; }
+    VECTORN& resize(unsigned m, unsigned n, bool preserve = false);
 
     /// Sets this to a n-length zero vector
     VECTORN& set_zero(unsigned n) { return resize(n).set_zero(); } 

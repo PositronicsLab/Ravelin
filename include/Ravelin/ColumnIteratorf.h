@@ -4,22 +4,15 @@
  * License (found in COPYING).
  ****************************************************************************/
 
-#ifndef _VECTOR2F_H
-#define _VECTOR2F_H
+#ifndef _COLUMN_ITERATORF_H
+#define _COLUMN_ITERATORF_H
 
-#include <assert.h>
-#include <cmath>
-#include <iostream>
-#include <limits>
-#include <boost/shared_ptr.hpp>
-#include <Ravelin/InvalidIndexException.h>
-#include <Ravelin/ColumnIteratorf.h>
-#include <Ravelin/RowIteratorf.h>
+#include <stdexcept>
 
 namespace Ravelin {
 
 #include "fdefs.h"
-#include "Vector2.h"
+#include "ColumnIterator.h"
 #include "undefs.h"
 
 } // end namespace

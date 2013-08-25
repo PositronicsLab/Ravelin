@@ -566,7 +566,7 @@ MATRIX3& MATRIX3::operator=(const SHAREDMATRIXN& m)
     throw MissizeException();
   #endif
   const unsigned SZ = 9;
-  CONST_ITERATOR miter = m.begin();
+  CONST_COLUMN_ITERATOR miter = m.column_iterator_begin();
   for (unsigned i=0; i< SZ; i++)
     _data[i] = *miter++;
   return *this;
@@ -580,7 +580,7 @@ MATRIX3& MATRIX3::operator=(const CONST_SHAREDMATRIXN& m)
     throw MissizeException();
   #endif
   const unsigned SZ = 9;
-  CONST_ITERATOR miter = m.begin();
+  CONST_COLUMN_ITERATOR miter = m.column_iterator_begin();
   for (unsigned i=0; i< SZ; i++)
     _data[i] = *miter++;
   return *this;
@@ -774,53 +774,4 @@ MATRIX3& MATRIX3::resize(unsigned m, unsigned n, bool preserve)
   return *this;
 }
  
-ITERATOR MATRIX3::begin()
-{
-  ITERATOR i;
-  i._data_start = i._current_data = _data;
-  i._count = 0;
-  i._sz = 9;
-  i._rows = 3;
-  i._columns = 3;
-  i._ld = 3;
-  return i;
-}
-
-ITERATOR MATRIX3::end()
-{
-  ITERATOR i;
-  i._data_start = _data;
-  i._current_data = _data+9;
-  i._count = 9;
-  i._sz = 9;
-  i._rows = 3;
-  i._columns = 3;
-  i._ld = 3;
-  return i;
-}
-
-CONST_ITERATOR MATRIX3::begin() const
-{
-  CONST_ITERATOR i;
-  i._data_start = i._current_data = _data;
-  i._count = 0;
-  i._sz = 9;
-  i._rows = 3;
-  i._columns = 3;
-  i._ld = 3;
-  return i;
-}
-
-CONST_ITERATOR MATRIX3::end() const
-{
-  CONST_ITERATOR i;
-  i._data_start = _data;
-  i._current_data = _data+9;
-  i._count = 9;
-  i._sz = 9;
-  i._rows = 3;
-  i._columns = 3;
-  i._ld = 3;
-  return i;
-}
 

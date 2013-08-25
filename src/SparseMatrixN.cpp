@@ -223,7 +223,7 @@ void SPARSEMATRIXN::set_column(unsigned col, const VECTORN& v)
     assert(_stype == eCSC);
 
     // calculate the number of nonzeros in the vector
-    unsigned nnz_v = std::count_if(v.begin(), v.end(), _1 > EPS || _1 < -EPS);
+    unsigned nnz_v = std::count_if(v.column_iterator_begin(), v.column_iterator_end(), _1 > EPS || _1 < -EPS);
 
     // get the number of nonzeros in the column of the matrix
     unsigned nnz_col = _ptr[col+1] - _ptr[col];
@@ -292,7 +292,7 @@ void SPARSEMATRIXN::set_row(unsigned row, const VECTORN& v)
   if (_stype == eCSR)
   {
     // calculate the number of nonzeros in the vector
-    unsigned nnz_v = std::count_if(v.begin(), v.end(), _1 > EPS || _1 < -EPS);
+    unsigned nnz_v = std::count_if(v.column_iterator_begin(), v.column_iterator_end(), _1 > EPS || _1 < -EPS);
 
     // get the number of nonzeros in the matrix
     unsigned nnz_row = _ptr[row+1] - _ptr[row];

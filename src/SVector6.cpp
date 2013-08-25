@@ -79,9 +79,9 @@ SVECTOR6::SVECTOR6(const VECTOR3& upper, const VECTOR3& lower, boost::shared_ptr
 }
 
 /// Gets an iterator to the beginning of the data
-CONST_ITERATOR SVECTOR6::begin() const
+CONST_COLUMN_ITERATOR SVECTOR6::column_iterator_begin() const
 {
-  CONST_ITERATOR i;
+  CONST_COLUMN_ITERATOR i;
   i._count = 0;
   i._sz = 6;
   i._ld = 6;
@@ -92,9 +92,9 @@ CONST_ITERATOR SVECTOR6::begin() const
 }
 
 /// Gets an iterator to the end of the data
-CONST_ITERATOR SVECTOR6::end() const
+CONST_COLUMN_ITERATOR SVECTOR6::column_iterator_end() const
 {
-  CONST_ITERATOR i;
+  CONST_COLUMN_ITERATOR i;
   i._count = 6;
   i._sz = 6;
   i._ld = 6;
@@ -106,9 +106,9 @@ CONST_ITERATOR SVECTOR6::end() const
 }
 
 /// Gets an iterator to the beginning of the data
-ITERATOR SVECTOR6::begin()
+COLUMN_ITERATOR SVECTOR6::column_iterator_begin()
 {
-  ITERATOR i;
+  COLUMN_ITERATOR i;
   i._count = 0;
   i._sz = 6;
   i._ld = 6;
@@ -119,9 +119,63 @@ ITERATOR SVECTOR6::begin()
 }
 
 /// Gets an iterator to the end of the data
-ITERATOR SVECTOR6::end()
+COLUMN_ITERATOR SVECTOR6::column_iterator_end()
 {
-  ITERATOR i;
+  COLUMN_ITERATOR i;
+  i._count = 6;
+  i._sz = 6;
+  i._ld = 6;
+  i._rows = i._sz;
+  i._columns = 1;
+  i._data_start = _data;
+  i._current_data  = data() + i._sz;
+  return i;
+}
+
+/// Gets an iterator to the beginning of the data
+CONST_ROW_ITERATOR SVECTOR6::row_iterator_begin() const
+{
+  CONST_ROW_ITERATOR i;
+  i._count = 0;
+  i._sz = 6;
+  i._ld = 6;
+  i._rows = i._sz;
+  i._columns = 1;
+  i._data_start = i._current_data  = _data;
+  return i;
+}
+
+/// Gets an iterator to the end of the data
+CONST_ROW_ITERATOR SVECTOR6::row_iterator_end() const
+{
+  CONST_ROW_ITERATOR i;
+  i._count = 6;
+  i._sz = 6;
+  i._ld = 6;
+  i._rows = i._sz;
+  i._columns = 1;
+  i._data_start = _data;
+  i._current_data  = data() + i._sz;
+  return i;
+}
+
+/// Gets an iterator to the beginning of the data
+ROW_ITERATOR SVECTOR6::row_iterator_begin()
+{
+  ROW_ITERATOR i;
+  i._count = 0;
+  i._sz = 6;
+  i._ld = 6;
+  i._rows = i._sz;
+  i._columns = 1;
+  i._data_start = i._current_data  = _data;
+  return i;
+}
+
+/// Gets an iterator to the end of the data
+ROW_ITERATOR SVECTOR6::row_iterator_end()
+{
+  ROW_ITERATOR i;
   i._count = 6;
   i._sz = 6;
   i._ld = 6;

@@ -7,6 +7,7 @@
 #include <cmath>
 #include <Ravelin/Opsd.h>
 #include <Ravelin/Constants.h>
+#include <Ravelin/InvalidIndexException.h>
 #include <Ravelin/Vector3d.h>
 
 using namespace Ravelin;

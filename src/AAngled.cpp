@@ -6,6 +6,7 @@
 
 #include <assert.h>
 #include <cmath>
+#include <Ravelin/SharedVectorNd.h>
 #include <Ravelin/AAngled.h>
 #include <Ravelin/Constants.h>
 #include <Ravelin/Opsd.h>

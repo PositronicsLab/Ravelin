@@ -137,7 +137,7 @@ MATRIXN& MATRIXN::set(const SHAREDVECTORN& v, Transposition trans)
     resize(v.rows(), 1, false);
   else
     resize(1, v.columns(), false);
-  std::copy(v.begin(), v.end(), begin());
+  std::copy(v.column_iterator_begin(), v.column_iterator_end(), column_iterator_begin());
   return *this;
 }
 
@@ -148,7 +148,7 @@ MATRIXN& MATRIXN::set(const CONST_SHAREDVECTORN& v, Transposition trans)
     resize(v.rows(), 1, false);
   else
     resize(1, v.columns(), false);
-  std::copy(v.begin(), v.end(), begin());
+  std::copy(v.column_iterator_begin(), v.column_iterator_end(), column_iterator_begin());
   return *this;
 }
 
@@ -519,7 +519,7 @@ MATRIXN& MATRIXN::operator=(const SHAREDMATRIXN& m)
   resize(m.rows(), m.columns(), false);
 
   if (_rows > 0 && _columns > 0)
-    std::copy(m.begin(), m.end(), begin());
+    std::copy(m.column_iterator_begin(), m.column_iterator_end(), column_iterator_begin());
   return *this;
 }
 
@@ -530,7 +530,7 @@ MATRIXN& MATRIXN::operator=(const CONST_SHAREDMATRIXN& m)
   resize(m.rows(), m.columns(), false);
 
   if (_rows > 0 && _columns > 0)
-    std::copy(m.begin(), m.end(), begin());
+    std::copy(m.column_iterator_begin(), m.column_iterator_end(), column_iterator_begin());
   return *this;
 }
 

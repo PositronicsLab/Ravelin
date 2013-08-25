@@ -75,10 +75,14 @@ class VECTOR3
     const REAL& operator[](const unsigned i) const;
     const REAL* data(unsigned i) const;
     REAL* data(unsigned i);
-    ITERATOR begin();
-    CONST_ITERATOR begin() const;
-    ITERATOR end();
-    CONST_ITERATOR end() const;
+    COLUMN_ITERATOR column_iterator_begin();
+    CONST_COLUMN_ITERATOR column_iterator_begin() const;
+    COLUMN_ITERATOR column_iterator_end();
+    CONST_COLUMN_ITERATOR column_iterator_end() const;
+    ROW_ITERATOR row_iterator_begin();
+    CONST_ROW_ITERATOR row_iterator_begin() const;
+    ROW_ITERATOR row_iterator_end();
+    CONST_ROW_ITERATOR row_iterator_end() const;
 
     VECTOR3& resize(unsigned N, bool keep = true) 
     { 

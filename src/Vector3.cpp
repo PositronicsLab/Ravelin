@@ -151,7 +151,7 @@ const REAL* VECTOR3::data(unsigned i) const
 VECTOR3& VECTOR3::resize(unsigned m, unsigned n, bool preserve)
 {
   #ifndef NEXCEPT
-  if (m != 3 || n != 1)
+  if (!((m == 3 && n == 1) || (m == 1 && n == 3)))
     throw std::runtime_error("Attempt to resize fixed-length vector!");
   #endif
 
@@ -214,9 +214,9 @@ VECTOR3& VECTOR3::operator-=(const ORIGIN3& o)
   return *this;
 }
 
-ITERATOR VECTOR3::begin()
+COLUMN_ITERATOR VECTOR3::column_iterator_begin()
 {
-  ITERATOR i;
+  COLUMN_ITERATOR i;
   i._data_start = i._current_data = _data;
   i._count = 0;
   i._sz = 3;
@@ -226,9 +226,9 @@ ITERATOR VECTOR3::begin()
   return i;
 }
 
-CONST_ITERATOR VECTOR3::begin() const
+CONST_COLUMN_ITERATOR VECTOR3::column_iterator_begin() const
 {
-  CONST_ITERATOR i;
+  CONST_COLUMN_ITERATOR i;
   i._data_start = i._current_data = _data;
   i._count = 0;
   i._sz = 3;
@@ -238,9 +238,9 @@ CONST_ITERATOR VECTOR3::begin() const
   return i;
 }
 
-ITERATOR VECTOR3::end()
+COLUMN_ITERATOR VECTOR3::column_iterator_end()
 {
-  ITERATOR i;
+  COLUMN_ITERATOR i;
   i._data_start = _data;
   i._current_data = _data+3;
   i._count = 3;
@@ -251,9 +251,59 @@ ITERATOR VECTOR3::end()
   return i;
 }
 
-CONST_ITERATOR VECTOR3::end() const
+CONST_COLUMN_ITERATOR VECTOR3::column_iterator_end() const
 {
-  CONST_ITERATOR i;
+  CONST_COLUMN_ITERATOR i;
+  i._data_start = _data;
+  i._current_data = _data+3;
+  i._count = 3;
+  i._sz = 3;
+  i._rows = 3;
+  i._columns = 1;
+  i._ld = 3;
+  return i;
+}
+
+ROW_ITERATOR VECTOR3::row_iterator_begin()
+{
+  ROW_ITERATOR i;
+  i._data_start = i._current_data = _data;
+  i._count = 0;
+  i._sz = 3;
+  i._rows = 3;
+  i._columns = 1;
+  i._ld = 3;
+  return i;
+}
+
+CONST_ROW_ITERATOR VECTOR3::row_iterator_begin() const
+{
+  CONST_ROW_ITERATOR i;
+  i._data_start = i._current_data = _data;
+  i._count = 0;
+  i._sz = 3;
+  i._rows = 3;
+  i._columns = 1;
+  i._ld = 3;
+  return i;
+}
+
+ROW_ITERATOR VECTOR3::row_iterator_end()
+{
+  ROW_ITERATOR i;
+  i._data_start = _data;
+  i._current_data = _data+3;
+  i._count = 3;
+  i._sz = 3;
+  i._rows = 3;
+  i._columns = 1;
+  i._ld = 3;
+  return i;
+}
+
+CONST_ROW_ITERATOR VECTOR3::row_iterator_end() const
+{
+  CONST_ROW_ITERATOR i;
   i._data_start = _data;
   i._current_data = _data+3;
   i._count = 3;

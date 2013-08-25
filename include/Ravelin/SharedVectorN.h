@@ -9,12 +9,15 @@
 #endif
 
 class CONST_SHAREDVECTORN;
+class VECTORN;
 
 /// A generic N-dimensional floating point vector
 class SHAREDVECTORN 
 {
   friend class VECTORN;
   friend class MATRIXN;
+  friend class MATRIX2;
+  friend class MATRIX3;
   friend class CONST_SHAREDVECTORN;
   friend class SHAREDMATRIXN;
   friend class CONST_SHAREDMATRIXN;
@@ -70,6 +73,8 @@ class CONST_SHAREDVECTORN
 {
   friend class VECTORN;
   friend class MATRIXN;
+  friend class MATRIX2;
+  friend class MATRIX3;
   friend class SHAREDVECTORN;
   friend class SHAREDMATRIXN;
   friend class CONST_SHAREDMATRIXN;

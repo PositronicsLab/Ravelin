@@ -26,14 +26,14 @@ const REAL* data(unsigned i) const
   return &_data[i+_start];
 }
 
-CONST_ITERATOR segment_iterator(unsigned start, unsigned end) const
+CONST_COLUMN_ITERATOR segment_iterator(unsigned start, unsigned end) const
 {
   #ifndef NEXCEPT
   if (end < start || end > _len)
     throw InvalidIndexException();
   #endif
 
-  CONST_ITERATOR i;
+  CONST_COLUMN_ITERATOR i;
   i._sz = end - start;
   i._ld = _len;
   i._rows = i._sz;
@@ -42,33 +42,108 @@ CONST_ITERATOR segment_iterator(unsigned start, unsigned end) const
   return i;
 }
 
-CONST_ITERATOR begin() const
+CONST_COLUMN_ITERATOR column_iterator_begin() const
 {
-  CONST_ITERATOR i;
-  i._sz = _len;
-  i._ld = _len;
-  i._rows = i._sz;
-  i._columns = 1;
+  CONST_COLUMN_ITERATOR i;
+  i._count = 0;
+  i._sz = size();
   i._data_start = i._current_data  = data();
+
+  // if the increment is > 1, we have a shared row vector
+  if (inc() > 1)
+  {
+    i._rows = 1;
+    i._columns = i._sz;
+    i._ld = inc();
+  }
+  else
+  {
+    i._rows = i._sz;
+    i._columns = 1;
+    i._ld = size();
+  }
+
   return i;
 }
 
-CONST_ITERATOR end() const
+CONST_COLUMN_ITERATOR column_iterator_end() const
 {
-  CONST_ITERATOR i;
-  i._sz = _len;
-  i._ld = _len;
-  i._rows = i._sz;
-  i._columns = 1;
+  CONST_COLUMN_ITERATOR i;
+  i._count = size();
+  i._sz = size();
   i._data_start = data();
-  i._current_data  = data() + _len;
+  i._current_data  = data() + size();
+
+  // if the increment is > 1, we have a shared row vector
+  if (inc() > 1)
+  {
+    i._rows = 1;
+    i._columns = i._sz;
+    i._ld = inc();
+  }
+  else
+  {
+    i._rows = i._sz;
+    i._columns = 1;
+    i._ld = size();
+  }
+
+  return i;
+}
+
+CONST_ROW_ITERATOR row_iterator_begin() const
+{
+  CONST_ROW_ITERATOR i;
+  i._count = 0;
+  i._sz = size();
+  i._data_start = i._current_data  = data();
+
+  // if the increment is > 1, we have a shared row vector
+  if (inc() > 1)
+  {
+    i._rows = 1;
+    i._columns = i._sz;
+    i._ld = inc();
+  }
+  else
+  {
+    i._rows = i._sz;
+    i._columns = 1;
+    i._ld = size();
+  }
+
+  return i;
+}
+
+CONST_ROW_ITERATOR row_iterator_end() const
+{
+  CONST_ROW_ITERATOR i;
+  i._count = size();
+  i._sz = size();
+  i._data_start = data();
+  i._current_data  = data() + size();
+
+  // if the increment is > 1, we have a shared row vector
+  if (inc() > 1)
+  {
+    i._rows = 1;
+    i._columns = i._sz;
+    i._ld = inc();
+  }
+  else
+  {
+    i._rows = i._sz;
+    i._columns = 1;
+    i._ld = size();
+  }
+
   return i;
 }
 
 /// Returns true if all components of this vector are not infinite and not NaN, and false otherwise
 bool is_finite() const
 {
-  CONST_ITERATOR i = begin();
+  CONST_COLUMN_ITERATOR i = column_iterator_begin();
   while (i != i.end())
   {
     if (std::isnan(*i) || std::isinf(*i))
@@ -117,8 +192,8 @@ bool operator<(const V& v) const
     throw DataMismatchException();
   #endif
 
-  CONST_ITERATOR data = begin();
-  CONST_ITERATOR vdata = v.begin();
+  CONST_COLUMN_ITERATOR data = column_iterator_begin();
+  CONST_COLUMN_ITERATOR vdata = v.column_iterator_begin();
 
   // compare up to the shorter of the two
   unsigned shorter = std::min(size(), v.size());
@@ -154,8 +229,8 @@ bool operator==(const V& v) const
     return false;
 
   // use iterator  
-  CONST_ITERATOR data = begin();
-  CONST_ITERATOR vdata = v.begin();
+  CONST_COLUMN_ITERATOR data = column_iterator_begin();
+  CONST_COLUMN_ITERATOR vdata = v.column_iterator_begin();
   for (unsigned i=0; i< _len; i++, data++, vdata++)
     if (!OPS::rel_equal(*data, *vdata))
       return false;
@@ -201,8 +276,8 @@ V& select(const std::vector<bool>& indices, V& v) const
   v.resize(len);
 
   // use iterator
-  CONST_ITERATOR iter = begin();
-  ITERATOR viter = v.begin();
+  CONST_COLUMN_ITERATOR iter = column_iterator_begin();
+  COLUMN_ITERATOR viter = v.column_iterator_begin();
   for (unsigned i = 0; i < indices.size(); i++, iter++)
     if (indices[i])
       *viter++ = *iter;
@@ -223,8 +298,8 @@ V& select(ForwardIterator idx_begin, ForwardIterator idx_end, V& v) const
   v.resize(len);
 
   // use iterator
-  ITERATOR viter = v.begin();
-  CONST_ITERATOR iter = begin();
+  COLUMN_ITERATOR viter = v.column_iterator_begin();
+  CONST_COLUMN_ITERATOR iter = column_iterator_begin();
   unsigned vidx = 0;
   for (ForwardIterator i = idx_begin; i != idx_end; i++)
     *viter++ = iter[*i];
@@ -236,7 +311,7 @@ V& select(ForwardIterator idx_begin, ForwardIterator idx_end, V& v) const
 static REAL norm_inf(const CONST_SHAREDVECTORN& v) 
 {
   REAL nrm = (REAL) 0.0;
-  CONST_ITERATOR i = v.begin();
+  CONST_COLUMN_ITERATOR i = v.column_iterator_begin();
   while (i != i.end())
     nrm = std::max(nrm , std::fabs(*i++));  
   return nrm;
@@ -246,7 +321,7 @@ static REAL norm_inf(const CONST_SHAREDVECTORN& v)
 static REAL norm1(const CONST_SHAREDVECTORN& v) 
 {
   REAL nrm = (REAL) 0.0;
-  CONST_ITERATOR i = v.begin();
+  CONST_COLUMN_ITERATOR i = v.column_iterator_begin();
   while (i != i.end())
     nrm += std::fabs(*i++);  
   return nrm;

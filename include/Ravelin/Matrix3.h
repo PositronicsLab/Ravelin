@@ -12,7 +12,9 @@ class QUAT;
 class AANGLE;
 class MATRIXN;
 class SHAREDMATRIXN;
+class SHAREDVECTORN;
 class CONST_SHAREDMATRIXN;
+class CONST_SHAREDVECTORN;
 
 /// A 3x3 matrix that may be used for orientation, inertia tensors, etc.
 class MATRIX3
@@ -106,10 +108,6 @@ class MATRIX3
     MATRIX3& resize(unsigned rows, unsigned columns, bool preserve = false);
     const REAL* data(unsigned i) const;
     REAL* data(unsigned i);
-    ITERATOR begin();
-    ITERATOR end();
-    CONST_ITERATOR begin() const;
-    CONST_ITERATOR end() const;
 
     /// Gets the total number of elements in this matrix
     unsigned size() const { return 9; }

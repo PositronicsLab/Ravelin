@@ -79,10 +79,6 @@ class MATRIX2
     REAL& operator()(unsigned i, unsigned j);
     const REAL& operator()(unsigned i, unsigned j) const;
     MATRIX2& resize(unsigned rows, unsigned columns, bool preserve = false);
-    ITERATOR begin();
-    CONST_ITERATOR begin() const;
-    ITERATOR end();
-    CONST_ITERATOR end() const;
     const REAL* data(unsigned i) const;
     REAL* data(unsigned i);
 

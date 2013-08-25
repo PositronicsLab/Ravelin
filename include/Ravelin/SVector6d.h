@@ -12,7 +12,8 @@
 #include <Ravelin/cblas.h>
 #include <Ravelin/MissizeException.h>
 #include <Ravelin/Vector3d.h>
-#include <Ravelin/dIterator.h>
+#include <Ravelin/ColumnIteratord.h>
+#include <Ravelin/RowIteratord.h>
 
 namespace Ravelin {
 

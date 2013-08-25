@@ -19,8 +19,10 @@
 #define VECTOR3 Vector3d
 #define VECTORN VectorNd
 #define POSE3 Pose3d
-#define CONST_ITERATOR dIterator_const
-#define ITERATOR dIterator
+#define CONST_COLUMN_ITERATOR ColumnIteratord_const
+#define CONST_ROW_ITERATOR RowIteratord_const
+#define COLUMN_ITERATOR ColumnIteratord
+#define ROW_ITERATOR RowIteratord
 #define SVECTOR6 SVector6d
 #define SMOMENTUM SMomentumd
 #define SFORCE SForced 

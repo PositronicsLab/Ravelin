@@ -6,6 +6,7 @@
 
 namespace Ravelin {
 
+/// A class for shared, resizable vectors and matrices
 template <class T>
 class SharedResizable
 {

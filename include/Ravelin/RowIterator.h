@@ -4,12 +4,12 @@
  * License (found in COPYING).
  ****************************************************************************/
 
-#ifndef ITERATOR 
-#error This class is not to be included by the user directly. Use fIterator.h or dIterator.h instead. 
+#ifndef ROW_ITERATOR 
+#error This class is not to be included by the user directly. Use RowIteratorf.h or RowIteratord.h instead. 
 #endif
 
 /// A construct for iterating over a rectangular block of a matrix
-class ITERATOR : public std::iterator<std::random_access_iterator_tag, REAL>
+class ROW_ITERATOR : public std::iterator<std::random_access_iterator_tag, REAL>
 {
   friend class MATRIXN;
   friend class VECTORN;
@@ -29,7 +29,7 @@ class ITERATOR : public std::iterator<std::random_access_iterator_tag, REAL>
   friend class SACCEL;
 
   public:
-    ITERATOR()
+    ROW_ITERATOR()
     {
       _data_start = _current_data = NULL;
       _count = 0;
@@ -39,7 +39,7 @@ class ITERATOR : public std::iterator<std::random_access_iterator_tag, REAL>
       _columns = 0;
     }
 
-    ITERATOR end() const
+    ROW_ITERATOR end() const
     {
       if (_count <= _sz)
         return *this + (_sz - _count);
@@ -47,32 +47,24 @@ class ITERATOR : public std::iterator<std::random_access_iterator_tag, REAL>
         return *this - (_count - _sz);
     }
 
-    ITERATOR& operator+=(int n) 
+    ROW_ITERATOR& operator+=(int n) 
     {
-      assert(n >= 0);
-      const unsigned NSKIP = _ld - _rows + 1;
-      for (int i=0; i< n; i++)
-      {
-        if (++_count % _rows == 0)
-          _current_data += NSKIP;
-        else
-          _current_data++;
-      }
+      // update the count
+      _count += n;
+
+      // update the current data
+      _current_data = _data_start + (_count / _columns) + (_count % _columns)*_ld; 
 
       return *this; 
     }
 
-    ITERATOR& operator-=(int n) 
+    ROW_ITERATOR& operator-=(int n) 
     { 
-      assert(n >= 0);
-      const unsigned NSKIP = _ld - _rows + 1;
-      for (int i=0; i< n; i++)  
-      {
-        if (--_count % _rows == 0)
-          _current_data -= NSKIP;
-        else
-          _current_data--;
-      }
+      // update the count
+      _count -= n;
+
+      // update the current data
+      _current_data = _data_start + (_count / _columns) + (_count % _columns)*_ld; 
 
       return *this; 
     }
@@ -81,56 +73,46 @@ class ITERATOR : public std::iterator<std::random_access_iterator_tag, REAL>
     {
       if (i > _sz)
         throw std::runtime_error("Data outside of scope!");
-      const unsigned NSKIP = _ld - _rows + 1;
-      REAL* data = _current_data - _count;
-      for (unsigned j=0; j< i; )
-      {
-        if (++j % _rows == 0)
-          data += NSKIP;
-        else
-          data++;
-      }
-
-      return *data;
+      return _data_start[(i / _columns) + (i % _columns)*_ld];
     }
 
-    ITERATOR operator+(int n) const
+    ROW_ITERATOR operator+(int n) const
     {
-      ITERATOR b = *this;
+      ROW_ITERATOR b = *this;
       b += n;
       return b;
     }
 
-    ITERATOR operator-(int n) const
+    ROW_ITERATOR operator-(int n) const
     {
-      ITERATOR b = *this;
+      ROW_ITERATOR b = *this;
       b -= n;
       return b;
     }
     
-    bool operator<(const ITERATOR& j) const
+    bool operator<(const ROW_ITERATOR& j) const
     {
       return _count < j._count;
     }
 
-    bool operator>(const ITERATOR& j) const
+    bool operator>(const ROW_ITERATOR& j) const
     {
       return _count > j._count;
     }
 
     REAL& operator*() const 
     {
-      if (_count >= _sz)
+      if (_count < 0 || _count >= _sz)
         throw std::runtime_error("Iterator outside of range!");
       return *_current_data; 
     }
 
-    int operator-(const ITERATOR& b) const
+    int operator-(const ROW_ITERATOR& b) const
     {
       return _count - b._count;
     }
  
-    bool operator==(const ITERATOR& b) const
+    bool operator==(const ROW_ITERATOR& b) const
     {
       // verify that we're not comparing two dissimilar iterators
       assert(_data_start == b._data_start &&
@@ -142,48 +124,48 @@ class ITERATOR : public std::iterator<std::random_access_iterator_tag, REAL>
       return (_count == b._count);
     }
 
-    bool operator!=(const ITERATOR& j) const { return !operator==(j); }
+    bool operator!=(const ROW_ITERATOR& j) const { return !operator==(j); }
 
     // prefix--
-    ITERATOR& operator--() 
+    ROW_ITERATOR& operator--() 
     { 
-      _count--; 
-      _current_data--;
-      if (_count % _rows == 0)
-        _current_data -= (_ld - _rows);
+      if (--_count % _columns == 0)
+        _current_data = _data_start + (_count / _columns);
+      else
+        _current_data -= _ld;
 
        return *this; 
     }
 
     // prefix++
-    ITERATOR& operator++() 
+    ROW_ITERATOR& operator++() 
     { 
-      _count++;
-      _current_data++;
-      if (_count % _rows == 0)
-        _current_data += (_ld - _rows);
+      if (--_count % _columns == 0)
+        _current_data = _data_start + (_count / _columns);
+      else
+        _current_data -= _ld;
 
       return *this;
     }
 
     // postfix--
-    ITERATOR operator--(int n) 
+    ROW_ITERATOR operator--(int) 
     { 
-      ITERATOR b = *this; 
+      ROW_ITERATOR b = *this; 
       this->operator--(); 
       return b; 
     }
 
     // postfix++ 
-    ITERATOR operator++(int n) 
+    ROW_ITERATOR operator++(int) 
     {
-      ITERATOR b = *this; 
+      ROW_ITERATOR b = *this; 
       this->operator++(); 
       return b; 
     }
 
     // assignment operator
-    ITERATOR& operator=(const ITERATOR& i)
+    ROW_ITERATOR& operator=(const ROW_ITERATOR& i)
     {
       _current_data = i._current_data;
       _count = i._count;
@@ -196,16 +178,17 @@ class ITERATOR : public std::iterator<std::random_access_iterator_tag, REAL>
     }
 
   protected:
-    int _count, _sz;
-    REAL* _data_start;
-    REAL* _current_data;
-    unsigned _ld;
-    unsigned _columns;
-    unsigned _rows;
+    int _count;            // number of iterator increments
+    int _sz;               // size of the data block
+    REAL* _data_start;     // pointer to the start of the data block
+    REAL* _current_data;   // pointer to data corresponding to iterator state
+    unsigned _ld;          // leading dimension of matrix
+    unsigned _columns;     // columns of the matrix
+    unsigned _rows;        // rows of the matrix
 }; // end class
 
 /// A construct for iterating over a rectangular block of a matrix
-class CONST_ITERATOR : public std::iterator<std::random_access_iterator_tag, REAL>
+class CONST_ROW_ITERATOR : public std::iterator<std::random_access_iterator_tag, REAL>
 {
   friend class MATRIXN;
   friend class VECTORN;
@@ -225,7 +208,7 @@ class CONST_ITERATOR : public std::iterator<std::random_access_iterator_tag, REA
   friend class SACCEL;
 
   public:
-    CONST_ITERATOR()
+    CONST_ROW_ITERATOR()
     {
       _data_start = _current_data = NULL;
       _count = 0;
@@ -236,7 +219,7 @@ class CONST_ITERATOR : public std::iterator<std::random_access_iterator_tag, REA
     }
 
     /// Gets the iterator at the end of this block
-    CONST_ITERATOR end() const
+    CONST_ROW_ITERATOR end() const
     {
       if (_count <= _sz)
         return *this + (_sz - _count);
@@ -244,32 +227,24 @@ class CONST_ITERATOR : public std::iterator<std::random_access_iterator_tag, REA
         return *this - (_count - _sz);
     }
 
-    CONST_ITERATOR& operator+=(int n) 
+    CONST_ROW_ITERATOR& operator+=(int n) 
     {
-      assert(n >= 0);
-      const unsigned NSKIP = _ld - _rows + 1;
-      for (int i=0; i< n; i++)
-      {
-        if (++_count % _rows == 0)
-          _current_data += NSKIP;
-        else
-          _current_data++;
-      }
+      // update the count
+      _count += n;
+
+      // update the current data
+      _current_data = _data_start + (_count / _columns) + (_count % _columns)*_ld; 
 
       return *this; 
     }
 
-    CONST_ITERATOR& operator-=(int n) 
+    CONST_ROW_ITERATOR& operator-=(int n) 
     { 
-      assert(n >= 0);
-      const unsigned NSKIP = _ld - _rows + 1;
-      for (int i=0; i< n; i++)  
-      {
-        if (--_count % _rows == 0)
-          _current_data -= NSKIP;
-        else
-          _current_data--;
-      }
+      // update the count
+      _count -= n;
+
+      // update the current data
+      _current_data = _data_start + (_count / _columns) + (_count % _columns)*_ld; 
 
       return *this; 
     }
@@ -278,56 +253,46 @@ class CONST_ITERATOR : public std::iterator<std::random_access_iterator_tag, REA
     {
       if (i > _sz)
         throw std::runtime_error("Data outside of scope!");
-      const unsigned NSKIP = _ld - _rows + 1;
-      const REAL* data = _current_data - _count;
-      for (unsigned j=0; j< i; )
-      {
-        if (++j % _rows == 0)
-          data += NSKIP;
-        else
-          data++;
-      }
-
-      return *data;
+      return _data_start[(i / _columns) + (i % _columns)*_ld];
     }
 
-    CONST_ITERATOR operator+(int n) const
+    CONST_ROW_ITERATOR operator+(int n) const
     {
-      CONST_ITERATOR b = *this;
+      CONST_ROW_ITERATOR b = *this;
       b += n;
       return b;
     }
 
-    CONST_ITERATOR operator-(int n) const
+    CONST_ROW_ITERATOR operator-(int n) const
     {
-      CONST_ITERATOR b = *this;
+      CONST_ROW_ITERATOR b = *this;
       b -= n;
       return b;
     }
     
-    bool operator<(const CONST_ITERATOR& j) const
+    bool operator<(const CONST_ROW_ITERATOR& j) const
     {
       return _count < j._count;
     }
 
-    bool operator>(const CONST_ITERATOR& j) const
+    bool operator>(const CONST_ROW_ITERATOR& j) const
     {
       return _count > j._count;
     }
 
     const REAL& operator*() const 
     {
-      if (_count >= _sz)
+      if (_count >= _sz || _count < 0)
         throw std::runtime_error("Iterator outside of range!");
       return *_current_data; 
     }
 
-    int operator-(const CONST_ITERATOR& b) const
+    int operator-(const CONST_ROW_ITERATOR& b) const
     {
       return _count - b._count;
     }
  
-    bool operator==(const CONST_ITERATOR& b) const
+    bool operator==(const CONST_ROW_ITERATOR& b) const
     {
       // verify that we're not comparing two dissimilar iterators
       assert(_data_start == b._data_start &&
@@ -339,48 +304,48 @@ class CONST_ITERATOR : public std::iterator<std::random_access_iterator_tag, REA
       return (_count == b._count);
     }
 
-    bool operator!=(const CONST_ITERATOR& j) const { return !operator==(j); }
+    bool operator!=(const CONST_ROW_ITERATOR& j) const { return !operator==(j); }
 
     // prefix--
-    CONST_ITERATOR& operator--() 
+    CONST_ROW_ITERATOR& operator--() 
     { 
-      _count--; 
-      _current_data--;
-      if (_count % _rows == 0)
-        _current_data -= (_ld - _rows);
+      if (--_count % _columns == 0)
+        _current_data = _data_start + (_count / _columns);
+      else
+        _current_data -= _ld;
 
        return *this; 
     }
 
     // prefix++
-    CONST_ITERATOR& operator++() 
+    CONST_ROW_ITERATOR& operator++() 
     { 
-      _count++;
-      _current_data++;
-      if (_count % _rows == 0)
-        _current_data += (_ld - _rows);
+      if (++_count % _columns == 0)
+        _current_data = _data_start + (_count / _columns);
+      else
+        _current_data += _ld;
 
       return *this;
     }
 
     // postfix--
-    CONST_ITERATOR operator--(int n) 
+    CONST_ROW_ITERATOR operator--(int) 
     { 
-      CONST_ITERATOR b = *this; 
+      CONST_ROW_ITERATOR b = *this; 
       this->operator--(); 
       return b; 
     }
 
     // postfix++ 
-    CONST_ITERATOR operator++(int n) 
+    CONST_ROW_ITERATOR operator++(int) 
     {
-      CONST_ITERATOR b = *this; 
+      CONST_ROW_ITERATOR b = *this; 
       this->operator++(); 
       return b; 
     }
 
     // assignment operator
-    CONST_ITERATOR& operator=(const CONST_ITERATOR& i)
+    CONST_ROW_ITERATOR& operator=(const CONST_ROW_ITERATOR& i)
     {
       _current_data = i._current_data;
       _count = i._count;
@@ -393,12 +358,13 @@ class CONST_ITERATOR : public std::iterator<std::random_access_iterator_tag, REA
     }
 
   protected:
-    int _count, _sz;
-    const REAL* _data_start;
-    const REAL* _current_data;
-    unsigned _ld;
-    unsigned _columns;
-    unsigned _rows;
+    int _count;                  // number of iterator increments
+    int _sz;                     // size of the data block
+    const REAL* _data_start;     // pointer to the start of the data block
+    const REAL* _current_data;   // pointer to data corresponding to iterator state
+    unsigned _ld;                // leading dimension of matrix
+    unsigned _columns;           // columns of the matrix
+    unsigned _rows;              // rows of the matrix
 }; // end class
 
 

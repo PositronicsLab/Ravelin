@@ -4,15 +4,15 @@
  * License (found in COPYING).
  ****************************************************************************/
 
-#ifndef _DITERATOR_H
-#define _DITERATOR_H
+#ifndef _COLUMN_ITERATORD_H
+#define _COLUMN_ITERATORD_H
 
 #include <stdexcept>
 
 namespace Ravelin {
 
 #include "ddefs.h"
-#include "rIterator.h"
+#include "ColumnIterator.h"
 #include "undefs.h"
 
 } // end namespace

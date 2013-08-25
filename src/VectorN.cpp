@@ -118,6 +118,19 @@ VECTORN VECTORN::zero(unsigned N)
   return v;
 }
 
+/// Resizes the vector
+VECTORN& VECTORN::resize(unsigned m, unsigned n, bool preserve) 
+{ 
+  if (n == 1)
+    resize(m, preserve); 
+  else if (m == 1)
+    resize(n, preserve);
+  else
+    assert(false);
+
+  return *this; 
+}
+
 /// Copies another vector
 VECTORN& VECTORN::operator=(const VECTOR2& source)
 {
@@ -210,7 +223,7 @@ VECTORN& VECTORN::operator=(const SHAREDMATRIXN& source)
 
   // use the C++ routine for copying
   if (size() > 0)
-    std::copy(source.begin(),source.end(),begin());
+    std::copy(source.column_iterator_begin(),source.column_iterator_end(),column_iterator_begin());
 
   return *this;
 }
@@ -223,7 +236,7 @@ VECTORN& VECTORN::operator=(const CONST_SHAREDMATRIXN& source)
 
   // use the C++ routine for copying
   if (size() > 0)
-    std::copy(source.begin(),source.end(),begin());
+    std::copy(source.column_iterator_begin(),source.column_iterator_end(),column_iterator_begin());
 
   return *this;
 }

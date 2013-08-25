@@ -10,7 +10,7 @@
 #include <cmath>
 #include <boost/enable_shared_from_this.hpp>
 #include <boost/shared_ptr.hpp>
-#include <Ravelin/dIterator.h>
+#include <Ravelin/ColumnIteratord.h>
 
 namespace Ravelin {
 

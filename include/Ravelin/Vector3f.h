@@ -15,7 +15,8 @@
 #include <boost/shared_ptr.hpp>
 #include <Ravelin/FrameException.h>
 #include <Ravelin/Origin3f.h>
-#include <Ravelin/fIterator.h>
+#include <Ravelin/ColumnIteratorf.h>
+#include <Ravelin/RowIteratord.h>
 
 namespace Ravelin {
 

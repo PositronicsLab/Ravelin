@@ -40,7 +40,7 @@ std::istream& Ravelin::operator>>(std::istream& in, XMATRIXN& m)
 /// Computes the l-infinity norm of this matrix
 REAL XMATRIXN::norm_inf() const
 {
-  CONST_ITERATOR i = begin();
+  CONST_COLUMN_ITERATOR i = column_iterator_begin();
   REAL nrm = (REAL) 0.0;
   while (i != i.end())
     nrm = std::max(nrm, std::fabs(*i++));

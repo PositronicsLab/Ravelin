@@ -3,9 +3,6 @@
 
 #include <Ravelin/cblas.h>
 #include <Ravelin/Constants.h>
-#include <Ravelin/AAngled.h>
-#include <Ravelin/Quatd.h>
-#include <Ravelin/Matrix3d.h>
 #include <Ravelin/DataMismatchException.h>
 #include <Ravelin/MissizeException.h>
 

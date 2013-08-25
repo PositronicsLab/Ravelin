@@ -375,8 +375,8 @@ MATRIXN& nullspace(Y& A, MATRIXN& nullspace, REAL tol = -1.0)
     return nullspace;
   else
   {
-    ITERATOR bi = nullspace.block_iterator_begin(0, nullspace.rows(), nullspace.columns()-ns, nullspace.columns());
-    std::copy(bi, bi+ns*nullspace.rows(), nullspace.begin());
+    COLUMN_ITERATOR bi = nullspace.block_column_iterator_begin(0, nullspace.rows(), nullspace.columns()-ns, nullspace.columns());
+    std::copy(bi, bi+ns*nullspace.rows(), nullspace.column_iterator_begin());
     nullspace.resize(nullspace.rows(), ns, true);
     return nullspace;
   }

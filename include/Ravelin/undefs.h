@@ -19,8 +19,10 @@
 #undef VECTOR2
 #undef VECTOR3
 #undef POSE3 
-#undef CONST_ITERATOR
-#undef ITERATOR
+#undef CONST_COLUMN_ITERATOR
+#undef CONST_ROW_ITERATOR
+#undef COLUMN_ITERATOR 
+#undef ROW_ITERATOR    
 #undef SVECTOR6 
 #undef SFORCE
 #undef SMOMENTUM
