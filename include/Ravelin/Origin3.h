@@ -50,6 +50,10 @@ class ORIGIN3
     REAL& x() { return _data[0]; }
     REAL& y() { return _data[1]; }
     REAL& z() { return _data[2]; }
+    COLUMN_ITERATOR begin() { return column_iterator_begin(); }
+    CONST_COLUMN_ITERATOR begin() const { return column_iterator_begin(); }
+    COLUMN_ITERATOR end() { return column_iterator_end(); }
+    CONST_COLUMN_ITERATOR end() const { return column_iterator_end(); }
     COLUMN_ITERATOR column_iterator_begin();
     CONST_COLUMN_ITERATOR column_iterator_begin() const;
     COLUMN_ITERATOR column_iterator_end();

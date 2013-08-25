@@ -58,6 +58,10 @@ class VECTOR2
     REAL& operator[](const unsigned i);
     const REAL& operator[](const unsigned i) const;
     VECTOR2& resize(unsigned m, unsigned n, bool preserve = false);
+    COLUMN_ITERATOR begin() { return column_iterator_begin(); }
+    CONST_COLUMN_ITERATOR begin() const { return column_iterator_begin(); }
+    COLUMN_ITERATOR end() { return column_iterator_end(); }
+    CONST_COLUMN_ITERATOR end() const { return column_iterator_end(); }
     COLUMN_ITERATOR column_iterator_begin();
     CONST_COLUMN_ITERATOR column_iterator_begin() const;
     COLUMN_ITERATOR column_iterator_end();

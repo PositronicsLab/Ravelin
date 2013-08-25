@@ -319,6 +319,18 @@ COLUMN_ITERATOR column_iterator_end()
   return i;
 }
 
+/// Returns the column iterator
+COLUMN_ITERATOR begin() { return column_iterator_begin(); }
+
+/// Returns the constant column iterator
+CONST_COLUMN_ITERATOR begin() const { return column_iterator_begin(); }
+
+/// Returns the column iterator
+COLUMN_ITERATOR end() { return column_iterator_end(); }
+
+/// Returns the constant column iterator
+CONST_COLUMN_ITERATOR end() const { return column_iterator_end(); }
+
 /// Sets the vector to the zero vector
 XVECTORN& set_zero()
 {

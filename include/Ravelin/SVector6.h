@@ -50,6 +50,10 @@ class SVECTOR6
     unsigned columns() const { return 1; }
     SVECTOR6& resize(unsigned rows, unsigned columns) { assert ((rows == 6 && columns == 1) || (columns == 1 && rows == 6)); return *this; } 
     SVECTOR6& resize(unsigned rows) { assert (rows == 6); return *this; } 
+    COLUMN_ITERATOR begin() { return column_iterator_begin(); }
+    CONST_COLUMN_ITERATOR begin() const { return column_iterator_begin(); }
+    COLUMN_ITERATOR end() { return column_iterator_end(); }
+    CONST_COLUMN_ITERATOR end() const { return column_iterator_end(); }
     COLUMN_ITERATOR column_iterator_begin();
     CONST_COLUMN_ITERATOR column_iterator_begin() const;
     COLUMN_ITERATOR column_iterator_end();
