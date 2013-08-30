@@ -91,6 +91,9 @@ CONST_COLUMN_ITERATOR column_iterator_end() const
   return i;
 }
 
+CONST_COLUMN_ITERATOR begin() const { return column_iterator_begin(); }
+CONST_COLUMN_ITERATOR end() const { return column_iterator_end(); }
+
 CONST_ROW_ITERATOR row_iterator_begin() const
 {
   CONST_ROW_ITERATOR i;

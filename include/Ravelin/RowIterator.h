@@ -49,6 +49,13 @@ class ROW_ITERATOR : public std::iterator<std::random_access_iterator_tag, REAL>
 
     ROW_ITERATOR& operator+=(int n) 
     {
+      // if there are no columns, verify that n = 0
+      if (_columns == 0)
+      {
+        assert(n == 0);
+        return *this;
+      }
+
       // update the count
       _count += n;
 
@@ -60,6 +67,13 @@ class ROW_ITERATOR : public std::iterator<std::random_access_iterator_tag, REAL>
 
     ROW_ITERATOR& operator-=(int n) 
     { 
+      // if there are no columns, verify that n = 0
+      if (_columns == 0)
+      {
+        assert(n == 0);
+        return *this;
+      }
+
       // update the count
       _count -= n;
 
@@ -71,6 +85,7 @@ class ROW_ITERATOR : public std::iterator<std::random_access_iterator_tag, REAL>
 
     REAL& operator[](unsigned i) const
     {
+      assert(_columns > 0);
       if (i > _sz)
         throw std::runtime_error("Data outside of scope!");
       return _data_start[(i / _columns) + (i % _columns)*_ld];
@@ -129,6 +144,7 @@ class ROW_ITERATOR : public std::iterator<std::random_access_iterator_tag, REAL>
     // prefix--
     ROW_ITERATOR& operator--() 
     { 
+      assert(_columns > 0);
       if (--_count % _columns == 0)
         _current_data = _data_start + (_count / _columns);
       else
@@ -139,7 +155,8 @@ class ROW_ITERATOR : public std::iterator<std::random_access_iterator_tag, REAL>
 
     // prefix++
     ROW_ITERATOR& operator++() 
-    { 
+    {
+      assert(_columns > 0); 
       if (--_count % _columns == 0)
         _current_data = _data_start + (_count / _columns);
       else
@@ -229,6 +246,13 @@ class CONST_ROW_ITERATOR : public std::iterator<std::random_access_iterator_tag,
 
     CONST_ROW_ITERATOR& operator+=(int n) 
     {
+      // if there are no columns, verify that n = 0
+      if (_columns == 0)
+      {
+        assert(n == 0);
+        return *this;
+      }
+
       // update the count
       _count += n;
 
@@ -240,6 +264,13 @@ class CONST_ROW_ITERATOR : public std::iterator<std::random_access_iterator_tag,
 
     CONST_ROW_ITERATOR& operator-=(int n) 
     { 
+      // if there are no columns, verify that n = 0
+      if (_columns == 0)
+      {
+        assert(n == 0);
+        return *this;
+      }
+
       // update the count
       _count -= n;
 
@@ -309,6 +340,8 @@ class CONST_ROW_ITERATOR : public std::iterator<std::random_access_iterator_tag,
     // prefix--
     CONST_ROW_ITERATOR& operator--() 
     { 
+      assert(_columns > 0);
+
       if (--_count % _columns == 0)
         _current_data = _data_start + (_count / _columns);
       else
@@ -319,7 +352,9 @@ class CONST_ROW_ITERATOR : public std::iterator<std::random_access_iterator_tag,
 
     // prefix++
     CONST_ROW_ITERATOR& operator++() 
-    { 
+    {
+      assert(_columns > 0);
+ 
       if (++_count % _columns == 0)
         _current_data = _data_start + (_count / _columns);
       else

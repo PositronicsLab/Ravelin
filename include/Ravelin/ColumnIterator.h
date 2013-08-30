@@ -49,6 +49,13 @@ class COLUMN_ITERATOR : public std::iterator<std::random_access_iterator_tag, RE
 
     COLUMN_ITERATOR& operator+=(int n) 
     {
+      // if there are no rows, verify that n = 0
+      if (_rows == 0)
+      {
+        assert(n == 0);
+        return *this;
+      }
+
       // update the count
       _count += n;
 
@@ -60,6 +67,13 @@ class COLUMN_ITERATOR : public std::iterator<std::random_access_iterator_tag, RE
 
     COLUMN_ITERATOR& operator-=(int n) 
     { 
+      // if there are no rows, verify that n = 0
+      if (_rows == 0)
+      {
+        assert(n == 0);
+        return *this;
+      }
+
       // update the count
       _count -= n;
 
@@ -71,6 +85,9 @@ class COLUMN_ITERATOR : public std::iterator<std::random_access_iterator_tag, RE
 
     REAL& operator[](unsigned i) const
     {
+      // verify user not doing something wrong
+      assert (_rows > 0);
+       
       if (i > _sz)
         throw std::runtime_error("Data outside of scope!");
       return _data_start[(i / _rows)*_ld + (i % _rows)];
@@ -129,6 +146,9 @@ class COLUMN_ITERATOR : public std::iterator<std::random_access_iterator_tag, RE
     // prefix--
     COLUMN_ITERATOR& operator--() 
     { 
+      // verify user not doing something wrong
+      assert(_rows > 0);
+
       _count--; 
       _current_data--;
       if (_count % _rows == 0)
@@ -140,6 +160,9 @@ class COLUMN_ITERATOR : public std::iterator<std::random_access_iterator_tag, RE
     // prefix++
     COLUMN_ITERATOR& operator++() 
     { 
+      // verify user not doing something wrong
+      assert(_rows > 0);
+
       _count++;
       _current_data++;
       if (_count % _rows == 0)
@@ -228,6 +251,13 @@ class CONST_COLUMN_ITERATOR : public std::iterator<std::random_access_iterator_t
 
     CONST_COLUMN_ITERATOR& operator+=(int n) 
     {
+      // if there are no rows, verify that n = 0
+      if (_rows == 0)
+      {
+        assert(n == 0);
+        return *this;
+      }
+
       // update the count
       _count += n;
 
@@ -239,6 +269,13 @@ class CONST_COLUMN_ITERATOR : public std::iterator<std::random_access_iterator_t
 
     CONST_COLUMN_ITERATOR& operator-=(int n) 
     { 
+      // if there are no rows, verify that n = 0
+      if (_rows == 0)
+      {
+        assert(n == 0);
+        return *this;
+      }
+
       // update the count
       _count -= n;
 
@@ -250,6 +287,9 @@ class CONST_COLUMN_ITERATOR : public std::iterator<std::random_access_iterator_t
 
     const REAL& operator[](unsigned i) const
     {
+      // verify user not doing something wrong
+      assert(_rows > 0);
+
       if (i > _sz)
         throw std::runtime_error("Data outside of scope!");
       return _data_start[(i / _rows)*_ld + (i % _rows)];
@@ -308,6 +348,9 @@ class CONST_COLUMN_ITERATOR : public std::iterator<std::random_access_iterator_t
     // prefix--
     CONST_COLUMN_ITERATOR& operator--() 
     { 
+      // verify user not doing something wrong
+      assert(_rows > 0);
+
       _count--; 
       _current_data--;
       if (_count % _rows == 0)
@@ -319,6 +362,9 @@ class CONST_COLUMN_ITERATOR : public std::iterator<std::random_access_iterator_t
     // prefix++
     CONST_COLUMN_ITERATOR& operator++() 
     { 
+      // verify user not doing something wrong
+      assert(_rows > 0);
+
       _count++;
       _current_data++;
       if (_count % _rows == 0)
@@ -330,6 +376,9 @@ class CONST_COLUMN_ITERATOR : public std::iterator<std::random_access_iterator_t
     // postfix--
     CONST_COLUMN_ITERATOR operator--(int n) 
     { 
+      // verify user not doing something wrong
+      assert(_rows > 0);
+
       CONST_COLUMN_ITERATOR b = *this; 
       this->operator--(); 
       return b; 
