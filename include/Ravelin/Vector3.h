@@ -16,10 +16,14 @@ class VECTOR3
 {
   public:
     VECTOR3(boost::shared_ptr<const POSE3> pose = boost::shared_ptr<const POSE3>()) { this->pose = pose; }
+    VECTOR3(boost::shared_ptr<POSE3> pose) { this->pose = boost::const_pointer_cast<const POSE3>(pose); }
     VECTOR3(REAL x, REAL y, REAL z, boost::shared_ptr<const POSE3> pose = boost::shared_ptr<const POSE3>());
+    VECTOR3(REAL x, REAL y, REAL z, boost::shared_ptr<POSE3> pose);
     VECTOR3(const REAL* array, boost::shared_ptr<const POSE3> pose = boost::shared_ptr<const POSE3>());
+    VECTOR3(const REAL* array, boost::shared_ptr<POSE3> pose);
     VECTOR3(const VECTOR3& source) { operator=(source); }
     VECTOR3(const ORIGIN3& source, boost::shared_ptr<const POSE3> pose) { this->pose = pose; operator=(source); }
+    VECTOR3(const ORIGIN3& source, boost::shared_ptr<POSE3> pose) { this->pose = boost::const_pointer_cast<const POSE3>(pose); operator=(source); }
     REAL dot(const VECTOR3& v) const { return dot(*this, v); }
     static REAL dot(const VECTOR3& v1, const VECTOR3& v2);
     void normalize() { assert(norm() > std::numeric_limits<REAL>::epsilon()); operator/=(norm()); }

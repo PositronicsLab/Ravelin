@@ -5,6 +5,15 @@
  ****************************************************************************/
 
 /// Constructs this vector with the given values
+VECTOR2::VECTOR2(REAL x, REAL y, boost::shared_ptr<POSE2> pose)
+{
+  const unsigned X = 0, Y = 1;
+  _data[X] = x;
+  _data[Y] = y;
+  this->pose = boost::const_pointer_cast<const POSE2>(pose);
+}
+
+/// Constructs this vector with the given values
 VECTOR2::VECTOR2(REAL x, REAL y, boost::shared_ptr<const POSE2> pose)
 {
   const unsigned X = 0, Y = 1;
@@ -23,6 +32,18 @@ VECTOR2::VECTOR2(const REAL* array, boost::shared_ptr<const POSE2> pose)
   _data[X] = array[X];
   _data[Y] = array[Y];
   this->pose = pose;
+}
+
+/// Constructs this vector from the given array
+/**
+ * \param array a 2-dimensional (or larger) array
+ */
+VECTOR2::VECTOR2(const REAL* array, boost::shared_ptr<POSE2> pose)
+{
+  const unsigned X = 0, Y = 1;
+  _data[X] = array[X];
+  _data[Y] = array[Y];
+  this->pose = boost::const_pointer_cast<const POSE2>(pose);
 }
 
 /// Constructs a vector from an origin object

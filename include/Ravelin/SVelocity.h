@@ -17,20 +17,35 @@ class SVELOCITY : public SVECTOR6
     /// Constructs a velocity with zero linear and zero angular components
     SVELOCITY(boost::shared_ptr<const POSE3> pose = boost::shared_ptr<const POSE3>()) : SVECTOR6(pose) {}
 
+    /// Constructs a velocity with zero linear and zero angular components
+    SVELOCITY(boost::shared_ptr<POSE3> pose) : SVECTOR6(pose) {}
+
     /// Constructs a velocity from a SVector6
     explicit SVELOCITY(const SVECTOR6& v) : SVECTOR6(v.get_upper(), v.get_lower(), v.pose) {} 
 
     /// Constructs a velocity from six values (first three linear, next three angular) and a pose
     SVELOCITY(REAL ax, REAL ay, REAL az, REAL lx, REAL ly, REAL lz, boost::shared_ptr<const POSE3> pose = boost::shared_ptr<const POSE3>()) : SVECTOR6(ax, ay, az, lx, ly, lz, pose) {};
 
+    /// Constructs a velocity from six values (first three linear, next three angular) and a pose
+    SVELOCITY(REAL ax, REAL ay, REAL az, REAL lx, REAL ly, REAL lz, boost::shared_ptr<POSE3> pose) : SVECTOR6(ax, ay, az, lx, ly, lz, pose) {};
+
     /// Constructs a velocity from six values (first three angular, next three linear) and a pose
     SVELOCITY(const REAL* array, boost::shared_ptr<const POSE3> pose = boost::shared_ptr<const POSE3>()) : SVECTOR6(array[0], array[1], array[2], array[3], array[4], array[5], pose) {}
+
+    /// Constructs a velocity from six values (first three angular, next three linear) and a pose
+    SVELOCITY(const REAL* array, boost::shared_ptr<POSE3> pose) : SVECTOR6(array[0], array[1], array[2], array[3], array[4], array[5], pose) {}
 
     /// Constructs a velocity from linear and angular components and a pose
     SVELOCITY(const VECTOR3& angular, const VECTOR3& linear, boost::shared_ptr<const POSE3> pose = boost::shared_ptr<const POSE3>()) : SVECTOR6(angular, linear, pose) {}
 
+    /// Constructs a velocity from linear and angular components and a pose
+    SVELOCITY(const VECTOR3& angular, const VECTOR3& linear, boost::shared_ptr<POSE3> pose) : SVECTOR6(angular, linear, pose) {}
+
     /// Returns a zero velocity
     static SVELOCITY zero(boost::shared_ptr<const POSE3> pose = boost::shared_ptr<const POSE3>()) { SVELOCITY t(pose); t.set_zero(); return t; }
+
+    /// Returns a zero velocity
+    static SVELOCITY zero(boost::shared_ptr<POSE3> pose) { SVELOCITY t(pose); t.set_zero(); return t; }
 
     template <class V>
     V& transpose_to_vector(V& v) const
@@ -46,6 +61,19 @@ class SVELOCITY : public SVECTOR6
 
     template <class V>
     static SVELOCITY from_vector(const V& v, boost::shared_ptr<const POSE3> pose = boost::shared_ptr<const POSE3>())
+    {
+      const unsigned SPATIAL_DIM = 6;
+      if (v.size() != SPATIAL_DIM)
+        throw MissizeException();
+      SVELOCITY t(pose);
+      REAL* tdata = t.data();
+      const REAL* vdata = v.data();
+      CBLAS::copy(SPATIAL_DIM, vdata, v.inc(), tdata, 1);
+      return t;
+    }
+
+    template <class V>
+    static SVELOCITY from_vector(const V& v, boost::shared_ptr<POSE3> pose)
     {
       const unsigned SPATIAL_DIM = 6;
       if (v.size() != SPATIAL_DIM)

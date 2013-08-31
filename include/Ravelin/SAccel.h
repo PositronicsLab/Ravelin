@@ -16,20 +16,35 @@ class SACCEL : public SVECTOR6
     /// Constructs a acceleration with zero linear and zero angular components
     SACCEL(boost::shared_ptr<const POSE3> pose = boost::shared_ptr<const POSE3>()) : SVECTOR6(pose) {}
 
+    /// Constructs a acceleration with zero linear and zero angular components
+    SACCEL(boost::shared_ptr<POSE3> pose) : SVECTOR6(pose) {}
+
     /// Constructs a acceleration from a SVector6
     explicit SACCEL(const SVECTOR6& v) : SVECTOR6(v.get_upper(), v.get_lower(), v.pose) {} 
 
     /// Constructs a acceleration from six values (first three angualr, next three linear) and a pose
     SACCEL(REAL ax, REAL ay, REAL az, REAL lx, REAL ly, REAL lz, boost::shared_ptr<const POSE3> pose = boost::shared_ptr<const POSE3>()) : SVECTOR6(ax, ay, az, lx, ly, lz, pose) {};
 
+    /// Constructs a acceleration from six values (first three angualr, next three linear) and a pose
+    SACCEL(REAL ax, REAL ay, REAL az, REAL lx, REAL ly, REAL lz, boost::shared_ptr<POSE3> pose) : SVECTOR6(ax, ay, az, lx, ly, lz, pose) {};
+
     /// Constructs a acceleration from six values (first three angular, next three linear) and a pose
     SACCEL(const REAL* array, boost::shared_ptr<const POSE3> pose = boost::shared_ptr<const POSE3>()) : SVECTOR6(array[0], array[1], array[2], array[3], array[4], array[5], pose) {}
+
+    /// Constructs a acceleration from six values (first three angular, next three linear) and a pose
+    SACCEL(const REAL* array, boost::shared_ptr<POSE3> pose) : SVECTOR6(array[0], array[1], array[2], array[3], array[4], array[5], pose) {}
 
     /// Constructs a acceleration from linear and angular components and a pose
     SACCEL(const VECTOR3& angular, const VECTOR3& linear, boost::shared_ptr<const POSE3> pose = boost::shared_ptr<const POSE3>()) : SVECTOR6(angular, linear, pose) {}
 
+    /// Constructs a acceleration from linear and angular components and a pose
+    SACCEL(const VECTOR3& angular, const VECTOR3& linear, boost::shared_ptr<POSE3> pose) : SVECTOR6(angular, linear, pose) {}
+
     /// Returns a zero acceleration
     static SACCEL zero(boost::shared_ptr<const POSE3> pose = boost::shared_ptr<const POSE3>()) { SACCEL t(pose); t.set_zero(); return t; }
+
+    /// Returns a zero acceleration
+    static SACCEL zero(boost::shared_ptr<POSE3> pose) { SACCEL t(pose); t.set_zero(); return t; }
 
     template <class V>
     V& transpose_to_vector(V& v) const
@@ -45,6 +60,19 @@ class SACCEL : public SVECTOR6
 
     template <class V>
     static SACCEL from_vector(const V& v, boost::shared_ptr<const POSE3> pose = boost::shared_ptr<const POSE3>())
+    {
+      const unsigned SPATIAL_DIM = 6;
+      if (v.size() != SPATIAL_DIM)
+        throw MissizeException();
+      SACCEL t(pose);
+      REAL* tdata = t.data();
+      const REAL* vdata = v.data();
+      CBLAS::copy(SPATIAL_DIM, vdata, v.inc(), tdata, 1);
+      return t;
+    }
+
+    template <class V>
+    static SACCEL from_vector(const V& v, boost::shared_ptr<POSE3> pose)
     {
       const unsigned SPATIAL_DIM = 6;
       if (v.size() != SPATIAL_DIM)

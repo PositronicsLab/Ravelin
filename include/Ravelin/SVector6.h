@@ -24,14 +24,19 @@ class SVECTOR6
   public:
     SVECTOR6();
     SVECTOR6(boost::shared_ptr<const POSE3> pose); 
+    SVECTOR6(boost::shared_ptr<POSE3> pose); 
     SVECTOR6(REAL x, REAL y, REAL z, REAL a, REAL b, REAL c);
     SVECTOR6(REAL x, REAL y, REAL z, REAL a, REAL b, REAL c, boost::shared_ptr<const POSE3> pose);
+    SVECTOR6(REAL x, REAL y, REAL z, REAL a, REAL b, REAL c, boost::shared_ptr<POSE3> pose);
     SVECTOR6(const REAL* array);
     SVECTOR6(const REAL* array, boost::shared_ptr<const POSE3> pose);
+    SVECTOR6(const REAL* array, boost::shared_ptr<POSE3> pose);
     SVECTOR6(const VECTOR3& upper, const VECTOR3& lower);
     SVECTOR6(const VECTOR3& upper, const VECTOR3& lower, boost::shared_ptr<const POSE3> pose);
+    SVECTOR6(const VECTOR3& upper, const VECTOR3& lower, boost::shared_ptr<POSE3> pose);
     unsigned size() const { return 6; }
     static SVECTOR6 zero(boost::shared_ptr<const POSE3> pose = boost::shared_ptr<const POSE3>()) { return SVECTOR6(0,0,0,0,0,0, pose); }
+    static SVECTOR6 zero(boost::shared_ptr<POSE3> pose = boost::shared_ptr<POSE3>()) { return SVECTOR6(0,0,0,0,0,0, pose); }
     SVECTOR6& set_zero() { std::fill_n(_data, 6, (REAL) 0.0); return *this; }
     SVECTOR6& set_zero(boost::shared_ptr<const POSE3> pose) { std::fill_n(_data, 6, (REAL) 0.0); this->pose = pose; return *this; }
     void set_lower(const VECTOR3& lower);

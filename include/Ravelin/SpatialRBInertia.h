@@ -23,7 +23,9 @@ class SPATIAL_RB_INERTIA
 {
   public:
     SPATIAL_RB_INERTIA(boost::shared_ptr<const POSE3> pose = boost::shared_ptr<const POSE3>());
+    SPATIAL_RB_INERTIA(boost::shared_ptr<POSE3> pose);
     SPATIAL_RB_INERTIA(REAL m, const VECTOR3& h, const MATRIX3& J, boost::shared_ptr<const POSE3> pose = boost::shared_ptr<const POSE3>());
+    SPATIAL_RB_INERTIA(REAL m, const VECTOR3& h, const MATRIX3& J, boost::shared_ptr<POSE3> pose);
     SPATIAL_RB_INERTIA(const SPATIAL_RB_INERTIA& source) { operator=(source); }
     void set_zero();
     static SPATIAL_RB_INERTIA zero() { SPATIAL_RB_INERTIA m; m.set_zero(); return m; }

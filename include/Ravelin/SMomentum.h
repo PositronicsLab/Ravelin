@@ -14,23 +14,51 @@ class SMOMENTUM : public SVECTOR6
     /// Constructs a spatial momentum with zero linear and angular components
     SMOMENTUM(boost::shared_ptr<const POSE3> pose = boost::shared_ptr<const POSE3>()) : SVECTOR6(pose) {} 
 
+    /// Constructs a spatial momentum with zero linear and angular components
+    SMOMENTUM(boost::shared_ptr<POSE3> pose) : SVECTOR6(pose) {} 
+
     /// Constructs a spatial momentum from the SVector6 
     explicit SMOMENTUM(const SVECTOR6& w) : SVECTOR6(w.get_upper(), w.get_lower(), w.pose) { }
 
     /// Constructs a spatial momentum using six values- first three linear, second three angular- and a pose
     SMOMENTUM(REAL lx, REAL ly, REAL lz, REAL ax, REAL ay, REAL az, boost::shared_ptr<const POSE3> pose = boost::shared_ptr<const POSE3>()) : SVECTOR6(lx, ly, lz, ax, ay, az, pose) {};
 
+    /// Constructs a spatial momentum using six values- first three linear, second three angular- and a pose
+    SMOMENTUM(REAL lx, REAL ly, REAL lz, REAL ax, REAL ay, REAL az, boost::shared_ptr<POSE3> pose) : SVECTOR6(lx, ly, lz, ax, ay, az, pose) {};
+
     /// Constructs a spatial momentum using six values- first three linear, second three angular and a pose
     SMOMENTUM(const REAL* array, boost::shared_ptr<const POSE3> pose = boost::shared_ptr<const POSE3>()) : SVECTOR6(array[0], array[1], array[2], array[3], array[4], array[5], pose) {}
+
+    /// Constructs a spatial momentum using six values- first three linear, second three angular and a pose
+    SMOMENTUM(const REAL* array, boost::shared_ptr<POSE3> pose) : SVECTOR6(array[0], array[1], array[2], array[3], array[4], array[5], pose) {}
 
     /// Constructs a spatial momentum using given linear and angular and pose
     SMOMENTUM(const VECTOR3& l, const VECTOR3& a, boost::shared_ptr<const POSE3> pose = boost::shared_ptr<const POSE3>()) : SVECTOR6(l, a, pose) {}
 
+    /// Constructs a spatial momentum using given linear and angular and pose
+    SMOMENTUM(const VECTOR3& l, const VECTOR3& a, boost::shared_ptr<POSE3> pose) : SVECTOR6(l, a, pose) {}
+
     /// Constructs a zero spatial momentum
     static SMOMENTUM zero(boost::shared_ptr<const POSE3> pose = boost::shared_ptr<const POSE3>()) { SMOMENTUM w(pose); w.set_zero(); return w; }
 
+    /// Constructs a zero spatial momentum
+    static SMOMENTUM zero(boost::shared_ptr<POSE3> pose) { SMOMENTUM w(pose); w.set_zero(); return w; }
+
     template <class V>
     static SMOMENTUM from_vector(const V& v, boost::shared_ptr<const POSE3> pose = boost::shared_ptr<const POSE3>())
+    {
+      const unsigned SPATIAL_DIM = 6;
+      if (v.size() != SPATIAL_DIM)
+        throw MissizeException();
+      SMOMENTUM w(pose);
+      REAL* wdata = w.data();
+      const REAL* vdata = v.data();
+      CBLAS::copy(SPATIAL_DIM, vdata, v.inc(), wdata, 1);
+      return w;
+    }
+
+    template <class V>
+    static SMOMENTUM from_vector(const V& v, boost::shared_ptr<POSE3> pose)
     {
       const unsigned SPATIAL_DIM = 6;
       if (v.size() != SPATIAL_DIM)

@@ -19,6 +19,14 @@ SVECTOR6::SVECTOR6(boost::shared_ptr<const POSE3> pose)
   this->pose = pose; 
 }
 
+/// Constructs a zero vector relative to the given pose
+SVECTOR6::SVECTOR6(boost::shared_ptr<POSE3> pose) 
+{ 
+  _data[0] = _data[1] = _data[2] = 0.0;
+  _data[3] = _data[4] = _data[5] = 0.0;
+  this->pose = boost::const_pointer_cast<const POSE3>(pose); 
+}
+
 /// Constructs this vector with the given values
 SVECTOR6::SVECTOR6(REAL x, REAL y, REAL z, REAL a, REAL b, REAL c)
 {
@@ -42,6 +50,18 @@ SVECTOR6::SVECTOR6(REAL x, REAL y, REAL z, REAL a, REAL b, REAL c, boost::shared
   this->pose = pose;
 }
 
+/// Constructs this vector with the given values
+SVECTOR6::SVECTOR6(REAL x, REAL y, REAL z, REAL a, REAL b, REAL c, boost::shared_ptr<POSE3> pose)
+{
+  _data[0] = x;
+  _data[1] = y;
+  _data[2] = z;
+  _data[3] = a;
+  _data[4] = b;
+  _data[5] = c;
+  this->pose = boost::const_pointer_cast<const POSE3>(pose); 
+}
+
 /// Constructs this vector from the given array
 /**
  * \param array a 6-dimensional (or larger) array
@@ -63,6 +83,17 @@ SVECTOR6::SVECTOR6(const REAL* array, boost::shared_ptr<const POSE3> pose)
   this->pose = pose;
 }
 
+/// Constructs this vector from the given array
+/**
+ * \param array a 6-dimensional (or larger) array
+ */
+SVECTOR6::SVECTOR6(const REAL* array, boost::shared_ptr<POSE3> pose)
+{
+  for (unsigned i=0; i< 6; i++)
+    _data[i] = array[i];
+  this->pose = boost::const_pointer_cast<const POSE3>(pose); 
+}
+
 /// Constructs the given spatial vector with given upper and lower components
 SVECTOR6::SVECTOR6(const VECTOR3& upper, const VECTOR3& lower)
 {
@@ -76,6 +107,14 @@ SVECTOR6::SVECTOR6(const VECTOR3& upper, const VECTOR3& lower, boost::shared_ptr
   set_upper(upper);
   set_lower(lower);
   this->pose = pose;
+}
+
+/// Constructs the given spatial vector with given upper and lower components
+SVECTOR6::SVECTOR6(const VECTOR3& upper, const VECTOR3& lower, boost::shared_ptr<POSE3> pose)
+{
+  set_upper(upper);
+  set_lower(lower);
+  this->pose = boost::const_pointer_cast<POSE3>(pose); 
 }
 
 /// Gets an iterator to the beginning of the data

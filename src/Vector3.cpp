@@ -14,6 +14,16 @@ VECTOR3::VECTOR3(REAL x, REAL y, REAL z, boost::shared_ptr<const POSE3> pose)
   this->pose = pose;
 }
 
+/// Constructs this vector with the given values
+VECTOR3::VECTOR3(REAL x, REAL y, REAL z, boost::shared_ptr<POSE3> pose)
+{
+  const unsigned X = 0, Y = 1, Z = 2;
+  _data[X] = x;
+  _data[Y] = y;
+  _data[Z] = z;
+  this->pose = boost::const_pointer_cast<const POSE3>(pose);
+}
+
 /// Constructs this vector from the given array
 /**
  * \param array a 3-dimensional (or larger) array
@@ -25,6 +35,19 @@ VECTOR3::VECTOR3(const REAL* array, boost::shared_ptr<const POSE3> pose)
   _data[Y] = array[Y];
   _data[Z] = array[Z];
   this->pose = pose;
+}
+
+/// Constructs this vector from the given array
+/**
+ * \param array a 3-dimensional (or larger) array
+ */
+VECTOR3::VECTOR3(const REAL* array, boost::shared_ptr<POSE3> pose)
+{
+  const unsigned X = 0, Y = 1, Z = 2;
+  _data[X] = array[X];
+  _data[Y] = array[Y];
+  _data[Z] = array[Z];
+  this->pose = boost::const_pointer_cast<const POSE3>(pose);
 }
 
 /// Determines whether all components of this vector are finite

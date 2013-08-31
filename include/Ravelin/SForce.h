@@ -16,23 +16,51 @@ class SFORCE : public SVECTOR6
     /// Constructs a spatial force with zero force and torque components
     SFORCE(boost::shared_ptr<const POSE3> pose = boost::shared_ptr<const POSE3>()) : SVECTOR6(pose) {} 
 
+    /// Constructs a spatial force with zero force and torque components
+    SFORCE(boost::shared_ptr<POSE3> pose) : SVECTOR6(pose) {} 
+
     /// Constructs a spatial force from the SVector6 
     explicit SFORCE(const SVECTOR6& w) : SVECTOR6(w.get_upper(), w.get_lower(), w.pose) { }
 
     /// Constructs a spatial force using six values- first three force, second three torque- and a pose
     SFORCE(REAL fx, REAL fy, REAL fz, REAL tx, REAL ty, REAL tz, boost::shared_ptr<const POSE3> pose = boost::shared_ptr<const POSE3>()) : SVECTOR6(fx, fy, fz, tx, ty, tz, pose) {};
 
+    /// Constructs a spatial force using six values- first three force, second three torque- and a pose
+    SFORCE(REAL fx, REAL fy, REAL fz, REAL tx, REAL ty, REAL tz, boost::shared_ptr<POSE3> pose) : SVECTOR6(fx, fy, fz, tx, ty, tz, pose) {};
+
     /// Constructs a spatial force using six values- first three force, second three torque0 and a pose
     SFORCE(const REAL* array, boost::shared_ptr<const POSE3> pose = boost::shared_ptr<const POSE3>()) : SVECTOR6(array[0], array[1], array[2], array[3], array[4], array[5], pose) {}
+
+    /// Constructs a spatial force using six values- first three force, second three torque0 and a pose
+    SFORCE(const REAL* array, boost::shared_ptr<POSE3> pose) : SVECTOR6(array[0], array[1], array[2], array[3], array[4], array[5], pose) {}
 
     /// Constructs a spatial force using given force and torque and pose
     SFORCE(const VECTOR3& f, const VECTOR3& t, boost::shared_ptr<const POSE3> pose = boost::shared_ptr<const POSE3>()) : SVECTOR6(f, t, pose) {}
 
+    /// Constructs a spatial force using given force and torque and pose
+    SFORCE(const VECTOR3& f, const VECTOR3& t, boost::shared_ptr<POSE3> pose) : SVECTOR6(f, t, pose) {}
+
     /// Constructs a zero spatial force
     static SFORCE zero(boost::shared_ptr<const POSE3> pose = boost::shared_ptr<const POSE3>()) { SFORCE w(pose); w.set_zero(); return w; }
 
+    /// Constructs a zero spatial force
+    static SFORCE zero(boost::shared_ptr<POSE3> pose) { SFORCE w(pose); w.set_zero(); return w; }
+
     template <class V>
     static SFORCE from_vector(const V& v, boost::shared_ptr<const POSE3> pose = boost::shared_ptr<const POSE3>())
+    {
+      const unsigned SPATIAL_DIM = 6;
+      if (v.size() != SPATIAL_DIM)
+        throw MissizeException();
+      SFORCE w(pose);
+      REAL* wdata = w.data();
+      const REAL* vdata = v.data();
+      CBLAS::copy(SPATIAL_DIM, vdata, v.inc(), wdata, 1);
+      return w;
+    }
+
+    template <class V>
+    static SFORCE from_vector(const V& v, boost::shared_ptr<POSE3> pose)
     {
       const unsigned SPATIAL_DIM = 6;
       if (v.size() != SPATIAL_DIM)

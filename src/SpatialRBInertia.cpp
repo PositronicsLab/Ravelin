@@ -15,6 +15,15 @@ SPATIAL_RB_INERTIA::SPATIAL_RB_INERTIA(shared_ptr<const POSE3> pose)
   this->pose = pose;
 }
 
+/// Default constructor -- constructs a zero inertia matrix
+SPATIAL_RB_INERTIA::SPATIAL_RB_INERTIA(shared_ptr<POSE3> pose)
+{
+  m = (REAL) 0.0;
+  h.set_zero();
+  J.set_zero();
+  this->pose = boost::const_pointer_cast<const POSE3>(pose);
+}
+
 /// Constructs the 6x6 spatial matrix from the given values 
 SPATIAL_RB_INERTIA::SPATIAL_RB_INERTIA(REAL m, const VECTOR3& h, const MATRIX3& J, shared_ptr<const POSE3> pose)
 {
@@ -22,6 +31,15 @@ SPATIAL_RB_INERTIA::SPATIAL_RB_INERTIA(REAL m, const VECTOR3& h, const MATRIX3& 
   this->h = h;
   this->J = J;
   this->pose = pose;
+}
+
+/// Constructs the 6x6 spatial matrix from the given values 
+SPATIAL_RB_INERTIA::SPATIAL_RB_INERTIA(REAL m, const VECTOR3& h, const MATRIX3& J, shared_ptr<POSE3> pose)
+{
+  this->m = m;
+  this->h = h;
+  this->J = J;
+  this->pose = boost::const_pointer_cast<const POSE3>(pose);
 }
 
 /// Copies a spatial matrix to this one 
