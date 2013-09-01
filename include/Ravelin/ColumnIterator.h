@@ -83,14 +83,15 @@ class COLUMN_ITERATOR : public std::iterator<std::random_access_iterator_tag, RE
       return *this; 
     }
 
-    REAL& operator[](unsigned i) const
+    REAL& operator[](int i) const
     {
       // verify user not doing something wrong
       assert (_rows > 0);
-       
-      if (i > _sz)
+
+      int j = i + _count;       
+      if (j > _sz || j < 0)
         throw std::runtime_error("Data outside of scope!");
-      return _data_start[(i / _rows)*_ld + (i % _rows)];
+      return _data_start[(j / _rows)*_ld + (j % _rows)];
     }
 
     COLUMN_ITERATOR operator+(int n) const
@@ -285,14 +286,15 @@ class CONST_COLUMN_ITERATOR : public std::iterator<std::random_access_iterator_t
       return *this;    
     }
 
-    const REAL& operator[](unsigned i) const
+    const REAL& operator[](int i) const
     {
       // verify user not doing something wrong
       assert(_rows > 0);
 
-      if (i > _sz)
+      int j = i + _count;       
+      if (j > _sz || j < 0)
         throw std::runtime_error("Data outside of scope!");
-      return _data_start[(i / _rows)*_ld + (i % _rows)];
+      return _data_start[(j / _rows)*_ld + (j % _rows)];
     }
 
     CONST_COLUMN_ITERATOR operator+(int n) const

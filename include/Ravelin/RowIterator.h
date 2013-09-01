@@ -83,12 +83,13 @@ class ROW_ITERATOR : public std::iterator<std::random_access_iterator_tag, REAL>
       return *this; 
     }
 
-    REAL& operator[](unsigned i) const
+    REAL& operator[](int i) const
     {
       assert(_columns > 0);
-      if (i > _sz)
+      int j = i + _count;
+      if (j < 0 && j > _sz)
         throw std::runtime_error("Data outside of scope!");
-      return _data_start[(i / _columns) + (i % _columns)*_ld];
+      return _data_start[(j / _columns) + (j % _columns)*_ld];
     }
 
     ROW_ITERATOR operator+(int n) const
@@ -280,11 +281,12 @@ class CONST_ROW_ITERATOR : public std::iterator<std::random_access_iterator_tag,
       return *this; 
     }
 
-    const REAL& operator[](unsigned i) const
+    const REAL& operator[](int i) const
     {
-      if (i > _sz)
+      int j = i + _count;
+      if (j < 0 && j > _sz)
         throw std::runtime_error("Data outside of scope!");
-      return _data_start[(i / _columns) + (i % _columns)*_ld];
+      return _data_start[(j / _columns) + (j % _columns)*_ld];
     }
 
     CONST_ROW_ITERATOR operator+(int n) const
