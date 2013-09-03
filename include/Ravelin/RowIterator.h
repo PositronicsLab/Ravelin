@@ -27,6 +27,7 @@ class ROW_ITERATOR : public std::iterator<std::random_access_iterator_tag, REAL>
   friend class SFORCE;
   friend class SVELOCITY;
   friend class SACCEL;
+  friend class CONST_ROW_ITERATOR;
 
   public:
     ROW_ITERATOR()
@@ -234,6 +235,18 @@ class CONST_ROW_ITERATOR : public std::iterator<std::random_access_iterator_tag,
       _rows = 0;
       _ld = 0;
       _columns = 0;
+    }
+
+    /// Converts a non-constant row iterator to a constant one
+    CONST_ROW_ITERATOR(ROW_ITERATOR i)
+    {
+      _data_start = i._data_start;
+      _current_data = i._current_data;
+      _count = i._count;
+      _sz = i._sz;
+      _rows = i._rows;
+      _ld = i._ld;
+      _columns = i._columns;
     }
 
     /// Gets the iterator at the end of this block
