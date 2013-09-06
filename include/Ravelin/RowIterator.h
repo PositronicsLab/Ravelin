@@ -159,10 +159,10 @@ class ROW_ITERATOR : public std::iterator<std::random_access_iterator_tag, REAL>
     ROW_ITERATOR& operator++() 
     {
       assert(_columns > 0); 
-      if (--_count % _columns == 0)
+      if (++_count % _columns == 0)
         _current_data = _data_start + (_count / _columns);
       else
-        _current_data -= _ld;
+        _current_data += _ld;
 
       return *this;
     }
