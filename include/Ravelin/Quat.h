@@ -28,6 +28,7 @@ class QUAT
     QUAT(const AANGLE& v) { operator=(v); }
     QUAT(const MATRIX3& v) { operator=(v); }
     bool unit() const;
+    static bool rel_equal(const QUAT& q1, const QUAT& q2, REAL tol = -1.0);
     static QUAT zero();
     void conjugate();
     static QUAT conjugate(const QUAT& q);

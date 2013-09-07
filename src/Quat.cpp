@@ -300,6 +300,18 @@ QUAT QUAT::lerp(const QUAT& q1, const QUAT& q2, REAL alpha)
   }
 }
 
+/// Determines whether two poses in 3D are relatively equivalent
+bool QUAT::rel_equal(const QUAT& q1, const QUAT& q2, REAL tol)
+{
+  // update the tolerance if necessary
+  if (tol < (REAL) 0.0)
+    tol = EPS;
+
+  // now check rotation (it's more expensive)
+  REAL angle = QUAT::calc_angle(q1, q2);
+  return OPS::rel_equal(angle, (REAL) 0.0, tol);
+}
+
 /// Calculates the angle between two orientations
 REAL QUAT::calc_angle(const QUAT& q1, const QUAT& q2)
 {
