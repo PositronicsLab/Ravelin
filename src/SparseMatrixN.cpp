@@ -1140,6 +1140,55 @@ SPARSEMATRIXN& SPARSEMATRIXN::operator+=(const SPARSEMATRIXN& m)
   return *this;
 }
 
+/// Copies a sparse matrix to this
+SPARSEMATRIXN& SPARSEMATRIXN::operator=(const SPARSEMATRIXN& m)
+{
+  // look for easiest exit
+  if (m._rows == 0 || m._columns == 0)
+  {
+    _rows = m._rows;
+    _columns = m._columns;
+    _stype = m._stype;
+    _nnz_capacity = 0;
+    _ptr_capacity = 0;
+    _data.reset();
+    _ptr.reset();
+    _indices.reset();
+  }
+  // see whether we can just copy the data without re-initing
+  else
+  {
+    // make new nnz-dependent arrays if necessary
+    if (_nnz_capacity < m._nnz)
+    {
+      _nnz_capacity = m._nnz;
+      _data = shared_array<REAL>(new REAL[_nnz_capacity]);
+      _indices = shared_array<unsigned>(new unsigned[_nnz_capacity]);
+    }
+
+    // make new ptr array, if necessary
+    const unsigned PTR_SZ = (m._stype == eCSR) ? m._rows : m._columns;
+    if (_ptr_capacity < PTR_SZ)
+    {
+      _ptr_capacity = PTR_SZ;
+      _ptr = shared_array<unsigned>(new unsigned[PTR_SZ]);
+    }
+
+    // copy everything
+    std::copy(m._ptr.get(), m._ptr.get()+PTR_SZ, _ptr.get());
+    std::copy(m._indices.get(), m._indices.get()+m._nnz, _indices.get());
+    std::copy(m._data.get(), m._data.get()+m._nnz, _data.get());
+
+    // update storage type, rows, and columns
+    _nnz = m._nnz;
+    _rows = m._rows;
+    _columns = m._columns;
+    _stype = m._stype;
+  }
+
+  return *this;
+}
+
 /// Multiplies a sparse matrix by a scalar
 SPARSEMATRIXN& SPARSEMATRIXN::operator*=(REAL scalar)
 {

@@ -31,6 +31,7 @@ class SPARSEMATRIXN
     const REAL* get_data() const { return _data.get(); }
     void set_row(unsigned i, const VECTORN& v);
     void set_column(unsigned i, const VECTORN& v);
+    SPARSEMATRIXN& operator=(const SPARSEMATRIXN& m);
     SPARSEMATRIXN& operator-=(const SPARSEMATRIXN& m);
     SPARSEMATRIXN& operator+=(const SPARSEMATRIXN& m);
     SPARSEMATRIXN& operator*=(REAL scalar);
