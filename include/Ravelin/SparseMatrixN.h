@@ -8,8 +8,8 @@ class SPARSEMATRIXN
     SPARSEMATRIXN(StorageType s);
     SPARSEMATRIXN(StorageType s, unsigned m, unsigned n, const std::map<std::pair<unsigned, unsigned>, REAL>& values);
     SPARSEMATRIXN(StorageType s, unsigned m, unsigned n, boost::shared_array<unsigned> ptr, boost::shared_array<unsigned> indices, boost::shared_array<REAL> data);
-    SPARSEMATRIXN(const MATRIXN& m);
-    SPARSEMATRIXN(StorageType s, const MATRIXN& m);
+    SPARSEMATRIXN(const MATRIXN& m, REAL tol=EPS);
+    SPARSEMATRIXN(StorageType s, const MATRIXN& m, REAL tol=EPS);
     REAL norm_inf() const;
     static SPARSEMATRIXN identity(unsigned n);
     static SPARSEMATRIXN identity(StorageType stype, unsigned n);

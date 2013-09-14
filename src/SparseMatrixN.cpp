@@ -53,27 +53,52 @@ SPARSEMATRIXN::SPARSEMATRIXN(StorageType stype, unsigned m, unsigned n, shared_a
 }
 
 /// Creates a sparse matrix from a dense matrix
-SPARSEMATRIXN::SPARSEMATRIXN(const MATRIXN& m)
+SPARSEMATRIXN::SPARSEMATRIXN(const MATRIXN& m, REAL tol)
 {
   _rows = m.rows();
   _columns = m.columns();
   _nnz = 0;
   _nnz_capacity = 0;
   _ptr_capacity = 0;
+  _stype = eCSR;
 
-  // find non-zero values
-  map<pair<unsigned, unsigned>, REAL> values;
-  for (unsigned i=0; i< m.rows(); i++)
-    for (unsigned j=0; j< m.columns(); j++)
-      if (std::fabs(m(i,j)) > EPS)
-        values[make_pair(i,j)] = m(i,j);
+  // determine number of non-zero values
+  unsigned nv = 0;
+  for (CONST_ROW_ITERATOR i=m.row_iterator_begin(); i!= i.end(); i++)
+    if (std::fabs(*i) > tol)
+      nv++;
 
-  // setup the matrix
-  set(m.rows(), m.columns(), values);
+  // setup arrays
+  _nnz_capacity = nv;
+  _ptr_capacity = m.rows()+1;
+  _data = shared_array<REAL>(new REAL[nv]);
+  _ptr = shared_array<unsigned>(new unsigned[m.rows()+1]);
+  _indices = shared_array<unsigned>(new unsigned[nv]);
+
+  // setup the arrays
+  unsigned j = 0;
+  unsigned k=0;
+  _ptr[0] = j;
+  CONST_COLUMN_ITERATOR i = m.column_iterator_begin();
+  for (unsigned r=0; r< m.rows(); r++)
+  {
+    for (unsigned s=0; s< m.columns(); s++, i++)
+      if (std::fabs(*i) > tol)
+      {
+        j++;
+        _data[k] = *i;
+        _indices[k] = s;
+        k++;
+      }
+    _ptr[r+1] = j;
+  }
+
+  // set nnz
+  _nnz = nv;
 }
 
 /// Creates a sparse matrix from a dense matrix
-SPARSEMATRIXN::SPARSEMATRIXN(StorageType stype, const MATRIXN& m)
+SPARSEMATRIXN::SPARSEMATRIXN(StorageType stype, const MATRIXN& m, REAL tol)
 {
   _rows = m.rows();
   _columns = m.columns();
@@ -82,15 +107,74 @@ SPARSEMATRIXN::SPARSEMATRIXN(StorageType stype, const MATRIXN& m)
   _nnz_capacity = 0;
   _ptr_capacity = 0;
 
-  // find non-zero values
-  map<pair<unsigned, unsigned>, REAL> values;
-  for (unsigned i=0; i< m.rows(); i++)
-    for (unsigned j=0; j< m.columns(); j++)
-      if (std::fabs(m(i,j)) > EPS)
-        values[make_pair(i,j)] = m(i,j);
+  // determine number of non-zero values
+  unsigned nv = 0;
+  for (CONST_ROW_ITERATOR i=m.row_iterator_begin(); i!= i.end(); i++)
+    if (std::fabs(*i) > tol)
+      nv++;
 
-  // setup the matrix
-  set(m.rows(), m.columns(), values);
+  if (_stype == eCSR)
+  {
+    // setup arrays
+    _nnz_capacity = nv;
+    _ptr_capacity = m.rows()+1;
+    _data = shared_array<REAL>(new REAL[nv]);
+    _ptr = shared_array<unsigned>(new unsigned[m.rows()+1]);
+    _indices = shared_array<unsigned>(new unsigned[nv]);
+
+    // setup the arrays
+    unsigned j=0;
+    unsigned k=0;
+    _ptr[0] = j;
+    CONST_COLUMN_ITERATOR i = m.column_iterator_begin();
+    for (unsigned r=0; r< m.rows(); r++)
+    {
+      for (unsigned s=0; s< m.columns(); s++, i++)
+        if (std::fabs(*i) > tol)
+        {
+          j++;
+          _data[k] = *i;
+          _indices[k] = s;
+          k++;
+        }
+      _ptr[r+1] = j;
+    }
+
+    // set nnz
+    _nnz = nv;
+  }
+  else
+  {
+    assert(_stype == eCSC);
+
+    // setup arrays
+    _nnz_capacity = nv;
+    _ptr_capacity = m.columns()+1;
+    _data = shared_array<REAL>(new REAL[nv]);
+    _ptr = shared_array<unsigned>(new unsigned[m.columns()+1]);
+    _indices = shared_array<unsigned>(new unsigned[nv]);
+
+    // setup ptr
+    unsigned j = 0;
+    unsigned k=0;
+    _ptr[0] = j;
+    CONST_ROW_ITERATOR i = m.row_iterator_begin();
+    for (unsigned col=0; col< m.columns(); col++)
+    {
+      for (unsigned row=0; row< m.rows(); row++, i++)
+        if (std::fabs(*i) > tol)
+        {
+          j++;
+          _indices[k] = row;
+          _data[k] = *i;
+          k++;
+        }
+      _ptr[col+1] = j;
+    }
+
+    // set nnz
+    _nnz = nv;
+  }
 }
 
 /// Computes the infinity norm of this sparse matrix
