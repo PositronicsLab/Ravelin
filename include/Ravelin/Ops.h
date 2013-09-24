@@ -21,7 +21,7 @@ class OPS
     static M2& transpose(const M1& m1, M2& m2)
     {
       // resize m2
-      m2.resize(m1.columns(), m2.rows());
+      m2.resize(m1.columns(), m1.rows());
 
       // setup necessary constants
       const unsigned LD1 = m1.leading_dim();
