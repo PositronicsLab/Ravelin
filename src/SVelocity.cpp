@@ -67,8 +67,8 @@ SFORCE SVELOCITY::cross(const SMOMENTUM& m) const
   VECTOR3 bx = get_linear();
 
   // multiply
-  VECTOR3 vtop = m.get_linear();
-  VECTOR3 vbot = m.get_angular();
+  VECTOR3 vtop = m.get_angular();
+  VECTOR3 vbot = m.get_linear();
   VECTOR3 bot = VECTOR3::cross(ax, vtop);
   VECTOR3 top = VECTOR3::cross(bx, vtop) + VECTOR3::cross(ax, vbot);
   return SFORCE(top, bot, pose);
