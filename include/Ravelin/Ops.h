@@ -32,8 +32,8 @@ class OPS
       // do the transposition
       for (unsigned i=0, i1=0; i< m1.rows(); i++)
       {
-        CBLAS::copy(m1.columns(), d1+i1, 1, d2+i, LD2); 
-        i1 += LD1;
+        CBLAS::copy(m1.columns(), d1+i, LD1, d2+i1, 1); 
+        i1 += LD2;
       }
 
       return m2;
