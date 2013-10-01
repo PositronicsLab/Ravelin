@@ -264,7 +264,7 @@ void CONST_SHAREDMATRIXN::reset_from(const SHAREDMATRIXN& source)
 {
   _rows = source.rows();
   _columns = source.columns();
-  _ld = source.rows();
+  _ld = source.leading_dim();
   _start = source._start;
   _data = source._data;
 }
@@ -274,7 +274,7 @@ void CONST_SHAREDMATRIXN::reset_from(const CONST_SHAREDMATRIXN& source)
 {
   _rows = source.rows();
   _columns = source.columns();
-  _ld = source.rows();
+  _ld = source.leading_dim();
   _start = source._start;
   _data = source._data;
 }

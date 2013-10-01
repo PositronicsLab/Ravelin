@@ -78,6 +78,7 @@ class POSE3 : public boost::enable_shared_from_this<POSE3>
     static VECTOR3 interpolate_transform_point(const POSE3& P1, const POSE3& P2, REAL t, const ORIGIN3& o);
     static SVELOCITY diff(const POSE3& P1, const POSE3& P2);
 
+    /// Computes a 6x6 matrix that transforms velocity vectors in [w; v] format or force vectors in [f; tau] format
     template <class M>
     static M& spatial_transform_to_matrix(boost::shared_ptr<const POSE3> source, boost::shared_ptr<const POSE3> target, M& m)
     {
@@ -91,6 +92,23 @@ class POSE3 : public boost::enable_shared_from_this<POSE3>
       MATRIX3 rx = MATRIX3::skew_symmetric(-r);
       m.set_sub_mat(3, 0, E*rx);
       m.set_sub_mat(0, 3, MATRIX3::zero());
+      return m;
+    }
+
+    /// Computes a 6x6 matrix that transforms velocity vectors in [v w] format 
+    template <class M>
+    static M& spatial_transform_to_matrix2(boost::shared_ptr<const POSE3> source, boost::shared_ptr<const POSE3> target, M& m)
+    {
+      const unsigned SPATIAL_DIM = 6;
+      m.resize(SPATIAL_DIM, SPATIAL_DIM);
+      VECTOR3 r;
+      MATRIX3 E;
+      get_r_E(calc_transform(source, target), r, E);
+      m.set_sub_mat(0, 0, E);
+      m.set_sub_mat(3, 3, E);
+      MATRIX3 rx = MATRIX3::skew_symmetric(-r);
+      m.set_sub_mat(0, 3, E*rx);
+      m.set_sub_mat(3, 0, MATRIX3::zero());
       return m;
     }
 
