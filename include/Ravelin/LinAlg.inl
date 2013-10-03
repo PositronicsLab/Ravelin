@@ -943,10 +943,10 @@ X& solve_LS_fast(const Y& U, const Vec& S, const Z& V, X& XB, REAL tol = (REAL) 
   const unsigned k = XB.columns();
   const unsigned minmn = std::min(m, n);
 
-  // check for easy out
+  // check for easy outs
   if (m == 0 || n == 0)
   {
-    XB.set_zero(n, XB.columns());
+    XB.set_zero(m,k);
     return XB;
   }
 
