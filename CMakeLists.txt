@@ -18,6 +18,9 @@ option (REENTRANT "Build Ravelin to be reentrant ? (slower)" OFF)
 option (ATLAS_BUGFIX "Use bugfix for Debian/Ubuntu ATLAS packages?" OFF)
 option (DISABLE_EXCEPT "Disable user-level exceptions for extra speed (not recommended)?" OFF)
 
+# superLU directories
+set (SUPERLU_PATH /usr/local)
+
 # modify C++ flags
 if (REENTRANT)
   add_definitions (-DREENTRANT)
@@ -46,10 +49,13 @@ endif (APPLE)
 # look for superlu
 find_package (SuperLU)
 if (SUPERLU_FOUND)
+  message("SuperLU found")
   add_definitions(-DUSE_SUPERLU)
   include_directories (${SUPERLU_INCLUDES})
   set (EXTRA_LIBRARIES ${EXTRA_LIBRARIES} ${SUPERLU_LIBRARIES})
   set (SOURCES ${SOURCES} SuperLU.cpp) 
+else (SUPERLU_FOUND)
+  message("SuperLU not found")
 endif (SUPERLU_FOUND)
 
 # use ATLAS bugfix if necessary
