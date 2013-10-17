@@ -71,6 +71,7 @@ class POSE3 : public boost::enable_shared_from_this<POSE3>
     POSE3& set(const AANGLE& a, const ORIGIN3& v);
     POSE3& set(const MATRIX3& m, const ORIGIN3& v);
     POSE3& set(const QUAT& q, const ORIGIN3& v);
+    POSE3 operator+(const SVELOCITY& v) const;
     POSE3& operator=(const POSE3& source);
     POSE3 operator*(const POSE3& m) const;
     POSE3& update_relative_pose(boost::shared_ptr<const POSE3> pose);

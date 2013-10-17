@@ -1015,6 +1015,23 @@ TRANSFORM3 POSE3::calc_transform(boost::shared_ptr<const POSE3> source, boost::s
   }
 }
 
+/// Adds a velocity to a pose to yield a new pose
+POSE3 POSE3::operator+(const SVELOCITY& v) const
+{
+  #ifndef NEXCEPT
+  if (rpose != v.pose)
+    throw FrameException();
+  #endif
+
+  // setup the new pose
+  POSE3 P;
+  P.rpose = rpose;
+  P.x = x + ORIGIN3(v.get_linear());
+  P.q = q + QUAT::deriv(q, v.get_angular());
+  P.q.normalize();
+  return P;
+}
+
 /// Computes the spatial velocity that gets from one pose (P1) to another (P2)
 SVELOCITY POSE3::diff(const POSE3& P1, const POSE3& P2)
 {

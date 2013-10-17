@@ -159,6 +159,10 @@ int solve_superlu(bool notrans, bool CRS, int m, int n, int nrhs, int nnz, int* 
 //  o.Equil = YES;
   o.Equil = NO;
   o.IterRefine = EXTRA;
+/*
+  o.Equil = YES;
+  o.IterRefine = SLU_EXTRA;
+*/
   o.SymmetricMode = NO;
   o.ConditionNumber = NO;
   o.ColPerm = NATURAL;
@@ -260,7 +264,7 @@ int solve_superlu(bool notrans, bool CRS, int m, int n, int nrhs, int nnz, int* 
   set_default_options(&o);
   o.Fact = DOFACT;
   o.Equil = YES;
-  o.IterRefine = EXTRA;
+  o.IterRefine = SLU_EXTRA;
   o.SymmetricMode = NO;
   o.ConditionNumber = NO;
   o.ColPerm = NATURAL;

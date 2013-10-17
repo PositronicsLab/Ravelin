@@ -1251,7 +1251,7 @@ SPARSEMATRIXN& SPARSEMATRIXN::operator=(const SPARSEMATRIXN& m)
     }
 
     // make new ptr array, if necessary
-    const unsigned PTR_SZ = (m._stype == eCSR) ? m._rows : m._columns;
+    const unsigned PTR_SZ = (m._stype == eCSR) ? m._rows+1 : m._columns+1;
     if (_ptr_capacity < PTR_SZ)
     {
       _ptr_capacity = PTR_SZ;
