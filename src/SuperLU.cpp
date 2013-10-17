@@ -150,13 +150,14 @@ int solve_superlu(bool notrans, bool CRS, int m, int n, int nrhs, int nnz, int* 
 
   // temporaries
   static std::vector<int> perm_r, perm_c, etree;
-  static std::vector<double> R, C, ferr, berr;
+  static std::vector<double> R, C, ferr, berr, work;
 
   // setup super LU options
   superlu_options_t o;
   set_default_options(&o);
   o.Fact = DOFACT;
-  o.Equil = YES;
+//  o.Equil = YES;
+  o.Equil = NO;
   o.IterRefine = EXTRA;
   o.SymmetricMode = NO;
   o.ConditionNumber = NO;
@@ -197,19 +198,36 @@ int solve_superlu(bool notrans, bool CRS, int m, int n, int nrhs, int nnz, int* 
   mem_usage_t mem_usage;
   SuperLUStat_t stat;
   StatInit(&stat);
-  int lwork = 0;
+  int lwork = -1;
   int info;
 /*
   dgssv(&o, &SM.A, &perm_c[0], &perm_r[0], &L, &U, &SM.B, &stat, &info);
 */
+
+  // determine amount of memory necessary
   dgssvx(&o, A,     // options structure and A matrix
          &perm_c[0], &perm_r[0], &etree[0], // some temporaries 
          &equed[0], &R[0], &C[0],           // more temporaries
          &L, &U,   // L and U outputs
-         NULL, lwork,      // indicate to use malloc() for data storage
+         &work[0], lwork,      
+         &SM.B, &SM.X,   // linear system system inputs 
+         &rpg, &rcond, &ferr[0], &berr[0], &mem_usage, &stat, &info); // outputs
+
+  // check info
+  assert(info >= 0);
+
+  // setup size of work and do the calculation
+  work.resize(mem_usage.total_needed);
+  lwork = work.size();
+  dgssvx(&o, A,     // options structure and A matrix
+         &perm_c[0], &perm_r[0], &etree[0], // some temporaries 
+         &equed[0], &R[0], &C[0],           // more temporaries
+         &L, &U,   // L and U outputs
+         &work[0], lwork,      
          &SM.B, &SM.X,   // linear system system inputs 
          &rpg, &rcond, &ferr[0], &berr[0], &mem_usage, &stat, &info); // outputs
   StatFree(&stat);
+
   // check info
   assert(info >= 0);
 

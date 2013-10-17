@@ -318,6 +318,12 @@ REAL QUAT::calc_angle(const QUAT& q1, const QUAT& q2)
   // compute q1'q2
   REAL dot = q1.x*q2.x + q1.y*q2.y + q1.z*q2.z + q1.w*q2.w;
 
+  // clip dot
+  if (dot < (REAL) -1.0)
+    dot = (REAL) -1.0;
+  else if (dot > (REAL) 1.0)
+    dot = (REAL) 1.0;
+
   // find the angle between the two
   return std::acos(std::fabs(dot));
 }
@@ -380,6 +386,12 @@ QUAT QUAT::slerp(const QUAT& q1, const QUAT& q2, REAL alpha)
 
   // see whether we need to use the conjugate of q2
   bool use_conj = (dot < (REAL) 0.0);  
+
+  // clip dot
+  if (dot < (REAL) -1.0)
+    dot = (REAL) -1.0;
+  else if (dot > (REAL) 1.0)
+    dot = (REAL) 1.0;
 
   // find the angle between the two
   REAL theta = std::acos(std::fabs(dot));

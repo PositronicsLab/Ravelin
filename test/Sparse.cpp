@@ -1,6 +1,7 @@
 #include <iostream>
 #include <Ravelin/MatrixNd.h>
 #include <Ravelin/SparseMatrixNd.h>
+#include <Ravelin/LinAlgd.h>
 
 using namespace Ravelin;
 using std::endl;
@@ -97,6 +98,15 @@ void test_to_dense(const SparseMatrixNd& s1, const SparseMatrixNd& s2, const Mat
   cout << "testing sparse to dense (CSC): " << d2.norm_inf() << endl;
 }
 
+void test_sol(const VectorNd& b, const VectorNd& x1, const VectorNd& x2)
+{
+  VectorNd diff1 = b, diff2 = b;
+  diff1 -= x1;
+  diff2 -= x2;
+  cout << "testing sparse solution (CSR): " << diff1.norm_inf() << endl;
+  cout << "testing sparse solution (CSC): " << diff1.norm_inf() << endl;
+} 
+
 int main()
 {
   // setup a random sparse matrix in dense form
@@ -115,5 +125,21 @@ int main()
 
   // test addition/subtraction arithmetic 
   test_plus(s1, s2, dense);
+
+  // setup a couple of identity matrices
+  MatrixNd eye = MatrixNd::identity(SZ*SZ);
+  SparseMatrixNd i1(SparseMatrixNd::eCSR, eye);
+  SparseMatrixNd i2(SparseMatrixNd::eCSC, eye);
+
+  // setup rhs / solution vector
+  VectorNd b(SZ*SZ);
+  for (unsigned i=0; i< SZ; i++)
+    b[i] = (double) i;
+
+  // test sparse solution
+  VectorNd x1, x2;
+  LinAlgd::solve_sparse_direct(i1, b, Ravelin::eNoTranspose, x1);
+  LinAlgd::solve_sparse_direct(i2, b, Ravelin::eNoTranspose, x2);
+  test_sol(b, x1, x2);
 }
 
