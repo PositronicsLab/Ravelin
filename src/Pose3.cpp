@@ -149,19 +149,7 @@ VECTOR3 POSE3::qG_mult(REAL qdw, REAL qdx, REAL qdy, REAL qdz) const
   TRANSFORM3 T = calc_relative_pose(shared_from_this(), GLOBAL);
 
   // use the resulting q
-  return T.q.G_mult(qdw, qdx, qdy, qdz);
-}
-
-/// Multiplies the quaternion derivative
-VECTOR3 POSE3::qL_mult(REAL qdw, REAL qdx, REAL qdy, REAL qdz) const
-{
-  const shared_ptr<const POSE3> GLOBAL;
-
-  // this will put everything into the global frame
-  TRANSFORM3 T = calc_relative_pose(shared_from_this(), GLOBAL);
-
-  // use the resulting q
-  return T.q.L_mult(qdw, qdx, qdy, qdz);
+  return T.q.G_mult(qdx, qdy, qdz, qdw);
 }
 
 /// Multiplies the quaternion derivative
@@ -174,18 +162,6 @@ QUAT POSE3::qG_transpose_mult(const VECTOR3& omega) const
 
   // use the resulting q
   return T.q.G_transpose_mult(omega);
-}
-
-/// Multiplies the quaternion derivative
-QUAT POSE3::qL_transpose_mult(const VECTOR3& omega) const
-{
-  const shared_ptr<const POSE3> GLOBAL;
-
-  // this will put everything into the global frame
-  TRANSFORM3 T = calc_relative_pose(shared_from_this(), GLOBAL);
-
-  // use the resulting q
-  return T.q.L_transpose_mult(omega);
 }
 
 // Sets the pose from an axis-angle representation and a translation vector

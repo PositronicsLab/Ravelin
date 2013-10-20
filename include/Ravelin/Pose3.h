@@ -58,9 +58,7 @@ class POSE3 : public boost::enable_shared_from_this<POSE3>
     static SPATIAL_AB_INERTIA transform(boost::shared_ptr<const POSE3> target, const SPATIAL_AB_INERTIA& j);
     static TRANSFORM3 calc_relative_pose(boost::shared_ptr<const POSE3> source, boost::shared_ptr<const POSE3> target) { return calc_transform(source, target); }
     VECTOR3 qG_mult(REAL qdw, REAL qdx, REAL qdy, REAL qdz) const;
-    VECTOR3 qL_mult(REAL qdw, REAL qdx, REAL qdy, REAL qdz) const;
     QUAT qG_transpose_mult(const VECTOR3& omega) const;
-    QUAT qL_transpose_mult(const VECTOR3& omega) const;
     POSE3& set_identity();
     POSE3& invert();
     POSE3 inverse() const { return invert(*this); }

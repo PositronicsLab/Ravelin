@@ -75,12 +75,12 @@ class QUAT
     static QUAT dderiv(const QUAT& q, const VECTOR3& omega, const VECTOR3& alpha);
     static VECTOR3 to_omega(const QUAT& q, const QUAT& qd);
 //    static VECTORN to_vect(const QUAT& q);
-    VECTOR3 G_mult(REAL qw, REAL qx, REAL qy, REAL qz) const;
+    VECTOR3 G_mult(REAL qx, REAL qy, REAL qz, REAL qw) const;
     QUAT G_transpose_mult(const VECTOR3& v) const;
     QUAT L_transpose_mult(const VECTOR3& v) const;
 //    MATRIXN& determine_G(MATRIXN& G) const;
 //    MATRIXN& determine_L(MATRIXN& L) const;
-    VECTOR3 L_mult(REAL qw, REAL qx, REAL qy, REAL qz) const;
+    VECTOR3 L_mult(REAL qx, REAL qy, REAL qz, REAL qw) const;
     
     /// First quaternion component
     REAL x;

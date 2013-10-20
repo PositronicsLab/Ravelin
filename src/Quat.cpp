@@ -115,12 +115,17 @@ QUAT QUAT::conjugate(const QUAT& q)
  * of a rigid body in the body's frame and qd/qdd are the first/second time 
  * derivatives of the Euler (unit quaternion) parameters.
  */
-VECTOR3 QUAT::L_mult(REAL qw, REAL qx, REAL qy, REAL qz) const
+VECTOR3 QUAT::L_mult(REAL qx, REAL qy, REAL qz, REAL qw) const
 {
+  const double e0 = qw;
+  const double e1 = qx;
+  const double e2 = qy;
+  const double e3 = qz;
+
   VECTOR3 v;
-  v.x() = -x*qx + w*qy + z*qz - y*qw;
-  v.y() = -y*qx - z*qy + w*qz + x*qw;
-  v.z() = -z*qx + y*qy - x*qz + w*qw;
+  v.x() = -x*e0 + w*e1 + z*e2 - y*e3;
+  v.y() = -y*e0 - z*e1 + w*e2 + x*e3;
+  v.z() = -z*e0 + y*e1 - x*e2 + w*e3;
   return v;
 }
 
@@ -154,12 +159,17 @@ MatrixNf& QUAT::determine_G(MatrixNf& G) const
  * of a rigid body in the game frame and qd/qdd are the first/second time 
  * derivatives of the Euler (unit quaternion) parameters.
  */
-VECTOR3 QUAT::G_mult(REAL qw, REAL qx, REAL qy, REAL qz) const
+VECTOR3 QUAT::G_mult(REAL qx, REAL qy, REAL qz, REAL qw) const
 {
+  const double e0 = qw;
+  const double e1 = qx;
+  const double e2 = qy;
+  const double e3 = qz;
+
   VECTOR3 r;
-  r.x() = -x*qw + w*qx - z*qy + y*qz;
-  r.y() = -y*qw + z*qx + w*qy - x*qz;
-  r.z() = -z*qw - y*qx + x*qy + w*qz;
+  r.x() = -x*e0 + w*e1 - z*e2 + y*e3;
+  r.y() = -y*e0 + z*e1 + w*e2 - x*e3;
+  r.z() = -z*e0 - y*e1 + x*e2 + w*e3;
   return r;
 }
 
@@ -172,12 +182,12 @@ VECTOR3 QUAT::G_mult(REAL qw, REAL qx, REAL qy, REAL qz) const
  */
 QUAT QUAT::G_transpose_mult(const VECTOR3& v) const
 {
-  QUAT output;
-  output.w = -x*v.x() - y*v.y() - z*v.z();
-  output.x = w*v.x() + z*v.y() - y*v.z();
-  output.y = -z*v.x() + w*v.y() + x*v.z();
-  output.z = y*v.x() - x*v.y() + w*v.z();
-  return output;
+  QUAT q;
+  q.w = -x*v.x() - y*v.y() - z*v.z();
+  q.x = +w*v.x() + z*v.y() - y*v.z();
+  q.y = -z*v.x() + w*v.y() + x*v.z();
+  q.z = +y*v.x() - x*v.y() + w*v.z();
+  return q;
 }
 
 /// Multiplies the transpose of the matrix 'L' by a vector
@@ -189,12 +199,12 @@ QUAT QUAT::G_transpose_mult(const VECTOR3& v) const
  */
 QUAT QUAT::L_transpose_mult(const VECTOR3& v) const
 {
-  QUAT output;
-  output.w = -x*v.x() - y*v.y() - z*v.z();
-  output.x = +w*v.x() - z*v.y() + y*v.z();
-  output.y = +z*v.x() + w*v.y() - x*v.z();
-  output.z = -y*v.x() + x*v.y() + w*v.z();
-  return output;
+  QUAT q;
+  q.w = -x*v.x() - y*v.y() - z*v.z();
+  q.x = +w*v.x() - z*v.y() + y*v.z();
+  q.y = +z*v.x() + w*v.y() - x*v.z();
+  q.z = -y*v.x() + x*v.y() + w*v.z();
+  return q;
 }
 
 /// Computes the derivative of a quaternion given current orientation and angular velocity
