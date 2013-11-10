@@ -4,7 +4,9 @@
  * License (found in COPYING).
  ****************************************************************************/
 
+//////////////////////////////////////////////////////////////////////////////
 // This file includes common routines for all matrices, dynamic and fixed size, and mutable and constant (through inclusion of ConstMatrixCommon.inl) 
+//////////////////////////////////////////////////////////////////////////////
 
 // include the constant versions
 #include "ConstMatrixCommon.inl"

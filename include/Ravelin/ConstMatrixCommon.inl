@@ -4,7 +4,9 @@
  * License (found in COPYING).
  ****************************************************************************/
 
+//////////////////////////////////////////////////////////////////////////////
 /// This file consists of general routines for constant matrices
+//////////////////////////////////////////////////////////////////////////////
 
 /// Gets a column iterator to a block
 CONST_COLUMN_ITERATOR block_column_iterator_begin(unsigned row_start, unsigned row_end, unsigned col_start, unsigned col_end) const
