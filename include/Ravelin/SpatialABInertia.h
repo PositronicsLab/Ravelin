@@ -50,7 +50,7 @@ class SPATIAL_AB_INERTIA
     static SPATIAL_AB_INERTIA inverse_inertia(const SPATIAL_AB_INERTIA& I);    
 
     template <class Mat>
-    static SPATIAL_AB_INERTIA from_matrix(const Mat& m, boost::shared_ptr<POSE3> pose = boost::shared_ptr<POSE3>())
+    static SPATIAL_AB_INERTIA from_matrix(const Mat& m, boost::shared_ptr<const POSE3> pose = boost::shared_ptr<const POSE3>())
     {
       SPATIAL_AB_INERTIA I(pose);
 
@@ -68,21 +68,9 @@ class SPATIAL_AB_INERTIA
     }
 
     template <class Mat>
-    static SPATIAL_AB_INERTIA from_matrix(const Mat& m, boost::shared_ptr<const POSE3> pose = boost::shared_ptr<const POSE3>())
+    static SPATIAL_AB_INERTIA from_matrix(const Mat& m, boost::shared_ptr<POSE3> pose = boost::shared_ptr<POSE3>())
     {
-      SPATIAL_AB_INERTIA I(pose);
-
-      #ifndef NEXCEPT
-      if (m.rows() != 6 || m.columns() != 6)
-        throw MissizeException();
-      #endif
-      m.get_sub_mat(3, 6, 3, 6, I.H);
-      m.get_sub_mat(0, 3, 0, 3, I.M);   // note: using M=H' here temporarily
-      I.H += MATRIX3::transpose(I.M);   //       to compute mean of the two
-      I.H *= (REAL) 0.5;                //       matrices
-      m.get_sub_mat(0, 3, 3, 6, I.M);
-      m.get_sub_mat(3, 6, 0, 3, I.J);
-      return I;
+      return from_matrix(m, boost::const_pointer_cast<const POSE3>(pose));
     }
 
     template <class Mat>

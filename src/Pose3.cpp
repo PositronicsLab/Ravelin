@@ -790,31 +790,6 @@ SPATIAL_AB_INERTIA POSE3::transform(boost::shared_ptr<const POSE3> target, const
 
   // compute the transformation
   return calc_transform(source, target).transform(m);
-
-/*
-  // setup r and E
-  VECTOR3 r;
-  MATRIX3 E;
-  get_r_E(Tx, r, E);
-  const MATRIX3 ET = MATRIX3::transpose(E);
-
-  // precompute some things we'll need
-  MATRIX3 EMET = E * m.M * ET;
-
-  // precompute some things we'll need
-  MATRIX3 rx = MATRIX3::skew_symmetric(r);
-  MATRIX3 HT = MATRIX3::transpose(m.H);
-  MATRIX3 EJET = E * m.J * ET;
-  MATRIX3 rx_E_HT_ET = rx*E*HT*ET;
-  MATRIX3 EHET = E * m.H * ET;
-  MATRIX3 rxEMET = rx * EMET;
-
-  SPATIAL_AB_INERTIA result;
-  result.pose = target;
-  result.M = EMET;
-  result.H = EHET - rxEMET;
-  result.J = EJET - rx_E_HT_ET + ((EHET - rxEMET) * rx); 
-*/
 }
 
 /// Transforms a spatial RB inertia to the given pose
@@ -829,30 +804,6 @@ SPATIAL_RB_INERTIA POSE3::transform(boost::shared_ptr<const POSE3> target, const
 
   // do the transformation
   return calc_transform(source, target).transform(J);
-
-/*
-  const ORIGIN3& r = Tx.x;
-
-  // precompute some things we need
-  MATRIX3 rx = MATRIX3::skew_symmetric(r);
-  MATRIX3 hx = MATRIX3::skew_symmetric(J.h);
-  MATRIX3 rxhx = rx*hx;
-  MATRIX3 hmrx = MATRIX3::skew_symmetric(J.h - r*J.m);
-  MATRIX3 hmrx_rx = hmrx*rx; 
-
-  // create the new inertia
-  SPATIAL_RB_INERTIA Jx(target);
-  Jx.m = J.m;
-  Jx.h = VECTOR3(E * ORIGIN3(J.h - r*J.m), target);
-  Jx.J = E*(MATRIX3::identity() + rxhx + hmrx_rx)*ET; 
-
-  SPATIAL_RB_INERTIA Jx(target);
-  Jx.m = J.m;
-  Jx.h = VECTOR3(Tx.q * ORIGIN3(J.h) + Tx.x, target); 
-  Jx.J = E*J.J*MATRIX3::transpose(E);
-
-  return Jx;
-*/
 }
 
 /// Determines whether pose p exists in the chain of relative poses (and, if so, how far down the chain)
