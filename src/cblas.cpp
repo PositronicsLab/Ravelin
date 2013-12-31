@@ -6,6 +6,7 @@
 
 #include <assert.h>
 #include <stdexcept>
+#include <algorithm>
 #include <Ravelin/cblas.h>
 
 template <>

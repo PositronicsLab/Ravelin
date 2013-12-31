@@ -46,18 +46,6 @@ else (APPLE)
   set (ATLAS_BUGFIX ON)
 endif (APPLE)
 
-# look for superlu
-find_package (SuperLU)
-if (SUPERLU_FOUND)
-  message("SuperLU found")
-  add_definitions(-DUSE_SUPERLU)
-  include_directories (${SUPERLU_INCLUDES})
-  set (EXTRA_LIBRARIES ${EXTRA_LIBRARIES} ${SUPERLU_LIBRARIES})
-  set (SOURCES ${SOURCES} SuperLU.cpp) 
-else (SUPERLU_FOUND)
-  message("SuperLU not found")
-endif (SUPERLU_FOUND)
-
 # use ATLAS bugfix if necessary
 if (ATLAS_BUGFIX)
   add_definitions (-DATLAS_BUGFIX)

@@ -18,6 +18,7 @@ class SharedResizable
     const T* get() const { return _data.get(); }
     unsigned capacity() const { return _capacity; }
     unsigned size() const { return _size; }
+    void reset() { _data.reset(); }
 
     SharedResizable(const SharedResizable& s)
     {

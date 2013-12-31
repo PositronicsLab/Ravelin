@@ -48,6 +48,9 @@ class SHAREDVECTORN
     const REAL* data() const { return _data.get() + _start; }
     SHAREDVECTORN& resize(unsigned m, unsigned n, bool preserve = false) { if (n != 1) throw MissizeException(); return resize(m, preserve); }
 
+    /// Resets the shared structure
+    void reset() { _data.reset(); _start = _inc = _len = 0; }
+
     unsigned rows() const { return _len; }
     unsigned columns() const { return 1; }
     unsigned leading_dim() const { return _len; }
@@ -106,6 +109,8 @@ class CONST_SHAREDVECTORN
       return resize(m, preserve); 
     }
 
+    /// Resets the shared structure
+    void reset() { _data.reset(); _start = _inc = _len = 0; }
     unsigned rows() const { return _len; }
     unsigned columns() const { return 1; }
     unsigned leading_dim() const { return _len; }

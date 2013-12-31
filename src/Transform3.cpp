@@ -536,7 +536,7 @@ SPATIAL_AB_INERTIA TRANSFORM3::transform(const SPATIAL_AB_INERTIA& J) const
   // setup the spatial inertia
   SPATIAL_AB_INERTIA result(target);
   result.M = E*J.M*ET;
-  result.H = Y;
+  result.H = EYET;
   result.J = E*Z*ET; 
 
   return result;

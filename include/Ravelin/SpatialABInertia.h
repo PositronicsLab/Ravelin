@@ -11,6 +11,12 @@
 class POSE3;
 
 /// A 6x6 spatial algebra matrix typically used for dynamics calculations
+/**
+ * Note: this representation differs from Featherstone's new spatial AB
+ * inertia representation:
+ * | J  H |
+ * | H' M |
+ */
 class SPATIAL_AB_INERTIA 
 {
   public:
@@ -25,7 +31,6 @@ class SPATIAL_AB_INERTIA
     SACCEL inverse_mult(const SFORCE& f) const;
     SVELOCITY inverse_mult(const SMOMENTUM& m) const;
     std::vector<SACCEL>& inverse_mult(const std::vector<SFORCE>& w, std::vector<SACCEL>& result) const;
-    std::vector<SVELOCITY>& inverse_mult(const std::vector<SMOMENTUM>& m, std::vector<SVELOCITY>& result) const;
     SPATIAL_AB_INERTIA& operator=(const SPATIAL_RB_INERTIA& source);
     SPATIAL_AB_INERTIA& operator=(const SPATIAL_AB_INERTIA& source);
     SPATIAL_AB_INERTIA& operator+=(const SPATIAL_AB_INERTIA& m);
@@ -33,6 +38,7 @@ class SPATIAL_AB_INERTIA
     SPATIAL_AB_INERTIA& operator*=(const SPATIAL_AB_INERTIA& m) { return *this = operator*(m); }
     SPATIAL_AB_INERTIA& operator*=(REAL scalar);
     SPATIAL_AB_INERTIA& operator/=(REAL scalar) { return operator*=(1.0/scalar); }
+    SPATIAL_RB_INERTIA to_rb_inertia() const;
     SPATIAL_AB_INERTIA operator+(const SPATIAL_RB_INERTIA& m) const;
     SPATIAL_AB_INERTIA& operator+=(const SPATIAL_RB_INERTIA& m) { return *this = *this + m; }
     SPATIAL_AB_INERTIA operator+(const SPATIAL_AB_INERTIA& m) const;
@@ -48,24 +54,6 @@ class SPATIAL_AB_INERTIA
     std::vector<SMOMENTUM>& mult(const std::vector<SVELOCITY>& s, std::vector<SMOMENTUM>& result) const;
     SPATIAL_AB_INERTIA operator-() const;
     static SPATIAL_AB_INERTIA inverse_inertia(const SPATIAL_AB_INERTIA& I);    
-
-    template <class Mat>
-    static SPATIAL_AB_INERTIA from_matrix(const Mat& m, boost::shared_ptr<POSE3> pose = boost::shared_ptr<POSE3>())
-    {
-      SPATIAL_AB_INERTIA I(pose);
-
-      #ifndef NEXCEPT
-      if (m.rows() != 6 || m.columns() != 6)
-        throw MissizeException();
-      #endif
-      m.get_sub_mat(3, 6, 3, 6, I.H);
-      m.get_sub_mat(0, 3, 0, 3, I.M);   // note: using M=H' here temporarily
-      I.H += MATRIX3::transpose(I.M);   //       to compute mean of the two
-      I.H *= (REAL) 0.5;                //       matrices
-      m.get_sub_mat(0, 3, 3, 6, I.M);
-      m.get_sub_mat(3, 6, 0, 3, I.J);
-      return I;
-    }
 
     template <class Mat>
     static SPATIAL_AB_INERTIA from_matrix(const Mat& m, boost::shared_ptr<const POSE3> pose = boost::shared_ptr<const POSE3>())
@@ -86,6 +74,12 @@ class SPATIAL_AB_INERTIA
     }
 
     template <class Mat>
+    static SPATIAL_AB_INERTIA from_matrix(const Mat& m, boost::shared_ptr<POSE3> pose = boost::shared_ptr<POSE3>())
+    {
+      return from_matrix(m, boost::const_pointer_cast<const POSE3>(pose));
+    }
+
+    template <class Mat>
     Mat& to_matrix(Mat& m) const
     {
       m.resize(6,6);
@@ -96,7 +90,7 @@ class SPATIAL_AB_INERTIA
       return m;
     }
 
-    /// The upper left / lower right hand matrix 'H'
+    /// The lower right hand matrix 'H' (and transpose of upper left matrix)
     MATRIX3 H;
 
     /// The lower left matrix
@@ -110,8 +104,8 @@ class SPATIAL_AB_INERTIA
 
   private:
     void mult_spatial(const SVECTOR6& v, SVECTOR6& result) const;
-    void inverse_mult_spatial(const SVECTOR6& v, SVECTOR6& result) const;
-    void inverse_mult_spatial(const SVECTOR6& v, const MATRIX3& UL, const MATRIX3& UR, const MATRIX3& LL, SVECTOR6& result) const;
+    void inverse_mult_spatial(const SFORCE& w, SVECTOR6& result) const;
+    void inverse_mult_spatial(const SFORCE& w, const MATRIX3& UL, const MATRIX3& UR, const MATRIX3& LL, SVECTOR6& result) const;
 }; // end class
 
 std::ostream& operator<<(std::ostream& out, const SPATIAL_AB_INERTIA& m);

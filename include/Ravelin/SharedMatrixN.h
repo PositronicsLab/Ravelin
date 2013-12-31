@@ -37,7 +37,11 @@ class CONST_SHAREDMATRIXN
     const REAL& operator()(unsigned i, unsigned j) const;
     const REAL* data() const { return _data.get()+_start; }    
 
+    /// Resets the shared matrix
+    void reset() { _data.reset(); _rows = _start = _columns = _ld = 0; }
+
     #include "ConstMatrixCommon.inl"
+    #include "ConstMatrixN.inl"
 
   protected:
     SharedResizable<REAL> _data;
@@ -82,6 +86,9 @@ class SHAREDMATRIXN
     const REAL& operator()(unsigned i, unsigned j) const;
     REAL* data() { return _data.get()+_start; }
     const REAL* data() const { return _data.get()+_start; }    
+ 
+    /// Resets the shared matrix
+    void reset() { _data.reset(); _rows = _start = _columns = _ld = 0; }
 
     #define XMATRIXN SHAREDMATRIXN
     #include "XMatrixN.inl"

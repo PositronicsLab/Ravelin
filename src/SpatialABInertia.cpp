@@ -66,6 +66,17 @@ SPATIAL_AB_INERTIA& SPATIAL_AB_INERTIA::operator=(const SPATIAL_RB_INERTIA& m)
   return *this;
 }
 
+/// Converts this matrix to a spatial RB inertia
+SPATIAL_RB_INERTIA SPATIAL_AB_INERTIA::to_rb_inertia() const
+{
+  SPATIAL_RB_INERTIA Jx;
+  Jx.pose = pose;
+  Jx.m = M(0,0);
+  Jx.h = MATRIX3::inverse_skew_symmetric(H);
+  Jx.J = J;
+  return Jx;
+}
+
 /// Creates a zero matrix
 void SPATIAL_AB_INERTIA::set_zero()
 {
@@ -88,7 +99,7 @@ void SPATIAL_AB_INERTIA::mult_spatial(const SVECTOR6& t, SVECTOR6& result) const
 }
 
 /// Does inverse spatial matrix/vector multiplication
-void SPATIAL_AB_INERTIA::inverse_mult_spatial(const SVECTOR6& w, SVECTOR6& result) const
+void SPATIAL_AB_INERTIA::inverse_mult_spatial(const SFORCE& w, SVECTOR6& result) const
 {
   MATRIX3 nMinv = -MATRIX3::invert(M);
   MATRIX3 UR = MATRIX3::invert((H * nMinv.mult_transpose(H)) + J);
@@ -105,7 +116,7 @@ void SPATIAL_AB_INERTIA::inverse_mult_spatial(const SVECTOR6& w, SVECTOR6& resul
 
 /// Multiplies this matrix by an axis and returns the result in a momentum 
 /// Does inverse spatial matrix/vector multiplication
-void SPATIAL_AB_INERTIA::inverse_mult_spatial(const SVECTOR6& w, const MATRIX3& UL, const MATRIX3& UR, const MATRIX3& LL, SVECTOR6& result) const
+void SPATIAL_AB_INERTIA::inverse_mult_spatial(const SFORCE& w, const MATRIX3& UL, const MATRIX3& UR, const MATRIX3& LL, SVECTOR6& result) const
 {
   // get the components of the force 
   ORIGIN3 top(w.get_upper());
@@ -306,8 +317,20 @@ SVELOCITY SPATIAL_AB_INERTIA::inverse_mult(const SMOMENTUM& w) const
     throw FrameException();
   #endif
 
-  SVELOCITY result;
-  inverse_mult_spatial(w, result);
+  MATRIX3 nMinv = -MATRIX3::invert(M);
+  MATRIX3 UR = MATRIX3::invert((H * nMinv.mult_transpose(H)) + J);
+  MATRIX3 UL = UR * H * nMinv;
+  MATRIX3 LL = nMinv * (H.transpose_mult(UL) - MATRIX3::identity());
+
+  // get the components of the momentum - this is the opposite of the force
+  // based version 
+  ORIGIN3 top(w.get_lower());
+  ORIGIN3 bot(w.get_upper());
+
+  // result is set in the opposite order of the force based version
+  SVELOCITY result(pose);
+  result.set_lower(VECTOR3(UL*top + UR*bot, pose));
+  result.set_upper(VECTOR3(LL*top + UL.transpose_mult(bot), pose)); 
   return result;
 }
 
@@ -333,34 +356,6 @@ vector<SACCEL>& SPATIAL_AB_INERTIA::inverse_mult(const std::vector<SFORCE>& w, v
     #endif
 
     inverse_mult_spatial(w[i], UL, UR, LL, result[i]); 
-  }
-
-  return result;
-}
-
-/// Multiplies the inverse of this spatial AB inertia by a force to yield an accel 
-vector<SVELOCITY>& SPATIAL_AB_INERTIA::inverse_mult(const std::vector<SMOMENTUM>& w, vector<SVELOCITY>& result) const
-{
-  result.resize(w.size());
-  if (result.empty())
-    return result;
-
-  // do precomputation
-  MATRIX3 nMinv = -MATRIX3::invert(M);
-  MATRIX3 UR = MATRIX3::invert((H * nMinv.mult_transpose(H)) + J);
-  MATRIX3 UL = UR * H * nMinv;
-  MATRIX3 LL = nMinv * (H.transpose_mult(UL) - MATRIX3::identity());
-
-  // loop
-  for (unsigned i=0; i< w.size(); i++)
-  {
-    #ifndef NEXCEPT
-    if (pose != w[i].pose)
-      throw FrameException();
-    #endif
-
-    // do the arithmetic
-    inverse_mult_spatial(w[i], UL, UR, LL, result[i]);
   }
 
   return result;

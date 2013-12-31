@@ -4,7 +4,10 @@
  * License (found in COPYING).
  ****************************************************************************/
 
-/// This file consists of general routines for constant dynamically allocated matrices
+//////////////////////////////////////////////////////////////////////////////
+// This file consists of general routines for constant dynamically allocated 
+// matrices
+//////////////////////////////////////////////////////////////////////////////
 
 /*
 /// Gets a column iterator to a block

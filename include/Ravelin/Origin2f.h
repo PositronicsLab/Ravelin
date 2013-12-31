@@ -8,6 +8,7 @@
 #define _ORIGIN2F_H
 
 #include <cmath>
+#include <iostream>
 #include <boost/enable_shared_from_this.hpp>
 #include <boost/shared_ptr.hpp>
 #include <Ravelin/ColumnIteratorf.h>
