@@ -976,7 +976,7 @@ X& solve_LS_fast(const Y& U, const Vec& S, const Z& V, X& XB, REAL tol = (REAL) 
 
   // check cases
   // case 1: n is smallest
-  if (n < m && n < k)
+  if (n <= m && n <= k)
   {
     // scale n columns of V
     workM2x = V;
@@ -993,7 +993,7 @@ X& solve_LS_fast(const Y& U, const Vec& S, const Z& V, X& XB, REAL tol = (REAL) 
     XB = workM2x;
   }
   // case 2: m < n < k
-  else if (m < n && n < k)
+  else if (m <= n && n <= k)
   {
     // scale columns of U
     workM2x = U;
@@ -1010,7 +1010,7 @@ X& solve_LS_fast(const Y& U, const Vec& S, const Z& V, X& XB, REAL tol = (REAL) 
     XB = workM2x;
   }
   // case 3: k < n < m
-  else if (k < n && n < m)
+  else if (k <= n && n <= m)
   {
     // scale columns of U
     workM2x = U;
