@@ -290,6 +290,11 @@ M& get_sub_mat(unsigned row_start, unsigned row_end, unsigned col_start, unsigne
 }
 
 /// Gets a submatrix of columns (not necessarily a block)
+/**
+ * \param col_start an iterator pointing to the beginning of a container of column indices (container need not be sorted)
+ * \param col_end an iterator pointing to the end of a container of column indices (container need not be sorted)
+ * \param M contains the submatrix on return
+ */
 template <class ForwardIterator, class M>
 M& select_columns(ForwardIterator col_start, ForwardIterator col_end, M& m) const
 {
@@ -320,7 +325,48 @@ M& select_columns(ForwardIterator col_start, ForwardIterator col_end, M& m) cons
   return m;
 }
 
+/// Gets a submatrix of columns (not necessarily a block)
+/**
+ * \param col_select a vector of bools; if the entry is true in the vector, the column is selected
+ * \param M contains the submatrix on return
+ */
+template <class M>
+M& select_columns(std::vector<bool>& col_select, M& m) const
+{
+  #ifndef NEXCEPT
+  if (sizeof(data()) != sizeof(m.data()))
+    throw DataMismatchException();
+  if (col_select.size() != columns())
+    throw MissizeException();
+  #endif
+
+  // setup vectors of selections
+  const unsigned ncols = std::count(col_select.begin(), col_select.end(), true); 
+
+  // resize matrix 
+  m.resize(rows(), ncols);
+
+  // make sure there is data to copy
+  if (rows() == 0 || ncols == 0)
+    return m;
+
+  // populate m
+  for (unsigned i=0, mi=0; i != columns(); i++)
+    if (col_select[i])
+    {
+      CBLAS::copy(rows(), data()+rows()*i, 1, m.data()+rows()*mi, 1);
+      mi++;
+    }
+
+  return m;
+}
+
 /// Gets a submatrix of rows (not necessarily a block)
+/**
+ * \param row_start an iterator pointing to the beginning of a container of row indices (container need not be sorted)
+ * \param row_end an iterator pointing to the end of a container of row indices (container need not be sorted)
+ * \param M contains the submatrix on return
+ */
 template <class ForwardIterator, class M>
 M& select_rows(ForwardIterator row_start, ForwardIterator row_end, M& m) const
 {
@@ -351,7 +397,51 @@ M& select_rows(ForwardIterator row_start, ForwardIterator row_end, M& m) const
   return m;
 }
 
+/// Gets a submatrix of rows (not necessarily a block)
+/**
+ * \param row_select a vector of bools; if the entry is true in the vector, the row is selected
+ * \param M contains the submatrix on return
+ */
+template <class M>
+M& select_columns(std::vector<bool>& col_select, M& m) const
+{
+  #ifndef NEXCEPT
+  if (sizeof(data()) != sizeof(m.data()))
+    throw DataMismatchException();
+  if (row_select.size() != rows())
+    throw MissizeException();
+  #endif
+
+  // setup vectors of selections
+  const unsigned nrows = std::count(row_select.begin(), row_select.end(), true); 
+
+  // resize matrix 
+  m.resize(nrows, columns());
+
+  // make sure there is data to copy
+  if (nrows == 0 || columns() == 0)
+    return m;
+
+  // populate m
+  for (unsigned i=0, mi=0; i != columns(); i++)
+    if (row_select[i])
+    {
+      CBLAS::copy(columns(), data()+i, rows(), m.data()+mi, nrows);
+      mi++;
+    }
+
+  return m;
+}
+
+
 /// Gets a submatrix (not necessarily a block)
+/**
+ * \param row_start an iterator pointing to the beginning of a container of row indices (container need not be sorted)
+ * \param row_end an iterator pointing to the end of a container of row indices (container need not be sorted)
+ * \param col_start an iterator pointing to the beginning of a container of column indices (container need not be sorted)
+ * \param col_end an iterator pointing to the end of a container of column indices (container need not be sorted)
+ * \param M contains the submatrix on return
+ */
 template <class ForwardIterator1, class ForwardIterator2, class X>
 X& select(ForwardIterator1 row_start, ForwardIterator1 row_end, ForwardIterator2 col_start, ForwardIterator2 col_end, X& m) const
 {
@@ -420,6 +510,10 @@ X& select(ForwardIterator1 row_start, ForwardIterator1 row_end, ForwardIterator2
 }
 
 /// Gets a submatrix (not necessarily a block)
+/*
+ * \param rows a vector of row indices (need not be sorted)
+ * \param cols a vector of column indices (need not be sorted) 
+*/
 template <class X>
 X& select(const std::vector<bool>& rows, const std::vector<bool>& cols, X& m) const
 {
@@ -461,12 +555,21 @@ X& select(const std::vector<bool>& rows, const std::vector<bool>& cols, X& m) co
   return m;
 }
 
+/// Gets a square submatrix (not necessarily a block)
+/*
+ * \param indices a vector of row / column indices (need not be sorted)
+*/
 template <class M>
 M& select_square(const std::vector<bool>& indices, M& result) const
 {
   return select(indices, indices, result);
 }
 
+/**
+ * \param start an iterator pointing to the beginning of a container of row/column indices (container need not be sorted)
+ * \param end an iterator pointing to the end of a container of row/column indices (container need not be sorted)
+ * \param M contains the submatrix on return
+ */
 template <class ForwardIterator, class M>
 M& select_square(ForwardIterator start, ForwardIterator end, M& m) const
 {
