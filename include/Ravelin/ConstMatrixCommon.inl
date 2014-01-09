@@ -403,7 +403,7 @@ M& select_rows(ForwardIterator row_start, ForwardIterator row_end, M& m) const
  * \param M contains the submatrix on return
  */
 template <class M>
-M& select_columns(std::vector<bool>& col_select, M& m) const
+M& select_rows(std::vector<bool>& row_select, M& m) const
 {
   #ifndef NEXCEPT
   if (sizeof(data()) != sizeof(m.data()))
