@@ -32,7 +32,6 @@ class SPATIAL_RB_INERTIA
     SACCEL inverse_mult(const SFORCE& v) const;
     SVELOCITY inverse_mult(const SMOMENTUM& m) const;
     std::vector<SACCEL>& inverse_mult(const std::vector<SFORCE>& v, std::vector<SACCEL>& result) const;
-    std::vector<SVELOCITY>& inverse_mult(const std::vector<SMOMENTUM>& m, std::vector<SVELOCITY>& result) const;
     SPATIAL_RB_INERTIA& operator=(const SPATIAL_RB_INERTIA& source);
     SPATIAL_RB_INERTIA& operator+=(const SPATIAL_RB_INERTIA& m);
     SPATIAL_RB_INERTIA& operator-=(const SPATIAL_RB_INERTIA& m);
@@ -87,8 +86,8 @@ class SPATIAL_RB_INERTIA
   private:
     void mult_spatial(const SVECTOR6& t, SVECTOR6& result) const;
     void mult_spatial(const SVECTOR6& t, const MATRIX3& hx, SVECTOR6& result) const;
-    void inverse_mult_spatial(const SVECTOR6& w, SVECTOR6& result) const;
-    void inverse_mult_spatial(const SVECTOR6& w, const MATRIX3& iJ, const MATRIX3& hx, const MATRIX3& hxiJ, REAL m, SVECTOR6& result) const;
+    void inverse_mult_spatial(const SFORCE& w, SVECTOR6& result) const;
+    void inverse_mult_spatial(const SFORCE& w, const MATRIX3& iJ, const MATRIX3& hx, const MATRIX3& hxiJ, REAL m, SVECTOR6& result) const;
 
 }; // end class
 

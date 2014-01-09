@@ -281,10 +281,10 @@ M& get_sub_mat(unsigned row_start, unsigned row_end, unsigned col_start, unsigne
   // copy each column using BLAS
   if (trans == eNoTranspose)
     for (unsigned i=0; i< m.columns(); i++)
-      CBLAS::copy(m.rows(), data()+row_start+(col_start+i) * rows(), 1, m.data()+i*m.rows(), 1);
+      CBLAS::copy(m.rows(), data()+row_start+(col_start+i) * rows(), 1, m.data()+i*m.leading_dim(), 1);
   else
     for (unsigned i=0; i< m.rows(); i++)
-      CBLAS::copy(m.columns(), data()+row_start+(col_start+i) * rows(), 1, m.data()+i, m.rows());
+      CBLAS::copy(m.columns(), data()+row_start+(col_start+i) * rows(), 1, m.data()+i, m.leading_dim());
   
   return m;
 }
@@ -319,7 +319,7 @@ M& select_columns(ForwardIterator col_start, ForwardIterator col_end, M& m) cons
   for (i=col_start, mi=0; i != col_end; i++, mi++)
   {
     assert(*i < columns());
-    CBLAS::copy(rows(), data()+rows()*(*i), 1, m.data()+rows()*mi, 1);
+    CBLAS::copy(rows(), data()+rows()*(*i), 1, m.data()+m.leading_dim()*mi, 1);
   }
 
   return m;
@@ -391,7 +391,7 @@ M& select_rows(ForwardIterator row_start, ForwardIterator row_end, M& m) const
   for (i=row_start, mi=0; i != row_end; i++, mi++)
   {
     assert(*i < rows());
-    CBLAS::copy(columns(), data()+*i, rows(), m.data()+mi, nrows);
+    CBLAS::copy(columns(), data()+*i, m.leading_dim(), m.data()+mi, nrows);
   }
 
   return m;
