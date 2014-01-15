@@ -391,7 +391,7 @@ M& select_rows(ForwardIterator row_start, ForwardIterator row_end, M& m) const
   for (i=row_start, mi=0; i != row_end; i++, mi++)
   {
     assert(*i < rows());
-    CBLAS::copy(columns(), data()+*i, m.leading_dim(), m.data()+mi, nrows);
+    CBLAS::copy(columns(), data()+*i, leading_dim(), m.data()+mi, m.leading_dim());
   }
 
   return m;
