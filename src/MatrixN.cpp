@@ -204,25 +204,22 @@ MATRIXN MATRIXN::construct_variable(unsigned rows, unsigned cols, ...)
 
 /// Removes a row from the matrix
 /**
- * \note downsizes the matrix -- does not reallocate memory
+ * \note reallocates memory 
  */
 MATRIXN& MATRIXN::remove_row(unsigned i)
 {
-  #ifdef REENTRANT
-  VECTORN workv;
-  #else
-  VECTORN& workv = _workv();
-  #endif
-
-  workv.resize(_columns);
-  for (unsigned j=i+1; j< _rows; j++)
-  {
-    get_row(j, workv);
-    set_row(j-1, workv);
-  }
-
-  // downsize the matrix
-  _rows--;
+  MATRIXN tmp(_rows-1, _columns);
+  CONST_SHAREDMATRIXN top_block_this = block(0, i, 0, columns());
+  CONST_SHAREDMATRIXN bottom_block_this = block(i+1, rows(), 0, columns());
+  SHAREDMATRIXN top_block_tmp = tmp.block(0, i, 0, columns());
+  SHAREDMATRIXN bottom_block_tmp = tmp.block(i, tmp.rows(), 0, columns());
+  top_block_tmp = top_block_this;
+  bottom_block_tmp = bottom_block_this;
+ 
+  // now set this from the new matrix
+  _data = tmp._data;
+  _rows = tmp._rows;
+  _columns = tmp._columns;
   return *this;
 }
 

@@ -479,9 +479,11 @@ M& select_square(ForwardIterator start, ForwardIterator end, M& m) const
 /// Gets a constant shared vector for a row
 CONST_SHAREDVECTORN row(unsigned i) const
 {
+  const unsigned OFFSET = data() - _data.get(); 
+
   CONST_SHAREDVECTORN v;
   v._data = _data;
-  v._start = data() - _data.get() + i;
+  v._start = OFFSET + i;
   v._inc = leading_dim();
   v._len = _columns;
   return v;
