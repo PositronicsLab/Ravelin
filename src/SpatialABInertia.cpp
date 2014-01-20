@@ -322,15 +322,15 @@ SVELOCITY SPATIAL_AB_INERTIA::inverse_mult(const SMOMENTUM& w) const
   MATRIX3 UL = UR * H * nMinv;
   MATRIX3 LL = nMinv * (H.transpose_mult(UL) - MATRIX3::identity());
 
-  // get the components of the momentum - this is the opposite of the force
-  // based version 
-  ORIGIN3 top(w.get_lower());
-  ORIGIN3 bot(w.get_upper());
+  // get the components of the momentum
+  ORIGIN3 top(w.get_upper());
+  ORIGIN3 bot(w.get_lower());
 
-  // result is set in the opposite order of the force based version
+  // result is set in the same order as the force based version
+  // (theory indicates this should be the case)
   SVELOCITY result(pose);
-  result.set_lower(VECTOR3(UL*top + UR*bot, pose));
-  result.set_upper(VECTOR3(LL*top + UL.transpose_mult(bot), pose)); 
+  result.set_upper(VECTOR3(UL*top + UR*bot, pose));
+  result.set_lower(VECTOR3(LL*top + UL.transpose_mult(bot), pose)); 
   return result;
 }
 

@@ -83,6 +83,27 @@ class SPATIAL_RB_INERTIA
       return M;
     }
 
+    /// Converts this to a positive-definite matrix
+    template <class Mat>
+    Mat& to_PD_matrix(Mat& M) const
+    {
+      const unsigned X = 0, Y = 1, Z = 2, SPATIAL_DIM = 6;
+
+      // resize the matrix
+      M.resize(SPATIAL_DIM, SPATIAL_DIM);
+
+      // precompute matrices
+      MATRIX3 hx = MATRIX3::skew_symmetric(h);
+
+      // setup the 3x3 blocks
+      M.set_sub_mat(0,3, hx, eTranspose);
+      M.set_sub_mat(3,3, J);
+      M.set_sub_mat(0,0, MATRIX3(m, 0, 0, 0, m, 0, 0, 0, m));
+      M.set_sub_mat(3,0, hx);
+
+      return M;
+    }
+
   private:
     void mult_spatial(const SVECTOR6& t, SVECTOR6& result) const;
     void mult_spatial(const SVECTOR6& t, const MATRIX3& hx, SVECTOR6& result) const;
