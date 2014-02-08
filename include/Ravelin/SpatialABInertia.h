@@ -14,8 +14,8 @@ class POSE3;
 /**
  * Note: this representation differs from Featherstone's new spatial AB
  * inertia representation:
- * | J  H |
  * | H' M |
+ * | J  H |
  */
 class SPATIAL_AB_INERTIA 
 {

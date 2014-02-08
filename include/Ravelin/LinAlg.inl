@@ -437,8 +437,8 @@ bool is_SPD(X& m, REAL tol)
  * \param A a matrix
  * \param evals on return, the eigenvalues will be stored here in ascending order
  */
-template <class X>
-void eig_symm(X& A, VECTORN& evals)
+template <class X, class Y>
+void eig_symm(X& A, Y& evals)
 {
   // make sure A is not zero sized
   if (A.rows() == 0)
