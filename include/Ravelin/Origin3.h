@@ -23,6 +23,8 @@ class ORIGIN3
     REAL norm_sq() const { return sqr(_data[0]) + sqr(_data[1]) + sqr(_data[2]); }
     static REAL norm(const ORIGIN3& v) { return std::sqrt(norm_sq(v)); }
     static REAL norm_sq(const ORIGIN3& v) { return v.norm_sq(); }
+    REAL dot(const ORIGIN3& v) const { return _data[0]*v._data[0] + _data[1]*v._data[1] + _data[2]*v._data[2]; }
+    static REAL dot(const ORIGIN3& v1, const ORIGIN3& v2) { return v1.dot(v2); }
     void set_zero() { _data[0] = _data[1] = _data[2] = (REAL) 0.0; }
     static ORIGIN3 zero() { return ORIGIN3((REAL) 0.0, (REAL) 0.0, (REAL) 0.0); }
     ORIGIN3& operator=(const ORIGIN3& o);
