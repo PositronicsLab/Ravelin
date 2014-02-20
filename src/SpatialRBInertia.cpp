@@ -183,18 +183,18 @@ SVELOCITY SPATIAL_RB_INERTIA::inverse_mult(const SMOMENTUM& w) const
   // compute inverse mass
   REAL inv_m = (REAL) 1.0/m;
 
-  // get the components of the momentum - this is reversed from the force version 
-  ORIGIN3 top(w.get_lower());
-  ORIGIN3 bot(w.get_upper());
+  // get the components of the momentum
+  ORIGIN3 top(w.get_upper());
+  ORIGIN3 bot(w.get_lower());
 
   // do the arithmetic
   VECTOR3 ttop(opxiJ.transpose_mult(top) + iJ*bot, pose); 
   VECTOR3 tbot(opxiJ*opx.transpose_mult(top) + top*inv_m + opxiJ*bot, pose); 
 
-  // set the spatial vector components, again reversed from the force version
+  // set the spatial vector components
   SVELOCITY result(pose);
-  result.set_upper(tbot);
-  result.set_lower(ttop);
+  result.set_lower(tbot);
+  result.set_upper(ttop);
 
   return result;
 }
