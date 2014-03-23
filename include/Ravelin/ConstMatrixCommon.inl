@@ -485,14 +485,12 @@ X& select(ForwardIterator1 row_start, ForwardIterator1 row_end, ForwardIterator2
       mdata++;
 
       // determine how we need to advance the rows
-      unsigned row_diff = *i;
-      i++;
-      row_diff -= *i;
-      row_diff = -row_diff;
-
-      // if we're able, advance data_start 
-      if (i != row_end)
-        data += row_diff;
+      if (i+1 != row_end)
+      {
+        data -= *i;
+        i++;
+        data += *i;
+      }
     }
 
     // determine how we need to advance the columns
