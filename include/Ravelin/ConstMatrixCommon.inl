@@ -496,11 +496,14 @@ X& select(ForwardIterator1 row_start, ForwardIterator1 row_end, ForwardIterator2
     }
 
     // determine how we need to advance the columns
-    unsigned col_diff = *(j+1) - *j;
+    if (j+1 != col_end)
+    {
+      unsigned col_diff = *(j+1) - *j;
 
-    // advance data
-    data += (col_diff * leading_dim());
-    data -= row_sub;
+      // advance data
+      data += (col_diff * leading_dim());
+      data -= row_sub;
+    }
     j++; 
   }
 
