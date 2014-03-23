@@ -500,7 +500,8 @@ X& select(ForwardIterator1 row_start, ForwardIterator1 row_end, ForwardIterator2
 
     // advance data
     data += (col_diff * leading_dim());
-    data -= row_sub; 
+    data -= row_sub;
+    j++; 
   }
 
   return m;
