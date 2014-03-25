@@ -1,6 +1,6 @@
 /****************************************************************************
  * Copyright 2013 Evan Drumwright
- * This library is distributed under the terms of the GNU Lesser General Public 
+ * This library is distributed under the terms of the GNU Lesser General Public
  * License (found in COPYING).
  ****************************************************************************/
 
@@ -25,7 +25,7 @@ ORIGIN3::ORIGIN3(const REAL* array)
   _data[Z] = array[Z];
 }
 
-/// Assigns this origin using the 3D vector 
+/// Assigns this origin using the 3D vector
 ORIGIN3& ORIGIN3::operator=(const VECTOR3& v)
 {
   const unsigned X = 0, Y = 1, Z = 2;
@@ -38,9 +38,9 @@ ORIGIN3& ORIGIN3::operator=(const VECTOR3& v)
 /// Assigns the values from one origin to this origin
 ORIGIN3& ORIGIN3::operator=(const ORIGIN3& o)
 {
-  x() = o.x(); 
-  y() = o.y(); 
-  z() = o.z(); 
+  x() = o.x();
+  y() = o.y();
+  z() = o.z();
   return *this;
 }
 
@@ -58,7 +58,7 @@ ORIGIN3& ORIGIN3::resize(unsigned m, unsigned n, bool preserve)
 ORIGIN3 ORIGIN3::operator+(const ORIGIN3& o) const
 {
   ORIGIN3 result;
-  result.x() = x() + o.x(); 
+  result.x() = x() + o.x();
   result.y() = y() + o.y();
   result.z() = z() + o.z();
   return result;
@@ -68,7 +68,7 @@ ORIGIN3 ORIGIN3::operator+(const ORIGIN3& o) const
 VECTOR3 ORIGIN3::operator+(const VECTOR3& v) const
 {
   VECTOR3 result(v.pose);
-  result.x() = x() + v.x(); 
+  result.x() = x() + v.x();
   result.y() = y() + v.y();
   result.z() = z() + v.z();
   return result;
@@ -77,7 +77,7 @@ VECTOR3 ORIGIN3::operator+(const VECTOR3& v) const
 /// Adds two origins
 ORIGIN3& ORIGIN3::operator+=(const ORIGIN3& o)
 {
-  x() += o.x(); 
+  x() += o.x();
   y() += o.y();
   z() += o.z();
   return *this;
@@ -87,7 +87,7 @@ ORIGIN3& ORIGIN3::operator+=(const ORIGIN3& o)
 VECTOR3 ORIGIN3::operator-(const VECTOR3& v) const
 {
   VECTOR3 result(v.pose);
-  result.x() = x() - v.x(); 
+  result.x() = x() - v.x();
   result.y() = y() - v.y();
   result.z() = z() - v.z();
   return result;
@@ -97,16 +97,16 @@ VECTOR3 ORIGIN3::operator-(const VECTOR3& v) const
 ORIGIN3 ORIGIN3::operator-(const ORIGIN3& o) const
 {
   ORIGIN3 result;
-  result.x() = x() - o.x(); 
+  result.x() = x() - o.x();
   result.y() = y() - o.y();
   result.z() = z() - o.z();
   return result;
 }
 
-/// Subtracts an origin from this 
+/// Subtracts an origin from this
 ORIGIN3& ORIGIN3::operator-=(const ORIGIN3& o)
 {
-  x() -= o.x(); 
+  x() -= o.x();
   y() -= o.y();
   z() -= o.z();
   return *this;
@@ -252,4 +252,12 @@ CONST_ROW_ITERATOR ORIGIN3::row_iterator_end() const
   return i;
 }
 
-
+/// Computes the cross-product of two vectors
+ORIGIN3 ORIGIN3::cross(const ORIGIN3& v1, const ORIGIN3& v2)
+{
+  ORIGIN3 w;
+  w[0] = v1[1] * v2[2] - v1[2] * v2[1];
+  w[1] = v1[2] * v2[0] - v1[0] * v2[2];
+  w[2] = v1[0] * v2[1] - v1[1] * v2[0];
+  return w;
+}

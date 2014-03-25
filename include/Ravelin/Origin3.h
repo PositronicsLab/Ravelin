@@ -1,6 +1,6 @@
 /****************************************************************************
  * Copyright 2013 Evan Drumwright
- * This library is distributed under the terms of the GNU Lesser General Public 
+ * This library is distributed under the terms of the GNU Lesser General Public
  * License (found in COPYING).
  ****************************************************************************/
 
@@ -69,6 +69,7 @@ class ORIGIN3
     unsigned inc() const { return 1; }
     unsigned leading_dim() const { return 3; }
     ORIGIN3& resize(unsigned m, unsigned n, bool preserve = false);
+    static ORIGIN3 cross(const ORIGIN3& v1, const ORIGIN3& v2);
 
   private:
     REAL _data[3];
