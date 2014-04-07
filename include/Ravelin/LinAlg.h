@@ -1,10 +1,10 @@
 /****************************************************************************
  * Copyright 2013 Evan Drumwright
- * This library is distributed under the terms of the GNU Lesser General Public 
+ * This library is distributed under the terms of the GNU Lesser General Public
  * License (found in COPYING).
  ****************************************************************************/
 
-#ifndef LINALG 
+#ifndef LINALG
 #error This class is not to be included by the user directly. Use LinAlgf.h or LinAlgd.h instead.
 #endif
 
@@ -12,7 +12,7 @@
 /**
 LinAlg is a set of static routines that interface to LAPACK.  I have included only very few routines here, however they should be some of the most utilized: SVD, (SVD-based) pseudo-inverse, linear equation solving, and matrix inverse.
 */
-class LINALG 
+class LINALG
 {
   public:
     enum SVD { eSVD1, eSVD2 };
@@ -22,10 +22,10 @@ class LINALG
     static void lartg_(REAL* F, REAL* G, REAL* CS, REAL* SN, REAL* R);
     static void gtsv_(INTEGER* N, INTEGER* NRHS, REAL* DL, REAL* D, REAL* DU, REAL* B, INTEGER* LDB, INTEGER* INFO);
     static void trtrs_(char* UPLO, char* TRANS, INTEGER* N, INTEGER* NRHS, REAL* AP, INTEGER* LDA, REAL* B, INTEGER* LDB, INTEGER* INFO);
-    void ormqr_(char* SIDE, char* TRANS, INTEGER* M, INTEGER* N, INTEGER* K, REAL* A, INTEGER* LDA, REAL* TAU, REAL* C, INTEGER* LDC, INTEGER* INFO); 
+    void ormqr_(char* SIDE, char* TRANS, INTEGER* M, INTEGER* N, INTEGER* K, REAL* A, INTEGER* LDA, REAL* TAU, REAL* C, INTEGER* LDC, INTEGER* INFO);
     static void sptrf_(char* UPLO, INTEGER* N, REAL* AP, INTEGER* IPIV, INTEGER* INFO);
     static void sptrs_(char* UPLO, INTEGER* N, INTEGER* NRHS, REAL* AP, INTEGER* IPIV, REAL* B, INTEGER* LDB, INTEGER* INFO);
-    void gelsd_(INTEGER* M, INTEGER* N, INTEGER* NRHS, REAL* A, INTEGER* 
+    void gelsd_(INTEGER* M, INTEGER* N, INTEGER* NRHS, REAL* A, INTEGER*
 LDA, REAL* B, INTEGER* LDB, REAL* RCOND, INTEGER* INFO);
     void sysv_(char* UPLO, INTEGER* N, INTEGER* NRHS, REAL* A, INTEGER* LDA, INTEGER* IPIV, REAL* B, INTEGER* LDB, INTEGER* INFO);
     void gesdd_(char* JOBZ, INTEGER* M, INTEGER* N, REAL* A, INTEGER* LDA, REAL* S, REAL* U, INTEGER* LDU, REAL* V, INTEGER* LDVT, INTEGER* INFO);
@@ -49,7 +49,7 @@ LDA, REAL* B, INTEGER* LDB, REAL* RCOND, INTEGER* INFO);
     void factor_QR(MATRIXN& AR, MATRIXN& Q);
     void factor_QR(MATRIXN& AR, MATRIXN& Q, std::vector<int>& PI);
     static void factor_LDL(MATRIXN& M, std::vector<int>& IPIV);
-    MATRIXN& pseudo_invert(MATRIXN& A, void (*svd)(MATRIXN&, MATRIXN&, VECTORN&, MATRIXN&), REAL tol=(REAL) -1.0);
+    MATRIXN& pseudo_invert(MATRIXN& A, REAL tol=(REAL) -1.0);
     static void givens(REAL a, REAL b, REAL& c, REAL& s);
     static MATRIX2 givens(REAL c, REAL s);
     static void householder(REAL alpha, const VECTORN& x, REAL& tau, VECTORN& v);
