@@ -64,6 +64,7 @@ class ORIGIN3
     CONST_ROW_ITERATOR row_iterator_begin() const;
     ROW_ITERATOR row_iterator_end();
     CONST_ROW_ITERATOR row_iterator_end() const;
+    unsigned size() const { return 3; }
     unsigned rows() const { return 3; }
     unsigned columns() const { return 1; }
     unsigned inc() const { return 1; }
