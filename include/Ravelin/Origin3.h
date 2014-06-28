@@ -69,6 +69,7 @@ class ORIGIN3
     unsigned columns() const { return 1; }
     unsigned inc() const { return 1; }
     unsigned leading_dim() const { return 3; }
+    ORIGIN3& resize(unsigned m, bool preserve = false);
     ORIGIN3& resize(unsigned m, unsigned n, bool preserve = false);
     static ORIGIN3 cross(const ORIGIN3& v1, const ORIGIN3& v2);
 

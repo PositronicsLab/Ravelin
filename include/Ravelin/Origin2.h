@@ -53,6 +53,7 @@ class ORIGIN2
     unsigned columns() const { return 1; }
     unsigned leading_dim() const { return 3; }
     unsigned inc() const { return 1; }
+    ORIGIN2& resize(unsigned m, bool preserve = false);
     ORIGIN2& resize(unsigned m, unsigned n, bool preserve = false);
 
   private:

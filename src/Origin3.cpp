@@ -45,6 +45,16 @@ ORIGIN3& ORIGIN3::operator=(const ORIGIN3& o)
 }
 
 /// Does nothing
+ORIGIN3& ORIGIN3::resize(unsigned m, bool preserve)
+{
+  #ifndef NEXCEPT
+  if (m != 3)
+    throw MissizeException();
+  #endif
+  return *this;
+}
+
+/// Does nothing
 ORIGIN3& ORIGIN3::resize(unsigned m, unsigned n, bool preserve)
 {
   #ifndef NEXCEPT
