@@ -85,13 +85,13 @@ void LINALG::factor_QR(MATRIXN& AR, MATRIXN& Q, vector<int>& PI)
   // setup constants
   const unsigned m = AR.rows();
   const unsigned n = AR.columns();
-  
+
   // determine LAPACK parameters
   INTEGER M = AR.rows();
   INTEGER N = AR.columns();
   INTEGER MINMN = std::min(M, N);
-  unsigned min_mn = (unsigned) std::min(M,N); 
- 
+  unsigned min_mn = (unsigned) std::min(M,N);
+
   // setup tau vector
   workv2().resize(min_mn);
 
@@ -120,7 +120,7 @@ void LINALG::factor_QR(MATRIXN& AR, MATRIXN& Q, vector<int>& PI)
 
 /// Performs the QR factorization of a matrix
 /**
- * \param AQ the m x n matrix A on input; the matrix min(m,n) x n R on output 
+ * \param AQ the m x n matrix A on input; the matrix min(m,n) x n R on output
  * \param Q the m x min(m,n) matrix Q on output
  */
 void LINALG::factor_QR(MATRIXN& AR, MATRIXN& Q)
@@ -140,8 +140,8 @@ void LINALG::factor_QR(MATRIXN& AR, MATRIXN& Q)
   INTEGER M = AR.rows();
   INTEGER N = AR.columns();
   INTEGER MINMN = std::min(M, N);
-  const unsigned min_mn = (unsigned) MINMN; 
- 
+  const unsigned min_mn = (unsigned) MINMN;
+
   // setup tau vector
   tau.resize(min_mn);
 
@@ -155,15 +155,15 @@ void LINALG::factor_QR(MATRIXN& AR, MATRIXN& Q)
   Q.resize(m,m);
   std::copy(AR.data(), AR.data()+m*min_mn, Q.data());
   orgqr_(&M, &MINMN, &MINMN, Q.data(), &M, tau.data(), &INFO);
-  
+
   // make R triangular
   AR.zero_lower_triangle();
 
-  // note: R is m x n, so we don't have to resize 
+  // note: R is m x n, so we don't have to resize
 }
 
 //// Computes the psuedo-inverse of a matrix
-MATRIXN& LINALG::pseudo_invert(MATRIXN& A, void (*svd)(MATRIXN&, MATRIXN&, VECTORN&, MATRIXN&), REAL tol)
+MATRIXN& LINALG::pseudo_invert(MATRIXN& A, REAL tol)
 {
   // get the dimensionality of A
   const unsigned m = A.rows();
@@ -187,8 +187,8 @@ MATRIXN& LINALG::pseudo_invert(MATRIXN& A, void (*svd)(MATRIXN&, MATRIXN&, VECTO
   MATRIXN& Vx = V();
   VECTORN& Sx = S();
   svd(A, Ux, Sx, Vx);
-  REAL* Sx_data = Sx.data(); 
- 
+  REAL* Sx_data = Sx.data();
+
   // determine new tolerance based on first std::singular value if necessary
   if (tol < 0.0)
     tol = Sx_data[0] * std::max(m,n) * std::numeric_limits<REAL>::epsilon();
@@ -202,7 +202,7 @@ MATRIXN& LINALG::pseudo_invert(MATRIXN& A, void (*svd)(MATRIXN&, MATRIXN&, VECTO
   // (R -> L, scaling U')   m^2 + m^2k + nmk + n^2k  [k < n < m]
   // (R -> L, scaling U'*B) m^2k + min(n,m)*k + n*min(m,n)*k [k < m < n, m < k < n]
 
-  // compute inv(s) 
+  // compute inv(s)
   for (unsigned i=0; i< S_len; i++)
     Sx_data[i] = (std::fabs(Sx_data[i]) > tol) ? (REAL) 1.0/Sx[i] : (REAL) 0.0;
 
@@ -219,7 +219,7 @@ MATRIXN& LINALG::pseudo_invert(MATRIXN& A, void (*svd)(MATRIXN&, MATRIXN&, VECTO
 
   // do the multiplication (V * U')
   CBLAS::gemm(CblasColMajor, CblasNoTrans, CblasTrans, n, m, minmn, (REAL) 1.0, Vx.data(), Vx.leading_dim(), Ux.data(), Ux.leading_dim(), (REAL) 0.0, A.data(), A.leading_dim());
- 
+
   return A;
 }
 
@@ -238,11 +238,11 @@ VECTORN& LINALG::solve_LS_fast2(MATRIXN& A, VECTORN& XB)
   if (A.rows() != XB.size())
     throw MissizeException();
 
-  // do QR factorization 
+  // do QR factorization
   INTEGER M = A.rows();
   INTEGER N = A.columns();
   INTEGER min_mn = std::min(A.rows(), A.columns());
- 
+
   // setup tau vector
   SAFESTATIC FastThreadable<VECTORN> TAU;
   TAU().resize(min_mn);
@@ -268,8 +268,8 @@ VECTORN& LINALG::solve_LS_fast2(MATRIXN& A, VECTORN& XB)
   INTEGER NRHS = 1;
   trtrs_(&UPLO, &TRANS, &N, &NRHS, A.data(), &LDA, XB.data(), &LDB, &INFO);
 
-  return XB; 
-} 
+  return XB;
+}
 */
 
 /// Computes a givens rotation
@@ -304,7 +304,7 @@ void LINALG::householder(REAL alpha, const VECTORN& x, REAL& tau, VECTORN& v)
     REAL v_one = (alpha <= (REAL) 0.0) ? (alpha-t) : -s/(alpha+t);
     tau = 2*v_one*v_one/(s + v_one*v_one);
     v /= v_one;
-  }   
+  }
 }
 
 /// Updates a QR factorization by a rank-1 update
@@ -323,7 +323,7 @@ void LINALG::update_QR_rank1(MATRIXN& Q, MATRIXN& R, const VECTORN& u, const VEC
  * \param Q a m x min(m,n) matrix
  * \param R a min(m,n) x n matrix
  * \param k the column index to start deleting at
- * \parma p the number of columns to delete 
+ * \parma p the number of columns to delete
  */
 void LINALG::update_QR_delete_cols(MATRIXN& Q, MATRIXN& R, unsigned k, unsigned p)
 {
@@ -334,7 +334,7 @@ void LINALG::update_QR_delete_cols(MATRIXN& Q, MATRIXN& R, unsigned k, unsigned 
   vector<REAL> c, s, tau;
   vector<unsigned> select;
   vector<VECTORN> V;
-  
+
   const int m = Q.rows();
   const int n = R.columns();
   const int lim = std::min(m-1,n-(int) p);
@@ -351,7 +351,7 @@ void LINALG::update_QR_delete_cols(MATRIXN& Q, MATRIXN& R, unsigned k, unsigned 
     Q.get_sub_mat(0,m,0,m,workM);
     Q = workM;
     return;
-  } 
+  }
 
   // next simplest case
   if (k > std::min(m-1,(int) (n-p)))
@@ -383,7 +383,7 @@ void LINALG::update_QR_delete_cols(MATRIXN& Q, MATRIXN& R, unsigned k, unsigned 
     {
       // compute Givens rotation
       givens(R(j-1,j-1), R(j,j-1), c[j], s[j]);
-      
+
       // update R
       R(j-1,j-1) = c[j]*R(j-1,j-1) - s[j]*R(j,j-1);
       R.get_sub_mat(j-1,j+1,j-1,n-1,workM);
@@ -455,7 +455,7 @@ void LINALG::update_QR_delete_cols(MATRIXN& Q, MATRIXN& R, unsigned k, unsigned 
     outer_prod(workv, workv2, workM2);
     workM.mult(workM2, workM3);
     workM -= workM3;
-    Q.set_sub_mat(0,j-1,workM);    
+    Q.set_sub_mat(0,j-1,workM);
   }
 //  Q.get_sub_mat(0,m,0,std::min(lim+(int) p, m), workM);
   Q.get_sub_mat(0,m,0,m, workM);
@@ -501,7 +501,7 @@ void LINALG::update_QR_insert_cols(MATRIXN& Q, MATRIXN& R, MATRIXN& U, unsigned 
 
   if (k <= n)
   {
-    // zero out the rest with givens, stop at last column of U or last row that 
+    // zero out the rest with givens, stop at last column of U or last row that
     // is reached first
     int jstop = std::min((int) p,m-(int) k-2);
     for (int j=1; j<= jstop; j++)
@@ -557,7 +557,7 @@ void LINALG::update_QR_insert_cols(MATRIXN& Q, MATRIXN& R, MATRIXN& U, unsigned 
   // finally, make R upper triangular
   for (int i=1; i<= (int) R.rows(); i++)
     for (int j=1; j<= std::min((int) R.columns(),i-1); j++)
-      R(i-1,j-1) = (REAL) 0.0; 
+      R(i-1,j-1) = (REAL) 0.0;
 
   // compute Q
   if (m > n+1)
@@ -621,7 +621,7 @@ void LINALG::update_QR_insert_rows(MATRIXN& Q, MATRIXN& R, MATRIXN& U, unsigned 
     {
       // compute Givens rotation
       givens(R(j-1,j-1), U(0, j-1), c[j], s[j]);
-      
+
       // update R
       R(j-1,j-1) = c[j]*R(j-1,j-1) - s[j]*U(0,j-1);
 
@@ -639,7 +639,7 @@ void LINALG::update_QR_insert_rows(MATRIXN& Q, MATRIXN& R, MATRIXN& U, unsigned 
       workv4 = workv2;
       workv4 *= c[j];
       workv3 += workv4;
-      U.set_sub_mat(0,j, workv3, eTranspose); 
+      U.set_sub_mat(0,j, workv3, eTranspose);
     }
 
     // setup new R
@@ -656,7 +656,7 @@ void LINALG::update_QR_insert_rows(MATRIXN& Q, MATRIXN& R, MATRIXN& U, unsigned 
     std::fill_n(b, Q.columns(), (REAL) 0.0);
     b = workM.block_iterator(0, Q.rows(), Q.columns(), Q.columns()+1);
     std::fill_n(b, Q.rows(), (REAL) 0.0);
-    workM(Q.rows(), Q.columns()) = (REAL) 1.0; 
+    workM(Q.rows(), Q.columns()) = (REAL) 1.0;
     Q = workM;
     if (k != m+1)
     {
@@ -710,7 +710,7 @@ void LINALG::update_QR_insert_rows(MATRIXN& Q, MATRIXN& R, MATRIXN& U, unsigned 
     U.get_sub_mat(0,p,j-1,n,workM);   // workM = U(1:p,j:n)
     workM.transpose_mult(V[j], workv3) *= tau[j];
     workv2 -= workv3;
-    R.set_sub_mat(j-1,j-1,workv2,eTranspose); 
+    R.set_sub_mat(j-1,j-1,workv2,eTranspose);
 
     // update trailing part if U
     if (j < n)
@@ -796,7 +796,7 @@ void LINALG::update_QR_insert_rows(MATRIXN& Q, MATRIXN& R, MATRIXN& U, unsigned 
 */
 }
 
-/// Updates a QR factorization by deleting a block of rows 
+/// Updates a QR factorization by deleting a block of rows
 /**
  * \param Q a m x min(m,n) matrix
  * \param R a min(m,n) x n matrix
@@ -832,7 +832,7 @@ void LINALG::update_QR_delete_rows(MATRIXN& Q, MATRIXN& R, unsigned k, unsigned 
       // compute givens rotation and update q
       givens(workv[j-1], workv[j], c[j], s[j]);
       workv[j-1] = c[j]*workv[j-1] - s[j]*workv[j];
-    
+
       // update R if there is a nonzero row
       if (j <= n)
       {
@@ -859,7 +859,7 @@ void LINALG::update_QR_delete_rows(MATRIXN& Q, MATRIXN& R, unsigned k, unsigned 
     }
 
     // do not need to update 1st column of Q
-    Q.get_sub_mat(1,m,0,1,workv); 
+    Q.get_sub_mat(1,m,0,1,workv);
     Q.get_sub_mat(1,m,1,2,workv2);
     workv *= s[1];
     workv2 *= c[1];

@@ -48,10 +48,12 @@ class ORIGIN2
     const REAL& y() const { return _data[1]; }
     REAL& x() { return _data[0]; }
     REAL& y() { return _data[1]; }
+    unsigned size() const { return 3; }
     unsigned rows() const { return 3; }
     unsigned columns() const { return 1; }
     unsigned leading_dim() const { return 3; }
     unsigned inc() const { return 1; }
+    ORIGIN2& resize(unsigned m, bool preserve = false);
     ORIGIN2& resize(unsigned m, unsigned n, bool preserve = false);
 
   private:

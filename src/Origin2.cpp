@@ -24,6 +24,16 @@ ORIGIN2::ORIGIN2(const REAL* array)
 }
 
 /// Does nothing
+ORIGIN2& ORIGIN2::resize(unsigned m, bool preserve)
+{
+  #ifndef NEXCEPT
+  if (m != 2)
+    throw MissizeException();
+  #endif
+  return *this;
+}
+
+/// Does nothing
 ORIGIN2& ORIGIN2::resize(unsigned m, unsigned n, bool preserve)
 {
   #ifndef NEXCEPT
