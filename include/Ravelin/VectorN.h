@@ -72,6 +72,7 @@ class VECTORN
     /// Sets this to a n-length ones vector
     VECTORN& set_one(unsigned n) { return resize(n).set_one(); }
 
+    void free_memory() { resize(0); compress(); }
     void compress() { _data.compress(); }
     unsigned rows() const { return _data.size(); }
     unsigned columns() const { return 1; }

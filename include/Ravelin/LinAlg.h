@@ -46,6 +46,8 @@ LDA, REAL* B, INTEGER* LDB, REAL* RCOND, INTEGER* INFO);
     void orgqr_(INTEGER* M, INTEGER* N, INTEGER* K, REAL* A, INTEGER* LDA, REAL* TAU, INTEGER* INFO);
 
   public:
+    void compress();
+    void free_memory();
     void factor_QR(MATRIXN& AR, MATRIXN& Q);
     void factor_QR(MATRIXN& AR, MATRIXN& Q, std::vector<int>& PI);
     static void factor_LDL(MATRIXN& M, std::vector<int>& IPIV);
