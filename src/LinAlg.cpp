@@ -1,3 +1,32 @@
+/// Frees all allocated memory
+void LINALG::free_memory()
+{
+  workM().resize(0,0);
+  workM2().resize(0,0);
+  U().resize(0,0);
+  pivwork().resize(0);
+  V().resize(0,0);
+  S().resize(0);
+  workv().resize(0);
+  workv2().resize(0);
+  iworkv().resize(0);
+  compress();
+}
+
+/// Compresses all memory
+void LINALG::compress()
+{
+  workM().compress();
+  workM2().compress();
+  U().compress();
+//  pivwork().shrink_to_fit();
+  V().compress();
+  S().compress();
+  workv().compress();
+  workv2().compress();
+//  iworkv().shrink_to_fit();
+}
+
 /// Performs a LDL' factorization of a symmetric, indefinite matrix
 /**
  * \param A the matrix A on input; the factorized matrix on output

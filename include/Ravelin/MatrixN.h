@@ -70,6 +70,7 @@ class MATRIXN
     MATRIXN& operator*=(REAL scalar);
     REAL* data() { return _data.get(); }
     const REAL* data() const { return _data.get(); }    
+    void free_memory() { resize(0,0); compress(); }
     void compress() { _data.compress(); }
     unsigned leading_dim() const { return _rows; }
     unsigned inc() const { return 1; }
