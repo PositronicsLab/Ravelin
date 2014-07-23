@@ -525,8 +525,8 @@ void eig_symm_plus(X& A_evecs, Y& evals)
     throw NumericalException("Eigenvalue/eigenvector determination did not converge");
 }
 
-template <class X>
-void svd(X& A, MATRIXN& U, VECTORN& S, MATRIXN& V)
+template <class X, class MatU, class VecS, class MatV>
+void svd(X& A, MatU& U, VecS& S, MatV& V)
 {
   MATRIXN& A_backup = workM();
 
@@ -564,8 +564,8 @@ void svd(X& A, MATRIXN& U, VECTORN& S, MATRIXN& V)
  * \param S on output, a min(A.rows(), A.columns()) length vector of singular values
  * \param V on output, a A.columns() x A.columns() orthogonal matrix
  */
-template <class X>
-void svd1(X& A, MATRIXN& U, VECTORN& S, MATRIXN& V)
+template <class X, class MatU, class VecS, class MatV>
+void svd1(X& A, MatU& U, VecS& S, MatV& V)
 {
   // make sure that A is not zero sized
   if (A.rows() == 0 || A.columns() == 0)
@@ -629,8 +629,8 @@ void svd1(X& A, MATRIXN& U, VECTORN& S, MATRIXN& V)
  * \param S on output, a min(A.rows(), A.columns()) length vector of singular values
  * \param V on output, a A.columns() x A.columns() orthogonal matrix
  */
-template <class X>
-void svd2(X& A, MATRIXN& U, VECTORN& S, MATRIXN& V)
+template <class X, class MatU, class VecS, class MatV>
+void svd2(X& A, MatU& U, VecS& S, MatV& V)
 {
   // make sure that A is not zero sized
   if (A.rows() == 0 || A.columns() == 0)
@@ -956,7 +956,8 @@ X& solve_LS_fast(const Y& U, const Vec& S, const Z& V, X& XB, REAL tol = (REAL) 
   MATRIXN& workM2x = workM2();
 
   // determine new tolerance based on first std::singular value if necessary
-  Sx = S;
+  Sx.resize(S.rows());
+  std::copy(S.begin(), S.end(), Sx.begin());
   REAL* Sx_data = Sx.data();
   if (tol < (REAL) 0.0)
     tol = Sx_data[0] * std::max(m,n) * std::numeric_limits<REAL>::epsilon();
@@ -990,7 +991,8 @@ X& solve_LS_fast(const Y& U, const Vec& S, const Z& V, X& XB, REAL tol = (REAL) 
     // multiply workM * XB
     workM2x.resize(n,k);
     CBLAS::gemm(CblasColMajor, CblasNoTrans, CblasNoTrans, n, k, m, (REAL) 1.0, workMx.data(), workMx.leading_dim(), XB.data(), XB.leading_dim(), (REAL) 0.0, workM2x.data(), workM2x.leading_dim());
-    XB = workM2x;
+    XB.resize(workM2x.rows(), workM2x.columns());
+    std::copy(workM2x.row_iterator_begin(), workM2x.row_iterator_end(), XB.row_iterator_begin());
   }
   // case 2: m < n < k
   else if (m <= n && n <= k)
@@ -1007,7 +1009,8 @@ X& solve_LS_fast(const Y& U, const Vec& S, const Z& V, X& XB, REAL tol = (REAL) 
     // multiply workM * XB
     workM2x.resize(n,k);
     CBLAS::gemm(CblasColMajor, CblasNoTrans, CblasNoTrans, n, k, m, (REAL) 1.0, workMx.data(), workMx.leading_dim(), XB.data(), XB.leading_dim(), (REAL) 0.0, workM2x.data(), workM2x.leading_dim());
-    XB = workM2x;
+    XB.resize(workM2x.rows(), workM2x.columns());
+    std::copy(workM2x.row_iterator_begin(), workM2x.row_iterator_end(), XB.row_iterator_begin());
   }
   // case 3: k < n < m
   else if (k <= n && n <= m)
