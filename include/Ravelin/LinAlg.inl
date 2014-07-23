@@ -1169,7 +1169,8 @@ X& solve_LS_fast(Y& A, X& XB, SVD svd_algo, REAL tol)
     // multiply workM * XB
     Vx.resize(n,k);
     CBLAS::gemm(CblasColMajor, CblasNoTrans, CblasNoTrans, n, k, m, (REAL) 1.0, workMx.data(), workMx.leading_dim(), XB.data(), XB.leading_dim(), (REAL) 0.0, Vx.data(), Vx.leading_dim());
-    XB = Vx;
+    XB.resize(Vx.rows(), Vx.columns());
+    std::copy(Vx.row_iterator_begin(), Vx.row_iterator_end(), XB.row_iterator_begin());
   }
   // case 2: m < n < k
   else if (m < n && n < k)
@@ -1185,7 +1186,8 @@ X& solve_LS_fast(Y& A, X& XB, SVD svd_algo, REAL tol)
     // multiply workM * XB
     Vx.resize(n,k);
     CBLAS::gemm(CblasColMajor, CblasNoTrans, CblasNoTrans, n, k, m, (REAL) 1.0, workMx.data(), workMx.leading_dim(), XB.data(), XB.leading_dim(), (REAL) 0.0, Vx.data(), Vx.leading_dim());
-    XB = Vx;
+    XB.resize(Vx.rows(), Vx.columns());
+    std::copy(Vx.row_iterator_begin(), Vx.row_iterator_end(), XB.row_iterator_begin());
   }
   // case 3: k < n < m
   else if (k < n && n < m)
