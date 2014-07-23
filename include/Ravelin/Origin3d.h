@@ -7,6 +7,7 @@
 #ifndef _ORIGIN3D_H
 #define _ORIGIN3D_H
 
+#include <limits>
 #include <cmath>
 #include <iostream>
 #include <boost/enable_shared_from_this.hpp>
