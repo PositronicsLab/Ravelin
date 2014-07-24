@@ -168,7 +168,12 @@ static X& solve_tri_fast(const Y& A, bool utri, bool transpose_A, X& XB)
   INTEGER LDB = XB.leading_dim();
   INTEGER NRHS = XB.columns();
   INTEGER INFO;
-  trtrs_(&UPLO, &TRANS, &N, &NRHS, A.data(), &LDA, XB.data(), &LDB, &INFO);
+  if (typeid(A.data()) == typeid(const double*))
+    trtrs_(&UPLO, &TRANS, &N, &NRHS, (double*) A.data(), &LDA, XB.data(), &LDB, &INFO);
+  else if (typeid(A.data()) == typeid(const float*))
+    trtrs_(&UPLO, &TRANS, &N, &NRHS, (float*) A.data(), &LDA, XB.data(), &LDB, &INFO);
+  else
+    assert(false);
 
   return XB;
 }
@@ -1314,4 +1319,107 @@ X& solve_LS_fast2(Y& A, X& XB, REAL tol = (REAL) -1.0)
 { 
   return solve_LS_fast(A, XB, eSVD2, tol); 
 }     
+
+/// Performs the QR factorization of a matrix with column pivoting
+/**
+ * Factorizes A*P = Q*R
+ * \param AQ the matrix A on input; the matrix R on output
+ * \param Q the matrix Q on output
+ * \param PI the column pivots on output
+ */
+template <class ARMat, class QMat>
+void factor_QR(ARMat& AR, QMat& Q, std::vector<int>& PI)
+{
+  // get matrix/vector
+  VECTORN& tau = workv2();
+
+  // setup constants
+  const unsigned m = AR.rows();
+  const unsigned n = AR.columns();
+
+  // determine LAPACK parameters
+  INTEGER M = AR.rows();
+  INTEGER N = AR.columns();
+  INTEGER MINMN = std::min(M, N);
+  unsigned min_mn = (unsigned) std::min(M,N);
+
+  // setup tau vector
+  workv2().resize(min_mn);
+
+  // setup PI for entry
+  PI.resize(N);
+  for (int i=0; i< N; i++)
+    PI[i] = 0;
+
+  // call LAPACK
+  INTEGER LDA = AR.leading_dim();
+  INTEGER INFO;
+  geqp3_(&M, &N, AR.data(), &LDA, PI.data(), workv2().data(), &INFO);
+  assert(INFO == 0);
+
+  // setup Q
+  Q.resize(m,m);
+  std::copy(AR.data(), AR.data()+m*min_mn, Q.data());
+  orgqr_(&M, &MINMN, &MINMN, Q.data(), &M, tau.data(), &INFO);
+
+  // resize AR
+  AR.resize(std::min(AR.rows(), AR.columns()), AR.columns(), true);
+
+  // make R upper triangular
+  for (unsigned i=0; i< AR.columns(); i++)
+  {
+    RowIteratord coli = AR.block_row_iterator_begin(i+1,AR.rows(),i,i+1);
+    std::fill(coli, coli.end(), 0.0);
+  }
+}
+
+/// Performs the QR factorization of a matrix
+/**
+ * \param AQ the m x n matrix A on input; the matrix min(m,n) x n R on output
+ * \param Q the m x min(m,n) matrix Q on output
+ */
+template <class ARMat, class QMat>
+void factor_QR(ARMat& AR, QMat& Q)
+{
+  // get matrix/vector
+  VECTORN& tau = workv2();
+
+  // setup constants
+  const unsigned m = AR.rows();
+  const unsigned n = AR.columns();
+
+  // check for zero sized matrix
+  if (m == 0 || n == 0)
+    return;
+
+  // determine LAPACK parameters
+  INTEGER M = AR.rows();
+  INTEGER N = AR.columns();
+  INTEGER MINMN = std::min(M, N);
+  const unsigned min_mn = (unsigned) MINMN;
+
+  // setup tau vector
+  tau.resize(min_mn);
+
+  // call LAPACK
+  INTEGER LDA = AR.leading_dim();
+  INTEGER INFO;
+  geqrf_(&M, &N, AR.data(), &M, tau.data(), &INFO);
+  assert(INFO == 0);
+
+  // setup Q
+  Q.resize(m,m);
+  std::copy(AR.data(), AR.data()+m*min_mn, Q.data());
+  orgqr_(&M, &MINMN, &MINMN, Q.data(), &M, tau.data(), &INFO);
+
+  // make R upper triangular 
+
+  // note: R is m x n, so we don't have to resize
+  for (unsigned i=0; i< AR.columns(); i++)
+  {
+    RowIteratord coli = AR.block_row_iterator_begin(i+1,AR.rows(),i,i+1);
+    std::fill(coli, coli.end(), 0.0);
+  }
+}
+
 

@@ -48,8 +48,6 @@ LDA, REAL* B, INTEGER* LDB, REAL* RCOND, INTEGER* INFO);
   public:
     void compress();
     void free_memory();
-    void factor_QR(MATRIXN& AR, MATRIXN& Q);
-    void factor_QR(MATRIXN& AR, MATRIXN& Q, std::vector<int>& PI);
     static void factor_LDL(MATRIXN& M, std::vector<int>& IPIV);
     MATRIXN& pseudo_invert(MATRIXN& A, REAL tol=(REAL) -1.0);
     static void givens(REAL a, REAL b, REAL& c, REAL& s);

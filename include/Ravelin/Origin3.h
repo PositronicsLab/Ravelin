@@ -27,9 +27,9 @@ class ORIGIN3
     static ORIGIN3 normalize(const ORIGIN3& v) { ORIGIN3 w = v; w.normalize(); return w; }
     REAL dot(const ORIGIN3& v) const { return _data[0]*v._data[0] + _data[1]*v._data[1] + _data[2]*v._data[2]; }
     static REAL dot(const ORIGIN3& v1, const ORIGIN3& v2) { return v1.dot(v2); }
-    void set_zero() { _data[0] = _data[1] = _data[2] = (REAL) 0.0; }
-    void set_zero(unsigned m) { assert(m==3); set_zero(); }
-    void set_zero(unsigned m, unsigned n) { assert(m==3 && n==1); set_zero(); }
+    ORIGIN3& set_zero() { _data[0] = _data[1] = _data[2] = (REAL) 0.0; return *this; }
+    ORIGIN3& set_zero(unsigned m) { assert(m==3); return set_zero(); }
+    ORIGIN3& set_zero(unsigned m, unsigned n) { assert(m==3 && n==1); return set_zero(); }
     static ORIGIN3 zero() { return ORIGIN3((REAL) 0.0, (REAL) 0.0, (REAL) 0.0); }
     ORIGIN3& operator=(const ORIGIN3& o);
     ORIGIN3& operator=(const VECTOR3& v);

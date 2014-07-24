@@ -23,7 +23,9 @@ class ORIGIN2
     REAL norm_sq() const { return sqr(_data[0]) + sqr(_data[1]); }
     static REAL norm(const ORIGIN2& v) { return std::sqrt(norm_sq(v)); }
     static REAL norm_sq(const ORIGIN2& v) { return v.norm_sq(); }
-    void set_zero() { _data[0] = _data[1] = 0.0; }
+    ORIGIN2& set_zero() { _data[0] = _data[1] = 0.0; return *this; }
+    ORIGIN2& set_zero(unsigned m) { assert(m==2); return set_zero(); }
+    ORIGIN2& set_zero(unsigned m, unsigned n) { assert(m==2 && n==1); return set_zero(); }
     static ORIGIN2 zero() { return ORIGIN2(0.0, 0.0); }
     ORIGIN2& operator=(const VECTOR2& v);
     ORIGIN2& operator=(const ORIGIN2& v) { _data[0] = v[0]; _data[1] = v[1]; return *this; }
