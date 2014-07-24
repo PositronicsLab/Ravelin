@@ -142,7 +142,7 @@ X& inverse_LU(X& M, const std::vector<int>& pivwork)
  * \return reference to XB
  */
 template <class X, class Y>
-static X& solve_tri_fast(const Y& A, bool utri, bool transpose_A, X& XB)
+static X& solve_tri_fast(Y& A, bool utri, bool transpose_A, X& XB)
 {
   #ifndef NEXCEPT
   if (A.rows() != XB.rows())
@@ -168,12 +168,7 @@ static X& solve_tri_fast(const Y& A, bool utri, bool transpose_A, X& XB)
   INTEGER LDB = XB.leading_dim();
   INTEGER NRHS = XB.columns();
   INTEGER INFO;
-  if (typeid(A.data()) == typeid(const double*))
-    trtrs_(&UPLO, &TRANS, &N, &NRHS, (double*) A.data(), &LDA, XB.data(), &LDB, &INFO);
-  else if (typeid(A.data()) == typeid(const float*))
-    trtrs_(&UPLO, &TRANS, &N, &NRHS, (float*) A.data(), &LDA, XB.data(), &LDB, &INFO);
-  else
-    assert(false);
+  trtrs_(&UPLO, &TRANS, &N, &NRHS, A.data(), &LDA, XB.data(), &LDB, &INFO);
 
   return XB;
 }
