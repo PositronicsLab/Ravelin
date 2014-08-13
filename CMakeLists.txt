@@ -15,7 +15,6 @@ set (SOURCES AAnglef.cpp AAngled.cpp cblas.cpp LinAlgf.cpp LinAlgd.cpp Matrix2d.
 option (BUILD_SHARED_LIBS "Build Ravelin as a shared library?" ON)
 option (PROFILE "Build for profiling?" OFF)
 option (REENTRANT "Build Ravelin to be reentrant ? (slower)" OFF)
-option (ATLAS_BUGFIX "Use bugfix for Debian/Ubuntu ATLAS packages?" OFF)
 option (DISABLE_EXCEPT "Disable user-level exceptions for extra speed (not recommended)?" OFF)
 
 # superLU directories
@@ -43,13 +42,7 @@ else (APPLE)
   find_package (CBLAS REQUIRED)
   find_package (LAPACKLite REQUIRED)
   set (BLAS_LIBRARIES ${CBLAS_LIBRARIES})
-  set (ATLAS_BUGFIX ON)
 endif (APPLE)
-
-# use ATLAS bugfix if necessary
-if (ATLAS_BUGFIX)
-  add_definitions (-DATLAS_BUGFIX)
-endif (ATLAS_BUGFIX)
 
 # setup include directories, compiler flags, and libraries for required pkgs
 include_directories (${Boost_INCLUDE_DIR})
