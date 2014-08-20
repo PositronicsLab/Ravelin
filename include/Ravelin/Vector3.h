@@ -5,7 +5,7 @@
  ****************************************************************************/
 
 #ifndef VECTOR3
-#error This class is not to be included by the user directly. Use VECTOR3.h or Vector3f.h instead.
+#error This class is not to be included by the user directly. Use Vector3d.h or Vector3f.h instead.
 #endif
 
 class POSE3;

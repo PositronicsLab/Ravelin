@@ -40,4 +40,10 @@
 #define OPS Opsf
 #define TRANSFORM3 Transform3f
 #define TRANSFORM2 Transform2f
+#define JOINT Jointf
+#define FIXEDJOINT FixedJointf
+#define PRISMATICJOINT PrismaticJointf
+#define REVOLUTEJOINT RevoluteJointf
+#define SPHERICALJOINT SphericalJointf
+#define UNIVERSALJOINT UniversalJointf
 
