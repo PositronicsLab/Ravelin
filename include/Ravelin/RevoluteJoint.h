@@ -24,10 +24,9 @@ class REVOLUTEJOINT : public JOINT
     /// Revolute joint can never be in a singular configuration
     virtual bool is_singular_config() const { return false; }
 
-  private:
+  protected:
 //    virtual void calc_constraint_jacobian(RigidBodyPtr, unsigned index, REAL Cq[7]);
 //    virtual void calc_constraint_jacobian_dot(RigidBodyPtr, unsigned index, REAL Cq[7]);
-    void setup_joint();
 
     /// The joint axis (defined in inner relative pose coordinates)
     VECTOR3 _u;

@@ -34,7 +34,7 @@ class UNIVERSALJOINT : public JOINT
      */
     REAL SINGULAR_TOL;
 
-  private:
+  protected:
     bool assign_axes();
     static bool rel_equal(REAL x, REAL y);
     MATRIX3 get_rotation() const;

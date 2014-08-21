@@ -24,10 +24,9 @@ class PRISMATICJOINT : public JOINT
     /// Prismatic joint can never be in a singular configuration
     virtual bool is_singular_config() const { return false; }
 
-  private:
+  protected:
 //    virtual void calc_constraint_jacobian(RigidBodyPtr, unsigned index, REAL Cq[7]);
 //    virtual void calc_constraint_jacobian_dot(RigidBodyPtr, unsigned index, REAL Cq[7]);
-    void setup_joint();
 
     /// The axis of the joint (inboard pose frame)
     VECTOR3 _u;

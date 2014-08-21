@@ -3,9 +3,6 @@
  * This library is distributed under the terms of the Apache V2.0 license 
  ****************************************************************************/
 
-// shared (static) linear algebra object
-LINALG JOINT::_LA;
-
 /// Initializes the joint
 /**
  * The inboard and outboard links are set to NULL.
@@ -27,38 +24,6 @@ void JOINT::determine_q_tare()
 {
   // determine q tare
   determine_q(_q_tare);
-}
-
-/// (Relatively slow) method for determining the joint velocity from current link velocities
-void JOINT::determine_q_dot()
-{
-  MATRIXN m, U, V;
-  VECTORN S;
-
-/*
-  // get the spatial axes
-  const vector<SVELOCITY>& s = get_spatial_axes();
-
-  // convert to a matrix
-  to_matrix(s, m);
-
-  // compute the SVD
-  _LA.svd(m, U, S, V);
-
-  // get the velocities in computation frames
-  RigidBodyPtr inboard = get_inboard_link();
-  RigidBodyPtr outboard = get_outboard_link();
-  const SVELOCITY& vi = inboard->get_velocity();
-  const SVELOCITY& vo = outboard->get_velocity();
-
-  // get velocities in s's frame
-  shared_ptr<const POSE3> spose = get_pose();
-  SVELOCITY svi = POSE3::transform(spose, vi);
-  SVELOCITY svo = POSE3::transform(spose, vo);
-
-  // compute the change in velocity
-  m.mult(svo - svi, this->qd);
-*/
 }
 
 /// Evaluates the time derivative of the constraint
@@ -110,7 +75,7 @@ void JOINT::update_spatial_axes()
 
 /// Sets the number of degrees-of-freedom for this joint
 /**
- * \note resets all joint values (q, qd) to zero
+ * \note resets all joint values (q) to zero
  */
 void JOINT::init_data()
 {
@@ -118,8 +83,8 @@ void JOINT::init_data()
   const unsigned NEQ = num_constraint_eqns();
 
   q.set_zero(NDOF);
-  _q_tare.set_zero(NDOF);
   qd.set_zero(NDOF);
+  _q_tare.set_zero(NDOF);
   _s.resize(NDOF);
 }
 
@@ -127,18 +92,36 @@ void JOINT::init_data()
 void JOINT::set_inboard_pose(shared_ptr<const POSE3> pose, bool update_joint_pose) 
 {
   if (update_joint_pose)
+  {
     _F->update_relative_pose(pose);
+    shared_ptr<const POSE3> old_rpose = _Fb->rpose;
+    *_Fb = *_F;
+    _Fb->update_relative_pose(old_rpose);    
+  }
   else
     _F->rpose = pose;
+
+  // update spatial axes if both poses are set
+  if (_F->rpose && _Fb->rpose)
+    update_spatial_axes();
 }
 
 /// Sets the outboard pose on the joint
 void JOINT::set_outboard_pose(shared_ptr<const POSE3> pose, bool update_joint_pose) 
 {
   if (update_joint_pose)
+  {
     _Fb->update_relative_pose(pose);
+    shared_ptr<const POSE3> old_rpose = _F->rpose;
+    *_F = *_Fb;
+    _F->update_relative_pose(old_rpose);    
+  }
   else
     _Fb->rpose = pose;
+
+  // update spatial axes if both poses are set
+  if (_F->rpose && _Fb->rpose)
+    update_spatial_axes();
 }
 
 /// Sets the location of this joint

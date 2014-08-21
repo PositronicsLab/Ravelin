@@ -21,8 +21,7 @@ class JOINT
     virtual void set_outboard_pose(boost::shared_ptr<const POSE3> outboard_pose, bool update_joint_pose);
     virtual void update_spatial_axes();
     void evaluate_constraints_dot(REAL C[6]);
-    virtual void determine_q_dot();
-    void determine_q_tare();
+    virtual void determine_q_tare();
 
     /// Gets the pose of this joint (relative to the inboard pose instead of the outboard pose as returned by get_pose_from_outboard())
     boost::shared_ptr<const POSE3> get_pose() const { return _F; };
@@ -118,7 +117,7 @@ class JOINT
      * This method should be called at the beginning of all constructors of
      * all derived classes.
      */
-    void init_data();
+    virtual void init_data();
 
     /// The spatial axes (in joint frame) for the joint
     /**
@@ -135,13 +134,6 @@ class JOINT
      * re-enters the initial configuration.
      */
     VECTORN _q_tare;
-
-    /// Set whether _q_tare needs to be determined
-    bool _determine_q_tare;
-
-  private:
-    // shared linear algebra object
-    static LINALG _LA;
 }; // end class
 
 
