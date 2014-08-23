@@ -19,7 +19,7 @@ class FIXEDJOINT : public JOINT
     virtual unsigned num_dof() const { return 0; }
     virtual void evaluate_constraints(REAL C[]);
     virtual void set_inboard_pose(boost::shared_ptr<const POSE3> inboard_pose, bool update_joint_pose);
-    virtual void set_outboard_pose(boost::shared_ptr<const POSE3> outboard_pose, bool update_joint_pose);
+    virtual void set_outboard_pose(boost::shared_ptr<POSE3> outboard_pose, bool update_joint_pose);
 
     /// Fixed joint can never be in a singular configuration
     virtual bool is_singular_config() const { return false; }

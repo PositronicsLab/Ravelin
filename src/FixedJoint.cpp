@@ -71,7 +71,7 @@ void FIXEDJOINT::set_inboard_pose(shared_ptr<const POSE3> inboard_pose, bool upd
 }
 
 /// Sets the outboard link
-void FIXEDJOINT::set_outboard_pose(shared_ptr<const POSE3> outboard_pose, bool update_joint_pose)
+void FIXEDJOINT::set_outboard_pose(shared_ptr<POSE3> outboard_pose, bool update_joint_pose)
 {
   // call parent method since it does all of the work
   JOINT::set_outboard_pose(outboard_pose, update_joint_pose);

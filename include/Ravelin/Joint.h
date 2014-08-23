@@ -18,7 +18,7 @@ class JOINT
     void set_location(const VECTOR3& p);
     VECTOR3 get_location(bool use_outboard = false) const;
     virtual void set_inboard_pose(boost::shared_ptr<const POSE3> inboard_pose, bool update_joint_pose);
-    virtual void set_outboard_pose(boost::shared_ptr<const POSE3> outboard_pose, bool update_joint_pose);
+    virtual void set_outboard_pose(boost::shared_ptr<POSE3> outboard_pose, bool update_joint_pose);
     virtual void update_spatial_axes();
     void evaluate_constraints_dot(REAL C[6]);
     virtual void determine_q_tare();

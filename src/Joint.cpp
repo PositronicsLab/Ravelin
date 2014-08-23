@@ -107,17 +107,23 @@ void JOINT::set_inboard_pose(shared_ptr<const POSE3> pose, bool update_joint_pos
 }
 
 /// Sets the outboard pose on the joint
-void JOINT::set_outboard_pose(shared_ptr<const POSE3> pose, bool update_joint_pose) 
+void JOINT::set_outboard_pose(shared_ptr<POSE3> pose, bool update_joint_pose) 
 {
   if (update_joint_pose)
   {
+    // update Fb
     _Fb->update_relative_pose(pose);
     shared_ptr<const POSE3> old_rpose = _F->rpose;
     *_F = *_Fb;
+
+    // now update F
     _F->update_relative_pose(old_rpose);    
   }
   else
     _Fb->rpose = pose;
+
+  // set the pose to be relative to Fprime
+  pose->update_relative_pose(_Fprime);
 
   // update spatial axes if both poses are set
   if (_F->rpose && _Fb->rpose)
