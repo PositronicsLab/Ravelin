@@ -13,7 +13,7 @@ REAL& operator[](unsigned i)
   if (i > _len)
     throw InvalidIndexException();
   #endif
-  return _data[i+_start];
+  return _data[i*inc()+_start];
 }
 
 /// Returns the desired component of this vector
@@ -33,7 +33,7 @@ REAL* data(unsigned i)
   if (i >= _len)
     throw InvalidIndexException();
   #endif
-  return &_data[i+_start];
+  return &_data[i*inc()+_start];
 }
 
 /// Gets the appropriate data element
@@ -43,7 +43,7 @@ const REAL* data(unsigned i) const
   if (i >= _len)
     throw InvalidIndexException();
   #endif
-  return &_data[i+_start];
+  return &_data[i*inc()+_start];
 }
 
 
