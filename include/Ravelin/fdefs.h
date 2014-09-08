@@ -46,4 +46,5 @@
 #define REVOLUTEJOINT RevoluteJointf
 #define SPHERICALJOINT SphericalJointf
 #define UNIVERSALJOINT UniversalJointf
+#define MOVINGTRANSFORM3 MovingTransform3f 
 

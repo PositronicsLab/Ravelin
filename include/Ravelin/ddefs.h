@@ -46,4 +46,5 @@
 #define REVOLUTEJOINT RevoluteJointd
 #define SPHERICALJOINT SphericalJointd
 #define UNIVERSALJOINT UniversalJointd
+#define MOVINGTRANSFORM3 MovingTransform3d
 
