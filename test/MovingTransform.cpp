@@ -44,10 +44,8 @@ int main()
   // do the conversion, testing source to target
   MovingTransform3d M3 = MovingTransform3d::calc_transform(Ts, Tt, vs, vt);
 
-/* 
   // check Edot and rdot
   std::cout << "Edot: " << std::endl << M3.Edot;
   std::cout << "rdot: " << M3.rdot<< std::endl;
-*/
 }
 
