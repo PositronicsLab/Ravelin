@@ -415,7 +415,7 @@ QUAT QUAT::slerp(const QUAT& q1, const QUAT& q2, REAL alpha)
   QUAT qa(q1.x*sin1at, q1.y*sin1at, q1.z*sin1at, q1.w*sin1at);
   QUAT qb(q2.x*sinat, q2.y*sinat, q2.z*sinat, q2.w*sinat);
   if (use_conj)
-    qb = -qb;
+    qb.conjugate();
   QUAT qc = qa + qb;
   qc.x *= sint_i;
   qc.y *= sint_i;
@@ -470,12 +470,6 @@ bool QUAT::unit() const
 {
   REAL mag = magnitude();
   return (std::fabs(mag - (REAL) 1.0) < std::sqrt(EPS));
-}
-
-/// Constructs the conjugate of <b>this</b>
-QUAT QUAT::operator-() const
-{
-  return QUAT::conjugate(*this);
 }
 
 /// Subtracts a quaternion from <b>this</b>

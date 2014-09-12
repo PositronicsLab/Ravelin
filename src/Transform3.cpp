@@ -362,7 +362,7 @@ void TRANSFORM3::transform_spatial(const SVECTOR6& w, SVECTOR6& result) const
   // setup r and E
   MATRIX3 E = q;
   ORIGIN3 r = E.transpose_mult(-x);
-  VECTOR3 rv(r, target);
+  VECTOR3 rv(r, source);
 
   // get the components of w
   VECTOR3 top = w.get_upper();

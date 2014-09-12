@@ -91,6 +91,7 @@ SACCEL MOVINGTRANSFORM3::transform(const SACCEL& a, const SVELOCITY& v) const
  */
 MOVINGTRANSFORM3 MOVINGTRANSFORM3::calc_transform(boost::shared_ptr<const POSE3> source, boost::shared_ptr<const POSE3> target, const SVELOCITY& vs, const SVELOCITY& vt)
 {
+  const boost::shared_ptr<const POSE3> GLOBAL; 
   boost::shared_ptr<const POSE3> r, s; 
   MOVINGTRANSFORM3 result;
 
@@ -139,7 +140,7 @@ MOVINGTRANSFORM3 MOVINGTRANSFORM3::calc_transform(boost::shared_ptr<const POSE3>
     result.r = result.E.transpose_mult(-x);
 
     // get the velocity of s in the target frame
-    SVELOCITY vs_target = POSE3::transform(boost::shared_ptr<POSE3>(), vs);
+    SVELOCITY vs_target = POSE3::transform(GLOBAL, vs);
 
     // setup result Edot
     MATRIX3 vs_target_hat = MATRIX3::skew_symmetric(vs_target.get_angular());
@@ -189,7 +190,7 @@ MOVINGTRANSFORM3 MOVINGTRANSFORM3::calc_transform(boost::shared_ptr<const POSE3>
     result.r = result.E.transpose_mult(-x);
 
     // get the velocity of t in the global frame
-    SVELOCITY vt_global = POSE3::transform(boost::shared_ptr<POSE3>(), vt);
+    SVELOCITY vt_global = POSE3::transform(GLOBAL, vt);
 
     // setup result Edot
     MATRIX3 vt_hat = MATRIX3::skew_symmetric(-vt_global.get_angular());
@@ -212,34 +213,97 @@ MOVINGTRANSFORM3 MOVINGTRANSFORM3::calc_transform(boost::shared_ptr<const POSE3>
       throw std::runtime_error("Target frame's relative pose not equal to pose of velocity");
     #endif
 
-    // compute the inverse pose of p 
-    QUAT inv_target_q = QUAT::invert(target->q);
-    QUAT q = inv_target_q * source->q;
-    ORIGIN3 x = inv_target_q * (source->x - target->x);
+    if (!source->rpose)
+    {
+      // compute the inverse pose of p 
+      QUAT inv_target_q = QUAT::invert(target->q);
+      QUAT q = inv_target_q * source->q;
+      ORIGIN3 x = inv_target_q * (source->x - target->x);
 
-    // setup the result
-    result.E = q;
-    result.r = result.E.transpose_mult(-x);
+      // setup the result
+      result.E = q;
+      result.r = result.E.transpose_mult(-x);
 
-    // setup rotation matrices for calculating Edot
-    MATRIX3 rRs = source->q;
-    MATRIX3 tRr = inv_target_q;
+      // setup rotation matrices for calculating Edot
+      const QUAT& wQs = source->q;
+      QUAT sQw = wQs.inverse();
+      const QUAT& tQw = inv_target_q;
+      QUAT wQt = tQw.inverse();
+      MATRIX3 tRw = tQw;
+      MATRIX3 wRs = wQs;
 
-    // E = tRr * rRs
-    // d/dt E = tRr * \dot{rRs} + \dot{tRr} * rRs
-    MATRIX3 vs_hat = MATRIX3::skew_symmetric(vs.get_angular());
-    MATRIX3 vt_hat = MATRIX3::skew_symmetric(vt.get_angular());
-    result.Edot = tRr * vs_hat * rRs - tRr * vt_hat * rRs;   
+      // E = tRw * wRs
+      MATRIX3 vs_hat = MATRIX3::skew_symmetric(vs.get_angular());
+      MATRIX3 vt_hat = MATRIX3::skew_symmetric(vt.get_angular());
+      
+      // E = tRw * wRs
+      // d/dt E = tRw * \dot{wRs} + \dot{tRw} * wRs
+      result.Edot = tRw * vs_hat * wRs - tRw * vt_hat * wRs;   
 
-    // r = rRs' * (xr^target - xr^source)
-    // d/dt r =  d/dt xRs' * (xr^target - xr^source) +
-    //           rRs' * d/dt (xr^target - xr^source)
-    ORIGIN3 vt_o(vt.get_linear());
-    ORIGIN3 vs_o(vs.get_linear());
-    result.rdot = -rRs.transpose_mult(vs_hat) * (target->x - source->x) + 
-                  rRs.transpose_mult(vt_o - vs_o);
+      // r = sRw * (xw^target - xw^source)
+      // d/dt r =  d/dt sRw * (xw^target - xw^source) +
+      //           wRs' * d/dt (xw^target - dw^source)
+      // d/dt sRw = (d/dt wRs)' = (skew(omegas) * wRs)' = wRs' * -skew(omegas)
+      ORIGIN3 vt_o(vt.get_linear());
+      ORIGIN3 vs_o(vs.get_linear());
+      result.rdot = -(sQw * (vs_hat * (target->x - source->x)))
+                    +sQw * (vt_o - vs_o);
 
-    return result;
+      return result;
+    }
+    else
+    {
+      // compute the inverse pose of p 
+      QUAT inv_target_q = QUAT::invert(target->q);
+      QUAT q = inv_target_q * source->q;
+      ORIGIN3 x = inv_target_q * (source->x - target->x);
+
+      // setup the result
+      result.E = q;
+      result.r = result.E.transpose_mult(-x);
+
+      // setup rotation matrices for calculating Edot
+      const QUAT& rQs = source->q;
+      const QUAT& tQr = inv_target_q;
+
+      // get transform from r to global
+      r = source->rpose;
+      TRANSFORM3 wTr = POSE3::calc_relative_pose(r, GLOBAL);
+
+      // setup tRw and wRs
+      QUAT tQw = tQr * wTr.q.inverse();
+      QUAT wQt = tQw.inverse();
+      QUAT wQs = wTr.q * rQs; 
+      QUAT sQw = wQs.inverse();
+
+      // get the velocities in the global frame
+      SVELOCITY vsw = wTr.transform(vs);
+      SVELOCITY vtw = wTr.transform(vt);
+
+      // E = tRw * wRs
+      MATRIX3 vs_hat = MATRIX3::skew_symmetric(vsw.get_angular());
+      MATRIX3 vt_hat = MATRIX3::skew_symmetric(vtw.get_angular());
+      
+      // E = tRw * wRs
+      // d/dt E = tRw * \dot{wRs} + \dot{tRw} * wRs
+      // \dot{tRw} = \dot{wRt}' = (vt_hat * wRt)' = -tRw * vt_hat
+      MATRIX3 tRw = tQw;
+      MATRIX3 wRs = wQs;
+      result.Edot = tRw * vs_hat * wRs - tRw * vt_hat * wRs;   
+
+      // get the difference between the two frames in the world frame
+      VECTOR3 diff = wTr.transform_vector(VECTOR3(target->x - source->x, r));
+
+      // r = wRs' * (xw^target - xw^source)
+      // d/dt r =  d/dt wRs' * (xw^target - xw^source) +
+      //           wRs' * d/dt (xw^target - dw^source)
+      ORIGIN3 vt_o(vtw.get_linear());
+      ORIGIN3 vs_o(vsw.get_linear());
+      result.rdot = -(sQw * (vs_hat * ORIGIN3(diff))) + 
+                    sQw * (vt_o - vs_o);
+
+      return result;
+    }
   }
   else
   {
@@ -299,31 +363,34 @@ MOVINGTRANSFORM3 MOVINGTRANSFORM3::calc_transform(boost::shared_ptr<const POSE3>
     QUAT q = inv_right_q * left_q;      
     ORIGIN3 x = inv_right_q * (left_x - right_x);
 
-    // get the velocities of s and t in the common frame (r)
-    SVELOCITY vs_r = POSE3::transform(r, vs);
-    SVELOCITY vt_r = POSE3::transform(r, vt);
+    // get the transform from r to the global frame
+    TRANSFORM3 wTr = POSE3::calc_relative_pose(r, GLOBAL);
+
+    // get the velocities of s and t in the global frame
+    SVELOCITY vsw = POSE3::transform(GLOBAL, vs);
+    SVELOCITY vtw = POSE3::transform(GLOBAL, vt);
 
     // setup result r and E
     result.E = q;
     result.r = result.E.transpose_mult(-x);
 
     // setup rotation matrices for calculating Edot
-    MATRIX3 rRs = left_q;
-    MATRIX3 tRr = inv_right_q;
+    MATRIX3 wRs = wTr.q * left_q;
+    MATRIX3 tRw = inv_right_q * wTr.q.inverse();
 
-    // E = tRr * rRs
-    // d/dt E = tRr * \dot{rRs} + \dot{tRr} * rRs
-    MATRIX3 vs_r_hat = MATRIX3::skew_symmetric(vs_r.get_angular());
-    MATRIX3 vt_r_hat = MATRIX3::skew_symmetric(vt_r.get_angular());
-    result.Edot = tRr * vs_r_hat * rRs - tRr * vt_r_hat * rRs;   
+    // E = tRw * wRs
+    // d/dt E = tRw * \dot{wRs} + \dot{tRw} * wRs
+    MATRIX3 vs_hat = MATRIX3::skew_symmetric(vsw.get_angular());
+    MATRIX3 vt_hat = MATRIX3::skew_symmetric(vtw.get_angular());
+    result.Edot = tRw * vs_hat * wRs - tRw * vt_hat * wRs;   
 
-    // r = rRs' * (xr^target - xr^source)
-    // d/dt r =  d/dt xRs' * (xr^target - xr^source) +
-    //           rRs' * d/dt (xr^target - xr^source)
-    ORIGIN3 vt_r_o(vt_r.get_linear());
-    ORIGIN3 vs_r_o(vs_r.get_linear());
-    result.rdot = -rRs.transpose_mult(vs_r_hat) * (right_x - left_x) + 
-                  rRs.transpose_mult(vt_r_o - vs_r_o);
+    // r = wRs' * (x^target - x^source)
+    // d/dt r =  d/dt wRs' * (x^target - x^source) +
+    //           wRs' * d/dt (x^target - x^source)
+    ORIGIN3 vt_o(vt.get_linear());
+    ORIGIN3 vs_o(vs.get_linear());
+    result.rdot = -wRs.transpose_mult(vs_hat) * (right_x - left_x) + 
+                  wRs.transpose_mult(vt_o - vs_o);
 
     return result;
   }
