@@ -15,7 +15,7 @@ class MOVINGTRANSFORM3
 {
   public:
     MOVINGTRANSFORM3();
-    SACCEL transform(const SACCEL& a, const SVELOCITY& v) const;
+    SACCEL transform(const SACCEL& a) const;
 /*
     POSE3 transform(const POSE3& p) const;
     POSE3 inverse_transform(const POSE3& p) const;
@@ -26,6 +26,9 @@ class MOVINGTRANSFORM3
 */
     MOVINGTRANSFORM3& operator=(const MOVINGTRANSFORM3& source);
     static MOVINGTRANSFORM3 calc_transform(boost::shared_ptr<const POSE3> source, boost::shared_ptr<const POSE3> target, const SVELOCITY& vs, const SVELOCITY& vt);
+
+    /// the velocity of the original frame
+    SVELOCITY v;
 
     /// the r vector
     ORIGIN3 r;

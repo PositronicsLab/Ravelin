@@ -225,4 +225,57 @@ TEST(MovingFrameTest, SourceToTargetRelMAndN)
   EXPECT_NEAR(M5.rdot[2], +2.9654, 5e-3);
 }
 
+TEST(MovingFrameTest, AccelConversion)
+{
+  shared_ptr<Pose3d> GLOBAL;
+  const double DT = 1e-4;
+
+  // setup a rigid body pose 
+  shared_ptr<Pose3d> body_frame(new Pose3d); 
+  body_frame->rpose = GLOBAL;
+  body_frame->x = Origin3d(-.1952, -.2176, -.3031);
+  body_frame->q = Matrix3d(0.8849, 0.378, 0.2722, 0.4634, -0.6546, -0.5973, -0.0476, 0.6546, -0.7544);
+
+  // setup a dummy pose for the rigid body
+  shared_ptr<Pose3d> dummy_rigid_pose(new Pose3d);
+  dummy_rigid_pose->rpose = body_frame;
+
+  // setup a frame defined in the global system 
+  shared_ptr<Pose3d> pose(new Pose3d); 
+  pose->rpose = GLOBAL;
+  pose->x = Origin3d(1, 2, 3);
+
+  // set the velocity of the body
+  SVelocityd body_v(1, 2, 3, 4, 5, 6, body_frame);
+  SVelocityd pose_v(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, GLOBAL);; 
+
+  // set the acceleration for the body
+  SAcceld body_a(-0.9792, -1.1564, -0.5336, -2.0026, 0.9642, 0.5201, body_frame);
+
+  // do the conversion, testing source to target
+  MovingTransform3d M5 = MovingTransform3d::calc_transform(dummy_rigid_pose, pose, body_v, pose_v);
+
+  // now compute the transformation of the acceleration to pose
+  SAcceld pose_a = M5.transform(body_a);
+
+  // *** now numerically integrate body_frame forward by dt
+  // update the body frame origin
+  body_frame->x += Origin3d(body_v.get_linear())*DT;
+  Quatd qd = Quatd::deriv(pose->q, body_v.get_angular());
+  body_frame->q += qd*DT;
+  body_frame->q.normalize();
+
+  // update the velocity
+  for (unsigned i=0; i< body_v.size(); i++)
+    body_v[i] += body_a[i]*DT;
+
+  // given the new poses and new velocities, compute acceleration numerically
+  SVelocityd vdiff = body_v - pose_v;
+  vdiff /= DT;
+
+  // test numerically
+  for (unsigned i=0; i< vdiff.size(); i++)
+    EXPECT_NEAR(vdiff[i], pose_a[i], 1e-3);
+}
+
 

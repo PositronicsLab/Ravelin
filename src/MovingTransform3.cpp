@@ -29,8 +29,8 @@ MOVINGTRANSFORM3& MOVINGTRANSFORM3::operator=(const MOVINGTRANSFORM3& source)
   return *this;
 }
 
-/// Transforms a spatial acceleration and spatial velocity (both defined in the source frame) to a spatial acceleration (in the target frame)
-SACCEL MOVINGTRANSFORM3::transform(const SACCEL& a, const SVELOCITY& v) const
+/// Transforms a spatial acceleration (defined relative to the source frame's relative pose) to a spatial acceleration (relative to the target frame's relative pose)
+SACCEL MOVINGTRANSFORM3::transform(const SACCEL& a) const
 {
   #ifndef NEXCEPT
   if (a.pose != source || v.pose != source)
@@ -38,8 +38,8 @@ SACCEL MOVINGTRANSFORM3::transform(const SACCEL& a, const SVELOCITY& v) const
   #endif
 
   // setup r and rdot as vectors
-  VECTOR3 rv(r, target);
-  VECTOR3 rdotv(rdot, target);
+  VECTOR3 rv(r, source);
+  VECTOR3 rdotv(rdot, source);
 
   // get the components of a 
   VECTOR3 atop = a.get_upper();
@@ -106,6 +106,7 @@ MOVINGTRANSFORM3 MOVINGTRANSFORM3::calc_transform(boost::shared_ptr<const POSE3>
     result.rdot.set_zero();
     result.E.set_identity();
     result.Edot.set_zero();
+    result.v = vs;
     return result;
   }
 
@@ -138,6 +139,9 @@ MOVINGTRANSFORM3 MOVINGTRANSFORM3::calc_transform(boost::shared_ptr<const POSE3>
     // setup result r and E
     result.E = q;
     result.r = result.E.transpose_mult(-x);
+
+    // store the velocity
+    result.v = vs;
 
     // get the velocity of s in the target frame
     SVELOCITY vs_target = POSE3::transform(GLOBAL, vs);
@@ -189,6 +193,9 @@ MOVINGTRANSFORM3 MOVINGTRANSFORM3::calc_transform(boost::shared_ptr<const POSE3>
     result.E = q;
     result.r = result.E.transpose_mult(-x);
 
+    // set the velocity of the source
+    result.v.set_zero(source);
+
     // get the velocity of t in the global frame
     SVELOCITY vt_global = POSE3::transform(GLOBAL, vt);
 
@@ -212,6 +219,9 @@ MOVINGTRANSFORM3 MOVINGTRANSFORM3::calc_transform(boost::shared_ptr<const POSE3>
     if (vt.pose != target->rpose)
       throw std::runtime_error("Target frame's relative pose not equal to pose of velocity");
     #endif
+
+    // store the velocity of the source
+    result.v = vs;
 
     if (!source->rpose)
     {
@@ -384,12 +394,16 @@ MOVINGTRANSFORM3 MOVINGTRANSFORM3::calc_transform(boost::shared_ptr<const POSE3>
     MATRIX3 vt_hat = MATRIX3::skew_symmetric(vtw.get_angular());
     result.Edot = tRw * vs_hat * wRs - tRw * vt_hat * wRs;   
 
+    // get the positions of the origins in the global frame
+    ORIGIN3 target_x = right_x + wTr.x;
+    ORIGIN3 source_x = left_x + wTr.x;
+
     // r = wRs' * (x^target - x^source)
     // d/dt r =  d/dt wRs' * (x^target - x^source) +
     //           wRs' * d/dt (x^target - x^source)
-    ORIGIN3 vt_o(vt.get_linear());
-    ORIGIN3 vs_o(vs.get_linear());
-    result.rdot = -wRs.transpose_mult(vs_hat) * (right_x - left_x) + 
+    ORIGIN3 vt_o(vtw.get_linear());
+    ORIGIN3 vs_o(vsw.get_linear());
+    result.rdot = -wRs.transpose_mult(vs_hat) * (target_x - source_x) + 
                   wRs.transpose_mult(vt_o - vs_o);
 
     return result;
