@@ -26,6 +26,7 @@ MOVINGTRANSFORM3& MOVINGTRANSFORM3::operator=(const MOVINGTRANSFORM3& source)
   this->E = source.E;
   this->rdot = source.rdot;
   this->Edot = source.Edot;
+  this->v = source.v;
   return *this;
 }
 
