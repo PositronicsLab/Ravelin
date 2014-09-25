@@ -470,11 +470,12 @@ SPATIAL_RB_INERTIA TRANSFORM3::transform(const SPATIAL_RB_INERTIA& J) const
   ORIGIN3 r = E.transpose_mult(-x);
 
   // precompute some things
-  ORIGIN3 y = J.h - r*J.m;
-  MATRIX3 rx = MATRIX3::skew_symmetric(r);
-  MATRIX3 hx = MATRIX3::skew_symmetric(J.h);
-  MATRIX3 yx = MATRIX3::skew_symmetric(y);
-  MATRIX3 Z = J.J + (rx*hx) + (yx*rx);
+  ORIGIN3 y = J.h - r;
+//  MATRIX3 rx = MATRIX3::skew_symmetric(r);
+//  MATRIX3 hx = MATRIX3::skew_symmetric(J.h);
+//  MATRIX3 yx = MATRIX3::skew_symmetric(y);
+//  MATRIX3 Z = J.J + (rx*hx) + (yx*rx);
+  MATRIX3 Z = J.J;
 
   // transform the inertia 
   SPATIAL_RB_INERTIA Jx(target);
