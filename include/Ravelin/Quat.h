@@ -57,7 +57,6 @@ class QUAT
     unsigned size() const { return 4; }
     REAL& operator[](unsigned i);
     const REAL& operator[](unsigned i) const;
-    QUAT operator-() const;
     QUAT operator-(const QUAT& q) const;
     QUAT& operator-=(const QUAT& q);
     QUAT operator+(const QUAT& q) const;
