@@ -8,7 +8,7 @@
 #endif
 
 /// Defines a sliding joint 
-class PRISMATICJOINT : public JOINT
+class PRISMATICJOINT : public virtual JOINT
 {
   public:
     PRISMATICJOINT();

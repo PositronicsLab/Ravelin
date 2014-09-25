@@ -8,7 +8,7 @@
 #endif
 
 /// Defines a joint for purely rotational motion 
-class UNIVERSALJOINT : public JOINT
+class UNIVERSALJOINT : public virtual JOINT
 {
   public:
     enum Axis { eAxis1, eAxis2 };

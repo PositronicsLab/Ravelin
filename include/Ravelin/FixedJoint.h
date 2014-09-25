@@ -8,7 +8,7 @@
 #endif
 
 /// Defines a joint for fixing two bodies together or fixing one body to the ground
-class FIXEDJOINT : public JOINT
+class FIXEDJOINT : public virtual JOINT
 {
   public:
     FIXEDJOINT();

@@ -8,7 +8,7 @@
 #endif
 
 /// Defines a joint for purely rotational motion 
-class SPHERICALJOINT : public JOINT
+class SPHERICALJOINT : public virtual JOINT
 {
   public:
     enum Axis { eAxis1, eAxis2, eAxis3 };

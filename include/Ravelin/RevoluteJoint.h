@@ -8,7 +8,7 @@
 #endif
 
 /// Defines a rotary joint 
-class REVOLUTEJOINT : public JOINT
+class REVOLUTEJOINT : public virtual JOINT
 {
   public:
     REVOLUTEJOINT();

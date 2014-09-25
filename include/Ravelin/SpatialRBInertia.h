@@ -72,13 +72,15 @@ class SPATIAL_RB_INERTIA
       M.resize(SPATIAL_DIM, SPATIAL_DIM);
 
       // precompute matrices
+      ORIGIN3 hm = h*m;
       MATRIX3 hx = MATRIX3::skew_symmetric(h);
+      MATRIX3 hxm = MATRIX3::skew_symmetric(hm);
 
       // setup the 3x3 blocks
-      M.set_sub_mat(0,0, hx, eTranspose);
-      M.set_sub_mat(3,0, J);
+      M.set_sub_mat(0,0, hxm, eTranspose);
+      M.set_sub_mat(3,0, J-hx*hxm);
       M.set_sub_mat(0,3, MATRIX3(m, 0, 0, 0, m, 0, 0, 0, m));
-      M.set_sub_mat(3,3, hx);
+      M.set_sub_mat(3,3, hxm);
 
       return M;
     }
@@ -106,9 +108,9 @@ class SPATIAL_RB_INERTIA
 
   private:
     void mult_spatial(const SVECTOR6& t, SVECTOR6& result) const;
-    void mult_spatial(const SVECTOR6& t, const MATRIX3& hx, SVECTOR6& result) const;
-    void inverse_mult_spatial(const SFORCE& w, SVECTOR6& result) const;
-    void inverse_mult_spatial(const SFORCE& w, const MATRIX3& iJ, const MATRIX3& hx, const MATRIX3& hxiJ, REAL m, SVECTOR6& result) const;
+    void mult_spatial(const SVECTOR6& t, const MATRIX3& hxm, const MATRIX3& Jstar, SVECTOR6& result) const;
+    void inverse_mult_spatial(const SVECTOR6& w, SVECTOR6& result) const;
+    void inverse_mult_spatial(const SVECTOR6& w, const MATRIX3& iJ, const MATRIX3& hx, const MATRIX3& hxiJ, REAL m, SVECTOR6& result) const;
 
 }; // end class
 

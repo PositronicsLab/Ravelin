@@ -36,8 +36,8 @@ void FIXEDJOINT::setup_joint()
   // get the two poses 
   shared_ptr<const POSE3> inboard = get_inboard_pose();
   shared_ptr<const POSE3> outboard = get_outboard_pose();
-  assert(inboard);
-  assert(outboard);
+  if (!inboard || !outboard)
+    return;
 
   // get the rotation matrices
   MATRIX3 Ri = inboard->q;

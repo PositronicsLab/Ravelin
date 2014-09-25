@@ -69,75 +69,56 @@ void SPATIAL_RB_INERTIA::mult_spatial(const SVECTOR6& t, SVECTOR6& result) const
 
   // do some precomputation
   MATRIX3 hx = MATRIX3::skew_symmetric(h);
+  MATRIX3 hxm = MATRIX3::skew_symmetric(h*m);
 
   // compute result
-  VECTOR3 rtop(tbot*m + hx.transpose_mult(ttop), pose);
-  VECTOR3 rbot(J*ttop + hx*tbot, pose);
+  VECTOR3 rtop(tbot*m + hxm.transpose_mult(ttop), pose);
+  VECTOR3 rbot((J-hx*hxm)*ttop + hxm*tbot, pose);
   result.pose = pose;
   result.set_upper(rtop);
   result.set_lower(rbot);  
 }
 
 /// Multiplies a spatial vector
-void SPATIAL_RB_INERTIA::mult_spatial(const SVECTOR6& t, const MATRIX3& hx, SVECTOR6& result) const
+void SPATIAL_RB_INERTIA::mult_spatial(const SVECTOR6& t, const MATRIX3& hxm, const MATRIX3& Jmod, SVECTOR6& result) const
 {
   // get necessary components of t
   ORIGIN3 ttop(t.get_upper());
   ORIGIN3 tbot(t.get_lower());
 
   // compute result
-  VECTOR3 rtop(tbot*m + hx.transpose_mult(ttop), pose);
-  VECTOR3 rbot(J*ttop + hx*tbot, pose);
+  VECTOR3 rtop(tbot*m + hxm.transpose_mult(ttop), pose);
+  VECTOR3 rbot(Jmod*ttop + hxm*tbot, pose);
   result.pose = pose;
   result.set_upper(rtop);
   result.set_lower(rbot);  
 }
 
 /// Multiplies the inverse of this inertia by a spatial vector
-void SPATIAL_RB_INERTIA::inverse_mult_spatial(const SFORCE& w, SVECTOR6& result) const
+void SPATIAL_RB_INERTIA::inverse_mult_spatial(const SVECTOR6& w, SVECTOR6& result) const
 {
-  // get center-of-mass vector
-  ORIGIN3 op = h/m;
-
   // precompute some things
-  MATRIX3 opx = MATRIX3::skew_symmetric(op);
-  MATRIX3 mpox = MATRIX3::skew_symmetric(-h);
-
-  // get inertia tensor at c.o.m.
-  MATRIX3 Jstar = J - opx*mpox; 
+  MATRIX3 hx = MATRIX3::skew_symmetric(h);
 
   // compute the inverse of the c.o.m. inertia matrix
-  MATRIX3 iJ = MATRIX3::invert(Jstar);
+  MATRIX3 iJ = MATRIX3::invert(J);
 
-  // compute opx * inv(J)
-  MATRIX3 opxiJ = opx * iJ;
+  // compute h * inv(J)
+  MATRIX3 hxiJ = hx * iJ;
 
-  // compute inverse mass
-  REAL inv_m = (REAL) 1.0/m;
-
-  // get the components of the force 
-  ORIGIN3 top(w.get_upper());
-  ORIGIN3 bot(w.get_lower());
-
-  // do the arithmetic
-  VECTOR3 ttop(opxiJ.transpose_mult(top) + iJ*bot, pose); 
-  VECTOR3 tbot(opxiJ*opx.transpose_mult(top) + top*inv_m + opxiJ*bot, pose); 
-
-  // set the spatial vector components
-  result.pose = pose;
-  result.set_upper(ttop);
-  result.set_lower(tbot);
+  // setup the result
+  inverse_mult_spatial(w, iJ, hx, hxiJ, 1.0/m, result); 
 }
 
-void SPATIAL_RB_INERTIA::inverse_mult_spatial(const SFORCE& w, const MATRIX3& iJ, const MATRIX3& opx, const MATRIX3& opxiJ, REAL inv_m, SVECTOR6& result) const
+void SPATIAL_RB_INERTIA::inverse_mult_spatial(const SVECTOR6& w, const MATRIX3& iJ, const MATRIX3& hx, const MATRIX3& hxiJ, REAL inv_m, SVECTOR6& result) const
 {
   // get the components of the force 
   ORIGIN3 top(w.get_upper());
   ORIGIN3 bot(w.get_lower());
 
   // do the arithmetic
-  VECTOR3 ttop(opxiJ.transpose_mult(top) + iJ*bot, pose); 
-  VECTOR3 tbot(opxiJ*opx.transpose_mult(top) + top*inv_m + opxiJ*bot, pose); 
+  VECTOR3 ttop(hxiJ.mult(top) + bot*inv_m + hxiJ*hx.transpose_mult(bot), pose); 
+  VECTOR3 tbot(iJ*top + hxiJ.transpose_mult(bot), pose); 
   result.pose = pose;
   result.set_upper(ttop);
   result.set_lower(tbot);
@@ -164,39 +145,10 @@ SVELOCITY SPATIAL_RB_INERTIA::inverse_mult(const SMOMENTUM& w) const
     throw FrameException();
   #endif
 
-  // get center-of-mass vector
-  ORIGIN3 op = h/m;
+  SVELOCITY v;
+  inverse_mult_spatial(w, v);
 
-  // precompute some things
-  MATRIX3 opx = MATRIX3::skew_symmetric(op);
-  MATRIX3 mpox = MATRIX3::skew_symmetric(-h);
-
-  // get inertia tensor at c.o.m.
-  MATRIX3 Jstar = J - opx*mpox; 
-
-  // compute the inverse of the c.o.m. inertia matrix
-  MATRIX3 iJ = MATRIX3::invert(Jstar);
-
-  // compute opx * inv(J)
-  MATRIX3 opxiJ = opx * iJ;
-
-  // compute inverse mass
-  REAL inv_m = (REAL) 1.0/m;
-
-  // get the components of the momentum
-  ORIGIN3 top(w.get_upper());
-  ORIGIN3 bot(w.get_lower());
-
-  // do the arithmetic
-  VECTOR3 ttop(opxiJ.transpose_mult(top) + iJ*bot, pose); 
-  VECTOR3 tbot(opxiJ*opx.transpose_mult(top) + top*inv_m + opxiJ*bot, pose); 
-
-  // set the spatial vector components
-  SVELOCITY result(pose);
-  result.set_lower(tbot);
-  result.set_upper(ttop);
-
-  return result;
+  return v;
 }
 
 /// Multiplies the inverse of this spatial matrix by a force 
@@ -206,24 +158,17 @@ std::vector<SACCEL>& SPATIAL_RB_INERTIA::inverse_mult(const std::vector<SFORCE>&
   if (result.empty())
     return result;
 
-  // compute inverse mass
-  REAL inv_m = (REAL) 1.0/m;
-
-  // get center-of-mass vector
-  ORIGIN3 op = h/m;
-
   // precompute some things
-  MATRIX3 opx = MATRIX3::skew_symmetric(op);
-  MATRIX3 mpox = MATRIX3::skew_symmetric(-h);
-
-  // get inertia tensor at c.o.m.
-  MATRIX3 Jstar = J - opx*mpox; 
+  MATRIX3 hx = MATRIX3::skew_symmetric(h);
 
   // compute the inverse of the c.o.m. inertia matrix
-  MATRIX3 iJ = MATRIX3::invert(Jstar);
+  MATRIX3 iJ = MATRIX3::invert(J);
 
-  // compute opx * inv(J)
-  MATRIX3 opxiJ = opx * iJ;
+  // compute h * inv(J)
+  MATRIX3 hxiJ = hx * iJ;
+
+  // compute 1/m
+  REAL inv_m = ((REAL) 1.0)/m;
 
   // get the components of the force 
   for (unsigned i=0; i< w.size(); i++)
@@ -234,7 +179,7 @@ std::vector<SACCEL>& SPATIAL_RB_INERTIA::inverse_mult(const std::vector<SFORCE>&
     #endif
 
     // do the spatial arithmetic
-    inverse_mult_spatial(w[i], iJ, opx, opxiJ, inv_m, result[i]);
+    inverse_mult_spatial(w[i], iJ, hx, hxiJ, inv_m, result[i]);
   }
 
   return result;
@@ -363,6 +308,8 @@ std::vector<SFORCE>& SPATIAL_RB_INERTIA::mult(const std::vector<SACCEL>& t, std:
 
   // do some precomputation
   MATRIX3 hx = MATRIX3::skew_symmetric(h);
+  MATRIX3 hxm = MATRIX3::skew_symmetric(h*m);
+  MATRIX3 Jstar = J - (hx*hxm);
 
   // carry out multiplication one column at a time
   for (unsigned i=0; i< N; i++)
@@ -373,7 +320,7 @@ std::vector<SFORCE>& SPATIAL_RB_INERTIA::mult(const std::vector<SACCEL>& t, std:
     #endif
 
     // compute result
-    mult_spatial(t[i], hx, result[i]);
+    mult_spatial(t[i], hx, Jstar, result[i]);
   } 
 
   return result;
@@ -394,6 +341,8 @@ std::vector<SMOMENTUM>& SPATIAL_RB_INERTIA::mult(const std::vector<SVELOCITY>& t
 
   // do some precomputation
   MATRIX3 hx = MATRIX3::skew_symmetric(h);
+  MATRIX3 hxm = MATRIX3::skew_symmetric(h*m);
+  MATRIX3 Jstar = J - (hx*hxm);
 
   // carry out multiplication one column at a time
   for (unsigned i=0; i< N; i++)
@@ -404,7 +353,7 @@ std::vector<SMOMENTUM>& SPATIAL_RB_INERTIA::mult(const std::vector<SVELOCITY>& t
     #endif
 
     // compute result
-    mult_spatial(t[i], hx, result[i]);
+    mult_spatial(t[i], hxm, Jstar, result[i]);
   } 
 
   return result;
