@@ -18,6 +18,9 @@ class POSE3;
  * where hx is the skew symmetric matrix determined by h (h is the vector from
  * the origin of the reference frame to the center of mass) and I is the 
  * identity matrix.
+ * The inverse of this matrix is:
+ * | -inv(J)*hx          inv(J)    |
+ * | I/m - hx*inv(J)*hx  hx*inv(J) |
  */
 class SPATIAL_RB_INERTIA
 {

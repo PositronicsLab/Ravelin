@@ -117,8 +117,8 @@ void SPATIAL_RB_INERTIA::inverse_mult_spatial(const SVECTOR6& w, const MATRIX3& 
   ORIGIN3 bot(w.get_lower());
 
   // do the arithmetic
-  VECTOR3 ttop(hxiJ.mult(top) + bot*inv_m + hxiJ*hx.transpose_mult(bot), pose); 
-  VECTOR3 tbot(iJ*top + hxiJ.transpose_mult(bot), pose); 
+  VECTOR3 ttop(hxiJ.transpose_mult(top) + iJ*bot, pose); 
+  VECTOR3 tbot(top*inv_m + hx*(hxiJ.transpose_mult(top)) + hxiJ.mult(bot), pose);
   result.pose = pose;
   result.set_upper(ttop);
   result.set_lower(tbot);
