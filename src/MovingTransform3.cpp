@@ -15,6 +15,7 @@ MOVINGTRANSFORM3::MOVINGTRANSFORM3()
   E.set_identity();
   rdot.set_zero();
   Edot.set_zero();
+  v.set_zero();
 }
 
 /// Copies a moving transform to another
@@ -31,10 +32,13 @@ MOVINGTRANSFORM3& MOVINGTRANSFORM3::operator=(const MOVINGTRANSFORM3& source)
 }
 
 /// Transforms a spatial acceleration (defined relative to the source frame's relative pose) to a spatial acceleration (relative to the target frame's relative pose)
+/**
+ * \param a an acceleration defined in the source frame
+ */
 SACCEL MOVINGTRANSFORM3::transform(const SACCEL& a) const
 {
   #ifndef NEXCEPT
-  if (a.pose != source || v.pose != source)
+  if (a.pose != source)
     throw FrameException();
   #endif
 
@@ -78,12 +82,8 @@ SACCEL MOVINGTRANSFORM3::transform(const SACCEL& a) const
 /**
  * \param source the source frame
  * \param target the target frame
- * \param vs the velocity of the source frame, which is to be defined such that
- *        vs.pose = source->rpose (if source is the GLOBAL frame, vs must equal
- *        zero.  
- * \param vt the velocity of the target frame, which is to be defined such that
- *        vt.pose = target->rpose (if target is the GLOBAL frame, vt must equal
- *        zero.
+ * \param vs the velocity of the source frame
+ * \param vt the velocity of the target frame
  * \return a moving transformation
  * \note If source/target are not defined with respect to the GLOBAL frame,
  *       the caller must take care that the intermediate frames are either
@@ -107,19 +107,15 @@ MOVINGTRANSFORM3 MOVINGTRANSFORM3::calc_transform(boost::shared_ptr<const POSE3>
     result.rdot.set_zero();
     result.E.set_identity();
     result.Edot.set_zero();
-    result.v = vs;
+    result.v = POSE3::transform(source, vs);
     return result;
   }
 
   // check for special case: transformation to global frame
   if (!target)
   {
-    // verify vs is in the proper frame
-    #ifndef NEXCEPT
-    if (vs.pose != source->rpose)
-      throw std::runtime_error("Source frame's relative pose not equal to pose of velocity");
-
     // make sure that the target is zero
+    #ifndef NEXCEPT
     if (vt.get_linear().norm() > EPS || vt.get_angular().norm() > EPS)
       throw std::runtime_error("Target frame is global frame but velocity is non-zero");
     #endif
@@ -142,7 +138,7 @@ MOVINGTRANSFORM3 MOVINGTRANSFORM3::calc_transform(boost::shared_ptr<const POSE3>
     result.r = result.E.transpose_mult(-x);
 
     // store the velocity
-    result.v = vs;
+    result.v = POSE3::transform(source, vs);
 
     // get the velocity of s in the target frame
     SVELOCITY vs_target = POSE3::transform(GLOBAL, vs);
@@ -163,12 +159,8 @@ MOVINGTRANSFORM3 MOVINGTRANSFORM3::calc_transform(boost::shared_ptr<const POSE3>
   // check for special case: transformation from global frame
   if (!source)
   {
-    // verify vt is in the proper frame
-    #ifndef NEXCEPT
-    if (vt.pose != target->rpose)
-      throw std::runtime_error("Target frame's relative pose not equal to pose of velocity");
-
     // make sure that the source is zero
+    #ifndef NEXCEPT
     if (vs.get_linear().norm() > EPS || vs.get_angular().norm() > EPS)
       throw std::runtime_error("Source frame is global frame but velocity is non-zero");
     #endif
@@ -213,16 +205,8 @@ MOVINGTRANSFORM3 MOVINGTRANSFORM3::calc_transform(boost::shared_ptr<const POSE3>
   // if both transforms are defined relative to the same frame, this is easy
   if (source->rpose == target->rpose)
   {
-    // verify vs and vt are in the proper frame
-    #ifndef NEXCEPT
-    if (vs.pose != source->rpose)
-      throw std::runtime_error("Source frame's relative pose not equal to pose of velocity");
-    if (vt.pose != target->rpose)
-      throw std::runtime_error("Target frame's relative pose not equal to pose of velocity");
-    #endif
-
     // store the velocity of the source
-    result.v = vs;
+    result.v = POSE3::transform(source, vs);
 
     if (!source->rpose)
     {
@@ -318,13 +302,8 @@ MOVINGTRANSFORM3 MOVINGTRANSFORM3::calc_transform(boost::shared_ptr<const POSE3>
   }
   else
   {
-    // verify vs and vt are in the proper frame
-    #ifndef NEXCEPT
-    if (vs.pose != source->rpose)
-      throw std::runtime_error("Source frame's relative pose not equal to pose of velocity");
-    if (vt.pose != target->rpose)
-      throw std::runtime_error("Target frame's relative pose not equal to pose of velocity");
-    #endif
+    // store the velocity of the source
+    result.v = POSE3::transform(source, vs);
 
     // search for the common link - we arbitrary move up the target while
     // one step at a time while searching through all levels of the source 
