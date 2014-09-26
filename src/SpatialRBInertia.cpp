@@ -242,9 +242,15 @@ SPATIAL_RB_INERTIA SPATIAL_RB_INERTIA::operator+(const SPATIAL_RB_INERTIA& Jx) c
   #endif
 
   SPATIAL_RB_INERTIA result;
+  result.h = (h*m + Jx.h*Jx.m)/(m + Jx.m);
   result.m = m + Jx.m;
-  result.h = h + Jx.h;
-  result.J = J + Jx.J;
+  MATRIX3 hrskew = MATRIX3::skew_symmetric(result.h);
+  MATRIX3 mrhrskew = MATRIX3::skew_symmetric(result.h * result.m);
+  MATRIX3 hskew = MATRIX3::skew_symmetric(h);
+  MATRIX3 mhskew = MATRIX3::skew_symmetric(h*m);
+  MATRIX3 hxskew = MATRIX3::skew_symmetric(Jx.h);
+  MATRIX3 mxhxskew = MATRIX3::skew_symmetric(Jx.h*Jx.m);
+  result.J = J + Jx.J - (mhskew*hskew + hxskew*mxhxskew - hrskew*mrhrskew);
   return result;
 }
 
@@ -257,9 +263,15 @@ SPATIAL_RB_INERTIA SPATIAL_RB_INERTIA::operator-(const SPATIAL_RB_INERTIA& Jx) c
   #endif
 
   SPATIAL_RB_INERTIA result;
+  result.h = (h*m - Jx.h*Jx.m)/(m - Jx.m);
   result.m = m - Jx.m;
-  result.h = h - Jx.h;
-  result.J = J - Jx.J;
+  MATRIX3 hrskew = MATRIX3::skew_symmetric(result.h);
+  MATRIX3 mrhrskew = MATRIX3::skew_symmetric(result.h * result.m);
+  MATRIX3 hskew = MATRIX3::skew_symmetric(h);
+  MATRIX3 mhskew = MATRIX3::skew_symmetric(h*m);
+  MATRIX3 hxskew = MATRIX3::skew_symmetric(Jx.h);
+  MATRIX3 mxhxskew = MATRIX3::skew_symmetric(Jx.h*Jx.m);
+  result.J = J - Jx.J - mhskew*hskew + hxskew*mxhxskew + hrskew*mrhrskew;
   result.pose = pose;
   return result;
 }
@@ -272,9 +284,7 @@ SPATIAL_RB_INERTIA& SPATIAL_RB_INERTIA::operator+=(const SPATIAL_RB_INERTIA& Jx)
     throw FrameException();
   #endif
 
-  h += Jx.h; 
-  m += Jx.m;
-  J += Jx.J;
+  *this = *this + Jx;
   return *this;
 }
 
@@ -286,10 +296,7 @@ SPATIAL_RB_INERTIA& SPATIAL_RB_INERTIA::operator-=(const SPATIAL_RB_INERTIA& Jx)
     throw FrameException();
   #endif
 
-  h -= Jx.h;
-  m -= Jx.m;
-  J -= Jx.J;
-
+  *this = *this - Jx;
   return *this;
 }
 

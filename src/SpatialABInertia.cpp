@@ -58,11 +58,12 @@ SPATIAL_AB_INERTIA& SPATIAL_AB_INERTIA::operator=(const SPATIAL_RB_INERTIA& m)
 {
   // precompute some things
   MATRIX3 hx = MATRIX3::skew_symmetric(m.h);
+  MATRIX3 mhx = MATRIX3::skew_symmetric(m.m * m.h);
 
   this->pose = m.pose;
   this->M.set_identity() *= m.m;
-  this->H = hx;
-  this->J = m.J;
+  this->H = mhx;
+  this->J = m.J - mhx*hx;
   return *this;
 }
 
@@ -72,8 +73,8 @@ SPATIAL_RB_INERTIA SPATIAL_AB_INERTIA::to_rb_inertia() const
   SPATIAL_RB_INERTIA Jx;
   Jx.pose = pose;
   Jx.m = M(0,0);
-  Jx.h = MATRIX3::inverse_skew_symmetric(H);
-  Jx.J = J;
+  Jx.h = MATRIX3::inverse_skew_symmetric(H/Jx.m);
+  Jx.J = J + H*MATRIX3::skew_symmetric(Jx.h);
   return Jx;
 }
 
