@@ -99,12 +99,13 @@ class SPATIAL_RB_INERTIA
 
       // precompute matrices
       MATRIX3 hx = MATRIX3::skew_symmetric(h);
+      MATRIX3 mhx = MATRIX3::skew_symmetric(h*m);
 
       // setup the 3x3 blocks
-      M.set_sub_mat(0,3, hx, eTranspose);
-      M.set_sub_mat(3,3, J);
+      M.set_sub_mat(0,3, mhx, eTranspose);
+      M.set_sub_mat(3,3, J - (mhx*hx));
       M.set_sub_mat(0,0, MATRIX3(m, 0, 0, 0, m, 0, 0, 0, m));
-      M.set_sub_mat(3,0, hx);
+      M.set_sub_mat(3,0, mhx);
 
       return M;
     }
