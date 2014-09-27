@@ -339,8 +339,24 @@ XVECTORN& set_zero()
 }
 
 /// Sets the vector to the zero vector
+XVECTORN& set_zero(unsigned m, unsigned n=1)
+{
+  resize(m, n, false);
+  std::fill(column_iterator_begin(), column_iterator_end(), (REAL) 0.0);
+  return *this;
+}
+
+/// Sets the vector to the zero vector
 XVECTORN& set_one()
 {
+  std::fill(column_iterator_begin(), column_iterator_end(), (REAL) 1.0);
+  return *this;
+}
+
+/// Sets the vector to the zero vector
+XVECTORN& set_one(unsigned m, unsigned n = 1)
+{
+  resize(m, n, false);
   std::fill(column_iterator_begin(), column_iterator_end(), (REAL) 1.0);
   return *this;
 }

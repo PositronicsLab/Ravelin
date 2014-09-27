@@ -78,9 +78,6 @@ class MATRIXN
     /// Gets the total number of elements in this matrix
     unsigned size() const { return _rows * _columns; }
 
-    /// Sets this to a m x n sized zero matrix
-    MATRIXN& set_zero(unsigned m, unsigned n) { return resize(m,n).set_zero(); }
-
     const REAL& operator()(unsigned i, unsigned j) const;
     REAL& operator()(const unsigned i, const unsigned j);
 

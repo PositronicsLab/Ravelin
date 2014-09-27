@@ -63,15 +63,6 @@ class VECTORN
     static VECTORN parse(const std::string& s) { VECTORN v; parse(s, v); return v; }
     VECTORN& resize(unsigned m, unsigned n, bool preserve = false);
 
-    /// Sets this to a n-length zero vector
-    VECTORN& set_zero(unsigned n) { return resize(n).set_zero(); } 
-
-    /// Sets this to a n-length zero vector
-    VECTORN& set_zero(unsigned n, unsigned m) { return resize(n, m).set_zero(); } 
-
-    /// Sets this to a n-length ones vector
-    VECTORN& set_one(unsigned n) { return resize(n).set_one(); }
-
     void free_memory() { resize(0); compress(); }
     void compress() { _data.compress(); }
     unsigned rows() const { return _data.size(); }

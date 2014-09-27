@@ -165,3 +165,9 @@ static W& diag_mult_transpose(const V& d, const XMATRIXN& m, W& result)
   return result;
 }
 
+/// Sets this to a m x n sized zero matrix
+XMATRIXN& set_zero(unsigned m, unsigned n) 
+{ 
+  return resize(m,n).set_zero(); 
+}
+
