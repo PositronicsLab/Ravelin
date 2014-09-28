@@ -259,6 +259,21 @@ CONST_SHAREDMATRIXN::CONST_SHAREDMATRIXN(const SHAREDMATRIXN& source)
   reset_from(source);
 }
 
+/// Gets this object as a standard shared matrix 
+/**
+ * \note const-ness is not enforced by my compiler! 
+ */
+const SHAREDMATRIXN CONST_SHAREDMATRIXN::get() const
+{
+  SHAREDMATRIXN m;
+  m._rows = _rows;
+  m._columns = _columns;
+  m._ld = _ld;
+  m._start = _start;
+  m._data = _data;
+  return m;
+}
+
 /// Resets this from another shared matrix
 void CONST_SHAREDMATRIXN::reset_from(const SHAREDMATRIXN& source)
 {

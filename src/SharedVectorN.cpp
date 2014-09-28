@@ -155,6 +155,20 @@ CONST_SHAREDVECTORN::CONST_SHAREDVECTORN(unsigned len, unsigned inc, unsigned st
   _data = data;
 }
 
+/// Gets this object as a standard shared vector
+/**
+ * \note const-ness is not enforced by my compiler! 
+ */
+const SHAREDVECTORN CONST_SHAREDVECTORN::get() const
+{
+  SHAREDVECTORN v;
+  v._len = _len;
+  v._inc = _inc;
+  v._start = _start;
+  v._data = _data;
+  return v;
+}
+
 /// Constructs a shared vector from another shared vector 
 void CONST_SHAREDVECTORN::reset_from(const CONST_SHAREDVECTORN& v)
 {

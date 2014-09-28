@@ -87,6 +87,7 @@ class CONST_SHAREDVECTORN
     CONST_SHAREDVECTORN(unsigned len, unsigned inc, unsigned start, SharedResizable<REAL> data);
     CONST_SHAREDVECTORN(const SHAREDVECTORN& source) { reset_from(source); }
     CONST_SHAREDVECTORN(const CONST_SHAREDVECTORN& source) { reset_from(source); }
+    const SHAREDVECTORN get() const; 
     void reset_from(const SHAREDVECTORN& source);
     void reset_from(const CONST_SHAREDVECTORN& source);
     virtual ~CONST_SHAREDVECTORN() {}
