@@ -458,6 +458,17 @@ SACCEL TRANSFORM3::inverse_transform(const SACCEL& t) const
 }
 
 /// Transforms a rigid body inertia from one pose to another 
+/**
+ * The operations for this come from:
+ * | E     0 |  *  | -m*hx       eye(3)*m |  *  | E'    0  |        
+ * | -E*rx E |     | J - m*hx*hx m*hx     |     | rx*E' E' |
+ * which yields:
+ * | A  m  |
+ * | B  A' |
+ * where:
+ * A = -m*E*hx*E' + m*E*rx*E' 
+ * B = m*E*rx*hx*E' + E*J*E' - m*E*hx*hx*E' - m*E*rx*rx*E' + m*E*hx*rx*E'
+ */
 SPATIAL_RB_INERTIA TRANSFORM3::transform(const SPATIAL_RB_INERTIA& J) const
 {
   #ifndef NEXCEPT
