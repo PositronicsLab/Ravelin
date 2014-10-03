@@ -20,7 +20,7 @@ class UNIVERSALJOINT : public virtual JOINT
     virtual boost::shared_ptr<const POSE3> get_induced_pose();
     virtual const std::vector<SVELOCITY>& get_spatial_axes();
     virtual const std::vector<SVELOCITY>& get_spatial_axes_dot();
-    virtual unsigned num_dof() const { return 3; }
+    virtual unsigned num_dof() const { return 2; }
     virtual void evaluate_constraints(REAL C[]);
 
     /// Universal joint is never singular 

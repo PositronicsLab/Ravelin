@@ -117,16 +117,16 @@ void UNIVERSALJOINT::update_spatial_axes()
  */
 const vector<SVELOCITY>& UNIVERSALJOINT::get_spatial_axes()
 {
-/*
   const unsigned X = 0, Y = 1, Z = 2;
   const VECTOR3 ZEROS_3((REAL) 0.0, (REAL) 0.0, (REAL) 0.0, get_pose());
 
-  RigidBodyPtr inboard = get_inboard_pose();
-  RigidBodyPtr outboard = get_outboard_pose();
+  // get the inboard and outboard links
+  shared_ptr<const POSE3> inboard = get_inboard_pose();
+  shared_ptr<const POSE3> outboard = get_outboard_pose();
   if (!inboard)
-    throw std::runtime_error("UNIVERSALJOINT::get_spatial_axes_dot() called with NULL inboard link");
+    throw std::runtime_error("UNIVERSALJOINT::get_spatial_axes() called with NULL inboard link");
   if (!outboard)
-    throw std::runtime_error("UNIVERSALJOINT::get_spatial_axes_dot() called with NULL outboard link");
+    throw std::runtime_error("UNIVERSALJOINT::get_spatial_axes() called with NULL outboard link");
 
   // get current values of q
   const VECTORN& q = this->q;
@@ -147,7 +147,6 @@ const vector<SVELOCITY>& UNIVERSALJOINT::get_spatial_axes()
 
   // use the JOINT function to do the rest
   return JOINT::get_spatial_axes();
-*/
 }
 
 /// Gets the derivative of the spatial-axis
@@ -156,12 +155,11 @@ const vector<SVELOCITY>& UNIVERSALJOINT::get_spatial_axes()
  */
 const vector<SVELOCITY>& UNIVERSALJOINT::get_spatial_axes_dot()
 {
-/*
   const VECTOR3 ZEROS_3((REAL) 0.0, (REAL) 0.0, (REAL) 0.0, get_pose());
 
   // get the inboard and outboard links
-  RigidBodyPtr inboard = get_inboard_pose();
-  RigidBodyPtr outboard = get_outboard_pose();
+  shared_ptr<const POSE3> inboard = get_inboard_pose();
+  shared_ptr<const POSE3> outboard = get_outboard_pose();
   if (!inboard)
     throw std::runtime_error("UNIVERSALJOINT::get_spatial_axes_dot() called with NULL inboard link");
   if (!outboard)
@@ -186,17 +184,15 @@ const vector<SVELOCITY>& UNIVERSALJOINT::get_spatial_axes_dot()
   _s_dot[1].set_lower(ZEROS_3);
 
   return _s_dot;
-*/
 }
 
 /// Determines (and sets) the value of Q from the axes and the inboard link and outboard link transforms
 void UNIVERSALJOINT::determine_q(VECTORN& q)
 {
-/*
   const unsigned X = 0, Y = 1, Z = 2;
 
   // get the outboard link
-  RigidBodyPtr outboard = get_outboard_pose();
+  shared_ptr<POSE3> outboard = get_outboard_pose();
 
   // verify that the outboard link is set
   if (!outboard)
@@ -222,7 +218,6 @@ void UNIVERSALJOINT::determine_q(VECTORN& q)
   q.resize(num_dof());
   q[DOF_1] = std::atan2(R(Z,Y), R(Y,Y));
   q[DOF_2] = std::atan2(R(X,Z), R(X,X));   
-*/
 }
 
 /// Gets the (local) transform for this joint
