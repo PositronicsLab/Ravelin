@@ -190,20 +190,14 @@ const vector<SVELOCITY>& UNIVERSALJOINT::get_spatial_axes_dot()
 void UNIVERSALJOINT::determine_q(VECTORN& q)
 {
   const unsigned X = 0, Y = 1, Z = 2;
-
-  // get the outboard link
-  shared_ptr<POSE3> outboard = get_outboard_pose();
-
-  // verify that the outboard link is set
-  if (!outboard)
-    throw std::runtime_error("determine_q() called on NULL outboard link!");
+  shared_ptr<const POSE3> GLOBAL;
 
   // set proper size for q
   this->q.resize(num_dof());
 
   // get the poses of the joint and outboard link
   shared_ptr<const POSE3> Fj = get_pose();
-  shared_ptr<const POSE3> Fo = outboard->get_pose();
+  shared_ptr<const POSE3> Fo = get_outboard_pose();
 
   // compute transforms
   TRANSFORM3 wTo = POSE3::calc_relative_pose(Fo, GLOBAL); 
