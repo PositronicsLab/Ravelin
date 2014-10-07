@@ -132,6 +132,10 @@ const vector<SVELOCITY>& UNIVERSALJOINT::get_spatial_axes()
   const VECTORN& q = this->q;
   const VECTORN& q_tare = this->_q_tare;
 
+  // make sure that axis 1 is set
+  if (_u[0].norm() < EPS)
+    throw std::runtime_error("UNIVERSALJOINT::get_spatial_axes() called with first axis not set");
+
   // get the axes of the joint transformed into the inner link frame 
   REAL c1 = std::cos(q[DOF_1]+q_tare[DOF_1]);
   REAL s1 = std::sin(q[DOF_1]+q_tare[DOF_1]);
