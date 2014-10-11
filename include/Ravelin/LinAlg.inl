@@ -401,7 +401,7 @@ bool is_SPSD(X& m, REAL tol)
   REAL* ev = evals.data();
   // make tolerance positive, if it is not already
   if (tol < (REAL) 0.0)
-    tol = std::fabs(ev[evals.size()-1]) * m.rows() * std::numeric_limits<REAL>::max();
+    tol = std::fabs(ev[evals.size()-1]) * m.rows() * std::numeric_limits<REAL>::epsilon();
 
   // check whether all eigenvalues are non-negative to numerical tolerance
   for (unsigned i=0; i< evals.size(); i++)
@@ -422,7 +422,7 @@ bool is_SPD(X& m, REAL tol)
   // make tolerance positive, if it is not already
   REAL* ev = evals.data();
   if (tol < (REAL) 0.0)
-    tol = std::fabs(ev[evals.size()-1]) * m.rows() * std::numeric_limits<REAL>::max();
+    tol = std::fabs(ev[evals.size()-1]) * m.rows() * std::numeric_limits<REAL>::epsilon();
 
   // check whether all eigenvalues are positive to numerical tolerance
   for (unsigned i=0; i< evals.size(); i++)

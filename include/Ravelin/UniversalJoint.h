@@ -39,6 +39,9 @@ class UNIVERSALJOINT : public virtual JOINT
     static bool rel_equal(REAL x, REAL y);
     MATRIX3 get_rotation() const;
 
+    /// The orientation matrix that transforms the axes to those that the user desires
+    MATRIX3 _R;
+
     /// The local joint axes
     VECTOR3 _u[2];
 
