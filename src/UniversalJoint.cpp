@@ -49,17 +49,9 @@ VECTOR3 UNIVERSALJOINT::get_axis(Axis a) const
 
   // axis one is already set 
   if (a == eAxis1)
-  {
     return _u[0];
-  }
-
-  // axis two is obtained by multiplying rotation matrix around x by y-axis 
-  assert(a == eAxis2);
-  const REAL c1 = std::cos(q[DOF_1]+_q_tare[DOF_1]);
-  const REAL s1 = std::sin(q[DOF_1]+_q_tare[DOF_1]);
-  VECTOR3 u(0,c1,s1);
-  u.pose = get_pose();
-  return u;
+  else
+    return _u[1];
 }
 
 /// Sets an axis of this joint
@@ -72,12 +64,26 @@ VECTOR3 UNIVERSALJOINT::get_axis(Axis a) const
  * \sa set_axis_global()
  */
 void UNIVERSALJOINT::set_axis(const VECTOR3& axis, Axis a) 
-{ 
+{
+  const unsigned X = 0, Y = 1, Z = 2;
+ 
   // normalize the axis in case the user did not
   VECTOR3 naxis = VECTOR3::normalize(axis); 
 
   // set the axis
   _u[a] = POSE3::transform_vector(get_pose(), naxis); 
+
+  // determine the orientation matrix necessary to transform to
+  // Tait-Bryan angles
+  if (std::fabs(_u[eAxis1].norm() - (REAL) 1.0) < EPS &&
+      std::fabs(_u[eAxis2].norm() - (REAL) 1.0) < EPS &&
+      std::fabs(VECTOR3::dot(_u[eAxis1], _u[eAxis2])) < EPS) 
+  {
+    // need to transform axis 1 to x, axis 2 to y, and axis 3 to z
+    _R.set_column(X, ORIGIN3(_u[eAxis1]));
+    _R.set_column(Y, ORIGIN3(_u[eAxis2]));
+    _R.set_column(Z, ORIGIN3(VECTOR3::cross(_u[eAxis1], _u[eAxis2]))); 
+  }
 
   // update the spatial axes
   update_spatial_axes(); 
@@ -98,17 +104,6 @@ void UNIVERSALJOINT::update_spatial_axes()
 
   // call the parent method
   JOINT::update_spatial_axes();
-
-  // compute the rotation matrix necessary to transform the first axis to the
-  // z-axis
-  if (_u[eAxis1].norm() < EPS || _u[eAxis2].norm() < EPS)
-    return;
-
-  // first, verify that all are unit-length, and they are orthogonal in seq.
-  assert(std::fabs(_u[eAxis1].norm() - (REAL) 1.0) < EPS);
-  assert(std::fabs(_u[eAxis2].norm() - (REAL) 1.0) < EPS);
-  assert(std::fabs(VECTOR3::dot(_u[eAxis1], _u[eAxis2])) < EPS);
-  VECTOR3 axis3 = VECTOR3::normalize(VECTOR3::cross(_u[eAxis1], _u[eAxis2]));
 }
 
 /// Gets the spatial axes for this joint
@@ -136,15 +131,35 @@ const vector<SVELOCITY>& UNIVERSALJOINT::get_spatial_axes()
   if (_u[0].norm() < EPS)
     throw std::runtime_error("UNIVERSALJOINT::get_spatial_axes() called with first axis not set");
 
-  // get the axes of the joint transformed into the inner link frame 
-  REAL c1 = std::cos(q[DOF_1]+q_tare[DOF_1]);
-  REAL s1 = std::sin(q[DOF_1]+q_tare[DOF_1]);
-  VECTOR3 u1 = _u[0];
-  VECTOR3 u2(0, c1, s1);
-  u2.pose = u1.pose;
+  // get the inner link pose
+  boost::shared_ptr<const POSE3> pose = get_inboard_pose(); 
+
+  // compute some needed quantities
+  const REAL c1 = std::cos(q[DOF_1]+q_tare[DOF_1]);
+  const REAL s1 = std::sin(q[DOF_1]+q_tare[DOF_1]);
+
+/*
+  // form the axes matrix 
+  MATRIX3 Rx = MATRIX3::zero();
+  Rx.set_column(X, ORIGIN3(1.0, 0.0, 0.0)); 
+  Rx.set_column(Y, ORIGIN3(0.0, c1, s1));
+  ORIGIN3 cross = ORIGIN3::cross(ORIGIN3(1.0, 0.0, 0.0), ORIGIN3(0.0, c1, s1)); 
+  Rx.set_column(Z, cross);
+
+  // get the axes
+  MATRIX3 axes = _R * Rx * MATRIX3::transpose(_R);
+
+  // setup the vectors
+  VECTOR3 u1(axes.get_column(X), get_pose());
+  VECTOR3 u2(axes.get_column(Y), get_pose());
+*/
+
+  // get the second spatial axis
+  MATRIX3 R = AANGLE(_u[0], q[DOF_1]+q_tare[DOF_1]);
+  VECTOR3 u2(R * ORIGIN3(_u[1]), get_pose());
 
   // update the spatial axes in link coordinates
-  _s[0].set_angular(u1);
+  _s[0].set_angular(_u[0]);
   _s[0].set_linear(ZEROS_3);
   _s[1].set_angular(u2);
   _s[1].set_linear(ZEROS_3);
@@ -159,6 +174,7 @@ const vector<SVELOCITY>& UNIVERSALJOINT::get_spatial_axes()
  */
 const vector<SVELOCITY>& UNIVERSALJOINT::get_spatial_axes_dot()
 {
+  const unsigned X = 0, Y = 1, Z = 2;
   const VECTOR3 ZEROS_3((REAL) 0.0, (REAL) 0.0, (REAL) 0.0, get_pose());
 
   // get the inboard and outboard links
@@ -174,17 +190,39 @@ const vector<SVELOCITY>& UNIVERSALJOINT::get_spatial_axes_dot()
   const VECTORN& q_tare = this->_q_tare;
   const VECTORN& qd = this->qd;
 
+  // compute some needed quantities
+  const REAL c1 = std::cos(q[DOF_1]+q_tare[DOF_1]);
+  const REAL s1 = std::sin(q[DOF_1]+q_tare[DOF_1]);
+
+/*
   // form the time derivative of the spatial axis for the second DOF; note that spatial
   // axis for first DOF is constant, so time-derivative is zero 
-  REAL c1 = std::cos(q[DOF_1]+q_tare[DOF_1]);
-  REAL s1 = std::sin(q[DOF_1]+q_tare[DOF_1]);
+  MATRIX3 Rx = MATRIX3::zero();
   REAL qd1 = qd[DOF_1];
-  VECTOR3 u(0,-s1*qd1,c1*qd1);
-  u.pose = get_pose();
+  ORIGIN3 v(0.0, -s1*qd1, c1*qd1); 
+  Rx.set_column(Y, v);
+  ORIGIN3 cross = ORIGIN3::cross(ORIGIN3(1.0, 0.0, 0.0), v); 
+  Rx.set_column(Z, cross);
+
+  // compute u
+  ORIGIN3 ux = (_R * Rx * MATRIX3::transpose(_R)).get_column(Y);
+  VECTOR3 u(ux, get_pose());
+*/
+
+  // get the time derivative of second spatial axis
+  REAL qd1 = qd[DOF_1];
+  VECTOR3 u2(0.0, -s1*qd1, c1*qd1, get_pose());
+
+  // get the second spatial axis time derivative. This is:
+  // R * \dot{u2} + \dot{R} * u
+  // note that \dot{u2} is zero
+  MATRIX3 R = AANGLE(_u[0], q[DOF_1]+q_tare[DOF_1]);
+  VECTOR3 omega = _u[0] * qd1;
+  VECTOR3 dotRu = VECTOR3::cross(omega, VECTOR3(R * ORIGIN3(_u[1]), get_pose()));
 
   // update the spatial axis in link coordinates; note that axis 1 is always
   // set to zero (init'd in constructor)
-  _s_dot[1].set_upper(u);
+  _s_dot[1].set_upper(dotRu);
   _s_dot[1].set_lower(ZEROS_3);
 
   return _s_dot;
@@ -209,7 +247,7 @@ void UNIVERSALJOINT::determine_q(VECTORN& q)
   TRANSFORM3 jTo = jTw * wTo;
 
   // determine the joint transformation
-  MATRIX3 R = jTo.q;
+  MATRIX3 R = _R * jTo.q * MATRIX3::transpose(_R);
 
   // determine q1 and q2 -- they are uniquely determined by examining the rotation matrix
   // (see get_rotation())
@@ -234,13 +272,14 @@ MATRIX3 UNIVERSALJOINT::get_rotation() const
   const REAL s2 = std::sin(q[DOF_2]+q_tare[DOF_2]);
 
   // determine untransformed rotation; this rotation matrix is obtained by
-  // using Tait-Bryan angles without a final rotation
+  // using Tait-Bryan angles (XYZ) without a final rotation
   MATRIX3 R;
   R(X,X) = c2;      R(X,Y) = 0;    R(X,Z) = s2;
   R(Y,X) = s1*s2;  R(Y,Y) = c1;    R(Y,Z) = -c2*s1;
   R(Z,X) = -c1*s2;  R(Z,Y) = s1;   R(Z,Z) = c1*c2;
 
-  return R;
+  // transform using orientation matrix
+  return _R * R * MATRIX3::transpose(_R);
 }
 
 /// Gets the transform induced by this joint
