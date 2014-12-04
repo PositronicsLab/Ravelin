@@ -1,6 +1,6 @@
 /****************************************************************************
  * Copyright 2013 Evan Drumwright
- * This library is distributed under the terms of the Apache V2.0 
+ * This library is distributed under the terms of the Apache V2.0
  * License (obtainable from http://www.apache.org/licenses/LICENSE-2.0).
  ****************************************************************************/
 
@@ -110,9 +110,9 @@ QUAT QUAT::conjugate(const QUAT& q)
 
 /// Multiplies the 3x4 matrix 'L' times a four dimensional array
 /**
- * This matrix is used in the relationships omega' = 2*L*qd and 
- * alpha' = 2*L*qdd, where omega'/alpha' are the angular velocity/acceleration 
- * of a rigid body in the body's frame and qd/qdd are the first/second time 
+ * This matrix is used in the relationships omega' = 2*L*qd and
+ * alpha' = 2*L*qdd, where omega'/alpha' are the angular velocity/acceleration
+ * of a rigid body in the body's frame and qd/qdd are the first/second time
  * derivatives of the Euler (unit quaternion) parameters.
  */
 VECTOR3 QUAT::L_mult(REAL qx, REAL qy, REAL qz, REAL qw) const
@@ -154,9 +154,9 @@ MatrixNf& QUAT::determine_G(MatrixNf& G) const
 
 /// Multiplies the matrix 'G' by a quaternion vector
 /**
- * This matrix is used in the relationships omega = 2*G*qd and 
- * alpha = 2*G*qdd, where omega/alpha are the angular velocity/acceleration 
- * of a rigid body in the game frame and qd/qdd are the first/second time 
+ * This matrix is used in the relationships omega = 2*G*qd and
+ * alpha = 2*G*qdd, where omega/alpha are the angular velocity/acceleration
+ * of a rigid body in the game frame and qd/qdd are the first/second time
  * derivatives of the Euler (unit quaternion) parameters.
  */
 VECTOR3 QUAT::G_mult(REAL qx, REAL qy, REAL qz, REAL qw) const
@@ -175,9 +175,9 @@ VECTOR3 QUAT::G_mult(REAL qx, REAL qy, REAL qz, REAL qw) const
 
 /// Multiplies the transpose of the matrix 'G' by a vector
 /**
- * This matrix is used in the relationships qd = 1/2*G^T*omega and 
- * qdd = 1/2*G^T*alpha - 1/4*omega^2*q, where omega/alpha are the angular 
- * velocity/acceleration of a rigid body in the global frame and qd/qdd are the 
+ * This matrix is used in the relationships qd = 1/2*G^T*omega and
+ * qdd = 1/2*G^T*alpha - 1/4*omega^2*q, where omega/alpha are the angular
+ * velocity/acceleration of a rigid body in the global frame and qd/qdd are the
  * first/second time derivatives of the Euler (unit quaternion) parameters.
  */
 QUAT QUAT::G_transpose_mult(const VECTOR3& v) const
@@ -192,9 +192,9 @@ QUAT QUAT::G_transpose_mult(const VECTOR3& v) const
 
 /// Multiplies the transpose of the matrix 'L' by a vector
 /**
- * This matrix is used in the relationships qd = 1/2*L^T*omega and 
- * qdd = 1/2*L^T*alpha' - 1/4*omega'^2*q, where omega'/alpha' are the angular 
- * velocity/acceleration of a rigid body in the body frame and qd/qdd are the 
+ * This matrix is used in the relationships qd = 1/2*L^T*omega and
+ * qdd = 1/2*L^T*alpha' - 1/4*omega'^2*q, where omega'/alpha' are the angular
+ * velocity/acceleration of a rigid body in the body frame and qd/qdd are the
  * first/second time derivatives of the Euler (unit quaternion) parameters.
  */
 QUAT QUAT::L_transpose_mult(const VECTOR3& v) const
@@ -212,7 +212,7 @@ QUAT QUAT::L_transpose_mult(const VECTOR3& v) const
  * Note that the derivative is not generally a unit quaternion.
  * \param q the current orientation
  * \param w the angular velocity (in the global frame)
- * Uses the matrix: 
+ * Uses the matrix:
  *      |  -q.x  +q.w  -q.z  +q.y  |
  * G =  |  -q.y  +q.z  +q.w  -q.x  |
  *      |  -q.z  -q.y  +q.x  +q.w  |
@@ -221,7 +221,7 @@ QUAT QUAT::deriv(const QUAT& q, const VECTOR3& w)
 {
   QUAT qd;
 
-  qd.w = .5 * (-q.x * w.x() - q.y * w.y() - q.z * w.z()); 
+  qd.w = .5 * (-q.x * w.x() - q.y * w.y() - q.z * w.z());
   qd.x = .5 * (+q.w * w.x() + q.z * w.y() - q.y * w.z());
   qd.y = .5 * (-q.z * w.x() + q.w * w.y() + q.x * w.z());
   qd.z = .5 * (+q.y * w.x() - q.x * w.y() + q.w * w.z());
@@ -241,13 +241,13 @@ VECTOR3 QUAT::to_omega(const QUAT& q, const QUAT& qd)
 
 /// Calculates the second derivative of a quaternion
 /**
- * \note alpha and omega are acceleration and velocity vectors in the global 
+ * \note alpha and omega are acceleration and velocity vectors in the global
  *       frame
  */
 QUAT QUAT::dderiv(const QUAT& q, const VECTOR3& omega, const VECTOR3& alpha)
 {
   QUAT qdd = QUAT::deriv(q, alpha) - (REAL) 0.25 * omega.norm_sq() * q;
- 
+
   return qdd;
 }
 
@@ -280,12 +280,12 @@ void QUAT::lerp(const QUAT& q, REAL alpha)
 /// Performs non-spherical linear interpolation between this and q
 /**
  * Calculates the orientation of determined by linear interpolation between
- * q1 and q2.  If alpha is 0, then q1 is returned.  If alpha is 1, then 
- * q2 is returned. 
+ * q1 and q2.  If alpha is 0, then q1 is returned.  If alpha is 1, then
+ * q2 is returned.
  * \param q1 the "initial" orientation
  * \param q2 the "final" orientation
  * \param alpha interpolation value (0 <= alpha <= 1)
- * \return the orientation linearly interpolated between q1 and q2 
+ * \return the orientation linearly interpolated between q1 and q2
  */
 QUAT QUAT::lerp(const QUAT& q1, const QUAT& q2, REAL alpha)
 {
@@ -296,7 +296,7 @@ QUAT QUAT::lerp(const QUAT& q1, const QUAT& q2, REAL alpha)
   REAL dot = q1.x*q2.x + q1.y*q2.y + q1.z*q2.z + q1.w*q2.w;
 
   // see whether we need to use the conjugate of q2
-  if (dot < (REAL) 0.0)  
+  if (dot < (REAL) 0.0)
   {
     QUAT q = q1*((REAL) 1.0 - alpha) - q2*alpha;
     q.normalize();
@@ -338,7 +338,7 @@ REAL QUAT::calc_angle(const QUAT& q1, const QUAT& q2)
   return std::acos(std::fabs(dot));
 }
 
-/// Sets up the quaternion from roll-pitch-yaw 
+/// Sets up the quaternion from roll-pitch-yaw
 /**
  * \param roll the rotation around the local x axis
  * \param pitch the rotation around the local y axis
@@ -367,7 +367,7 @@ QUAT QUAT::rpy(REAL roll, REAL pitch, REAL yaw)
   return q;
 }
 
-/// Converts quaternion to roll/pitch/yaw 
+/// Converts quaternion to roll/pitch/yaw
 void QUAT::to_rpy(REAL& roll, REAL& pitch, REAL& yaw) const
 {
   pitch = std::atan2((REAL) 2.0*(y*z + w*x), w*w - x*x - y*y + z*z);
@@ -378,13 +378,13 @@ void QUAT::to_rpy(REAL& roll, REAL& pitch, REAL& yaw) const
 /// Performs spherical linear interpolation between this and q
 /**
  * Calculates the orientation of determined by linear interpolation between
- * q1 and q2.  If alpha is 0, then q1 is returned.  If alpha is 1, then 
- * q2 is returned. 
+ * q1 and q2.  If alpha is 0, then q1 is returned.  If alpha is 1, then
+ * q2 is returned.
  * \param q1 the "initial" orientation
  * \param q2 the "final" orientation
  * \param alpha interpolation value (0 <= alpha <= 1)
  * \return the orientation linearly interpolated between q1 and q2
- * \todo rewrite this function to avoid cancellation errors 
+ * \todo rewrite this function to avoid cancellation errors
  */
 QUAT QUAT::slerp(const QUAT& q1, const QUAT& q2, REAL alpha)
 {
@@ -395,7 +395,7 @@ QUAT QUAT::slerp(const QUAT& q1, const QUAT& q2, REAL alpha)
   REAL dot = q1.x*q2.x + q1.y*q2.y + q1.z*q2.z + q1.w*q2.w;
 
   // see whether we need to use the conjugate of q2
-  bool use_conj = (dot < (REAL) 0.0);  
+  bool use_conj = (dot < (REAL) 0.0);
 
   // clip dot
   if (dot < (REAL) -1.0)
@@ -422,7 +422,7 @@ QUAT QUAT::slerp(const QUAT& q1, const QUAT& q2, REAL alpha)
   qc.z *= sint_i;
   qc.w *= sint_i;
 
-  return qc; 
+  return qc;
 }
 
 /// Computes the inverse orientation represented by this quaternion in place
@@ -478,7 +478,7 @@ QUAT QUAT::operator-(const QUAT& q) const
   return QUAT(x+q.x, y+q.y, z+q.z, w+q.w);
 }
 
-/// Subtracts one quaternion from another 
+/// Subtracts one quaternion from another
 QUAT& QUAT::operator-=(const QUAT& q)
 {
   *this = *this - q;
@@ -504,12 +504,12 @@ QUAT QUAT::operator/(const QUAT& q) const
   return conjugate(q) * (*this);
 }
 
-/// Multiplies <b>this</b> by q and returns the result 
+/// Multiplies <b>this</b> by q and returns the result
 QUAT QUAT::operator*(const QUAT& q) const
 {
   QUAT qm;
 
-  qm.w = w * q.w - x * q.x - y * q.y - z * q.z; 
+  qm.w = w * q.w - x * q.x - y * q.y - z * q.z;
   qm.x = w * q.x + x * q.w + y * q.z - z * q.y;
   qm.y = w * q.y + y * q.w + z * q.x - x * q.z;
   qm.z = w * q.z + z * q.w + x * q.y - y * q.x;
@@ -538,7 +538,7 @@ QUAT& QUAT::operator*=(REAL scalar)
   return *this;
 }
 
-/// Multiplies the 3x3 matrix corresponding to this quaternion by a 3D origin and returns the result in a new 3D origin 
+/// Multiplies the 3x3 matrix corresponding to this quaternion by a 3D origin and returns the result in a new 3D origin
 ORIGIN3 QUAT::operator*(const ORIGIN3& o) const
 {
   const REAL w2 = w*w;
@@ -587,7 +587,7 @@ QUAT Ravelin::operator*(REAL scalar, const QUAT& q)
 }
 
 /// Sends the quaternion to the output stream
-std::ostream& Ravelin::operator<<(std::ostream& out, const QUAT& q) 
+std::ostream& Ravelin::operator<<(std::ostream& out, const QUAT& q)
 {
   out << "<" << q.x << ", " << q.y << ", " << q.z << "> " << q.w;
 
@@ -612,7 +612,7 @@ QUAT& QUAT::operator=(const MATRIX3& m)
   if (m.yx() - m.xy() < (REAL) 0.0)
     q.z = -q.z;
 
-  #ifndef NDEBUG 
+  #ifndef NDEBUG
   if (!q.unit())
     std::cerr << "QUAT::set() warning!  not a unit quaternion!" << std::endl;
   #endif

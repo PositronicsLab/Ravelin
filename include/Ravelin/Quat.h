@@ -1,6 +1,6 @@
 /****************************************************************************
  * Copyright 2013 Evan Drumwright
- * This library is distributed under the terms of the Apache V2.0 
+ * This library is distributed under the terms of the Apache V2.0
  * License (obtainable from http://www.apache.org/licenses/LICENSE-2.0).
  ****************************************************************************/
 
@@ -39,8 +39,10 @@ class QUAT
     static QUAT slerp(const QUAT& q1, const QUAT& q2, REAL alpha);
     static QUAT lerp(const QUAT& q1, const QUAT& q2, REAL alpha);
     static QUAT rpy(REAL roll, REAL pitch, REAL yaw);
+    static QUAT rpy(const ORIGIN3& RPY) { return rpy(RPY[0],RPY[1],RPY[2]); }
     static REAL calc_angle(const QUAT& q1, const QUAT& q2);
     void to_rpy(REAL& roll, REAL& pitch, REAL& yaw) const;
+    void to_rpy(ORIGIN3& RPY) const { this->to_rpy(RPY[0],RPY[1],RPY[2]);}
     QUAT& invert();
     QUAT inverse() const { QUAT q = *this; q.invert(); return q; }
     static QUAT invert(const QUAT& q);
@@ -48,7 +50,7 @@ class QUAT
     REAL norm() const { return magnitude(); }
     REAL norm_inf() const;
     void normalize();
-    static QUAT normalize(const QUAT& q); 
+    static QUAT normalize(const QUAT& q);
     QUAT& operator=(const VECTORN& v);
     QUAT& operator=(const AANGLE& a);
     QUAT& operator=(const MATRIX3& m);
@@ -80,7 +82,7 @@ class QUAT
 //    MATRIXN& determine_G(MATRIXN& G) const;
 //    MATRIXN& determine_L(MATRIXN& L) const;
     VECTOR3 L_mult(REAL qx, REAL qy, REAL qz, REAL qw) const;
-    
+
     /// First quaternion component
     REAL x;
 
@@ -88,7 +90,7 @@ class QUAT
     REAL y;
 
     /// Third quaterion component
-    REAL z; 
+    REAL z;
 
     /// Fourth quaternion component
     REAL w;
