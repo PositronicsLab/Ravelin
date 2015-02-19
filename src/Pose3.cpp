@@ -1,7 +1,7 @@
 /****************************************************************************
  * Copyright 2013 Evan Drumwright
- * This library is distributed under the terms of the GNU Lesser General Public 
- * License (found in COPYING).
+ * This library is distributed under the terms of the Apache V2.0 
+ * License (obtainable from http://www.apache.org/licenses/LICENSE-2.0).
  ****************************************************************************/
 
 using boost::shared_ptr;
@@ -887,13 +887,15 @@ TRANSFORM3 POSE3::calc_transform(boost::shared_ptr<const POSE3> source, boost::s
   if (source->rpose == target->rpose)
   {
     // compute the inverse pose of p 
-    result.q = QUAT::invert(target->q) * source->q;
-    result.x = result.q * (source->x - target->x);
+    QUAT inv_target_q = QUAT::invert(target->q);
+    result.q = inv_target_q * source->q;
+    result.x = inv_target_q * (source->x - target->x);
     return result;
   }
   else
   {
-    // search for the common link
+    // search for the common link - we arbitrary move up the target while
+    // one step at a time while searching through all levels of the source 
     unsigned i = std::numeric_limits<unsigned>::max();
     r = target;
     while (true)
@@ -907,7 +909,8 @@ TRANSFORM3 POSE3::calc_transform(boost::shared_ptr<const POSE3> source, boost::s
       } 
     } 
     
-     // combine transforms from this to i: this will give aTl
+    // combine transforms from this to i: this will give rTs, where r is
+    // the common frame and s is the source
     QUAT left_q = source->q;
     ORIGIN3 left_x = source->x;
     s = source;
@@ -920,7 +923,7 @@ TRANSFORM3 POSE3::calc_transform(boost::shared_ptr<const POSE3> source, boost::s
       left_q = s->q * left_q;
     }
 
-    // combine transforms from target to q
+    // combine transforms from target to r
     QUAT right_q = target->q;
     ORIGIN3 right_x = target->x;
     while (target != r)

@@ -1,7 +1,7 @@
 /****************************************************************************
  * Copyright 2013 Evan Drumwright
- * This library is distributed under the terms of the GNU Lesser General Public 
- * License (found in COPYING).
+ * This library is distributed under the terms of the Apache V2.0 
+ * License (obtainable from http://www.apache.org/licenses/LICENSE-2.0).
  *
  * This file contains code specific to SharedVectorNf/SharedVectorNd.
  ****************************************************************************/
@@ -153,6 +153,20 @@ CONST_SHAREDVECTORN::CONST_SHAREDVECTORN(unsigned len, unsigned inc, unsigned st
   _inc = inc;
   _start = start;
   _data = data;
+}
+
+/// Gets this object as a standard shared vector
+/**
+ * \note const-ness is not enforced by my compiler! 
+ */
+const SHAREDVECTORN CONST_SHAREDVECTORN::get() const
+{
+  SHAREDVECTORN v;
+  v._len = _len;
+  v._inc = _inc;
+  v._start = _start;
+  v._data = _data;
+  return v;
 }
 
 /// Constructs a shared vector from another shared vector 

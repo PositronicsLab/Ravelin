@@ -1,7 +1,7 @@
 /****************************************************************************
  * Copyright 2013 Evan Drumwright
- * This library is distributed under the terms of the GNU Lesser General Public 
- * License (found in COPYING).
+ * This library is distributed under the terms of the Apache V2.0
+ * License (obtainable from http://www.apache.org/licenses/LICENSE-2.0).
  ****************************************************************************/
 
 #ifndef ORIGIN3
@@ -23,9 +23,13 @@ class ORIGIN3
     REAL norm_sq() const { return sqr(_data[0]) + sqr(_data[1]) + sqr(_data[2]); }
     static REAL norm(const ORIGIN3& v) { return std::sqrt(norm_sq(v)); }
     static REAL norm_sq(const ORIGIN3& v) { return v.norm_sq(); }
+    void normalize() { assert(norm() > std::numeric_limits<REAL>::epsilon()); operator/=(norm()); }
+    static ORIGIN3 normalize(const ORIGIN3& v) { ORIGIN3 w = v; w.normalize(); return w; }
     REAL dot(const ORIGIN3& v) const { return _data[0]*v._data[0] + _data[1]*v._data[1] + _data[2]*v._data[2]; }
     static REAL dot(const ORIGIN3& v1, const ORIGIN3& v2) { return v1.dot(v2); }
-    void set_zero() { _data[0] = _data[1] = _data[2] = (REAL) 0.0; }
+    ORIGIN3& set_zero() { _data[0] = _data[1] = _data[2] = (REAL) 0.0; return *this; }
+    ORIGIN3& set_zero(unsigned m) { assert(m==3); return set_zero(); }
+    ORIGIN3& set_zero(unsigned m, unsigned n) { assert(m==3 && n==1); return set_zero(); }
     static ORIGIN3 zero() { return ORIGIN3((REAL) 0.0, (REAL) 0.0, (REAL) 0.0); }
     ORIGIN3& operator=(const ORIGIN3& o);
     ORIGIN3& operator=(const VECTOR3& v);
@@ -64,11 +68,14 @@ class ORIGIN3
     CONST_ROW_ITERATOR row_iterator_begin() const;
     ROW_ITERATOR row_iterator_end();
     CONST_ROW_ITERATOR row_iterator_end() const;
+    unsigned size() const { return 3; }
     unsigned rows() const { return 3; }
     unsigned columns() const { return 1; }
     unsigned inc() const { return 1; }
     unsigned leading_dim() const { return 3; }
+    ORIGIN3& resize(unsigned m, bool preserve = false);
     ORIGIN3& resize(unsigned m, unsigned n, bool preserve = false);
+    static ORIGIN3 cross(const ORIGIN3& v1, const ORIGIN3& v2);
 
   private:
     REAL _data[3];

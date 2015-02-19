@@ -142,7 +142,7 @@ X& inverse_LU(X& M, const std::vector<int>& pivwork)
  * \return reference to XB
  */
 template <class X, class Y>
-static X& solve_tri_fast(const Y& A, bool utri, bool transpose_A, X& XB)
+static X& solve_tri_fast(Y& A, bool utri, bool transpose_A, X& XB)
 {
   #ifndef NEXCEPT
   if (A.rows() != XB.rows())
@@ -401,7 +401,7 @@ bool is_SPSD(X& m, REAL tol)
   REAL* ev = evals.data();
   // make tolerance positive, if it is not already
   if (tol < (REAL) 0.0)
-    tol = std::fabs(ev[evals.size()-1]) * m.rows() * std::numeric_limits<REAL>::max();
+    tol = std::fabs(ev[evals.size()-1]) * m.rows() * std::numeric_limits<REAL>::epsilon();
 
   // check whether all eigenvalues are non-negative to numerical tolerance
   for (unsigned i=0; i< evals.size(); i++)
@@ -422,7 +422,7 @@ bool is_SPD(X& m, REAL tol)
   // make tolerance positive, if it is not already
   REAL* ev = evals.data();
   if (tol < (REAL) 0.0)
-    tol = std::fabs(ev[evals.size()-1]) * m.rows() * std::numeric_limits<REAL>::max();
+    tol = std::fabs(ev[evals.size()-1]) * m.rows() * std::numeric_limits<REAL>::epsilon();
 
   // check whether all eigenvalues are positive to numerical tolerance
   for (unsigned i=0; i< evals.size(); i++)
@@ -525,8 +525,8 @@ void eig_symm_plus(X& A_evecs, Y& evals)
     throw NumericalException("Eigenvalue/eigenvector determination did not converge");
 }
 
-template <class X>
-void svd(X& A, MATRIXN& U, VECTORN& S, MATRIXN& V)
+template <class X, class MatU, class VecS, class MatV>
+void svd(X& A, MatU& U, VecS& S, MatV& V)
 {
   MATRIXN& A_backup = workM();
 
@@ -564,8 +564,8 @@ void svd(X& A, MATRIXN& U, VECTORN& S, MATRIXN& V)
  * \param S on output, a min(A.rows(), A.columns()) length vector of singular values
  * \param V on output, a A.columns() x A.columns() orthogonal matrix
  */
-template <class X>
-void svd1(X& A, MATRIXN& U, VECTORN& S, MATRIXN& V)
+template <class X, class MatU, class VecS, class MatV>
+void svd1(X& A, MatU& U, VecS& S, MatV& V)
 {
   // make sure that A is not zero sized
   if (A.rows() == 0 || A.columns() == 0)
@@ -629,8 +629,8 @@ void svd1(X& A, MATRIXN& U, VECTORN& S, MATRIXN& V)
  * \param S on output, a min(A.rows(), A.columns()) length vector of singular values
  * \param V on output, a A.columns() x A.columns() orthogonal matrix
  */
-template <class X>
-void svd2(X& A, MATRIXN& U, VECTORN& S, MATRIXN& V)
+template <class X, class MatU, class VecS, class MatV>
+void svd2(X& A, MatU& U, VecS& S, MatV& V)
 {
   // make sure that A is not zero sized
   if (A.rows() == 0 || A.columns() == 0)
@@ -956,7 +956,8 @@ X& solve_LS_fast(const Y& U, const Vec& S, const Z& V, X& XB, REAL tol = (REAL) 
   MATRIXN& workM2x = workM2();
 
   // determine new tolerance based on first std::singular value if necessary
-  Sx = S;
+  Sx.resize(S.rows());
+  std::copy(S.begin(), S.end(), Sx.begin());
   REAL* Sx_data = Sx.data();
   if (tol < (REAL) 0.0)
     tol = Sx_data[0] * std::max(m,n) * std::numeric_limits<REAL>::epsilon();
@@ -990,7 +991,8 @@ X& solve_LS_fast(const Y& U, const Vec& S, const Z& V, X& XB, REAL tol = (REAL) 
     // multiply workM * XB
     workM2x.resize(n,k);
     CBLAS::gemm(CblasColMajor, CblasNoTrans, CblasNoTrans, n, k, m, (REAL) 1.0, workMx.data(), workMx.leading_dim(), XB.data(), XB.leading_dim(), (REAL) 0.0, workM2x.data(), workM2x.leading_dim());
-    XB = workM2x;
+    XB.resize(workM2x.rows(), workM2x.columns());
+    std::copy(workM2x.row_iterator_begin(), workM2x.row_iterator_end(), XB.row_iterator_begin());
   }
   // case 2: m < n < k
   else if (m <= n && n <= k)
@@ -1007,7 +1009,8 @@ X& solve_LS_fast(const Y& U, const Vec& S, const Z& V, X& XB, REAL tol = (REAL) 
     // multiply workM * XB
     workM2x.resize(n,k);
     CBLAS::gemm(CblasColMajor, CblasNoTrans, CblasNoTrans, n, k, m, (REAL) 1.0, workMx.data(), workMx.leading_dim(), XB.data(), XB.leading_dim(), (REAL) 0.0, workM2x.data(), workM2x.leading_dim());
-    XB = workM2x;
+    XB.resize(workM2x.rows(), workM2x.columns());
+    std::copy(workM2x.row_iterator_begin(), workM2x.row_iterator_end(), XB.row_iterator_begin());
   }
   // case 3: k < n < m
   else if (k <= n && n <= m)
@@ -1169,7 +1172,8 @@ X& solve_LS_fast(Y& A, X& XB, SVD svd_algo, REAL tol)
     // multiply workM * XB
     Vx.resize(n,k);
     CBLAS::gemm(CblasColMajor, CblasNoTrans, CblasNoTrans, n, k, m, (REAL) 1.0, workMx.data(), workMx.leading_dim(), XB.data(), XB.leading_dim(), (REAL) 0.0, Vx.data(), Vx.leading_dim());
-    XB = Vx;
+    XB.resize(Vx.rows(), Vx.columns());
+    std::copy(Vx.row_iterator_begin(), Vx.row_iterator_end(), XB.row_iterator_begin());
   }
   // case 2: m < n < k
   else if (m < n && n < k)
@@ -1185,7 +1189,8 @@ X& solve_LS_fast(Y& A, X& XB, SVD svd_algo, REAL tol)
     // multiply workM * XB
     Vx.resize(n,k);
     CBLAS::gemm(CblasColMajor, CblasNoTrans, CblasNoTrans, n, k, m, (REAL) 1.0, workMx.data(), workMx.leading_dim(), XB.data(), XB.leading_dim(), (REAL) 0.0, Vx.data(), Vx.leading_dim());
-    XB = Vx;
+    XB.resize(Vx.rows(), Vx.columns());
+    std::copy(Vx.row_iterator_begin(), Vx.row_iterator_end(), XB.row_iterator_begin());
   }
   // case 3: k < n < m
   else if (k < n && n < m)
@@ -1309,4 +1314,107 @@ X& solve_LS_fast2(Y& A, X& XB, REAL tol = (REAL) -1.0)
 { 
   return solve_LS_fast(A, XB, eSVD2, tol); 
 }     
+
+/// Performs the QR factorization of a matrix with column pivoting
+/**
+ * Factorizes A*P = Q*R
+ * \param AQ the matrix A on input; the matrix R on output
+ * \param Q the matrix Q on output
+ * \param PI the column pivots on output
+ */
+template <class ARMat, class QMat>
+void factor_QR(ARMat& AR, QMat& Q, std::vector<int>& PI)
+{
+  // get matrix/vector
+  VECTORN& tau = workv2();
+
+  // setup constants
+  const unsigned m = AR.rows();
+  const unsigned n = AR.columns();
+
+  // determine LAPACK parameters
+  INTEGER M = AR.rows();
+  INTEGER N = AR.columns();
+  INTEGER MINMN = std::min(M, N);
+  unsigned min_mn = (unsigned) std::min(M,N);
+
+  // setup tau vector
+  workv2().resize(min_mn);
+
+  // setup PI for entry
+  PI.resize(N);
+  for (int i=0; i< N; i++)
+    PI[i] = 0;
+
+  // call LAPACK
+  INTEGER LDA = AR.leading_dim();
+  INTEGER INFO;
+  geqp3_(&M, &N, AR.data(), &LDA, PI.data(), workv2().data(), &INFO);
+  assert(INFO == 0);
+
+  // setup Q
+  Q.resize(m,m);
+  std::copy(AR.data(), AR.data()+m*min_mn, Q.data());
+  orgqr_(&M, &MINMN, &MINMN, Q.data(), &M, tau.data(), &INFO);
+
+  // resize AR
+  AR.resize(std::min(AR.rows(), AR.columns()), AR.columns(), true);
+
+  // make R upper triangular
+  for (unsigned i=0; i< AR.columns(); i++)
+  {
+    RowIteratord coli = AR.block_row_iterator_begin(i+1,AR.rows(),i,i+1);
+    std::fill(coli, coli.end(), 0.0);
+  }
+}
+
+/// Performs the QR factorization of a matrix
+/**
+ * \param AQ the m x n matrix A on input; the matrix min(m,n) x n R on output
+ * \param Q the m x min(m,n) matrix Q on output
+ */
+template <class ARMat, class QMat>
+void factor_QR(ARMat& AR, QMat& Q)
+{
+  // get matrix/vector
+  VECTORN& tau = workv2();
+
+  // setup constants
+  const unsigned m = AR.rows();
+  const unsigned n = AR.columns();
+
+  // check for zero sized matrix
+  if (m == 0 || n == 0)
+    return;
+
+  // determine LAPACK parameters
+  INTEGER M = AR.rows();
+  INTEGER N = AR.columns();
+  INTEGER MINMN = std::min(M, N);
+  const unsigned min_mn = (unsigned) MINMN;
+
+  // setup tau vector
+  tau.resize(min_mn);
+
+  // call LAPACK
+  INTEGER LDA = AR.leading_dim();
+  INTEGER INFO;
+  geqrf_(&M, &N, AR.data(), &M, tau.data(), &INFO);
+  assert(INFO == 0);
+
+  // setup Q
+  Q.resize(m,m);
+  std::copy(AR.data(), AR.data()+m*min_mn, Q.data());
+  orgqr_(&M, &MINMN, &MINMN, Q.data(), &M, tau.data(), &INFO);
+
+  // make R upper triangular 
+
+  // note: R is m x n, so we don't have to resize
+  for (unsigned i=0; i< AR.columns(); i++)
+  {
+    RowIteratord coli = AR.block_row_iterator_begin(i+1,AR.rows(),i,i+1);
+    std::fill(coli, coli.end(), 0.0);
+  }
+}
+
 

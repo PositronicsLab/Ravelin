@@ -1,7 +1,7 @@
 /****************************************************************************
  * Copyright 2013 Evan Drumwright
- * This library is distributed under the terms of the GNU Lesser General Public 
- * License (found in COPYING).
+ * This library is distributed under the terms of the Apache V2.0 
+ * License (obtainable from http://www.apache.org/licenses/LICENSE-2.0).
  ****************************************************************************/
 
 //////////////////////////////////////////////////////////////////////////////
@@ -485,25 +485,26 @@ X& select(ForwardIterator1 row_start, ForwardIterator1 row_end, ForwardIterator2
       mdata++;
 
       // determine how we need to advance the rows
-      unsigned row_diff = *i;
-      i++;
-      row_diff -= *i;
-      row_diff = -row_diff;
-
-      // if we're able, advance data_start 
-      if (i != row_end)
-        data += row_diff;
+      if (i+1 != row_end)
+      {
+        data -= *i;
+        i++;
+        data += *i;
+      }
+      else
+        i++;
     }
 
     // determine how we need to advance the columns
-    unsigned col_diff = *j;
-    j++;
-    col_diff -= *j;
-    col_diff = -col_diff;
+    if (j+1 != col_end)
+    {
+      unsigned col_diff = *(j+1) - *j;
 
-    // advance data
-    data += (col_diff * leading_dim());
-    data -= row_sub; 
+      // advance data
+      data += (col_diff * leading_dim());
+      data -= row_sub;
+    }
+    j++; 
   }
 
   return m;

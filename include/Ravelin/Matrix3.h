@@ -1,7 +1,7 @@
 /****************************************************************************
  * Copyright 2013 Evan Drumwright
- * This library is distributed under the terms of the GNU Lesser General Public 
- * License (found in COPYING).
+ * This library is distributed under the terms of the Apache V2.0 
+ * License (obtainable from http://www.apache.org/licenses/LICENSE-2.0).
  ****************************************************************************/
 
 #ifndef MATRIX3
@@ -24,6 +24,7 @@ class MATRIX3
     MATRIX3(const MATRIX3& source) { operator=(source); }
     MATRIX3(const REAL* array);
     MATRIX3(const QUAT& q) { operator=(q); }
+    MATRIX3(const AANGLE& a) { operator=(a); }
     MATRIX3(REAL, REAL, REAL, REAL, REAL, REAL, REAL, REAL, REAL);
     MATRIX3& operator=(const QUAT& q);
     MATRIX3& operator=(const AANGLE& a);

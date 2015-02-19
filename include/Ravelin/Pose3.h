@@ -1,7 +1,7 @@
 /****************************************************************************
  * Copyright 2013 Evan Drumwright
- * This library is distributed under the terms of the GNU Lesser General Public 
- * License (found in COPYING).
+ * This library is distributed under the terms of the Apache V2.0 
+ * License (obtainable from http://www.apache.org/licenses/LICENSE-2.0).
  ****************************************************************************/
 
 #ifndef POSE3
@@ -14,6 +14,8 @@ class MATRIX3;
 /// A rigid body pose 
 class POSE3 : public boost::enable_shared_from_this<POSE3>
 {
+  friend class MOVINGTRANSFORM3;
+
   public:
     POSE3(boost::shared_ptr<const POSE3> relative_pose = boost::shared_ptr<const POSE3>());
     POSE3(const POSE3& source) { operator=(source); }

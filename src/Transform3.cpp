@@ -1,7 +1,7 @@
 /****************************************************************************
  * Copyright 2013 Evan Drumwright
- * This library is distributed under the terms of the GNU Lesser General Public 
- * License (found in COPYING).
+ * This library is distributed under the terms of the Apache V2.0 
+ * License (obtainable from http://www.apache.org/licenses/LICENSE-2.0).
  ****************************************************************************/
 
 /// Default constructor
@@ -362,7 +362,7 @@ void TRANSFORM3::transform_spatial(const SVECTOR6& w, SVECTOR6& result) const
   // setup r and E
   MATRIX3 E = q;
   ORIGIN3 r = E.transpose_mult(-x);
-  VECTOR3 rv(r, target);
+  VECTOR3 rv(r, source);
 
   // get the components of w
   VECTOR3 top = w.get_upper();
@@ -458,6 +458,17 @@ SACCEL TRANSFORM3::inverse_transform(const SACCEL& t) const
 }
 
 /// Transforms a rigid body inertia from one pose to another 
+/**
+ * The operations for this come from:
+ * | E     0 |  *  | -m*hx       eye(3)*m |  *  | E'    0  |        
+ * | -E*rx E |     | J - m*hx*hx m*hx     |     | rx*E' E' |
+ * which yields:
+ * | A  m  |
+ * | B  A' |
+ * where:
+ * A = -m*E*hx*E' + m*E*rx*E' 
+ * B = m*E*rx*hx*E' + E*J*E' - m*E*hx*hx*E' - m*E*rx*rx*E' + m*E*hx*rx*E'
+ */
 SPATIAL_RB_INERTIA TRANSFORM3::transform(const SPATIAL_RB_INERTIA& J) const
 {
   #ifndef NEXCEPT
@@ -470,11 +481,12 @@ SPATIAL_RB_INERTIA TRANSFORM3::transform(const SPATIAL_RB_INERTIA& J) const
   ORIGIN3 r = E.transpose_mult(-x);
 
   // precompute some things
-  ORIGIN3 y = J.h - r*J.m;
-  MATRIX3 rx = MATRIX3::skew_symmetric(r);
-  MATRIX3 hx = MATRIX3::skew_symmetric(J.h);
-  MATRIX3 yx = MATRIX3::skew_symmetric(y);
-  MATRIX3 Z = J.J + (rx*hx) + (yx*rx);
+  ORIGIN3 y = J.h - r;
+//  MATRIX3 rx = MATRIX3::skew_symmetric(r);
+//  MATRIX3 hx = MATRIX3::skew_symmetric(J.h);
+//  MATRIX3 yx = MATRIX3::skew_symmetric(y);
+//  MATRIX3 Z = J.J + (rx*hx) + (yx*rx);
+  MATRIX3 Z = J.J;
 
   // transform the inertia 
   SPATIAL_RB_INERTIA Jx(target);

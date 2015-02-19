@@ -9,13 +9,12 @@ set (CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_SOURCE_DIR}/CMakeModules)
 include_directories ("include")
 
 # setup library sources
-set (SOURCES AAnglef.cpp AAngled.cpp cblas.cpp LinAlgf.cpp LinAlgd.cpp Matrix2d.cpp Matrix2f.cpp Matrix3d.cpp Matrix3f.cpp MatrixNf.cpp MatrixNd.cpp Origin2d.cpp Origin2f.cpp Origin3d.cpp Origin3f.cpp Pose2d.cpp Pose2f.cpp Pose3f.cpp Pose3d.cpp Quatf.cpp Quatd.cpp SForcef.cpp SForced.cpp SharedMatrixNf.cpp SharedMatrixNd.cpp SharedVectorNf.cpp SharedVectorNd.cpp SMomentumf.cpp SMomentumd.cpp SparseMatrixNf.cpp SparseMatrixNd.cpp SparseVectorNf.cpp SparseVectorNd.cpp SpatialABInertiad.cpp SpatialABInertiaf.cpp SpatialRBInertiaf.cpp SpatialRBInertiad.cpp SVector6f.cpp SVector6d.cpp SVelocityd.cpp SVelocityf.cpp Transform2d.cpp Transform2f.cpp Transform3d.cpp Transform3f.cpp Vector2f.cpp Vector2d.cpp Vector3f.cpp Vector3d.cpp VectorNf.cpp VectorNd.cpp)
+set (SOURCES AAnglef.cpp AAngled.cpp cblas.cpp Jointd.cpp Jointf.cpp UniversalJointd.cpp UniversalJointf.cpp SphericalJointd.cpp SphericalJointf.cpp FixedJointd.cpp FixedJointf.cpp RevoluteJointf.cpp RevoluteJointd.cpp PrismaticJointf.cpp PrismaticJointd.cpp LinAlgf.cpp LinAlgd.cpp Matrix2d.cpp Matrix2f.cpp Matrix3d.cpp Matrix3f.cpp MatrixNf.cpp MatrixNd.cpp MovingTransform3f.cpp MovingTransform3d.cpp Origin2d.cpp Origin2f.cpp Origin3d.cpp Origin3f.cpp Pose2d.cpp Pose2f.cpp Pose3f.cpp Pose3d.cpp Quatf.cpp Quatd.cpp SForcef.cpp SForced.cpp SharedMatrixNf.cpp SharedMatrixNd.cpp SharedVectorNf.cpp SharedVectorNd.cpp SMomentumf.cpp SMomentumd.cpp SparseMatrixNf.cpp SparseMatrixNd.cpp SparseVectorNf.cpp SparseVectorNd.cpp SpatialABInertiad.cpp SpatialABInertiaf.cpp SpatialRBInertiaf.cpp SpatialRBInertiad.cpp SVector6f.cpp SVector6d.cpp SVelocityd.cpp SVelocityf.cpp Transform2d.cpp Transform2f.cpp Transform3d.cpp Transform3f.cpp Vector2f.cpp Vector2d.cpp Vector3f.cpp Vector3d.cpp VectorNf.cpp VectorNd.cpp)
 
 # build options 
 option (BUILD_SHARED_LIBS "Build Ravelin as a shared library?" ON)
 option (PROFILE "Build for profiling?" OFF)
 option (REENTRANT "Build Ravelin to be reentrant ? (slower)" OFF)
-option (ATLAS_BUGFIX "Use bugfix for Debian/Ubuntu ATLAS packages?" OFF)
 option (DISABLE_EXCEPT "Disable user-level exceptions for extra speed (not recommended)?" OFF)
 
 # superLU directories
@@ -43,13 +42,7 @@ else (APPLE)
   find_package (CBLAS REQUIRED)
   find_package (LAPACKLite REQUIRED)
   set (BLAS_LIBRARIES ${CBLAS_LIBRARIES})
-  set (ATLAS_BUGFIX ON)
 endif (APPLE)
-
-# use ATLAS bugfix if necessary
-if (ATLAS_BUGFIX)
-  add_definitions (-DATLAS_BUGFIX)
-endif (ATLAS_BUGFIX)
 
 # setup include directories, compiler flags, and libraries for required pkgs
 include_directories (${Boost_INCLUDE_DIR})

@@ -1,7 +1,7 @@
 /****************************************************************************
  * Copyright 2006 Evan Drumwright
- * This library is distributed under the terms of the GNU Lesser General Public 
- * License (found in COPYING).
+ * This library is distributed under the terms of the Apache V2.0 
+ * License (obtainable from http://www.apache.org/licenses/LICENSE-2.0).
  ****************************************************************************/
 
 #include <assert.h>
@@ -122,104 +122,7 @@ void CBLAS::ger(enum CBLAS_ORDER order, int M, int N, float alpha, const float* 
 template <>
 void CBLAS::gemv(enum CBLAS_ORDER order, CBLAS_TRANSPOSE transA, int M, int N, double alpha, const double* A, int lda, const double* X, int incX, double beta, double* Y, int incY)
 {
-  // this code is necessary due to a persistent bug in Debian/Ubuntu's ATLAS
-  // package; the bug occurs with the transpose operation
-  #ifdef ATLAS_BUGFIX 
-  if (transA != CblasTrans)
-    cblas_dgemv(order, transA, M, N, alpha, A, lda, X, incX, beta, Y, incY);
-  else
-  {
-    // define macro for offset
-    #define OFFSET(N, incX) ((incX) > 0 ? 0 : ((N)-1) * (-(incX)))
-
-    // NOTE: this slower code is taken from GSL's CBLAS
-    int i, j;
-    int lenX, lenY;
-
-    const int Trans = (transA != CblasConjTrans) ? transA : CblasTrans;
-
-    // do some error checking
-    #ifndef NEXCEPT
-    if (order != CblasRowMajor && order != CblasColMajor)
-      throw std::runtime_error("Invalid Cblas order");
-    if (transA != CblasNoTrans && transA != CblasTrans && transA != CblasConjTrans)
-      throw std::runtime_error("Invalid Cblas transposition operation");
-    if (M < 0 || N < 0)
-      throw std::runtime_error("Negative dimension provided");
-    if ((order == CblasRowMajor && lda < std::max(1,N)) || 
-        (order == CblasColMajor && lda < std::max(1,M)))
-      throw std::runtime_error("Invalid stride");
-    #endif
-
-    // check for fast returns
-    if (M == 0 || N == 0)
-      return;
-
-    if (alpha == 0.0 && beta == 1.0)
-      return;
-
-    if (Trans == CblasNoTrans) {
-      lenX = N;
-      lenY = M;
-    } else {
-      lenX = M;
-      lenY = N;
-    }
-
-    /* form  y := beta*y */
-    if (beta == 0.0) {
-      int iy = OFFSET(lenY, incY);
-      for (i = 0; i < lenY; i++) {
-        Y[iy] = 0.0;
-        iy += incY;
-      }
-    } else if (beta != 1.0) {
-      int iy = OFFSET(lenY, incY);
-      for (i = 0; i < lenY; i++) {
-        Y[iy] *= beta;
-        iy += incY;
-      }
-    }
-
-    if (alpha == 0.0)
-      return;
-
-    if ((order == CblasRowMajor && Trans == CblasNoTrans)
-        || (order == CblasColMajor && Trans == CblasTrans)) {
-      /* form  y := alpha*A*x + y */
-      int iy = OFFSET(lenY, incY);
-      for (i = 0; i < lenY; i++) {
-        double temp = 0.0;
-        int ix = OFFSET(lenX, incX);
-        for (j = 0; j < lenX; j++) {
-          temp += X[ix] * A[lda * i + j];
-          ix += incX;
-        }
-        Y[iy] += alpha * temp;
-        iy += incY;
-      }
-    } else if ((order == CblasRowMajor && Trans == CblasTrans)
-             || (order == CblasColMajor && Trans == CblasNoTrans)) {
-      /* form  y := alpha*A'*x + y */
-      int ix = OFFSET(lenX, incX);
-      for (j = 0; j < lenX; j++) {
-        const double temp = alpha * X[ix];
-        if (temp != 0.0) {
-          int iy = OFFSET(lenY, incY);
-          for (i = 0; i < lenY; i++) {
-            Y[iy] += temp * A[lda * j + i];
-            iy += incY;
-          }
-        }
-        ix += incX;
-      }
-    }
-
-    #undef OFFSET
-  }
-  #else
   cblas_dgemv(order, transA, M, N, alpha, A, lda, X, incX, beta, Y, incY);
-  #endif
 }
 
 template <>

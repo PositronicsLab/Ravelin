@@ -1,7 +1,7 @@
 /****************************************************************************
  * Copyright 2013 Evan Drumwright
- * This library is distributed under the terms of the GNU Lesser General Public 
- * License (found in COPYING).
+ * This library is distributed under the terms of the Apache V2.0 
+ * License (obtainable from http://www.apache.org/licenses/LICENSE-2.0).
  ****************************************************************************/
 
 /// Constructs this vector with the given values
@@ -21,6 +21,16 @@ ORIGIN2::ORIGIN2(const REAL* array)
   const unsigned X = 0, Y = 1;
   _data[X] = array[X];
   _data[Y] = array[Y];
+}
+
+/// Does nothing
+ORIGIN2& ORIGIN2::resize(unsigned m, bool preserve)
+{
+  #ifndef NEXCEPT
+  if (m != 2)
+    throw MissizeException();
+  #endif
+  return *this;
 }
 
 /// Does nothing

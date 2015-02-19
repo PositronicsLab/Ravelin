@@ -1,7 +1,7 @@
 /****************************************************************************
  * Copyright 2013 Evan Drumwright
- * This library is distributed under the terms of the GNU Lesser General Public 
- * License (found in COPYING).
+ * This library is distributed under the terms of the Apache V2.0 
+ * License (obtainable from http://www.apache.org/licenses/LICENSE-2.0).
  ****************************************************************************/
 
 #ifndef SHAREDMATRIXN
@@ -26,6 +26,7 @@ class CONST_SHAREDMATRIXN
     CONST_SHAREDMATRIXN(const SHAREDMATRIXN& source);
     CONST_SHAREDMATRIXN(const CONST_SHAREDMATRIXN& source);
     CONST_SHAREDMATRIXN(unsigned rows, unsigned cols, unsigned leading_dim, unsigned start, SharedResizable<REAL> data);
+    const SHAREDMATRIXN get() const;
     void reset_from(const CONST_SHAREDMATRIXN& source);
     void reset_from(const SHAREDMATRIXN& source);
     bool is_symmetric(REAL tolerance = (REAL) -1.0) const;

@@ -1,7 +1,7 @@
 /****************************************************************************
  * Copyright 2013 Evan Drumwright
- * This library is distributed under the terms of the GNU Lesser General Public 
- * License (found in COPYING).
+ * This library is distributed under the terms of the Apache V2.0 
+ * License (obtainable from http://www.apache.org/licenses/LICENSE-2.0).
  ****************************************************************************/
 
 #ifndef MATRIXN
@@ -70,15 +70,13 @@ class MATRIXN
     MATRIXN& operator*=(REAL scalar);
     REAL* data() { return _data.get(); }
     const REAL* data() const { return _data.get(); }    
+    void free_memory() { resize(0,0); compress(); }
     void compress() { _data.compress(); }
     unsigned leading_dim() const { return _rows; }
     unsigned inc() const { return 1; }
 
     /// Gets the total number of elements in this matrix
     unsigned size() const { return _rows * _columns; }
-
-    /// Sets this to a m x n sized zero matrix
-    MATRIXN& set_zero(unsigned m, unsigned n) { return resize(m,n).set_zero(); }
 
     const REAL& operator()(unsigned i, unsigned j) const;
     REAL& operator()(const unsigned i, const unsigned j);

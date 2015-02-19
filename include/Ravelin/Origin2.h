@@ -1,7 +1,7 @@
 /****************************************************************************
  * Copyright 2013 Evan Drumwright
- * This library is distributed under the terms of the GNU Lesser General Public 
- * License (found in COPYING).
+ * This library is distributed under the terms of the Apache V2.0 
+ * License (obtainable from http://www.apache.org/licenses/LICENSE-2.0).
  ****************************************************************************/
 
 #ifndef ORIGIN2
@@ -23,7 +23,9 @@ class ORIGIN2
     REAL norm_sq() const { return sqr(_data[0]) + sqr(_data[1]); }
     static REAL norm(const ORIGIN2& v) { return std::sqrt(norm_sq(v)); }
     static REAL norm_sq(const ORIGIN2& v) { return v.norm_sq(); }
-    void set_zero() { _data[0] = _data[1] = 0.0; }
+    ORIGIN2& set_zero() { _data[0] = _data[1] = 0.0; return *this; }
+    ORIGIN2& set_zero(unsigned m) { assert(m==2); return set_zero(); }
+    ORIGIN2& set_zero(unsigned m, unsigned n) { assert(m==2 && n==1); return set_zero(); }
     static ORIGIN2 zero() { return ORIGIN2(0.0, 0.0); }
     ORIGIN2& operator=(const VECTOR2& v);
     ORIGIN2& operator=(const ORIGIN2& v) { _data[0] = v[0]; _data[1] = v[1]; return *this; }
@@ -48,10 +50,12 @@ class ORIGIN2
     const REAL& y() const { return _data[1]; }
     REAL& x() { return _data[0]; }
     REAL& y() { return _data[1]; }
+    unsigned size() const { return 3; }
     unsigned rows() const { return 3; }
     unsigned columns() const { return 1; }
     unsigned leading_dim() const { return 3; }
     unsigned inc() const { return 1; }
+    ORIGIN2& resize(unsigned m, bool preserve = false);
     ORIGIN2& resize(unsigned m, unsigned n, bool preserve = false);
 
   private:

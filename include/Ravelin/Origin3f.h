@@ -1,12 +1,13 @@
 /****************************************************************************
  * Copyright 2013 Evan Drumwright
- * This library is distributed under the terms of the GNU Lesser General Public 
- * License (found in COPYING).
+ * This library is distributed under the terms of the Apache V2.0 
+ * License (obtainable from http://www.apache.org/licenses/LICENSE-2.0).
  ****************************************************************************/
 
 #ifndef _ORIGIN3F_H
 #define _ORIGIN3F_H
 
+#include <limits>
 #include <cmath>
 #include <iostream>
 #include <boost/enable_shared_from_this.hpp>
