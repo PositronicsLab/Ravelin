@@ -10,7 +10,7 @@
 REAL& operator[](unsigned i)
 {
   #ifndef NEXCEPT
-  if (i > size())
+  if (i >= size())
     throw InvalidIndexException();
   #endif
   return _data[i];
@@ -20,7 +20,7 @@ REAL& operator[](unsigned i)
 REAL operator[](unsigned i) const
 {
   #ifndef NEXCEPT
-  if (i > size())
+  if (i >= size())
     throw InvalidIndexException();
   #endif
   return _data[i];
