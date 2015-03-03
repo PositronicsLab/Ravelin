@@ -114,23 +114,29 @@ QUAT QUAT::conjugate(const QUAT& q)
  * alpha' = 2*L*qdd, where omega'/alpha' are the angular velocity/acceleration
  * of a rigid body in the body's frame and qd/qdd are the first/second time
  * derivatives of the Euler (unit quaternion) parameters.
+ * 
+ * The matrix L is defined as:
+ * -e1  e0  e3 -e2
+ * -e2 -e3  e0  e1
+ * -e3  e2 -e1  e0
  */
 VECTOR3 QUAT::L_mult(REAL qx, REAL qy, REAL qz, REAL qw) const
 {
-  const double e0 = qw;
-  const double e1 = qx;
-  const double e2 = qy;
-  const double e3 = qz;
+  const double& e0 = w;
+  const double& e1 = x;
+  const double& e2 = y;
+  const double& e3 = z;
 
   VECTOR3 v;
-  v.x() = -x*e0 + w*e1 + z*e2 - y*e3;
-  v.y() = -y*e0 - z*e1 + w*e2 + x*e3;
-  v.z() = -z*e0 + y*e1 - x*e2 + w*e3;
+  v.x() = -e1*qw + e0*qx + e3*qy - e2*qz; 
+  v.y() = -e2*qw - e3*qx + e0*qy + e1*qz;
+  v.z() = -e3*qw + e2*qx - e1*qy + e0*qz;
   return v;
 }
 
 /*
 /// Computes the matrix 'L' used for generalized coordinate calculations
+ * Assumes the quaternions are stored in the format qw qx qy qz
 MatrixNf& QUAT::determine_L(MatrixNf& L) const
 {
   L.resize(3,4);
@@ -141,6 +147,7 @@ MatrixNf& QUAT::determine_L(MatrixNf& L) const
 }
 
 /// Computes the matrix 'G' used for generalized coordinate calculations
+ * Assumes the quaternions are stored in the format qw qx qy qz
 MatrixNf& QUAT::determine_G(MatrixNf& G) const
 {
   const unsigned X = 0, Y = 1, Z = 2, W = 3;
@@ -182,11 +189,16 @@ VECTOR3 QUAT::G_mult(REAL qx, REAL qy, REAL qz, REAL qw) const
  */
 QUAT QUAT::G_transpose_mult(const VECTOR3& v) const
 {
+  double de0 = -x*v.x() - y*v.y() - z*v.z();
+  double de1 = +w*v.x() + z*v.y() - y*v.z();
+  double de2 = -z*v.x() + w*v.y() + x*v.z();
+  double de3 = +y*v.x() - x*v.y() + w*v.z();
+
   QUAT q;
-  q.w = -x*v.x() - y*v.y() - z*v.z();
-  q.x = +w*v.x() + z*v.y() - y*v.z();
-  q.y = -z*v.x() + w*v.y() + x*v.z();
-  q.z = +y*v.x() - x*v.y() + w*v.z();
+  q.w = de0;
+  q.x = de1;
+  q.y = de2;
+  q.z = de3;
   return q;
 }
 
@@ -196,14 +208,24 @@ QUAT QUAT::G_transpose_mult(const VECTOR3& v) const
  * qdd = 1/2*L^T*alpha' - 1/4*omega'^2*q, where omega'/alpha' are the angular
  * velocity/acceleration of a rigid body in the body frame and qd/qdd are the
  * first/second time derivatives of the Euler (unit quaternion) parameters.
+ * 
+ * The matrix L is defined as:
+ * -e1  e0  e3 -e2
+ * -e2 -e3  e0  e1
+ * -e3  e2 -e1  e0
  */
 QUAT QUAT::L_transpose_mult(const VECTOR3& v) const
 {
+  double de0 = -x*v.x() - y*v.y() - z*v.z();
+  double de1 = +w*v.x() - z*v.y() + y*v.z();
+  double de2 = +z*v.x() + w*v.y() - x*v.z();
+  double de3 = -y*v.x() + x*v.y() + w*v.z();
+
   QUAT q;
-  q.w = -x*v.x() - y*v.y() - z*v.z();
-  q.x = +w*v.x() - z*v.y() + y*v.z();
-  q.y = +z*v.x() + w*v.y() - x*v.z();
-  q.z = -y*v.x() + x*v.y() + w*v.z();
+  q.w = de0;
+  q.x = de1;
+  q.y = de2;
+  q.z = de3;
   return q;
 }
 
