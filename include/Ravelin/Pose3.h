@@ -113,6 +113,23 @@ class POSE3 : public boost::enable_shared_from_this<POSE3>
       return m;
     }
 
+    /// Computes the time derivative of a 6x6 matrix that transforms velocity vectors in [v w] format 
+    template <class M>
+    static M& dot_spatial_transform_to_matrix2(boost::shared_ptr<const POSE3> source, boost::shared_ptr<const POSE3> target, M& m)
+    {
+      const unsigned SPATIAL_DIM = 6;
+      m.resize(SPATIAL_DIM, SPATIAL_DIM);
+      VECTOR3 r;
+      MATRIX3 E;
+      get_r_E(calc_transform(source, target), r, E);
+      m.set_sub_mat(0, 0, MATRIX3::zero());
+      m.set_sub_mat(3, 3, MATRIX3::zero());
+      MATRIX3 rx = MATRIX3::skew_symmetric(-r);
+      m.set_sub_mat(0, 3, E*rx*rx);
+      m.set_sub_mat(3, 0, MATRIX3::zero());
+      return m;
+    }
+
     /// the orientation of the pose frame
     QUAT q;
 
