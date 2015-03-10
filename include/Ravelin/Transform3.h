@@ -60,6 +60,8 @@ class TRANSFORM3
     TRANSFORM3& set(const QUAT& q, const ORIGIN3& v);
     TRANSFORM3& operator=(const TRANSFORM3& source);
     TRANSFORM3 operator*(const TRANSFORM3& m) const;
+    POSE3 apply_transform() const;
+    POSE3 apply_inverse_transform() const;
 
     /// the relative orientation
     QUAT q;

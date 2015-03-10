@@ -268,6 +268,36 @@ TRANSFORM3 TRANSFORM3::operator*(const TRANSFORM3& T) const
   return result;
 }
 
+/// Applies a transform to a pose
+/**
+ * *This* transforms from the source pose to the target pose. If the source pose
+ * changes to become P, we can apply this transform to P to get the new target
+ * pose. 
+ */
+POSE3 TRANSFORM3::apply_transform() const
+{
+  POSE3 result(target->rpose);
+  result.q = source->q * q.inverse();
+  result.x = source->x - result.q * x; 
+
+  return result;
+}
+
+/// Applies the inverse transform to a pose
+/**
+ * *This* transforms from the source pose to the target pose. If the target pose
+ * changes to become P, we can apply this transform to P to get the new source
+ * pose. 
+ */
+POSE3 TRANSFORM3::apply_inverse_transform() const
+{
+  POSE3 result(source->rpose);
+  result.q = target->q * q;
+  result.x = target->q * x + target->x;
+ 
+  return result;
+}
+
 /// Transforms a pose
 POSE3 TRANSFORM3::transform(const POSE3& p) const
 {
