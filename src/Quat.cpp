@@ -642,6 +642,19 @@ QUAT& QUAT::operator=(const MATRIX3& m)
   return q;
 }
 
+/// Sets the quaternion based on the given parameters
+QUAT& QUAT::operator=(const VECTORN& v)
+{
+  if (v.size() != 4)
+    throw MissizeException();
+
+  x = v[0];
+  y = v[1];
+  z = v[2];
+  w = v[3];
+  return *this;
+}
+
 /// Sets quaternion to that represented by an axis-angle representation
 QUAT& QUAT::operator=(const AANGLE& a)
 {
