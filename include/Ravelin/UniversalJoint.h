@@ -26,21 +26,9 @@ class UNIVERSALJOINT : public virtual JOINT
     /// Universal joint is never singular 
     virtual bool is_singular_config() const { return false; }
 
-    /// The tolerance to which a joint configuration is considered singular
-    /**
-     * \note if this tolerance is too low, then dynamics computation may
-     * become unstable; if the tolerance is too high, then dynamics computation
-     * will be slower.  A safe value is 1e-2.
-     */
-    REAL SINGULAR_TOL;
-
   protected:
     bool assign_axes();
-    static bool rel_equal(REAL x, REAL y);
     MATRIX3 get_rotation() const;
-
-    /// The orientation matrix that transforms the axes to those that the user desires
-    MATRIX3 _R;
 
     /// The local joint axes
     VECTOR3 _u[2];

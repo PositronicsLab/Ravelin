@@ -28,6 +28,15 @@ AANGLE::AANGLE(const VECTOR3& v, REAL angle)
   set(v, angle);
 }
 
+/// Constructs an axis-angle object from a vector and a REAL value
+/*
+ * \note automatically normalizes the axis
+ */
+AANGLE::AANGLE(const ORIGIN3& v, REAL angle)
+{
+  set(v, angle);
+}
+
 /// Constructs an axis-angle object from a 3x3 rotation matrix
 AANGLE::AANGLE(const MATRIX3& m)
 {
@@ -50,6 +59,20 @@ AANGLE::AANGLE(const MATRIX3& m, const VECTOR3& v)
 AANGLE& AANGLE::set(const VECTOR3& v, REAL angle)
 {
   VECTOR3 w = VECTOR3::normalize(v);
+  x = w[0];
+  y = w[1];
+  z = w[2];
+  this->angle = angle;
+  return *this;
+}
+
+/// Sets this object from a three-dimensional vector and a REAL value
+/**
+ * \note automatically normalizes the axis
+ */
+AANGLE& AANGLE::set(const ORIGIN3& v, REAL angle)
+{
+  ORIGIN3 w = ORIGIN3::normalize(v);
   x = w[0];
   y = w[1];
   z = w[2];
