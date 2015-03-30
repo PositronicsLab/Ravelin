@@ -43,9 +43,9 @@ VECTOR3 UNIVERSALJOINT::get_axis(Axis a) const
 
   // axis one is already set 
   if (a == eAxis1)
-    return _u[0];
+    return _u[DOF_1];
   else
-    return _u[1];
+    return _u[DOF_2];
 }
 
 /// Sets an axis of this joint
@@ -89,7 +89,7 @@ void UNIVERSALJOINT::update_spatial_axes()
   JOINT::update_spatial_axes();
 
   // update the spatial axes in joint pose 
-  _s[0].set_angular(_u[0]);
+  _s[0].set_angular(_u[DOF_1]);
   _s[0].set_linear(ZEROS_3);
 
   // update the spatial axes in link coordinates
@@ -119,8 +119,8 @@ const vector<SVELOCITY>& UNIVERSALJOINT::get_spatial_axes()
     throw std::runtime_error("UNIVERSALJOINT::get_spatial_axes() called with NULL outboard link");
 
   // get the transformed second axis
-  MATRIX3 R = AANGLE(_u[0], q[DOF_1]+q_tare[DOF_1]);
-  VECTOR3 u1(R * ORIGIN3(_u[1]), get_pose());
+  MATRIX3 R = AANGLE(_u[DOF_1], q[DOF_1]+q_tare[DOF_1]);
+  VECTOR3 u1(R * ORIGIN3(_u[DOF_2]), get_pose());
 
   // update the second spatial axes
   _s[1].set_angular(u1);
@@ -160,9 +160,9 @@ const vector<SVELOCITY>& UNIVERSALJOINT::get_spatial_axes_dot()
   // get the second spatial axis time derivative. This is:
   // R * \dot{u2} + \dot{R} * u
   // note that \dot{u2} is zero
-  MATRIX3 R = AANGLE(_u[0], q[DOF_1]+q_tare[DOF_1]);
-  VECTOR3 omega = _u[0] * qd1;
-  ORIGIN3 u1 = ORIGIN3::cross(ORIGIN3(omega), R * ORIGIN3(_u[1]));
+  MATRIX3 R = AANGLE(_u[DOF_1], q[DOF_1]+q_tare[DOF_1]);
+  VECTOR3 omega = _u[DOF_1] * qd1;
+  ORIGIN3 u1 = ORIGIN3::cross(ORIGIN3(omega), R * ORIGIN3(_u[DOF_2]));
   _s_dot[1].set_angular(VECTOR3(u1, get_pose()));
   _s_dot[1].set_linear(ZEROS_3);
 
@@ -196,9 +196,9 @@ const vector<SVELOCITY>& UNIVERSALJOINT::get_spatial_axes_dot()
   // get the second spatial axis time derivative. This is:
   // R * \dot{u2} + \dot{R} * u
   // note that \dot{u2} is zero
-  MATRIX3 R = AANGLE(_u[0], q[DOF_1]+q_tare[DOF_1]);
-  VECTOR3 omega = _u[0] * qd1;
-  VECTOR3 dotRu = VECTOR3::cross(omega, VECTOR3(R * ORIGIN3(_u[1]), get_pose()));
+  MATRIX3 R = AANGLE(_u[DOF_1], q[DOF_1]+q_tare[DOF_1]);
+  VECTOR3 omega = _u[DOF_1] * qd1;
+  VECTOR3 dotRu = VECTOR3::cross(omega, VECTOR3(R * ORIGIN3(_u[DOF_2]), get_pose()));
 
   // update the spatial axis in link coordinates; note that axis 1 is always
   // set to zero (init'd in constructor)
@@ -212,32 +212,7 @@ const vector<SVELOCITY>& UNIVERSALJOINT::get_spatial_axes_dot()
 /// Determines (and sets) the value of Q from the axes and the inboard link and outboard link transforms
 void UNIVERSALJOINT::determine_q(VECTORN& q)
 {
-// NOTE: this isn't going to work...
-/*
-  const unsigned X = 0, Y = 1, Z = 2;
-  shared_ptr<const POSE3> GLOBAL;
-
-  // set proper size for q
-  this->q.resize(num_dof());
-
-  // get the poses of the joint and outboard link
-  shared_ptr<const POSE3> Fj = get_pose();
-  shared_ptr<const POSE3> Fo = get_outboard_pose();
-
-  // compute transforms
-  TRANSFORM3 wTo = POSE3::calc_relative_pose(Fo, GLOBAL); 
-  TRANSFORM3 jTw = POSE3::calc_relative_pose(GLOBAL, Fj);
-  TRANSFORM3 jTo = jTw * wTo;
-
-  // determine the joint transformation
-  MATRIX3 R = _R * jTo.q * MATRIX3::transpose(_R);
-
-  // determine q1 and q2 -- they are uniquely determined by examining the rotation matrix
-  // (see get_rotation())
-  q.resize(num_dof());
-  q[DOF_1] = std::atan2(R(Z,Y), R(Y,Y));
-  q[DOF_2] = std::atan2(R(X,Z), R(X,X));   
-*/
+  std::cerr << "SPHERICALJOINT::determine_q() warning- determine_q(.) is not currently functional" << std::endl;
 }
 
 /// Gets the (local) transform for this joint
@@ -314,9 +289,9 @@ void UNIVERSALJOINT::calc_constraint_jacobian(RigidBodyPtr body, unsigned index,
   const REAL p2x = -p2[X];
   const REAL p2y = -p2[Y];
   const REAL p2z = -p2[Z];
-  const REAL u0x = _u[0][X];
-  const REAL u0y = _u[0][Y];
-  const REAL u0z = _u[0][Z];
+  const REAL u0x = _u[DOF_1][X];
+  const REAL u0y = _u[DOF_1][Y];
+  const REAL u0z = _u[DOF_1][Z];
   const REAL h2x = _h2[X];
   const REAL h2y = _h2[Y];
   const REAL h2z = _h2[Z];
@@ -598,9 +573,9 @@ void UNIVERSALJOINT::calc_constraint_jacobian_dot(RigidBodyPtr body, unsigned in
   const REAL p2x = -p2[X];
   const REAL p2y = -p2[Y];
   const REAL p2z = -p2[Z];
-  const REAL ux = _u[0][X];
-  const REAL uy = _u[0][Y];
-  const REAL uz = _u[0][Z];
+  const REAL ux = _u[DOF_1][X];
+  const REAL uy = _u[DOF_1][Y];
+  const REAL uz = _u[DOF_1][Z];
   const REAL h2x = _h2[X];
   const REAL h2y = _h2[Y];
   const REAL h2z = _h2[Z];
@@ -876,7 +851,7 @@ void UNIVERSALJOINT::evaluate_constraints(REAL C[])
   // have been altered however
 
   // determine h1 and h2 in global coordinates
-  VECTOR3 h1 = inner->transform_vector(GLOBAL, _u[0]);
+  VECTOR3 h1 = inner->transform_vector(GLOBAL, _u[DOF_1]);
   VECTOR3 h2 = outer->transform_vector(GLOBAL, _h2);
 
   // determine the global positions of the attachment points and subtract them

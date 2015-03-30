@@ -52,7 +52,7 @@ VECTOR3 SPHERICALJOINT::get_axis(Axis a) const
   // axis one is easy 
   if (a == eAxis1)
   {
-    return _u[0];
+    return _u[DOF_1];
   }
 
   // for both axes 2 and 3 we need cos and sin of q(1)
@@ -63,7 +63,7 @@ VECTOR3 SPHERICALJOINT::get_axis(Axis a) const
   if (a == eAxis2)
   {
     VECTOR3 u(0,c1,s1);
-    u.pose = _u[0].pose;
+    u.pose = _u[DOF_1].pose;
     return u;
   }
     
@@ -74,7 +74,7 @@ VECTOR3 SPHERICALJOINT::get_axis(Axis a) const
   const REAL s2 = std::sin(q[DOF_2]+_q_tare[DOF_2]);
   assert (a == eAxis3);
   VECTOR3 u(s2, -c2*s1, c1*c2);
-  u.pose = _u[0].pose;
+  u.pose = _u[DOF_1].pose;
   return u;
 }
 
@@ -106,6 +106,17 @@ void SPHERICALJOINT::update_spatial_axes()
   // assign axes, if possible
   if (!assign_axes())
     return;
+
+  // set first spatial axis 
+  VECTOR3 ZEROS_3(0.0, 0.0, 0.0, get_pose());
+
+  // update the spatial axes in joint pose 
+  _s[DOF_1].set_angular(_u[DOF_1]);
+  _s[DOF_1].set_linear(ZEROS_3);
+
+  // update the spatial axes in link coordinates
+  _s_dot[DOF_1].set_angular(ZEROS_3);
+  _s_dot[DOF_1].set_linear(ZEROS_3);
 
   // verify that all are unit-length and they are orthogonal
   assert(std::fabs(_u[eAxis1].norm() - (REAL) 1.0) < EPS);
@@ -207,34 +218,19 @@ const vector<SVELOCITY>& SPHERICALJOINT::get_spatial_axes()
   const VECTORN& q = this->q;
   const VECTORN& q_tare = this->_q_tare;
 
-  // get the set of spatial axes
-  REAL c1 = std::cos(q[DOF_1]+q_tare[DOF_1]);
-  REAL c2 = std::cos(q[DOF_2]+q_tare[DOF_2]);
-  REAL s1 = std::sin(q[DOF_1]+q_tare[DOF_1]);
-  REAL s2 = std::sin(q[DOF_2]+q_tare[DOF_2]);
+  // get the transformed second axis
+  MATRIX3 R1 = AANGLE(_u[eAxis1], q[DOF_1] + q_tare[DOF_1]);
+  VECTOR3 u2(R1 * ORIGIN3(_u[eAxis2]), get_pose());
 
-  // form untransformed spatial axes -- this are the vectors describing each axis, after
-  // rotation by preceding axis/axes; note that first axis always points toward 1,0,0
-  VECTOR3 uu2(0, c1, s1);
-  VECTOR3 uu3(s2, -c2*s1, c1*c2);
-
-  // transform the spatial axes into the joint frame 
-  VECTOR3 u1 = _u[0];
-  VECTOR3 u2 =  uu2;
-  VECTOR3 u3 =  uu3;
-
-  // setup relative poses for all three
-  u1.pose = _F;
-  u2.pose = _F;
-  u3.pose = _F;
+  // get the transformed third axis
+  MATRIX3 R2 = AANGLE(_u[eAxis2], q[DOF_2] + q_tare[DOF_2]);
+  VECTOR3 u3(R1 * (R2 * ORIGIN3(_u[eAxis3])), get_pose());
 
   // update the spatial axis in link coordinates
-  _s[0].set_angular(u1);
-  _s[0].set_linear(ZEROS_3);
-  _s[1].set_angular(u2);
-  _s[1].set_linear(ZEROS_3);
-  _s[2].set_angular(u3);
-  _s[2].set_linear(ZEROS_3);
+  _s[DOF_2].set_angular(u2);
+  _s[DOF_2].set_linear(ZEROS_3);
+  _s[DOF_3].set_angular(u3);
+  _s[DOF_3].set_linear(ZEROS_3);
 
   // use the JOINT function to do the rest
   return JOINT::get_spatial_axes();
@@ -269,20 +265,25 @@ const vector<SVELOCITY>& SPHERICALJOINT::get_spatial_axes_dot()
   REAL qd1 = qd[DOF_1];
   REAL qd2 = qd[DOF_2];
 
-  // form the time derivatives of the non-constant spatial axes (untransformed) 
-  VECTOR3 uu2(0, -s1*qd1, c1*qd1);
-  VECTOR3 uu3(c2*qd2, -c2*c1*qd1 + s2*s1*qd2, -c1*s2*qd2 - s1*c2*qd1);
+  // get the transformed second axis time derivative. This is:
+  // R1 * \dot{u2} + \dot{R} * u2
+  // note that \dot{u2} is zero
+  MATRIX3 R1 = AANGLE(_u[DOF_1], q[DOF_1]+q_tare[DOF_1]);
+  VECTOR3 omega1 = _u[DOF_1] * qd1;
+  ORIGIN3 u2 = ORIGIN3::cross(ORIGIN3(omega1), R1 * ORIGIN3(_u[DOF_2]));
+  _s_dot[DOF_2].set_angular(VECTOR3(u2, get_pose()));
+  _s_dot[DOF_2].set_linear(ZEROS_3);
 
-  // transform the axes into outer link coordinates
-  VECTOR3 u2 = uu2; 
-  VECTOR3 u3 = uu3; 
-
-  // update the spatial axis in joint coordinates; note that third column of spatial axis
-  // derivative set to zero in constructor and is never modified
-  _s_dot[1].set_angular(u2);
-  _s_dot[1].set_lower(ZEROS_3);
-  _s_dot[2].set_angular(u3);
-  _s_dot[2].set_linear(ZEROS_3);
+  // get the transformed third axis time derivative. This is:
+  // R1 * R2 * \dot{u3} + \dot{R1} * R2 * u3 + R1 * \dot{R2} * u3
+  // note that \dot{u3} is zero
+  // compute R2 and omega2 
+  MATRIX3 R2 = AANGLE(_u[eAxis2], q[DOF_2] + q_tare[DOF_2]);
+  VECTOR3 omega2 = _u[DOF_2] * qd2;
+  ORIGIN3 u3 = ORIGIN3::cross(ORIGIN3(omega1), R1 * R2 * ORIGIN3(_u[DOF_3])) +
+               R1 * (ORIGIN3::cross(ORIGIN3(omega2), R2 * ORIGIN3(_u[DOF_3]))); 
+  _s_dot[DOF_3].set_angular(VECTOR3(u3, get_pose()));
+  _s_dot[DOF_3].set_linear(ZEROS_3);
 
   return _s_dot;
 }
@@ -290,94 +291,7 @@ const vector<SVELOCITY>& SPHERICALJOINT::get_spatial_axes_dot()
 /// Determines (and sets) the value of Q from the axes and the inboard link and outboard link transforms
 void SPHERICALJOINT::determine_q(VECTORN& q)
 {
-  shared_ptr<const POSE3> GLOBAL;
-  const unsigned X = 0, Y = 1, Z = 2;
-
-  // get the outboard link
-  shared_ptr<const POSE3> Fo = get_outboard_pose();
-
-  // verify that the outboard pose is set
-  if (!Fo)
-    throw std::runtime_error("determine_q() called with NULL outboard pose!");
-
-  // if any of the axes are not defined, can't use this method
-  if (std::fabs(_u[0].norm_sq() - (REAL) 1.0) > EPS ||
-      std::fabs(_u[1].norm_sq() - (REAL) 1.0) > EPS ||
-      std::fabs(_u[2].norm_sq() - (REAL) 1.0) > EPS)
-    throw UndefinedAxisException();
-
-  // set proper size for q
-  q.resize(num_dof());
-
-  // get the poses of the joint and outboard link
-  shared_ptr<const POSE3> Fj = get_pose();
-
-  // compute transforms
-  TRANSFORM3 wTo = POSE3::calc_relative_pose(Fo, GLOBAL); 
-  TRANSFORM3 jTw = POSE3::calc_relative_pose(GLOBAL, Fj);
-  TRANSFORM3 jTo = jTw * wTo;
-
-  // determine the joint transformation
-  MATRIX3 R = jTo.q;
-
-  // determine cos and sin values for q1, q2,  and q3
-  REAL s2 = R(X,Z);
-  REAL c2 = std::cos(std::asin(s2));
-  REAL s1, c1, s3, c3;
-  if (std::fabs(c2) > EPS)
-  {
-    s1 = -R(Y,Z)/c2;
-    c1 = R(Z,Z)/c2;
-    s3 = -R(X,Y)/c2;
-    c3 = R(X,X)/c2;
-    assert(!std::isnan(s1));
-    assert(!std::isnan(c1));
-    assert(!std::isnan(s3));
-    assert(!std::isnan(c3));
-  }
-  else
-  {
-    // singular, we can pick any value for s1, c1, s3, c3 as long as the
-    // following conditions are satisfied
-    // c1*s3 + s1*c3*s2 = R(Y,X)
-    // c1*c3 - s1*s3*s2 = R(Y,Y)
-    // s1*s3 - c1*c3*s2 = R(Z,X)
-    // s1*c3 + c1*s3*s2 = R(Z,Y)
-    // so, we'll set q1 to zero (arbitrarily) and obtain
-    s1 = 0;
-    c1 = 1;
-    s3 = R(Y,X);
-    c3 = R(Y,Y);
-  }
-
-  // now determine q; only q2 can be determined without ambiguity
-  if (std::fabs(s1) < EPS)
-    q[DOF_2] = std::atan2(R(X,Z), R(Z,Z)/c1);
-  else
-    q[DOF_2] = std::atan2(R(X,Z), -R(Y,Z)/s1);
-  assert(!std::isnan(q[DOF_2]));
-
-  // if cos(q2) is not singular, proceed easily from here..
-  if (std::fabs(c2) > EPS)
-  {
-    q[DOF_1] = std::atan2(-R(Y,Z)/c2, R(Z,Z)/c2);
-    q[DOF_3] = std::atan2(-R(X,Y)/c2, R(X,X)/c2);
-    assert(!std::isnan(q[DOF_1]));
-    assert(!std::isnan(q[DOF_3]));
-  }
-  else
-  {
-    if (std::fabs(c1) > EPS)
-      q[DOF_3] = std::atan2((R(Y,X) - s1*s2*c3)/c1, (R(Y,Y) + s1*s2*s3)/c1);
-    else
-      q[DOF_3] = std::atan2((R(Z,X) + c1*s2*c3)/s1, (R(Z,Y) - c1*s2*s3)/s1);
-    if (std::fabs(c3) > EPS)
-      q[DOF_1] = std::atan2((R(Y,X) - c1*s3)/(s2*c3), (-R(Y,X) + s1*s3)/(s2*c3));
-    else
-      q[DOF_1] = std::atan2((-R(Y,Y) + c1*c3)/(s2*s3), (R(Z,Y) - s1*c3)/(s2*s3));
-    assert(!std::isnan(q[DOF_1]));
-    assert(!std::isnan(q[DOF_3]));
-  }
+  std::cerr << "SPHERICALJOINT::determine_q() warning- determine_q(.) is not currently functional" << std::endl;
 }
 
 /// Gets the (local) rotation induced by this joint
@@ -389,22 +303,16 @@ MATRIX3 SPHERICALJOINT::get_rotation() const
   const VECTORN& q = this->q;
   const VECTORN& q_tare = this->_q_tare;
 
-  // compute some needed quantities
-  const REAL c1 = std::cos(q[DOF_1]+q_tare[DOF_1]);
-  const REAL s1 = std::sin(q[DOF_1]+q_tare[DOF_1]);
-  const REAL c2 = std::cos(q[DOF_2]+q_tare[DOF_2]);
-  const REAL s2 = std::sin(q[DOF_2]+q_tare[DOF_2]);
-  const REAL c3 = std::cos(q[DOF_3]+q_tare[DOF_3]);
-  const REAL s3 = std::sin(q[DOF_3]+q_tare[DOF_3]);
+  // get the transformed second axis
+  MATRIX3 R1 = AANGLE(_u[eAxis1], q[DOF_1] + q_tare[DOF_1]);
+  VECTOR3 u2(R1 * ORIGIN3(_u[eAxis2]), get_pose());
 
-  // determine rotation
-  // this is just the rotation matrix induced by using Tait-Bryan angles
-  MATRIX3 R;
-  R(X,X) = c2*c3;              R(X,Y) = -c2*s3;              R(X,Z) = s2;
-  R(Y,X) = s1*s2*c3 + c1*s3;   R(Y,Y) = -s1*s2*s3 + c1*c3;   R(Y,Z) = -c2*s1;
-  R(Z,X) = -c1*s2*c3 + s1*s3;  R(Z,Y) = c1*s2*s3 + s1*c3;    R(Z,Z) = c2*c1;
+  // get the transformed third axis
+  MATRIX3 R2 = AANGLE(_u[eAxis2], q[DOF_2] + q_tare[DOF_2]);
+  VECTOR3 u3(R1 * (R2 * ORIGIN3(_u[eAxis3])), get_pose());
 
-  return R;
+  // return the rotation
+  return R1 * R2 * AANGLE(_u[eAxis3], q[DOF_3] + q_tare[DOF_3]);
 }
 
 /// Gets the (local) transform for this joint
