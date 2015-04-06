@@ -11,6 +11,7 @@
 #include <Ravelin/MissizeException.h>
 #include <Ravelin/AAngled.h>
 #include <Ravelin/Opsd.h>
+#include <Ravelin/VectorNd.h>
 #include <Ravelin/Quatd.h>
 
 using namespace Ravelin;

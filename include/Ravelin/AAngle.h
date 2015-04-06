@@ -19,10 +19,12 @@ class AANGLE
     AANGLE(const AANGLE& source);
     AANGLE(REAL x, REAL y, REAL z, REAL angle);
     AANGLE(const VECTOR3& v, REAL angle);
+    AANGLE(const ORIGIN3& v, REAL angle);
     AANGLE(const MATRIX3& m);
     AANGLE(const QUAT& q);
     AANGLE(const MATRIX3& m, const VECTOR3& axis);
     AANGLE& set(const VECTOR3& v, REAL angle);
+    AANGLE& set(const ORIGIN3& v, REAL angle);
     AANGLE& operator=(const MATRIX3& m);
     AANGLE& operator=(const QUAT& q);
     AANGLE& operator=(const AANGLE& source);
