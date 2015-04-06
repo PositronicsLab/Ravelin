@@ -30,7 +30,7 @@ void REVOLUTEJOINT::set_axis(const VECTOR3& axis)
   VECTOR3 naxis = VECTOR3::normalize(axis);
 
   // transform the axis as necessary
-  _u = POSE3::transform_vector(_F, naxis);
+  _u = VECTOR3::normalize(POSE3::transform_vector(_F, naxis));
 
   // update the spatial axes
   update_spatial_axes(); 
@@ -98,8 +98,6 @@ void REVOLUTEJOINT::determine_q(VECTORN& q)
 /// Gets the pose for this joint
 shared_ptr<const POSE3> REVOLUTEJOINT::get_induced_pose()
 {
-  assert(std::fabs(_u.norm() - (REAL) 1.0) < EPS);
-
   // note that translation is set to zero in the constructors
   _Fprime->q = AANGLE(_u, this->q[DOF_1]+this->_q_tare[DOF_1]);
 

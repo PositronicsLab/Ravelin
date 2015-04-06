@@ -297,6 +297,13 @@ VECTORN& VECTORN::parse(const std::string& s, VECTORN& values)
 {
   std::list<std::string> plist;
 
+  // look for trivial case
+  if (s.size() == 0)
+  {
+    values.resize(0);
+    return values;
+  }
+
   // make a copy of the string
   std::string copy = s;
 

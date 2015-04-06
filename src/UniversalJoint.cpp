@@ -138,22 +138,6 @@ const vector<SVELOCITY>& UNIVERSALJOINT::get_spatial_axes()
   const REAL c1 = std::cos(q[DOF_1]+q_tare[DOF_1]);
   const REAL s1 = std::sin(q[DOF_1]+q_tare[DOF_1]);
 
-/*
-  // form the axes matrix 
-  MATRIX3 Rx = MATRIX3::zero();
-  Rx.set_column(X, ORIGIN3(1.0, 0.0, 0.0)); 
-  Rx.set_column(Y, ORIGIN3(0.0, c1, s1));
-  ORIGIN3 cross = ORIGIN3::cross(ORIGIN3(1.0, 0.0, 0.0), ORIGIN3(0.0, c1, s1)); 
-  Rx.set_column(Z, cross);
-
-  // get the axes
-  MATRIX3 axes = _R * Rx * MATRIX3::transpose(_R);
-
-  // setup the vectors
-  VECTOR3 u1(axes.get_column(X), get_pose());
-  VECTOR3 u2(axes.get_column(Y), get_pose());
-*/
-
   // get the second spatial axis
   MATRIX3 R = AANGLE(_u[0], q[DOF_1]+q_tare[DOF_1]);
   VECTOR3 u2(R * ORIGIN3(_u[1]), get_pose());
@@ -193,21 +177,6 @@ const vector<SVELOCITY>& UNIVERSALJOINT::get_spatial_axes_dot()
   // compute some needed quantities
   const REAL c1 = std::cos(q[DOF_1]+q_tare[DOF_1]);
   const REAL s1 = std::sin(q[DOF_1]+q_tare[DOF_1]);
-
-/*
-  // form the time derivative of the spatial axis for the second DOF; note that spatial
-  // axis for first DOF is constant, so time-derivative is zero 
-  MATRIX3 Rx = MATRIX3::zero();
-  REAL qd1 = qd[DOF_1];
-  ORIGIN3 v(0.0, -s1*qd1, c1*qd1); 
-  Rx.set_column(Y, v);
-  ORIGIN3 cross = ORIGIN3::cross(ORIGIN3(1.0, 0.0, 0.0), v); 
-  Rx.set_column(Z, cross);
-
-  // compute u
-  ORIGIN3 ux = (_R * Rx * MATRIX3::transpose(_R)).get_column(Y);
-  VECTOR3 u(ux, get_pose());
-*/
 
   // get the time derivative of second spatial axis
   REAL qd1 = qd[DOF_1];
