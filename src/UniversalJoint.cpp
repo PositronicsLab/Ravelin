@@ -122,7 +122,6 @@ const vector<SVELOCITY>& UNIVERSALJOINT::get_spatial_axes()
   MATRIX3 R = AANGLE(_u[DOF_1], q[DOF_1]+q_tare[DOF_1]);
   VECTOR3 u1(R * ORIGIN3(_u[DOF_2]), get_pose());
 
-<<<<<<< HEAD
   // get the inner link pose
   boost::shared_ptr<const POSE3> pose = get_inboard_pose(); 
 
