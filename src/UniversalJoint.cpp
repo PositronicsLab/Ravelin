@@ -125,12 +125,7 @@ const vector<SVELOCITY>& UNIVERSALJOINT::get_spatial_axes()
   // get the inner link pose
   boost::shared_ptr<const POSE3> pose = get_inboard_pose(); 
 
-  // compute some needed quantities
-  const REAL c1 = std::cos(q[DOF_1]+q_tare[DOF_1]);
-  const REAL s1 = std::sin(q[DOF_1]+q_tare[DOF_1]);
-
   // get the second spatial axis
-  MATRIX3 R = AANGLE(_u[0], q[DOF_1]+q_tare[DOF_1]);
   VECTOR3 u2(R * ORIGIN3(_u[1]), get_pose());
 
   // update the spatial axes in link coordinates
