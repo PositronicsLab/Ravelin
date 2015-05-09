@@ -48,10 +48,10 @@ class POSE3 : public boost::enable_shared_from_this<POSE3>
     static SVELOCITY transform(boost::shared_ptr<const POSE3> target, const SVELOCITY& t);
     static std::vector<SVELOCITY>& transform(boost::shared_ptr<const POSE3> target, const std::vector<SVELOCITY>& t, std::vector<SVELOCITY>& result);
     static std::vector<SMOMENTUM>& transform(boost::shared_ptr<const POSE3> target, const std::vector<SMOMENTUM>& t, std::vector<SMOMENTUM>& result);
-    SACCEL transform(const SACCEL& t) const;
-    SACCEL inverse_transform(const SACCEL& t) const;
-    static SACCEL transform(boost::shared_ptr<const POSE3> target, const SACCEL& t);
-    static std::vector<SACCEL>& transform(boost::shared_ptr<const POSE3> target, const std::vector<SACCEL>& t, std::vector<SACCEL>& result);
+    SACCEL transform(const SACCEL& t, const SVELOCITY& v) const;
+    SACCEL inverse_transform(const SACCEL& t, const SVELOCITY& v) const;
+    static SACCEL transform(boost::shared_ptr<const POSE3> target, const SACCEL& t, const SVELOCITY& v);
+    static std::vector<SACCEL>& transform(boost::shared_ptr<const POSE3> target, const std::vector<SACCEL>& t, const std::vector<SVELOCITY>& v, std::vector<SACCEL>& result);
     SPATIAL_RB_INERTIA transform(const SPATIAL_RB_INERTIA& j) const { return transform(rpose, j); }
     SPATIAL_RB_INERTIA inverse_transform(const SPATIAL_RB_INERTIA& j) const;
     static SPATIAL_RB_INERTIA transform(boost::shared_ptr<const POSE3> target, const SPATIAL_RB_INERTIA& j);

@@ -472,18 +472,22 @@ SMOMENTUM TRANSFORM3::inverse_transform(const SMOMENTUM& t) const
 }
 
 /// Transforms an acceleration from one pose to another 
-SACCEL TRANSFORM3::transform(const SACCEL& t) const
+SACCEL TRANSFORM3::transform(const SACCEL& t, const SVELOCITY& v) const
 {
   SACCEL result;
-  transform_spatial(t, result);
+
+  // TODO: fix this
+
   return result;
 }
 
 /// Transforms an acceleration from one pose to another 
-SACCEL TRANSFORM3::inverse_transform(const SACCEL& t) const
+SACCEL TRANSFORM3::inverse_transform(const SACCEL& t, const SVELOCITY& v) const
 {
   SACCEL result;
-  inverse_transform_spatial(t, result);
+
+  // TODO: fix this
+//  inverse_transform_spatial(t, result);
   return result;
 }
 
