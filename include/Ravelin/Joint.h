@@ -20,7 +20,7 @@ class JOINT
     virtual void set_inboard_pose(boost::shared_ptr<const POSE3> inboard_pose, bool update_joint_pose);
     virtual void set_outboard_pose(boost::shared_ptr<POSE3> outboard_pose, bool update_joint_pose);
     virtual void update_spatial_axes();
-    void evaluate_constraints_dot(REAL C[6]);
+    void evaluate_constraints_dot(REAL C[]);
     virtual void determine_q_tare();
 
     /// Gets the pose of this joint (relative to the inboard pose instead of the outboard pose as returned by get_pose_from_outboard())
@@ -79,6 +79,22 @@ class JOINT
     /// The velocity of this joint
     VECTORN qd;
 
+    /// Computes the constraint Jacobian for this joint with respect to the given body
+    /**
+     * \param inboard 'true' if the Jacobian is to be computed w.r.t. the
+     *        inboard link; 'false' for the outboard
+     * \param Cq a 6 x ndof matrix for the given body (on return) 
+     */
+    virtual void calc_constraint_jacobian(bool inboard, SHAREDMATRIXN& Cq) = 0;
+ 
+     /// Computes the time derivative of the constraint Jacobian for this joint with respect to the given body
+    /**
+     * \param inboard 'true' if the Jacobian is to be computed w.r.t. the
+     *        inboard link; 'false' for the outboard
+     * \param Cq a 6 x ndof matrix for the given body (on return)
+     */
+    virtual void calc_constraint_jacobian_dot(bool inboard, SHAREDMATRIXN& Cq) = 0;
+
   protected:
 
     /// The frame induced by the joint 
@@ -89,28 +105,6 @@ class JOINT
 
     /// The frame of this joint _backward_ from the outboard link
     boost::shared_ptr<POSE3> _Fb;
-
-    /// Computes the constraint Jacobian for this joint with respect to the given body in Rodrigues parameters
-    /**
-     * \param body the body with which the constraint Jacobian will be 
-     *        calculated; if the body is not either the inner or outer link,
-     *        the constraint Jacobian will be a zero matrix
-     * \param index the index of the constraint equation for which to calculate
-     * \param Cq a vector that contains the corresponding column of the
-     *        constraint Jacobian on return
-     */
-//    virtual void calc_constraint_jacobian(RigidBodyPtr body, unsigned index, REAL Cq[]) = 0;
- 
-     /// Computes the time derivative of the constraint Jacobian for this joint with respect to the given body in Rodrigues parameters
-    /**
-     * \param body the body with which the constraint Jacobian will be 
-     *        calculated; if the body is not either the inner or outer link,
-     *        the constraint Jacobian will be a zero matrix
-     * \param index the index of the constraint equation for which to calculate
-     * \param Cq a vector that contains the corresponding column of the
-     *        constraint Jacobian on return
-     */
-//    virtual void calc_constraint_jacobian_dot(RigidBodyPtr body, unsigned index, REAL Cq[]) = 0;
 
     /// Method for initializing all variables in the joint
     /**

@@ -39,6 +39,8 @@ class SHAREDVECTORN
     SHAREDVECTORN segment(unsigned start, unsigned end);
     CONST_SHAREDVECTORN segment(unsigned start, unsigned end) const;
     SHAREDVECTORN& resize(unsigned N, bool preserve = false);
+    SHAREDVECTORN& operator=(const ORIGIN2& source);
+    SHAREDVECTORN& operator=(const ORIGIN3& source);
     SHAREDVECTORN& operator=(const VECTOR3& source);
     SHAREDVECTORN& operator=(const SHAREDVECTORN& source);
     SHAREDVECTORN& operator=(const CONST_SHAREDVECTORN& source);

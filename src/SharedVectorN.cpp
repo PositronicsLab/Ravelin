@@ -77,6 +77,45 @@ SHAREDVECTORN& SHAREDVECTORN::resize(unsigned N, bool preserve)
 }
 
 /// Copies another vector
+SHAREDVECTORN& SHAREDVECTORN::operator=(const ORIGIN2& source)
+{
+  // check size
+  #ifndef NEXCEPT
+  if (_len != source.size())
+    throw MissizeException();
+  #endif
+
+  // get data
+  REAL* x = data();
+
+  // don't even worry about BLAS for copying
+  *x = source.x(); x += inc();
+  *x = source.y(); 
+
+  return *this;
+}
+
+/// Copies another vector
+SHAREDVECTORN& SHAREDVECTORN::operator=(const ORIGIN3& source)
+{
+  // check size
+  #ifndef NEXCEPT
+  if (_len != source.size())
+    throw MissizeException();
+  #endif
+
+  // get data
+  REAL* x = data();
+
+  // don't even worry about BLAS for copying
+  *x = source.x(); x += inc();
+  *x = source.y(); x += inc();
+  *x = source.z();
+
+  return *this;
+}
+
+/// Copies another vector
 SHAREDVECTORN& SHAREDVECTORN::operator=(const VECTOR3& source)
 {
   // check size

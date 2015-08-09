@@ -326,265 +326,128 @@ shared_ptr<const POSE3> SPHERICALJOINT::get_induced_pose()
 /// Evaluates the constraint equations
 void SPHERICALJOINT::evaluate_constraints(REAL C[])
 {
-/*
   const unsigned X = 0, Y = 1, Z = 2;
-
-  // get the two links
-  RigidBodyPtr inner = get_inboard_link();
-  RigidBodyPtr outer = get_outboard_link();
+  const shared_ptr<const POSE3> GLOBAL;
 
   // This code was developed using [Shabana, 2003], pp. 430-431; variable
   // names have been altered, however
 
+  // get the attachment frames in the global frame
+  TRANSFORM3 wFi = POSE3::calc_relative_pose(_F, GLOBAL);
+  TRANSFORM3 wFo = POSE3::calc_relative_pose(_Fb, GLOBAL);
+
   // determine the global positions of the attachment points and subtract them
-  VECTOR3 r1 = get_position_global(false);
-  VECTOR3 r2 = get_position_global(true);
-  VECTOR3 r12 = r1 - r2; 
+  ORIGIN3 r12 = wFi.x - wFo.x; 
 
   // copy values
   C[0] = r12[X];
   C[1] = r12[Y];
   C[2] = r12[Z];
-*/
 }
 
-/*
 /// Computes the constraint jacobian with respect to a body
-void SPHERICALJOINT::calc_constraint_jacobian(RigidBodyPtr body, unsigned index, REAL Cq[7])
+void SPHERICALJOINT::calc_constraint_jacobian(bool inboard, SHAREDMATRIXN& Cq)
 {
-  const unsigned X = 0, Y = 1, Z = 2, SPATIAL_DIM = 7;
+  const unsigned X = 0, Y = 1, Z = 2, SPATIAL_DIM = 6;
+  const shared_ptr<const POSE3> GLOBAL;
 
   // get the two links
-  RigidBodyPtr inner = get_inboard_link();
-  RigidBodyPtr outer = get_outboard_link();
+  shared_ptr<const POSE3> Pi = get_inboard_pose();
+  shared_ptr<const POSE3> Po = get_outboard_pose();
 
-  // mke sure that body is one of the links
-  if (inner != body && outer != body)
-  {
-    for (unsigned i=0; i< SPATIAL_DIM; i++)
-      Cq[i] = (REAL) 0.0;
-    return;
-  }
+  // get the attachment frames in the global frame
+  TRANSFORM3 wPi = POSE3::calc_relative_pose(_F, GLOBAL);
+  TRANSFORM3 wPo = POSE3::calc_relative_pose(_Fb, GLOBAL);
+
+  // get the vector from the inboard and outboard poses to the joint pose 
+  VECTOR3 joint_pos(0.0, 0.0, 0.0, _F);
+  VECTOR3 ui = POSE3::transform_vector(Pi, joint_pos);
+  VECTOR3 uo = POSE3::transform_vector(Po, joint_pos);
 
   // setup the constraint equations (from Shabana, p. 432)
-  if (body == inner)
+  if (inboard)
   {
+    // get the vector from the inboard pose to the joint pose 
+    ORIGIN3 u = ORIGIN3(POSE3::transform_point(Pi, joint_pos));
+
     // get the information necessary to compute the constraint equations
-    const QUAT& q = inner->get_orientation();
-    const VECTOR3& p = inner->get_outer_joint_data(outer).com_to_joint_vec;
-    const REAL qx = q.x;
-    const REAL qy = q.y;
-    const REAL qz = q.z;
-    const REAL qw = q.w;
-    const REAL px = p[X];
-    const REAL py = p[Y];
-    const REAL pz = p[Z];
+    MATRIX3 R = wPi.q;
+    ORIGIN3 Ru = R*u;
 
-    switch (index)
-    {
-      case 0:
-        Cq[0] = 1.0;    
-        Cq[1] = 0.0;    
-        Cq[2] = 0.0;    
-        Cq[3] = 4*px*qw + 2*pz*qy - 2*py*qz;
-        Cq[4] = 4*qx*px + 2*qy*py + 2*qz*pz;
-        Cq[5] = 2*pz*qw + 2*py*qx;
-        Cq[6] = 2*pz*qx - 2*py*qw;
-        break;
-
-      case 1:
-        Cq[0] = 0.0;    
-        Cq[1] = 1.0;    
-        Cq[2] = 0.0;    
-        Cq[3] = 4*py*qw - 2*pz*qx + 2*px*qz;
-        Cq[4] = 2*qy*px - 2*qw*pz;
-        Cq[5] = 2*px*qx + 4*py*qy + 2*pz*qz;
-        Cq[6] = 2*px*qw + 2*pz*qy;
-        break;
-
-      case 2:
-        Cq[0] = 0.0;
-        Cq[1] = 0.0;
-        Cq[2] = 1.0;
-        Cq[3] = 4*pz*qw + 2*py*qx - 2*px*qy;
-        Cq[4] = 2*qz*px + 2*qw*py;
-        Cq[5] = 2*py*qz - 2*px*qw;
-        Cq[6] = 4*pz*qz + 2*py*qy + 2*px*qx;
-        break;
-
-      default:
-        throw std::runtime_error("Invalid joint constraint index!");
-    }
+    // get positional components of Cq
+    SHAREDMATRIXN Cq_trans = Cq.block(0, 3, 0, 3);
+    Cq_trans.set_identity();
+    SHAREDMATRIXN Cq_rot = Cq.block(0, 3, 3, 6);
+    Cq_rot = MATRIX3::skew_symmetric(-Ru);
   }
   else
   {
+    // get the vector from the outboard pose to the joint pose 
+    ORIGIN3 u = ORIGIN3(POSE3::transform_point(Po, joint_pos));
+
     // get the information necessary to compute the constraint equations
-    const QUAT& q = outer->get_orientation();
-    const VECTOR3& p = body->get_inner_joint_data(inner).joint_to_com_vec_of;
-    const REAL qx = q.x;
-    const REAL qy = q.y;
-    const REAL qz = q.z;
-    const REAL qw = q.w;
-    const REAL px = -p[X];
-    const REAL py = -p[Y];
-    const REAL pz = -p[Z];
+    MATRIX3 R = wPi.q;
+    ORIGIN3 Ru = R*u;
 
-    switch (index)
-    {
-      case 0:
-        Cq[0] = -1.0;     
-        Cq[1] = 0.0;      
-        Cq[2] = 0.0;      
-        Cq[3] = -(4*px*qw + 2*pz*qy - 2*py*qz);
-        Cq[4] = -(4*qx*px + 2*qy*py + 2*qz*pz);
-        Cq[5] = -(2*pz*qw + 2*py*qx);
-        Cq[6] = -(2*pz*qx - 2*py*qw);
-        break;
-
-      case 1:
-        Cq[0] = 0.0;      
-        Cq[1] = -1.0;     
-        Cq[2] = 0.0;      
-        Cq[3] = -(4*py*qw - 2*pz*qx + 2*px*qz);
-        Cq[4] = -(2*qy*px - 2*qw*pz);
-        Cq[5] = -(2*px*qx + 4*py*qy + 2*pz*qz);
-        Cq[6] = -(2*px*qw + 2*pz*qy);
-        break;
-
-      case 2:
-        Cq[0] = 0.0;
-        Cq[1] = 0.0;
-        Cq[2] = -1.0;
-        Cq[3] = -(4*pz*qw + 2*py*qx - 2*px*qy);
-        Cq[4] = -(2*qz*px + 2*qw*py);
-        Cq[5] = -(2*py*qz - 2*px*qw);
-        Cq[6] = -(4*pz*qz + 2*py*qy + 2*px*qx);
-        break;
-
-      default:
-        throw std::runtime_error("Invalid joint constraint index!");
-    }
+    // get positional components of Cq
+    SHAREDMATRIXN Cq_trans = Cq.block(0, 3, 0, 3);
+    Cq_trans.set_identity();
+    Cq_trans *= -1.0;
+    SHAREDMATRIXN Cq_rot = Cq.block(0, 3, 3, 6);
+    Cq_rot = MATRIX3::skew_symmetric(Ru);
   }
 }
 
 /// Computes the time derivative of the constraint jacobian with respect to a body
-void SPHERICALJOINT::calc_constraint_jacobian_dot(RigidBodyPtr body, unsigned index, REAL Cq[7])
+void SPHERICALJOINT::calc_constraint_jacobian_dot(bool inboard, SHAREDMATRIXN& Cq)
 {
-  const unsigned X = 0, Y = 1, Z = 2, SPATIAL_DIM = 7;
+  const unsigned X = 0, Y = 1, Z = 2, SPATIAL_DIM = 6;
+  const shared_ptr<const POSE3> GLOBAL;
 
   // get the two links
-  RigidBodyPtr inner = get_inboard_link();
-  RigidBodyPtr outer = get_outboard_link();
+  shared_ptr<const POSE3> Pi = get_inboard_pose();
+  shared_ptr<const POSE3> Po = get_outboard_pose();
 
-  // mke sure that body is one of the links
-  if (inner != body && outer != body)
-  {
-    for (unsigned i=0; i< SPATIAL_DIM; i++)
-      Cq[i] = (REAL) 0.0;
-    return;
-  }
+  // get the attachment frames in the global frame
+  TRANSFORM3 wPi = POSE3::calc_relative_pose(_F, GLOBAL);
+  TRANSFORM3 wPo = POSE3::calc_relative_pose(_Fb, GLOBAL);
+
+  // get the vector from the inboard and outboard poses to the joint pose 
+  VECTOR3 joint_pos(0.0, 0.0, 0.0, _F);
+  VECTOR3 ui = POSE3::transform_vector(Pi, joint_pos);
+  VECTOR3 uo = POSE3::transform_vector(Po, joint_pos);
 
   // setup the constraint equations (from Shabana, p. 432)
-  if (body == inner)
+  if (inboard)
   {
+    // get the vector from the inboard pose to the joint pose 
+    ORIGIN3 u = ORIGIN3(POSE3::transform_point(Pi, joint_pos));
+
     // get the information necessary to compute the constraint equations
-    const QUAT& q = inner->get_orientation();
-    const VECTOR3& p = inner->get_outer_joint_data(outer).com_to_joint_vec;
-    const REAL px = p[X];
-    const REAL py = p[Y];
-    const REAL pz = p[Z];
-    QUAT qd = QUAT::deriv(q, inner->get_avel());
-    const REAL dqw = qd.w;
-    const REAL dqx = qd.x;
-    const REAL dqy = qd.y;
-    const REAL dqz = qd.z;
+    MATRIX3 R = wPi.q;
+    ORIGIN3 Ru = R*u;
 
-    switch (index)
-    {
-      case 0:
-        Cq[0] = 0.0;    
-        Cq[1] = 0.0;    
-        Cq[2] = 0.0;    
-        Cq[3] = 4*px*dqw + 2*pz*dqy - 2*py*dqz;
-        Cq[4] = 4*dqx*px + 2*dqy*py + 2*dqz*pz;
-        Cq[5] = 2*pz*dqw + 2*py*dqx;
-        Cq[6] = 2*pz*dqx - 2*py*dqw;
-        break;
-
-      case 1:
-        Cq[0] = 0.0;    
-        Cq[1] = 0.0;    
-        Cq[2] = 0.0;    
-        Cq[3] = 4*py*dqw - 2*pz*dqx + 2*px*dqz;
-        Cq[4] = 2*dqy*px - 2*dqw*pz;
-        Cq[5] = 2*px*dqx + 4*py*dqy + 2*pz*dqz;
-        Cq[6] = 2*px*dqw + 2*pz*dqy;
-        break;
-
-      case 2:
-        Cq[0] = 0.0;
-        Cq[1] = 0.0;
-        Cq[2] = 0.0;
-        Cq[3] = 4*pz*dqw + 2*py*dqx - 2*px*dqy;
-        Cq[4] = 2*dqz*px + 2*dqw*py;
-        Cq[5] = 2*py*dqz - 2*px*dqw;
-        Cq[6] = 4*pz*dqz + 2*py*dqy + 2*px*dqx;
-        break;
-
-      default:
-        throw std::runtime_error("Invalid joint constraint index!");
-    }
+    // get positional components of Cq
+    SHAREDMATRIXN Cq_trans = Cq.block(0, 3, 0, 3);
+    Cq_trans.set_zero();
+    SHAREDMATRIXN Cq_rot = Cq.block(0, 3, 3, 6);
+    Cq_rot = MATRIX3::skew_symmetric(-Ru);
   }
   else
   {
+    // get the vector from the outboard pose to the joint pose 
+    ORIGIN3 u = ORIGIN3(POSE3::transform_point(Po, joint_pos));
+
     // get the information necessary to compute the constraint equations
-    const QUAT& q = outer->get_orientation();
-    const VECTOR3& p = body->get_inner_joint_data(inner).joint_to_com_vec_of;
-    const REAL px = -p[X];
-    const REAL py = -p[Y];
-    const REAL pz = -p[Z];
-    QUAT qd = QUAT::deriv(q, outer->get_avel());
-    const REAL dqw = qd.w;
-    const REAL dqx = qd.x;
-    const REAL dqy = qd.y;
-    const REAL dqz = qd.z;
+    MATRIX3 R = wPo.q;
+    ORIGIN3 Ru = R*u;
 
-    switch (index)
-    {
-      case 0:
-        Cq[0] = 0.0;     
-        Cq[1] = 0.0;      
-        Cq[2] = 0.0;      
-        Cq[3] = -(4*px*dqw + 2*pz*dqy - 2*py*dqz);
-        Cq[4] = -(4*dqx*px + 2*dqy*py + 2*dqz*pz);
-        Cq[5] = -(2*pz*dqw + 2*py*dqx);
-        Cq[6] = -(2*pz*dqx - 2*py*dqw);
-        break;
-
-      case 1:
-        Cq[0] = 0.0;      
-        Cq[1] = 0.0;     
-        Cq[2] = 0.0;      
-        Cq[3] = -(4*py*dqw - 2*pz*dqx + 2*px*dqz);
-        Cq[4] = -(2*dqy*px - 2*dqw*pz);
-        Cq[5] = -(2*px*dqx + 4*py*dqy + 2*pz*dqz);
-        Cq[6] = -(2*px*dqw + 2*pz*dqy);
-        break;
-
-      case 2:
-        Cq[0] = 0.0;
-        Cq[1] = 0.0;
-        Cq[2] = 0.0;
-        Cq[3] = -(4*pz*dqw + 2*py*dqx - 2*px*dqy);
-        Cq[4] = -(2*dqz*px + 2*dqw*py);
-        Cq[5] = -(2*py*dqz - 2*px*dqw);
-        Cq[6] = -(4*pz*dqz + 2*py*dqy + 2*px*dqx);
-        break;
-
-      default:
-        throw std::runtime_error("Invalid joint constraint index!");
-    }
+    // get positional components of Cq
+    SHAREDMATRIXN Cq_trans = Cq.block(0, 3, 0, 3);
+    Cq_trans.set_zero();
+    SHAREDMATRIXN Cq_rot = Cq.block(0, 3, 3, 6);
+    Cq_rot = MATRIX3::skew_symmetric(Ru);
   }
+
 }
-*/
 
