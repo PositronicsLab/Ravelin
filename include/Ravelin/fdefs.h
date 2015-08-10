@@ -46,5 +46,16 @@
 #define REVOLUTEJOINT RevoluteJointf
 #define SPHERICALJOINT SphericalJointf
 #define UNIVERSALJOINT UniversalJointf
-#define MOVINGTRANSFORM3 MovingTransform3f 
+#define MOVINGTRANSFORM3 MovingTransform3f
+#define RIGIDBODY RigidBodyf
+#define ARTICULATEDBODY ArticulatedBodyf 
+#define RCARTICULATEDBODY RCArticulatedBodyf 
+#define SINGLEBODY SingleBodyf
+#define DYNAMICBODY DynamicBodyf
+#define SPARITH SpArithf 
+#define CRBALGORITHM CRBAlgorithmf
+#define FSABALGORITHM FSABAlgorithmf
+#define RNEALGORITHM RNEAlgorithmf
+#define URDFREADER URDFReaderf 
 
+ 

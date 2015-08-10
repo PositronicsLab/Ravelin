@@ -47,4 +47,14 @@
 #define SPHERICALJOINT SphericalJointd
 #define UNIVERSALJOINT UniversalJointd
 #define MOVINGTRANSFORM3 MovingTransform3d
+#define RIGIDBODY RigidBodyd
+#define ARTICULATEDBODY ArticulatedBodyd
+#define RCARTICULATEDBODY RCArticulatedBodyd 
+#define SINGLEBODY SingleBodyd
+#define DYNAMICBODY DynamicBodyd
+#define SPARITH SpArithd 
+#define CRBALGORITHM CRBAlgorithmd
+#define FSABALGORITHM FSABAlgorithmd
+#define RNEALGORITHM RNEAlgorithmd
+#define URDFREADER URDFReaderd 
 

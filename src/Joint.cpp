@@ -131,21 +131,24 @@ void JOINT::set_outboard_pose(shared_ptr<POSE3> pose, bool update_joint_pose)
 }
 
 /// Sets the location of this joint
-void JOINT::set_location(const VECTOR3& point) 
+void JOINT::set_location(const VECTOR3& point, shared_ptr<RIGIDBODY> inboard, shared_ptr<RIGIDBODY> outboard) 
 {
-  // verify inboard and outboard poses are set
-  if (!_F->rpose)
-    throw std::runtime_error("JOINT::set_location() called and inboard pose not set");
-  if (!_Fb->rpose)
-    throw std::runtime_error("JOINT::set_location() called and outboard pose not set");
+  assert(inboard && outboard);
 
   // convert p to the inboard and outboard links' frames
-  VECTOR3 pi = POSE3::transform_point(_F->rpose, point);
-  VECTOR3 po = POSE3::transform_point(_Fb->rpose, point);
+  VECTOR3 pi = POSE3::transform_point(inboard->get_pose(), point);
+  VECTOR3 po = POSE3::transform_point(outboard->get_pose(), point);
 
   // set _F's and Fb's origins
   _F->x = ORIGIN3(pi);
   _Fb->x = ORIGIN3(po);
+
+  // invalidate all outboard pose vectors
+  outboard->invalidate_pose_vectors();
+
+  // set inboard and outboard links
+  set_inboard_link(inboard, false);
+  set_outboard_link(outboard, false);
 }
 
 /// Gets the location of this joint
