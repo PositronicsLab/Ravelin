@@ -4,8 +4,8 @@
  * License (obtainable from http://www.apache.org/licenses/LICENSE-2.0).
  ****************************************************************************/
 
-#ifndef _RAVELIN_FSABALGORITHMF_H
-#define _RAVELIN_FSABALGORITHMF_H
+#ifndef _RAVELIN_FSAB_ALGORITHMF_H
+#define _RAVELIN_FSAB_ALGORITHMF_H
 
 #include <vector>
 #include <queue>

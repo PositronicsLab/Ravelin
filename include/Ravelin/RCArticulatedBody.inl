@@ -1,6 +1,6 @@
 /*
 template <class M>
-M& RCARTICULATEDBODY::solve_generalized_inertia(DYNAMICBODY::GeneralizedCoordinateType gctype, const M& B, M& X)
+M& RC_ARTICULATED_BODY::solve_generalized_inertia(DYNAMIC_BODY::GeneralizedCoordinateType gctype, const M& B, M& X)
 {
   // update the inverse / factorized inertia (if necessary)
   update_factorized_generalized_inertia(gctype);
@@ -17,7 +17,7 @@ M& RCARTICULATEDBODY::solve_generalized_inertia(DYNAMICBODY::GeneralizedCoordina
 }
 
 template <class M>
-M& RCARTICULATEDBODY::transpose_solve_generalized_inertia(DYNAMICBODY::GeneralizedCoordinateType gctype, const M& B, M& X)
+M& RC_ARTICULATED_BODY::transpose_solve_generalized_inertia(DYNAMIC_BODY::GeneralizedCoordinateType gctype, const M& B, M& X)
 {
   // update the inverse / factorized inertia (if necessary)
   update_factorized_generalized_inertia(gctype);
@@ -42,12 +42,12 @@ M& RCARTICULATEDBODY::transpose_solve_generalized_inertia(DYNAMICBODY::Generaliz
  * composed of the joint-space accelerations and base forces (and torques).
  */
 template <class V>
-void RCARTICULATEDBODY::get_generalized_acceleration_generic(V& ga)
+void RC_ARTICULATED_BODY::get_generalized_acceleration_generic(V& ga)
 {
   const unsigned GC_AA_DIM = 6, GC_ROD_DIM = 7;
 
   // resize the state-derivative vector
-  ga.resize(num_generalized_coordinates(DYNAMICBODY::eSpatial));
+  ga.resize(num_generalized_coordinates(DYNAMIC_BODY::eSpatial));
   
   // setup the generalized acceleration for the base (if any) 
   if (_floating_base)
@@ -67,7 +67,7 @@ void RCARTICULATEDBODY::get_generalized_acceleration_generic(V& ga)
 
 /// Gets the generalized coordinates of this body
 template <class V>
-void RCARTICULATEDBODY::get_generalized_coordinates_generic(DYNAMICBODY::GeneralizedCoordinateType gctype, V& gc)
+void RC_ARTICULATED_BODY::get_generalized_coordinates_generic(DYNAMIC_BODY::GeneralizedCoordinateType gctype, V& gc)
 {
   // resize gc
   gc.resize(num_generalized_coordinates(gctype));
@@ -93,7 +93,7 @@ void RCARTICULATEDBODY::get_generalized_coordinates_generic(DYNAMICBODY::General
 
 /// Sets the generalized position of this body
 template <class V>
-void RCARTICULATEDBODY::set_generalized_coordinates_generic(DYNAMICBODY::GeneralizedCoordinateType gctype, V& gc)
+void RC_ARTICULATED_BODY::set_generalized_coordinates_generic(DYNAMIC_BODY::GeneralizedCoordinateType gctype, V& gc)
 {
   assert(num_generalized_coordinates(gctype) == gc.size());
 
@@ -119,7 +119,7 @@ void RCARTICULATEDBODY::set_generalized_coordinates_generic(DYNAMICBODY::General
 
 /// Sets the generalized velocity of this body
 template <class V>
-void RCARTICULATEDBODY::set_generalized_velocity_generic(DYNAMICBODY::GeneralizedCoordinateType gctype, V& gv)
+void RC_ARTICULATED_BODY::set_generalized_velocity_generic(DYNAMIC_BODY::GeneralizedCoordinateType gctype, V& gv)
 {
   assert(num_generalized_coordinates(gctype) == gv.size());
 
@@ -145,7 +145,7 @@ void RCARTICULATEDBODY::set_generalized_velocity_generic(DYNAMICBODY::Generalize
 
 /// Gets the generalized velocity of this body
 template <class V>
-void RCARTICULATEDBODY::get_generalized_velocity_generic(DYNAMICBODY::GeneralizedCoordinateType gctype, V& gv)
+void RC_ARTICULATED_BODY::get_generalized_velocity_generic(DYNAMIC_BODY::GeneralizedCoordinateType gctype, V& gv)
 {
   // resize gv
   gv.resize(num_generalized_coordinates(gctype));

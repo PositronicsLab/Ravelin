@@ -134,7 +134,7 @@ void RIGIDBODY::rotate(const QUAT& q)
 }
 
 /// Gets the time derivative of the Jacobian that converts velocities from this body in the source pose to velocities of the particular link in the target pose
-MATRIXN& RIGIDBODY::calc_jacobian_dot(shared_ptr<const POSE3> source_pose, shared_ptr<const POSE3> target_pose, shared_ptr<DYNAMICBODY> body, MATRIXN& J)
+MATRIXN& RIGIDBODY::calc_jacobian_dot(shared_ptr<const POSE3> source_pose, shared_ptr<const POSE3> target_pose, shared_ptr<DYNAMIC_BODY> body, MATRIXN& J)
 {
   const unsigned SPATIAL_DIM = 6;
 
@@ -154,7 +154,7 @@ MATRIXN& RIGIDBODY::calc_jacobian_dot(shared_ptr<const POSE3> source_pose, share
 }
 
 /// Gets the time derivative of the Jacobian that converts velocities from this body in the source pose to velocities of the particular link in the target pose
-MATRIXN& RIGIDBODY::calc_jacobian(shared_ptr<const POSE3> source_pose, shared_ptr<const POSE3> target_pose, shared_ptr<DYNAMICBODY> body, MATRIXN& J)
+MATRIXN& RIGIDBODY::calc_jacobian(shared_ptr<const POSE3> source_pose, shared_ptr<const POSE3> target_pose, shared_ptr<DYNAMIC_BODY> body, MATRIXN& J)
 {
   const unsigned SPATIAL_DIM = 6;
   const shared_ptr<const POSE3> GLOBAL;
@@ -293,7 +293,7 @@ void RIGIDBODY::calc_fwd_dyn()
   else
   {
     // otherwise, need to call forward dynamics on the articulated body
-    shared_ptr<ARTICULATEDBODY> abody(_abody);
+    shared_ptr<ARTICULATED_BODY> abody(_abody);
 
     // calculate forward dynamics on it
     abody->calc_fwd_dyn();
@@ -857,7 +857,7 @@ void RIGIDBODY::add_inner_joint(shared_ptr<JOINT> j)
   // set the articulated body / inner joint articulated body pointers, if
   // possible
   if (!j->get_articulated_body() && !_abody.expired())
-    j->set_articulated_body(shared_ptr<ARTICULATEDBODY>(_abody));
+    j->set_articulated_body(shared_ptr<ARTICULATED_BODY>(_abody));
   else if (j->get_articulated_body() && _abody.expired())
     set_articulated_body(j->get_articulated_body());
 
@@ -867,8 +867,8 @@ void RIGIDBODY::add_inner_joint(shared_ptr<JOINT> j)
   #ifndef NDEBUG
   if (!_abody.expired())
   {
-    shared_ptr<ARTICULATEDBODY> abody1 = j->get_articulated_body();
-    shared_ptr<ARTICULATEDBODY> abody2(_abody);
+    shared_ptr<ARTICULATED_BODY> abody1 = j->get_articulated_body();
+    shared_ptr<ARTICULATED_BODY> abody2(_abody);
     assert(abody1 == abody2);
   }
   #endif
@@ -890,7 +890,7 @@ void RIGIDBODY::add_outer_joint(shared_ptr<JOINT> j)
   // set the articulated body / inner joint articulated body pointers, if
   // possible
   if (!j->get_articulated_body() && !_abody.expired())
-    j->set_articulated_body(shared_ptr<ARTICULATEDBODY>(_abody));
+    j->set_articulated_body(shared_ptr<ARTICULATED_BODY>(_abody));
   else if (j->get_articulated_body() && _abody.expired())
     set_articulated_body(j->get_articulated_body());
 
@@ -900,8 +900,8 @@ void RIGIDBODY::add_outer_joint(shared_ptr<JOINT> j)
   #ifndef NDEBUG
   if (!_abody.expired())
   {
-    shared_ptr<ARTICULATEDBODY> abody1 = j->get_articulated_body();
-    shared_ptr<ARTICULATEDBODY> abody2(_abody);
+    shared_ptr<ARTICULATED_BODY> abody1 = j->get_articulated_body();
+    shared_ptr<ARTICULATED_BODY> abody2(_abody);
     assert(abody1 == abody2);
   }
   #endif
@@ -1019,7 +1019,7 @@ void RIGIDBODY::apply_impulse(const SMOMENTUM& w)
   else
   {
     // get the articulated body
-    shared_ptr<ARTICULATEDBODY> abody(_abody);
+    shared_ptr<ARTICULATED_BODY> abody(_abody);
 
     // apply the impulse to the articulated body
     abody->apply_impulse(w, get_this());
@@ -1032,7 +1032,7 @@ unsigned RIGIDBODY::num_generalized_coordinates(GeneralizedCoordinateType gctype
   // if this body part of an articulated body, call that function instead
   if (!_abody.expired())
   {
-    shared_ptr<ARTICULATEDBODY> ab(_abody);
+    shared_ptr<ARTICULATED_BODY> ab(_abody);
     return ab->num_generalized_coordinates(gctype);
   }
   else
@@ -1044,13 +1044,13 @@ void RIGIDBODY::set_generalized_forces(const Ravelin::SHAREDVECTORN& gf)
 {
   if (!_abody.expired())
   {
-    shared_ptr<ARTICULATEDBODY> ab(_abody);
+    shared_ptr<ARTICULATED_BODY> ab(_abody);
     ab->add_generalized_force(gf);
     return;
   }
 
   // if we're still here, this is only an individual body
-  assert(gf.size() == num_generalized_coordinates(DYNAMICBODY::eSpatial));
+  assert(gf.size() == num_generalized_coordinates(DYNAMIC_BODY::eSpatial));
   SFORCE w;
 
   // if body is not enabled, do nothing
@@ -1073,13 +1073,13 @@ void RIGIDBODY::add_generalized_force(const SHAREDVECTORN& gf)
 {
   if (!_abody.expired())
   {
-    shared_ptr<ARTICULATEDBODY> ab(_abody);
+    shared_ptr<ARTICULATED_BODY> ab(_abody);
     ab->add_generalized_force(gf);
     return;
   }
 
   // if we're still here, this is only an individual body
-  assert(gf.size() == num_generalized_coordinates(DYNAMICBODY::eSpatial));
+  assert(gf.size() == num_generalized_coordinates(DYNAMIC_BODY::eSpatial));
   SFORCE w;
 
   // if body is not enabled, do nothing
@@ -1103,7 +1103,7 @@ void RIGIDBODY::apply_generalized_impulse(const SHAREDVECTORN& gj)
   // if this body part of an articulated body, call that function instead
   if (!_abody.expired())
   {
-    shared_ptr<ARTICULATEDBODY> ab(_abody);
+    shared_ptr<ARTICULATED_BODY> ab(_abody);
     ab->apply_generalized_impulse(gj);
     return;
   }
@@ -1121,7 +1121,7 @@ void RIGIDBODY::apply_generalized_impulse_single(const SHAREDVECTORN& gj)
     return;
 
   // simple error check...
-  assert(gj.size() == num_generalized_coordinates(DYNAMICBODY::eSpatial));
+  assert(gj.size() == num_generalized_coordinates(DYNAMIC_BODY::eSpatial));
 
   // clear the force accumulators (and validate them all)
   reset_accumulators();
@@ -1153,13 +1153,13 @@ SHAREDMATRIXN& RIGIDBODY::transpose_solve_generalized_inertia(const SHAREDMATRIX
   // if this body part of an articulated body, call that function instead
   if (!_abody.expired())
   {
-    shared_ptr<ARTICULATEDBODY> ab(_abody);
+    shared_ptr<ARTICULATED_BODY> ab(_abody);
     return ab->transpose_solve_generalized_inertia(B, X);
   }
   else
   {
     // get proper generalized inertia matrix
-    const unsigned NGC = num_generalized_coordinates(DYNAMICBODY::eSpatial);
+    const unsigned NGC = num_generalized_coordinates(DYNAMIC_BODY::eSpatial);
     MATRIXN M;
     M.resize(NGC, NGC);
     SHAREDMATRIXN Mshared = M.block(0, NGC, 0, NGC);
@@ -1175,7 +1175,7 @@ SHAREDMATRIXN& RIGIDBODY::solve_generalized_inertia(const SHAREDMATRIXN& B, SHAR
   // if this body part of an articulated body, call that function instead
   if (!_abody.expired())
   {
-    shared_ptr<ARTICULATEDBODY> ab(_abody);
+    shared_ptr<ARTICULATED_BODY> ab(_abody);
     return ab->solve_generalized_inertia(B, X);
   }
   else
@@ -1186,7 +1186,7 @@ SHAREDMATRIXN& RIGIDBODY::solve_generalized_inertia(const SHAREDMATRIXN& B, SHAR
 SHAREDMATRIXN& RIGIDBODY::transpose_solve_generalized_inertia_single(const SHAREDMATRIXN& B, SHAREDMATRIXN& X)
 {
   // get proper generalized inertia matrix
-  const unsigned NGC = num_generalized_coordinates(DYNAMICBODY::eSpatial);
+  const unsigned NGC = num_generalized_coordinates(DYNAMIC_BODY::eSpatial);
   MATRIXN M;
   M.resize(NGC, NGC);
   SHAREDMATRIXN Mshared = M.block(0, NGC, 0, NGC);
@@ -1200,7 +1200,7 @@ SHAREDMATRIXN& RIGIDBODY::transpose_solve_generalized_inertia_single(const SHARE
 SHAREDMATRIXN& RIGIDBODY::solve_generalized_inertia_single(const SHAREDMATRIXN& B, SHAREDMATRIXN& X)
 {
   // get proper generalized inertia matrix
-  const unsigned NGC = num_generalized_coordinates(DYNAMICBODY::eSpatial);
+  const unsigned NGC = num_generalized_coordinates(DYNAMIC_BODY::eSpatial);
   MATRIXN M;
   M.resize(NGC, NGC);
   SHAREDMATRIXN Mshared = M.block(0, NGC, 0, NGC);
@@ -1216,7 +1216,7 @@ SHAREDVECTORN& RIGIDBODY::solve_generalized_inertia(const SHAREDVECTORN& b, SHAR
   // if this body part of an articulated body, call that function instead
   if (!_abody.expired())
   {
-    shared_ptr<ARTICULATEDBODY> ab(_abody);
+    shared_ptr<ARTICULATED_BODY> ab(_abody);
     return ab->solve_generalized_inertia(b, x);
   }
   else
@@ -1227,7 +1227,7 @@ SHAREDVECTORN& RIGIDBODY::solve_generalized_inertia(const SHAREDVECTORN& b, SHAR
 SHAREDVECTORN& RIGIDBODY::solve_generalized_inertia_single(const SHAREDVECTORN& b, SHAREDVECTORN& x)
 {
   // get proper generalized inertia matrix
-  const unsigned NGC = num_generalized_coordinates(DYNAMICBODY::eSpatial);
+  const unsigned NGC = num_generalized_coordinates(DYNAMIC_BODY::eSpatial);
   MATRIXN M;
   M.resize(NGC, NGC);
   SHAREDMATRIXN Mshared = M.block(0, NGC, 0, NGC);
@@ -1243,7 +1243,7 @@ SHAREDVECTORN& RIGIDBODY::get_generalized_coordinates(GeneralizedCoordinateType 
   // if this body part of an articulated body, call that function instead
   if (!_abody.expired())
   {
-    shared_ptr<ARTICULATEDBODY> ab(_abody);
+    shared_ptr<ARTICULATED_BODY> ab(_abody);
     ab->get_generalized_coordinates(gctype, gc);
   }
   else
@@ -1258,7 +1258,7 @@ void RIGIDBODY::set_generalized_coordinates(GeneralizedCoordinateType gctype, co
   // if this body part of an articulated body, call that function instead
   if (!_abody.expired())
   {
-    shared_ptr<ARTICULATEDBODY> ab(_abody);
+    shared_ptr<ARTICULATED_BODY> ab(_abody);
     ab->set_generalized_coordinates(gctype, gc);
   }
   else
@@ -1271,11 +1271,24 @@ void RIGIDBODY::set_generalized_velocity(GeneralizedCoordinateType gctype, const
   // if this body part of an articulated body, call that function instead
   if (!_abody.expired())
   {
-    shared_ptr<ARTICULATEDBODY> ab(_abody);
+    shared_ptr<ARTICULATED_BODY> ab(_abody);
     ab->set_generalized_velocity(gctype, gv);
   }
   else
     set_generalized_velocity_generic(gctype, gv);
+}
+
+/// Sets the generalized acceleration of this rigid body
+void RIGIDBODY::set_generalized_acceleration(const SHAREDVECTORN& ga)
+{
+  // if this body part of an articulated body, call that function instead
+  if (!_abody.expired())
+  {
+    shared_ptr<ARTICULATED_BODY> ab(_abody);
+    ab->set_generalized_acceleration(ga);
+  }
+  else
+    set_generalized_acceleration_generic(ga);
 }
 
 /// Gets the generalized velocity of this rigid body
@@ -1284,7 +1297,7 @@ SHAREDVECTORN& RIGIDBODY::get_generalized_velocity(GeneralizedCoordinateType gct
   // if this body part of an articulated body, call that function instead
   if (!_abody.expired())
   {
-    shared_ptr<ARTICULATEDBODY> ab(_abody);
+    shared_ptr<ARTICULATED_BODY> ab(_abody);
     ab->get_generalized_velocity(gctype, gv);
   }
   else
@@ -1299,7 +1312,7 @@ SHAREDVECTORN& RIGIDBODY::get_generalized_acceleration(SHAREDVECTORN& ga)
   // if this body part of an articulated body, call that function instead
   if (!_abody.expired())
   {
-    shared_ptr<ARTICULATEDBODY> ab(_abody);
+    shared_ptr<ARTICULATED_BODY> ab(_abody);
     ab->get_generalized_acceleration(ga);
   }
   else
@@ -1314,7 +1327,7 @@ SHAREDMATRIXN& RIGIDBODY::get_generalized_inertia(SHAREDMATRIXN& M)
   // if this body part of an articulated body, call that function instead
   if (!_abody.expired())
   {
-    shared_ptr<ARTICULATEDBODY> ab(_abody);
+    shared_ptr<ARTICULATED_BODY> ab(_abody);
     return ab->get_generalized_inertia(M);
   }
   else
@@ -1384,7 +1397,7 @@ SHAREDVECTORN& RIGIDBODY::get_generalized_forces(SHAREDVECTORN& gf)
   // if this body part of an articulated body, call that function instead
   if (!_abody.expired())
   {
-    shared_ptr<ARTICULATEDBODY> ab(_abody);
+    shared_ptr<ARTICULATED_BODY> ab(_abody);
     return ab->get_generalized_forces(gf);
   }
   else
@@ -1399,7 +1412,7 @@ SHAREDVECTORN& RIGIDBODY::get_generalized_forces_single(SHAREDVECTORN& gf)
     return gf.resize(0);
 
   // resize the generalized forces vector
-  const unsigned NGC = num_generalized_coordinates(DYNAMICBODY::eSpatial);
+  const unsigned NGC = num_generalized_coordinates(DYNAMIC_BODY::eSpatial);
   gf.resize(NGC);
 
   // get force and torque
@@ -1418,12 +1431,12 @@ SHAREDVECTORN& RIGIDBODY::get_generalized_forces_single(SHAREDVECTORN& gf)
 }
 
 /// Converts a force to a generalized force
-SHAREDVECTORN& RIGIDBODY::convert_to_generalized_force(shared_ptr<SINGLEBODY> body, const SFORCE& w, SHAREDVECTORN& gf)
+SHAREDVECTORN& RIGIDBODY::convert_to_generalized_force(shared_ptr<SINGLE_BODY> body, const SFORCE& w, SHAREDVECTORN& gf)
 {
   // if this belongs to an articulated body, call the articulated body method
   if (!_abody.expired())
   {
-    shared_ptr<ARTICULATEDBODY> ab(_abody);
+    shared_ptr<ARTICULATED_BODY> ab(_abody);
     return ab->convert_to_generalized_force(body, w, gf);
   }
   else
@@ -1431,7 +1444,7 @@ SHAREDVECTORN& RIGIDBODY::convert_to_generalized_force(shared_ptr<SINGLEBODY> bo
 }
 
 /// Converts a force to a generalized force (does not call articulated body version)
-SHAREDVECTORN& RIGIDBODY::convert_to_generalized_force_single(shared_ptr<SINGLEBODY> body, const SFORCE& w, SHAREDVECTORN& gf)
+SHAREDVECTORN& RIGIDBODY::convert_to_generalized_force_single(shared_ptr<SINGLE_BODY> body, const SFORCE& w, SHAREDVECTORN& gf)
 {
   // verify that body == this
   assert(body.get() == this);
@@ -1448,7 +1461,7 @@ SHAREDVECTORN& RIGIDBODY::convert_to_generalized_force_single(shared_ptr<SINGLEB
   VECTOR3 t = wt.get_torque();
 
   // resize gf
-  gf.resize(num_generalized_coordinates(DYNAMICBODY::eSpatial));
+  gf.resize(num_generalized_coordinates(DYNAMIC_BODY::eSpatial));
 
   // setup the linear components
   gf[0] = f[0];
@@ -1483,7 +1496,7 @@ REAL RIGIDBODY::calc_kinetic_energy()
 }
 
 /// Gets the number of generalized coordinates
-unsigned RIGIDBODY::num_generalized_coordinates_single(DYNAMICBODY::GeneralizedCoordinateType gctype) const
+unsigned RIGIDBODY::num_generalized_coordinates_single(DYNAMIC_BODY::GeneralizedCoordinateType gctype) const
 {
   const unsigned NGC_EULER = 7, NGC_SPATIAL = 6;
 
@@ -1494,10 +1507,10 @@ unsigned RIGIDBODY::num_generalized_coordinates_single(DYNAMICBODY::GeneralizedC
   // return the proper number of coordinates
   switch (gctype)
   {
-    case DYNAMICBODY::eEuler:
+    case DYNAMIC_BODY::eEuler:
       return NGC_EULER;
 
-    case DYNAMICBODY::eSpatial:
+    case DYNAMIC_BODY::eSpatial:
       return NGC_SPATIAL;
 
     default:
@@ -1556,8 +1569,8 @@ bool RIGIDBODY::is_ground() const
     return false;
 
   // now, case will differ depending on what type of articulated body this is
-  shared_ptr<ARTICULATEDBODY> ab(_abody);
-  shared_ptr<RCARTICULATEDBODY> rcab = dynamic_pointer_cast<RCARTICULATEDBODY>(ab);
+  shared_ptr<ARTICULATED_BODY> ab(_abody);
+  shared_ptr<RC_ARTICULATED_BODY> rcab = dynamic_pointer_cast<RC_ARTICULATED_BODY>(ab);
   if (rcab)
   {
     // check whether inner explicit joints are present (if none are present,

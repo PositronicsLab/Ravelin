@@ -5,7 +5,8 @@
  ****************************************************************************/
 
 class RIGIDBODY;
-class RCARTICULATEDBODY;
+class RC_ARTICULATED_BODY;
+class JOINT;
 
 /// Used to read the simulator state from URDF
 class URDFREADER
@@ -19,13 +20,8 @@ class URDFREADER
       public:
         ~URDFData()
         {
-          #ifdef USE_OSG
-          for (std::map<boost::shared_ptr<RIGIDBODY>, void*>::const_iterator i = visual_transform_nodes.begin(); i != visual_transform_nodes.end(); i++)
-            ((osg::Node*) i->second)->unref();
-          #endif
         }
 
-        std::map<boost::shared_ptr<RIGIDBODY>, void*> visual_transform_nodes;
         std::map<boost::shared_ptr<JOINT>, boost::shared_ptr<RIGIDBODY> > joint_parent, joint_child;
         std::map<std::string, std::pair<VectorNd, std::string> > materials;
     };

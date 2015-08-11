@@ -15,7 +15,7 @@ using std::list;
 /**
  * Computed joint actuator forces are stored in inv_dyn_data.
  */
-map<shared_ptr<JOINT>, VECTORN> RNEALGORITHM::calc_inv_dyn(shared_ptr<RCARTICULATEDBODY> body, const map<shared_ptr<RIGIDBODY>, RCArticulatedBodyInvDynData>& inv_dyn_data)
+map<shared_ptr<JOINT>, VECTORN> RNE_ALGORITHM::calc_inv_dyn(shared_ptr<RC_ARTICULATED_BODY> body, const map<shared_ptr<RIGIDBODY>, RCArticulatedBodyInvDynData>& inv_dyn_data)
 {
   if (!body->is_floating_base())
     return calc_inv_dyn_fixed_base(body, inv_dyn_data);
@@ -27,7 +27,7 @@ map<shared_ptr<JOINT>, VECTORN> RNEALGORITHM::calc_inv_dyn(shared_ptr<RCARTICULA
 /**
  * Computed joint actuator forces are stored in inv_dyn_data.
  */
-map<shared_ptr<JOINT>, VECTORN> RNEALGORITHM::calc_inv_dyn_fixed_base(shared_ptr<RCARTICULATEDBODY> body, const map<shared_ptr<RIGIDBODY>, RCArticulatedBodyInvDynData>& inv_dyn_data) const
+map<shared_ptr<JOINT>, VECTORN> RNE_ALGORITHM::calc_inv_dyn_fixed_base(shared_ptr<RC_ARTICULATED_BODY> body, const map<shared_ptr<RIGIDBODY>, RCArticulatedBodyInvDynData>& inv_dyn_data) const
 {
   queue<shared_ptr<RIGIDBODY> > link_queue;
   map<shared_ptr<RIGIDBODY>, RCArticulatedBodyInvDynData>::const_iterator idd_iter;
@@ -219,7 +219,7 @@ map<shared_ptr<JOINT>, VECTORN> RNEALGORITHM::calc_inv_dyn_fixed_base(shared_ptr
  *      appropriate forward dynamics function must be run first.
  */
 /*
-void RNEALGORITHM::calc_constraint_forces(shared_ptr<RCARTICULATEDBODY> body)
+void RNE_ALGORITHM::calc_constraint_forces(shared_ptr<RC_ARTICULATED_BODY> body)
 {
   queue<shared_ptr<RIGIDBODY> > link_queue;
   vector<SPATIAL_RB_INERTIA> Iiso;
@@ -365,7 +365,7 @@ void RNEALGORITHM::calc_constraint_forces(shared_ptr<RCARTICULATEDBODY> body)
  *        is not applicable in that case and will be ignored for it)
  * \return a mapping from joints to actuator forces
  */
-map<shared_ptr<JOINT>, VECTORN> RNEALGORITHM::calc_inv_dyn_floating_base(shared_ptr<RCARTICULATEDBODY> body, const map<shared_ptr<RIGIDBODY>, RCArticulatedBodyInvDynData>& inv_dyn_data) const
+map<shared_ptr<JOINT>, VECTORN> RNE_ALGORITHM::calc_inv_dyn_floating_base(shared_ptr<RC_ARTICULATED_BODY> body, const map<shared_ptr<RIGIDBODY>, RCArticulatedBodyInvDynData>& inv_dyn_data) const
 {
   queue<shared_ptr<RIGIDBODY> > link_queue;
   map<shared_ptr<RIGIDBODY>, RCArticulatedBodyInvDynData>::const_iterator idd_iter;

@@ -4,8 +4,8 @@
  * License (obtainable from http://www.apache.org/licenses/LICENSE-2.0).
  ****************************************************************************/
 
-#ifndef _RAVELIN_CRBALGORITHMF_H
-#define _RAVELIN_CRBALGORITHMF_H
+#ifndef _RAVELIN_CRB_ALGORITHMF_H
+#define _RAVELIN_CRB_ALGORITHMF_H
 
 #include <vector>
 #include <boost/shared_ptr.hpp>

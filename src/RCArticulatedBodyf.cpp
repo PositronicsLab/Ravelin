@@ -6,17 +6,17 @@
 
 #include <stack>
 #include <queue>
-#include <Ravelin/Jointd.h>
-#include <Ravelin/RigidBodyd.h>
-#include <Ravelin/RCArticulatedBodyd.h>
-#include <Ravelin/CRBAlgorithmd.h>
-#include <Ravelin/FSABAlgorithmd.h>
-#include <Ravelin/SpatialArithmeticd.h>
+#include <Ravelin/Jointf.h>
+#include <Ravelin/RigidBodyf.h>
+#include <Ravelin/RCArticulatedBodyf.h>
+#include <Ravelin/CRBAlgorithmf.h>
+#include <Ravelin/FSABAlgorithmf.h>
+#include <Ravelin/SpatialArithmeticf.h>
 #include <Ravelin/NumericalException.h>
 
 using namespace Ravelin;
 
-#include <Ravelin/ddefs.h>
+#include <Ravelin/fdefs.h>
 #include "RCArticulatedBody.cpp"
 #include <Ravelin/undefs.h>
 

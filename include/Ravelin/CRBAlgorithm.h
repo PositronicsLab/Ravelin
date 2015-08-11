@@ -4,20 +4,20 @@
  * License (obtainable from http://www.apache.org/licenses/LICENSE-2.0).
  ****************************************************************************/
 
-#ifndef CRBALGORITHM 
+#ifndef CRB_ALGORITHM 
 #error This class is not to be included by the user directly. Use CRBAlgorithmd.h or CRBAlgorithmf.h instead.
 #endif
 
 /// Computes forward dynamics using composite-rigid body method
-class CRBALGORITHM
+class CRB_ALGORITHM
 {
-  friend class RCARTICULATEDBODY;
+  friend class RC_ARTICULATED_BODY;
 
   public:
-    CRBALGORITHM();
-    ~CRBALGORITHM() {}
-    boost::shared_ptr<RCARTICULATEDBODY> get_body() const { return boost::shared_ptr<RCARTICULATEDBODY>(_body); }
-    void set_body(boost::shared_ptr<RCARTICULATEDBODY> body) { _body = body; setup_parent_array(); }
+    CRB_ALGORITHM();
+    ~CRB_ALGORITHM() {}
+    boost::shared_ptr<RC_ARTICULATED_BODY> get_body() const { return boost::shared_ptr<RC_ARTICULATED_BODY>(_body); }
+    void set_body(boost::shared_ptr<RC_ARTICULATED_BODY> body) { _body = body; setup_parent_array(); }
     void calc_fwd_dyn();
     void apply_impulse(const SMOMENTUM& w, boost::shared_ptr<RIGIDBODY> link);
     void calc_generalized_inertia(SHAREDMATRIXN& M);
@@ -32,12 +32,12 @@ class CRBALGORITHM
 
   private:
     void calc_fwd_dyn_special();
-    static boost::shared_ptr<const POSE3> get_computation_frame(boost::shared_ptr<RCARTICULATEDBODY> body);
+    static boost::shared_ptr<const POSE3> get_computation_frame(boost::shared_ptr<RC_ARTICULATED_BODY> body);
     std::vector<unsigned> _lambda;
     void setup_parent_array();
 
     /// The body that this algorithm operates on
-    boost::weak_ptr<RCARTICULATEDBODY> _body;
+    boost::weak_ptr<RC_ARTICULATED_BODY> _body;
 
     /// The spatial acceleration of the base computed on the last call to calc_fwd_dyn()
     SACCEL _a0;
@@ -54,13 +54,13 @@ class CRBALGORITHM
     /// Determines whether the system of equations for forward dynamics is rank-deficient
      bool _rank_deficient;
 
-    void calc_joint_space_inertia(boost::shared_ptr<RCARTICULATEDBODY> body, MATRIXN& H, std::vector<SPATIAL_RB_INERTIA>& Ic);
-    void apply_coulomb_joint_friction(boost::shared_ptr<RCARTICULATEDBODY> body);
-    void precalc(boost::shared_ptr<RCARTICULATEDBODY> body);
-    void calc_generalized_inertia(boost::shared_ptr<RCARTICULATEDBODY> body);
-    void calc_fwd_dyn_fixed_base(boost::shared_ptr<RCARTICULATEDBODY> body);
-    void calc_fwd_dyn_floating_base(boost::shared_ptr<RCARTICULATEDBODY> body);
-    void update_link_accelerations(boost::shared_ptr<RCARTICULATEDBODY> body);
+    void calc_joint_space_inertia(boost::shared_ptr<RC_ARTICULATED_BODY> body, MATRIXN& H, std::vector<SPATIAL_RB_INERTIA>& Ic);
+    void apply_coulomb_joint_friction(boost::shared_ptr<RC_ARTICULATED_BODY> body);
+    void precalc(boost::shared_ptr<RC_ARTICULATED_BODY> body);
+    void calc_generalized_inertia(boost::shared_ptr<RC_ARTICULATED_BODY> body);
+    void calc_fwd_dyn_fixed_base(boost::shared_ptr<RC_ARTICULATED_BODY> body);
+    void calc_fwd_dyn_floating_base(boost::shared_ptr<RC_ARTICULATED_BODY> body);
+    void update_link_accelerations(boost::shared_ptr<RC_ARTICULATED_BODY> body);
     static void to_spatial7_inertia(const SPATIAL_RB_INERTIA& I, const QUAT& q, MATRIXN& I7);
     VECTORN& M_solve_noprecalc(VECTORN& xb);
     MATRIXN& M_solve_noprecalc(MATRIXN& XB);

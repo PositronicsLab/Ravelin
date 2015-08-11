@@ -4,26 +4,26 @@
  * License (obtainable from http://www.apache.org/licenses/LICENSE-2.0).
  ****************************************************************************/
 
-#ifndef DYNAMICBODY 
+#ifndef DYNAMIC_BODY 
 #error This class is not to be included by the user directly. Use DynamicBodyd.h or DynamicBodyf.h instead.
 #endif
 
-class SINGLEBODY;
+class SINGLE_BODY;
 
 /// Superclass for deformable bodies and single and multi-rigid bodies  
-class DYNAMICBODY : public boost::enable_shared_from_this<DYNAMICBODY>
+class DYNAMIC_BODY : public boost::enable_shared_from_this<DYNAMIC_BODY>
 {
   public:
     enum GeneralizedCoordinateType { eEuler, eSpatial };
 
-    virtual ~DYNAMICBODY() {}
+    virtual ~DYNAMIC_BODY() {}
 
     /// The identifier for this body
     std::string id;
 
     /// The Jacobian transforms from the generalized coordinate from to the given frame
-    virtual MATRIXN& calc_jacobian(boost::shared_ptr<const POSE3> source_pose, boost::shared_ptr<const POSE3> target_pose, boost::shared_ptr<DYNAMICBODY> body, MATRIXN& J) = 0;
-    virtual MATRIXN& calc_jacobian_dot(boost::shared_ptr<const POSE3> source_pose, boost::shared_ptr<const POSE3> target_pose, boost::shared_ptr<DYNAMICBODY> body, MATRIXN& J) = 0;
+    virtual MATRIXN& calc_jacobian(boost::shared_ptr<const POSE3> source_pose, boost::shared_ptr<const POSE3> target_pose, boost::shared_ptr<DYNAMIC_BODY> body, MATRIXN& J) = 0;
+    virtual MATRIXN& calc_jacobian_dot(boost::shared_ptr<const POSE3> source_pose, boost::shared_ptr<const POSE3> target_pose, boost::shared_ptr<DYNAMIC_BODY> body, MATRIXN& J) = 0;
 
     /// Validates position-based variables (potentially dangerous for a user to call)
     virtual void validate_position_variables() { };
@@ -130,7 +130,7 @@ class DYNAMICBODY : public boost::enable_shared_from_this<DYNAMICBODY>
     /// Gets the generalized acceleration of this body
     virtual VECTORN& get_generalized_acceleration(VECTORN& ga) 
     {
-      const unsigned NGC = num_generalized_coordinates(DYNAMICBODY::eSpatial);
+      const unsigned NGC = num_generalized_coordinates(DYNAMIC_BODY::eSpatial);
       ga.resize(NGC);
       SHAREDVECTORN ga_shared = ga.segment(0, ga.size());
       get_generalized_acceleration(ga_shared);
@@ -164,7 +164,7 @@ class DYNAMICBODY : public boost::enable_shared_from_this<DYNAMICBODY>
     /// Gets the generalized inertia of this body
     MATRIXN& get_generalized_inertia(MATRIXN& M)
     {
-      const unsigned NGC = num_generalized_coordinates(DYNAMICBODY::eSpatial);
+      const unsigned NGC = num_generalized_coordinates(DYNAMIC_BODY::eSpatial);
       M.resize(NGC, NGC);
       SHAREDMATRIXN X = M.block(0, NGC, 0, NGC);
       get_generalized_inertia(X);
@@ -180,7 +180,7 @@ class DYNAMICBODY : public boost::enable_shared_from_this<DYNAMICBODY>
     /// Solves using the inverse generalized inertia
     virtual MATRIXN& solve_generalized_inertia(const MATRIXN& B, MATRIXN& X)
     {
-      const unsigned NGC = num_generalized_coordinates(DYNAMICBODY::eSpatial);
+      const unsigned NGC = num_generalized_coordinates(DYNAMIC_BODY::eSpatial);
       const SHAREDMATRIXN Bx = B.block(0, B.rows(), 0, B.columns()).get();
       X.resize(NGC, B.columns());
       SHAREDMATRIXN Xx = X.block(0, X.rows(), 0, X.columns());
@@ -191,7 +191,7 @@ class DYNAMICBODY : public boost::enable_shared_from_this<DYNAMICBODY>
     /// Solves using the inverse generalized inertia
     virtual MATRIXN& solve_generalized_inertia(const SHAREDMATRIXN& B, MATRIXN& X)
     {
-      const unsigned NGC = num_generalized_coordinates(DYNAMICBODY::eSpatial);
+      const unsigned NGC = num_generalized_coordinates(DYNAMIC_BODY::eSpatial);
       X.resize(NGC, B.columns());
       SHAREDMATRIXN Xx = X.block(0, X.rows(), 0, X.columns());
       solve_generalized_inertia(B, Xx);
@@ -201,7 +201,7 @@ class DYNAMICBODY : public boost::enable_shared_from_this<DYNAMICBODY>
     /// Solves using the inverse generalized inertia
     virtual SHAREDMATRIXN& solve_generalized_inertia(const MATRIXN& B, SHAREDMATRIXN& X)
     {
-      const unsigned NGC = num_generalized_coordinates(DYNAMICBODY::eSpatial);
+      const unsigned NGC = num_generalized_coordinates(DYNAMIC_BODY::eSpatial);
       const SHAREDMATRIXN Bx = B.block(0, B.rows(), 0, B.columns()).get();
       solve_generalized_inertia(Bx, X);
       return X;
@@ -210,7 +210,7 @@ class DYNAMICBODY : public boost::enable_shared_from_this<DYNAMICBODY>
     /// Solves using the inverse generalized inertia
     virtual VECTORN& solve_generalized_inertia(const VECTORN& b, VECTORN& x)
     {
-      const unsigned NGC = num_generalized_coordinates(DYNAMICBODY::eSpatial);
+      const unsigned NGC = num_generalized_coordinates(DYNAMIC_BODY::eSpatial);
       const SHAREDVECTORN bx = b.segment(0, b.rows()).get();
       x.resize(NGC);
       SHAREDVECTORN xx = x.segment(0, x.rows());
@@ -221,7 +221,7 @@ class DYNAMICBODY : public boost::enable_shared_from_this<DYNAMICBODY>
     /// Solves using the inverse generalized inertia
     virtual VECTORN& solve_generalized_inertia(const SHAREDVECTORN& b, VECTORN& x)
     {
-      const unsigned NGC = num_generalized_coordinates(DYNAMICBODY::eSpatial);
+      const unsigned NGC = num_generalized_coordinates(DYNAMIC_BODY::eSpatial);
       x.resize(NGC);
       SHAREDVECTORN xx = x.segment(0, x.rows());
       solve_generalized_inertia(b, xx);
@@ -231,7 +231,7 @@ class DYNAMICBODY : public boost::enable_shared_from_this<DYNAMICBODY>
     /// Solves using the inverse generalized inertia
     virtual SHAREDVECTORN& solve_generalized_inertia(const VECTORN& b, SHAREDVECTORN& x)
     {
-      const unsigned NGC = num_generalized_coordinates(DYNAMICBODY::eSpatial);
+      const unsigned NGC = num_generalized_coordinates(DYNAMIC_BODY::eSpatial);
       const SHAREDVECTORN bx = b.segment(0, b.rows()).get();
       solve_generalized_inertia(bx, x);
       return x;
@@ -243,7 +243,7 @@ class DYNAMICBODY : public boost::enable_shared_from_this<DYNAMICBODY>
     /// Solves the transpose matrix using the inverse generalized inertia
     virtual MATRIXN& transpose_solve_generalized_inertia(const MATRIXN& B, MATRIXN& X)
     {
-      const unsigned NGC = num_generalized_coordinates(DYNAMICBODY::eSpatial);
+      const unsigned NGC = num_generalized_coordinates(DYNAMIC_BODY::eSpatial);
       const SHAREDMATRIXN Bx = B.block(0, B.rows(), 0, B.columns()).get();
       X.resize(NGC, B.rows());
       SHAREDMATRIXN Xx = X.block(0, X.rows(), 0, X.columns());
@@ -254,7 +254,7 @@ class DYNAMICBODY : public boost::enable_shared_from_this<DYNAMICBODY>
     /// Solves the transpose matrix using the inverse generalized inertia
     virtual MATRIXN& transpose_solve_generalized_inertia(const SHAREDMATRIXN& B, MATRIXN& X)
     {
-      const unsigned NGC = num_generalized_coordinates(DYNAMICBODY::eSpatial);
+      const unsigned NGC = num_generalized_coordinates(DYNAMIC_BODY::eSpatial);
       X.resize(NGC, B.rows());
       SHAREDMATRIXN Xx = X.block(0, X.rows(), 0, X.columns());
       transpose_solve_generalized_inertia(B, Xx);
@@ -264,7 +264,7 @@ class DYNAMICBODY : public boost::enable_shared_from_this<DYNAMICBODY>
     /// Solves the transpose matrix using the inverse generalized inertia
     virtual SHAREDMATRIXN& transpose_solve_generalized_inertia(const MATRIXN& B, SHAREDMATRIXN& X)
     {
-      const unsigned NGC = num_generalized_coordinates(DYNAMICBODY::eSpatial);
+      const unsigned NGC = num_generalized_coordinates(DYNAMIC_BODY::eSpatial);
       const SHAREDMATRIXN Bx = B.block(0, B.rows(), 0, B.columns()).get();
       transpose_solve_generalized_inertia(Bx, X);
       return X;
@@ -285,7 +285,7 @@ class DYNAMICBODY : public boost::enable_shared_from_this<DYNAMICBODY>
      */
     virtual VECTORN& get_generalized_forces(VECTORN& f)
     {
-      f.resize(num_generalized_coordinates(DYNAMICBODY::eSpatial));
+      f.resize(num_generalized_coordinates(DYNAMIC_BODY::eSpatial));
       SHAREDVECTORN f_shared = f.segment(0, f.size());
       get_generalized_forces(f_shared);
       return f;
@@ -299,7 +299,7 @@ class DYNAMICBODY : public boost::enable_shared_from_this<DYNAMICBODY>
      * \param gf the generalized force, on return
      * \note uses the current generalized coordinates
      */
-    virtual SHAREDVECTORN& convert_to_generalized_force(boost::shared_ptr<SINGLEBODY> body, const SFORCE& w, SHAREDVECTORN& gf) = 0;
+    virtual SHAREDVECTORN& convert_to_generalized_force(boost::shared_ptr<SINGLE_BODY> body, const SFORCE& w, SHAREDVECTORN& gf) = 0;
 
     /// Converts a force to a generalized force
     /**
@@ -309,9 +309,9 @@ class DYNAMICBODY : public boost::enable_shared_from_this<DYNAMICBODY>
      * \param gf the generalized force, on return
      * \note uses the current generalized coordinates
      */
-    virtual VECTORN& convert_to_generalized_force(boost::shared_ptr<SINGLEBODY> body, const SFORCE& w, VECTORN& gf)
+    virtual VECTORN& convert_to_generalized_force(boost::shared_ptr<SINGLE_BODY> body, const SFORCE& w, VECTORN& gf)
     {
-      const unsigned NGC = num_generalized_coordinates(DYNAMICBODY::eSpatial);
+      const unsigned NGC = num_generalized_coordinates(DYNAMIC_BODY::eSpatial);
       gf.resize(NGC);
       SHAREDVECTORN gf_shared = gf.segment(0, gf.size());
       convert_to_generalized_force(body, w, gf_shared);

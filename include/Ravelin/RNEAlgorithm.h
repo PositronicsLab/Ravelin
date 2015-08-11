@@ -4,7 +4,7 @@
  * License (obtainable from http://www.apache.org/licenses/LICENSE-2.0).
  ****************************************************************************/
 
-#ifndef RNEALGORITHM 
+#ifndef RNE_ALGORITHM 
 #error This class is not to be included by the user directly. Use RNEAlgorithmd.h or RNEAlgorithmf.h instead.
 #endif
 
@@ -24,15 +24,15 @@ struct RCArticulatedBodyInvDynData
 /**
  * Algorithm taken from Featherstone, 1987.
  */ 
-class RNEALGORITHM
+class RNE_ALGORITHM
 {
   public:
-    std::map<boost::shared_ptr<JOINT>, VECTORN> calc_inv_dyn(boost::shared_ptr<RCARTICULATEDBODY> body, const std::map<boost::shared_ptr<RIGIDBODY>, RCArticulatedBodyInvDynData>& inv_dyn_data);
-    void calc_constraint_forces(boost::shared_ptr<RCARTICULATEDBODY> body);
+    std::map<boost::shared_ptr<JOINT>, VECTORN> calc_inv_dyn(boost::shared_ptr<RC_ARTICULATED_BODY> body, const std::map<boost::shared_ptr<RIGIDBODY>, RCArticulatedBodyInvDynData>& inv_dyn_data);
+    void calc_constraint_forces(boost::shared_ptr<RC_ARTICULATED_BODY> body);
 
   private:
-    std::map<boost::shared_ptr<JOINT>, VECTORN> calc_inv_dyn_fixed_base(boost::shared_ptr<RCARTICULATEDBODY> body, const std::map<boost::shared_ptr<RIGIDBODY>, RCArticulatedBodyInvDynData>& inv_dyn_data) const;
-    std::map<boost::shared_ptr<JOINT>, VECTORN> calc_inv_dyn_floating_base(boost::shared_ptr<RCARTICULATEDBODY> body, const std::map<boost::shared_ptr<RIGIDBODY>, RCArticulatedBodyInvDynData>& inv_dyn_data) const;
+    std::map<boost::shared_ptr<JOINT>, VECTORN> calc_inv_dyn_fixed_base(boost::shared_ptr<RC_ARTICULATED_BODY> body, const std::map<boost::shared_ptr<RIGIDBODY>, RCArticulatedBodyInvDynData>& inv_dyn_data) const;
+    std::map<boost::shared_ptr<JOINT>, VECTORN> calc_inv_dyn_floating_base(boost::shared_ptr<RC_ARTICULATED_BODY> body, const std::map<boost::shared_ptr<RIGIDBODY>, RCArticulatedBodyInvDynData>& inv_dyn_data) const;
 };
 
 

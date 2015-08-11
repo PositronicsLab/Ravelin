@@ -14,17 +14,17 @@ using std::map;
 using std::string;
 using std::queue;
 
-ARTICULATEDBODY::ARTICULATEDBODY()
+ARTICULATED_BODY::ARTICULATED_BODY()
 {
 }
 
 /// "Compiles" the articulated body
-void ARTICULATEDBODY::compile()
+void ARTICULATED_BODY::compile()
 {
 }
 
 /// Gets the Jacobian that converts velocities from this body in the source pose to velocities of the particular link in the target pose 
-MATRIXN& ARTICULATEDBODY::calc_jacobian_dot(boost::shared_ptr<const POSE3> target_pose, shared_ptr<DYNAMICBODY> body, MATRIXN& J)
+MATRIXN& ARTICULATED_BODY::calc_jacobian_dot(boost::shared_ptr<const POSE3> target_pose, shared_ptr<DYNAMIC_BODY> body, MATRIXN& J)
 {
   const shared_ptr<const POSE3> GLOBAL;
 
@@ -39,7 +39,7 @@ MATRIXN& ARTICULATEDBODY::calc_jacobian_dot(boost::shared_ptr<const POSE3> targe
 }
 
 /// Gets the time derivative of the Jacobian that converts velocities from this body in the source pose to velocities of the particular link in the target pose 
-MATRIXN& ARTICULATEDBODY::calc_jacobian_dot(shared_ptr<const POSE3> source_pose, shared_ptr<const POSE3> target_pose, shared_ptr<DYNAMICBODY> body, MATRIXN& J)
+MATRIXN& ARTICULATED_BODY::calc_jacobian_dot(shared_ptr<const POSE3> source_pose, shared_ptr<const POSE3> target_pose, shared_ptr<DYNAMIC_BODY> body, MATRIXN& J)
 {
   const unsigned SPATIAL_DIM = 6;
 
@@ -92,7 +92,7 @@ MATRIXN& ARTICULATEDBODY::calc_jacobian_dot(shared_ptr<const POSE3> source_pose,
 }
 
 /// Gets the Jacobian that converts velocities from this body in the source pose to velocities of the particular link in the target pose 
-MATRIXN& ARTICULATEDBODY::calc_jacobian(boost::shared_ptr<const POSE3> target_pose, shared_ptr<DYNAMICBODY> body, MATRIXN& J)
+MATRIXN& ARTICULATED_BODY::calc_jacobian(boost::shared_ptr<const POSE3> target_pose, shared_ptr<DYNAMIC_BODY> body, MATRIXN& J)
 {
   const shared_ptr<const POSE3> GLOBAL;
 
@@ -107,7 +107,7 @@ MATRIXN& ARTICULATEDBODY::calc_jacobian(boost::shared_ptr<const POSE3> target_po
 }
 
 /// Gets the Jacobian that converts velocities from this body in the source pose to velocities of the particular link in the target pose 
-MATRIXN& ARTICULATEDBODY::calc_jacobian(boost::shared_ptr<const POSE3> source_pose, boost::shared_ptr<const POSE3> target_pose, shared_ptr<DYNAMICBODY> body, MATRIXN& J)
+MATRIXN& ARTICULATED_BODY::calc_jacobian(boost::shared_ptr<const POSE3> source_pose, boost::shared_ptr<const POSE3> target_pose, shared_ptr<DYNAMIC_BODY> body, MATRIXN& J)
 {
   const unsigned SPATIAL_DIM = 6;
 
@@ -164,7 +164,7 @@ MATRIXN& ARTICULATEDBODY::calc_jacobian(boost::shared_ptr<const POSE3> source_po
 }
 
 /// Determines the loop indices corresponding to each joint and the vector of links for each joint
-void ARTICULATEDBODY::find_loops(vector<unsigned>& loop_indices, vector<vector<unsigned> >& loop_links) const
+void ARTICULATED_BODY::find_loops(vector<unsigned>& loop_indices, vector<vector<unsigned> >& loop_links) const
 {
   vector<shared_ptr<JOINT> > loop_joints, implicit_joints;
   queue<shared_ptr<RIGIDBODY> > q;
@@ -275,7 +275,7 @@ void ARTICULATEDBODY::find_loops(vector<unsigned>& loop_indices, vector<vector<u
 }
 
 /// Sets the vectors of links and joints
-void ARTICULATEDBODY::set_links_and_joints(const vector<shared_ptr<RIGIDBODY> >& links, const vector<shared_ptr<JOINT> >& joints)
+void ARTICULATED_BODY::set_links_and_joints(const vector<shared_ptr<RIGIDBODY> >& links, const vector<shared_ptr<JOINT> >& joints)
 {
   // copy the vector
   _links = links;
@@ -301,7 +301,7 @@ void ARTICULATEDBODY::set_links_and_joints(const vector<shared_ptr<RIGIDBODY> >&
 }
 
 /// Gets the number of explicit joint constraint equations
-unsigned ARTICULATEDBODY::num_constraint_eqns_explicit() const
+unsigned ARTICULATED_BODY::num_constraint_eqns_explicit() const
 {
   unsigned neq = 0;
   for (unsigned i=0; i< _joints.size(); i++)
@@ -312,7 +312,7 @@ unsigned ARTICULATEDBODY::num_constraint_eqns_explicit() const
 }
 
 /// Gets the number of implicit joint constraint equations
-unsigned ARTICULATEDBODY::num_constraint_eqns_implicit() const
+unsigned ARTICULATED_BODY::num_constraint_eqns_implicit() const
 {
   unsigned neq = 0;
   for (unsigned i=0; i< _joints.size(); i++)
@@ -323,7 +323,7 @@ unsigned ARTICULATEDBODY::num_constraint_eqns_implicit() const
 }
 
 /// Gets the number of joint degrees of freedom permitted by both implicit and explicit joint constraints
-unsigned ARTICULATEDBODY::num_joint_dof() const
+unsigned ARTICULATED_BODY::num_joint_dof() const
 {
   unsigned ndof = 0;
   for (unsigned i=0; i< _joints.size(); i++)
@@ -335,7 +335,7 @@ unsigned ARTICULATEDBODY::num_joint_dof() const
 /**
  * \return NULL if the joint wasshared_ptr<void> not found
  */
-shared_ptr<JOINT> ARTICULATEDBODY::find_joint(const string& jointname) const
+shared_ptr<JOINT> ARTICULATED_BODY::find_joint(const string& jointname) const
 {
   for (unsigned i=0; i< _joints.size(); i++)
     if (_joints[i]->id == jointname)
@@ -345,7 +345,7 @@ shared_ptr<JOINT> ARTICULATEDBODY::find_joint(const string& jointname) const
 }
 
 /// Gets the adjacent links
-void ARTICULATEDBODY::get_adjacent_links(list<sorted_pair<shared_ptr<RIGIDBODY> > >& links) const
+void ARTICULATED_BODY::get_adjacent_links(list<sorted_pair<shared_ptr<RIGIDBODY> > >& links) const
 {
   for (unsigned i=0; i< _joints.size(); i++)
   {
@@ -360,7 +360,7 @@ void ARTICULATEDBODY::get_adjacent_links(list<sorted_pair<shared_ptr<RIGIDBODY> 
 /**
  * The given transformation is cumulative; the links will not necessarily be set to T.
  */
-void ARTICULATEDBODY::translate(const ORIGIN3& x)
+void ARTICULATED_BODY::translate(const ORIGIN3& x)
 {
   // apply transform to all links
   BOOST_FOREACH(shared_ptr<RIGIDBODY> rb, _links)
@@ -371,7 +371,7 @@ void ARTICULATEDBODY::translate(const ORIGIN3& x)
 /**
  * The given transformation is cumulative; the links will not necessarily be set to T.
  */
-void ARTICULATEDBODY::rotate(const QUAT& q)
+void ARTICULATED_BODY::rotate(const QUAT& q)
 {
   // apply transform to all links
   BOOST_FOREACH(shared_ptr<RIGIDBODY> rb, _links)
@@ -379,7 +379,7 @@ void ARTICULATEDBODY::rotate(const QUAT& q)
 }
 
 /// Calculates the combined kinetic energy of all links in this body with respect to the base frame
-REAL ARTICULATEDBODY::calc_kinetic_energy() 
+REAL ARTICULATED_BODY::calc_kinetic_energy() 
 {
   // TODO: fix this to do computation in the base frame
   REAL KE = 0;
@@ -393,14 +393,14 @@ REAL ARTICULATEDBODY::calc_kinetic_energy()
 /**
  * Force and torque accumulators on all links are reset.
  */
-void ARTICULATEDBODY::reset_accumulators()
+void ARTICULATED_BODY::reset_accumulators()
 {
   BOOST_FOREACH(shared_ptr<RIGIDBODY> rb, _links)
     rb->reset_accumulators();
 }
 
 /// Finds the link with the given name
-shared_ptr<RIGIDBODY> ARTICULATEDBODY::find_link(const string& linkid) const
+shared_ptr<RIGIDBODY> ARTICULATED_BODY::find_link(const string& linkid) const
 {
   BOOST_FOREACH(shared_ptr<RIGIDBODY> rb, _links)
     if (rb->id == linkid)

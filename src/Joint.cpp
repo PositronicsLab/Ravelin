@@ -19,6 +19,85 @@ JOINT::JOINT()
   _Fprime->rpose = _F;
 }
 
+/// Resets the force on the joint
+void JOINT::reset_force()
+{
+  force.set_zero(num_dof());
+}
+
+/// Sets inboard link
+void JOINT::set_inboard_link(shared_ptr<RIGIDBODY> inboard, bool update_pose)
+{
+  _inboard_link = inboard;
+  if (!inboard)
+    return;
+
+  // add this joint to the outer joints
+  inboard->_outer_joints.insert(shared_from_this());
+
+  // setup F's pose relative to the inboard
+  set_inboard_pose(inboard->get_pose(), update_pose);
+
+  // update articulated body pointers, if possible
+  if (!inboard->get_articulated_body() && !_abody.expired())
+    inboard->set_articulated_body(shared_ptr<ARTICULATED_BODY>(_abody));
+  else if (inboard->get_articulated_body() && _abody.expired())
+    set_articulated_body(shared_ptr<ARTICULATED_BODY>(inboard->get_articulated_body()));
+
+  // the articulated body pointers must now be equal; it is
+  // conceivable that the user is updating the art. body pointers in an
+  // unorthodox manner, but we'll look for this anwyway...
+  if (!_abody.expired())
+  {
+    shared_ptr<ARTICULATED_BODY> abody1(inboard->get_articulated_body());
+    shared_ptr<ARTICULATED_BODY> abody2(_abody);
+    assert(abody1 == abody2);
+  }
+}
+
+/// Sets the pointer to the outboard link for this joint
+/**
+ * \note also points the outboard link to this joint
+ */
+void JOINT::set_outboard_link(shared_ptr<RIGIDBODY> outboard, bool update_pose)
+{
+  _outboard_link = outboard;
+  if (!outboard)
+    return;
+
+  // add this joint to the outer joints
+  outboard->_inner_joints.insert(shared_from_this());
+
+  // get the outboard pose
+  if (outboard->_F->rpose)
+    throw std::runtime_error("Joint::set_inboard_link() - relative pose on inboard link already set");
+
+  // setup Fb's pose relative to the outboard 
+  set_outboard_pose(outboard->_F, update_pose);
+
+  // setup the frame
+  outboard->_xdj.pose = get_pose();
+  outboard->_xddj.pose = get_pose();
+  outboard->_Jj.pose = get_pose();
+  outboard->_forcej.pose = get_pose();
+
+  // use one articulated body pointer to set the other, if possible
+  if (!outboard->get_articulated_body() && !_abody.expired())
+    outboard->set_articulated_body(shared_ptr<ARTICULATED_BODY>(_abody));
+  else if (outboard->get_articulated_body() && _abody.expired())
+    set_articulated_body(shared_ptr<ARTICULATED_BODY>(outboard->get_articulated_body()));
+
+  // the articulated body pointers must now be equal; it is
+  // conceivable that the user is updating the art. body pointers in an
+  // unorthodox manner, but we'll look for this anwyway...
+  if (!_abody.expired())
+  {
+    shared_ptr<ARTICULATED_BODY> abody1(outboard->get_articulated_body());
+    shared_ptr<ARTICULATED_BODY> abody2(_abody);
+    assert(abody1 == abody2);
+  }
+}
+
 /// Determines q tare
 void JOINT::determine_q_tare()
 {
@@ -84,6 +163,9 @@ void JOINT::init_data()
 
   q.set_zero(NDOF);
   qd.set_zero(NDOF);
+  qdd.set_zero(NDOF);
+  force.set_zero(NDOF);
+  lambda.set_zero(NEQ);
   _q_tare.set_zero(NDOF);
   _s.resize(NDOF);
 }

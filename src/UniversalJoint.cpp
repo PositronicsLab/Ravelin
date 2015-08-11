@@ -329,6 +329,15 @@ void UNIVERSALJOINT::calc_constraint_jacobian(bool inboard, SHAREDMATRIXN& Cq)
   }
 }
 
+/// Computes the time derivative of the constraint jacobian with respect to a body
+/**
+ * TODO: implement this
+ */
+void UNIVERSALJOINT::calc_constraint_jacobian_dot(bool inboard, SHAREDMATRIXN& Cq)
+{
+  throw std::runtime_error("Implementation required");
+}
+
 /// Evaluates the constraint equations
 void UNIVERSALJOINT::evaluate_constraints(REAL C[])
 {

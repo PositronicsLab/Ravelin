@@ -12,16 +12,16 @@ using std::endl;
 using boost::shared_array;
 using boost::shared_ptr;
 
-CRBALGORITHM::CRBALGORITHM()
+CRB_ALGORITHM::CRB_ALGORITHM()
 {
 }
 
 /// Computes the parent array for sparse Cholesky factorization
-void CRBALGORITHM::setup_parent_array()
+void CRB_ALGORITHM::setup_parent_array()
 {
   // get the number of generalized coordinates
-  shared_ptr<RCARTICULATEDBODY> body(_body);
-  const unsigned N = body->num_generalized_coordinates(DYNAMICBODY::eSpatial);
+  shared_ptr<RC_ARTICULATED_BODY> body(_body);
+  const unsigned N = body->num_generalized_coordinates(DYNAMIC_BODY::eSpatial);
 
   // get explicit joints
   const vector<shared_ptr<JOINT> >& ijoints = body->get_explicit_joints();
@@ -57,7 +57,7 @@ void CRBALGORITHM::setup_parent_array()
 }
 
 /// Factorizes (Cholesky) the generalized inertia matrix, exploiting sparsity
-bool CRBALGORITHM::factorize_cholesky(MATRIXN& M)
+bool CRB_ALGORITHM::factorize_cholesky(MATRIXN& M)
 {
   // check whether the parent array has been setup
   if (_lambda.size() == 0)
@@ -111,7 +111,7 @@ bool CRBALGORITHM::factorize_cholesky(MATRIXN& M)
 }
 
 // Transforms (as necessary) and multiplies
-void CRBALGORITHM::transform_and_mult(shared_ptr<const POSE3> target, const SPATIAL_RB_INERTIA& I, const vector<SVELOCITY>& s, vector<SMOMENTUM>& Is)
+void CRB_ALGORITHM::transform_and_mult(shared_ptr<const POSE3> target, const SPATIAL_RB_INERTIA& I, const vector<SVELOCITY>& s, vector<SMOMENTUM>& Is)
 {
   // transform s
   POSE3::transform(I.pose, s, _sprime);
@@ -127,7 +127,7 @@ void CRBALGORITHM::transform_and_mult(shared_ptr<const POSE3> target, const SPAT
 /**
  * Only valid for bodies with floating bases.
  */
-shared_ptr<const POSE3> CRBALGORITHM::get_computation_frame(shared_ptr<RCARTICULATEDBODY> body)
+shared_ptr<const POSE3> CRB_ALGORITHM::get_computation_frame(shared_ptr<RC_ARTICULATED_BODY> body)
 {
   assert(body->is_floating_base());
 
@@ -160,7 +160,7 @@ shared_ptr<const POSE3> CRBALGORITHM::get_computation_frame(shared_ptr<RCARTICUL
 /**
  * Specialized function for use with the CRB algorithm
  */
-void CRBALGORITHM::calc_generalized_inertia(shared_ptr<RCARTICULATEDBODY> body)
+void CRB_ALGORITHM::calc_generalized_inertia(shared_ptr<RC_ARTICULATED_BODY> body)
 {
   const unsigned SPATIAL_DIM = 6;
 
@@ -237,7 +237,7 @@ void CRBALGORITHM::calc_generalized_inertia(shared_ptr<RCARTICULATEDBODY> body)
 }
 
 /// Computes *just* the joint space inertia matrix
-void CRBALGORITHM::calc_joint_space_inertia(shared_ptr<RCARTICULATEDBODY> body, MATRIXN& H, vector<SPATIAL_RB_INERTIA>& Ic)
+void CRB_ALGORITHM::calc_joint_space_inertia(shared_ptr<RC_ARTICULATED_BODY> body, MATRIXN& H, vector<SPATIAL_RB_INERTIA>& Ic)
 {
   queue<shared_ptr<RIGIDBODY> > link_queue;
   const unsigned SPATIAL_DIM = 6;
@@ -486,10 +486,10 @@ void CRBALGORITHM::calc_joint_space_inertia(shared_ptr<RCARTICULATEDBODY> body, 
 /**
  * Generic method provided for use with generalized coordinates.
  */
-void CRBALGORITHM::calc_generalized_inertia(SHAREDMATRIXN& M)
+void CRB_ALGORITHM::calc_generalized_inertia(SHAREDMATRIXN& M)
 {
   // do the precalculation
-  shared_ptr<RCARTICULATEDBODY> body(_body);
+  shared_ptr<RC_ARTICULATED_BODY> body(_body);
   precalc(body);
 
   // get the set of links
@@ -564,7 +564,7 @@ void CRBALGORITHM::calc_generalized_inertia(SHAREDMATRIXN& M)
 }
 
 /// Performs necessary pre-computations for computing accelerations or applying impulses
-void CRBALGORITHM::precalc(shared_ptr<RCARTICULATEDBODY> body)
+void CRB_ALGORITHM::precalc(shared_ptr<RC_ARTICULATED_BODY> body)
 {
   // tolerance for not recomputing/refactorizing inertia matrix
   const double REFACTOR_TOL = 1e-4;
@@ -574,7 +574,7 @@ void CRBALGORITHM::precalc(shared_ptr<RCARTICULATEDBODY> body)
 
   // get the generalized coordinates
   static VECTORN gc, tmpv;
-  body->get_generalized_coordinates(DYNAMICBODY::eEuler, gc);
+  body->get_generalized_coordinates(DYNAMIC_BODY::eEuler, gc);
   if (_gc_last.size() == 0 || ((tmpv = gc) -= _gc_last).norm_inf() > REFACTOR_TOL)
   {
     // compute spatial isolated inertias and generalized inertia matrix
@@ -597,10 +597,10 @@ void CRBALGORITHM::precalc(shared_ptr<RCARTICULATEDBODY> body)
 }
 
 /// Executes the composite rigid-body method
-void CRBALGORITHM::calc_fwd_dyn()
+void CRB_ALGORITHM::calc_fwd_dyn()
 {
   // get the body
-  shared_ptr<RCARTICULATEDBODY> body(_body);
+  shared_ptr<RC_ARTICULATED_BODY> body(_body);
 
   // do necessary pre-calculations
   precalc(body);
@@ -620,10 +620,10 @@ void CRBALGORITHM::calc_fwd_dyn()
  * This method is useful when the inertia matrix has already been computed-
  * considerable computation will then be avoided.
  */
-void CRBALGORITHM::calc_fwd_dyn_special()
+void CRB_ALGORITHM::calc_fwd_dyn_special()
 {
   // get the body and the reference frame
-  shared_ptr<RCARTICULATEDBODY> body(_body);
+  shared_ptr<RC_ARTICULATED_BODY> body(_body);
 
   // execute the appropriate algorithm
   if (body->is_floating_base())
@@ -636,10 +636,10 @@ void CRBALGORITHM::calc_fwd_dyn_special()
 }
 
 /// Solves for acceleration using the body inertia matrix
-VECTORN& CRBALGORITHM::M_solve(VECTORN& xb) 
+VECTORN& CRB_ALGORITHM::M_solve(VECTORN& xb) 
 {
   // do necessary pre-calculations
-  shared_ptr<RCARTICULATEDBODY> body(_body);
+  shared_ptr<RC_ARTICULATED_BODY> body(_body);
   precalc(body);
 
   // setup xb
@@ -650,10 +650,10 @@ VECTORN& CRBALGORITHM::M_solve(VECTORN& xb)
 }
 
 /// Solves for acceleration using the body inertia matrix
-SHAREDVECTORN& CRBALGORITHM::M_solve(SHAREDVECTORN& xb) 
+SHAREDVECTORN& CRB_ALGORITHM::M_solve(SHAREDVECTORN& xb) 
 {
   // do necessary pre-calculations
-  shared_ptr<RCARTICULATEDBODY> body(_body);
+  shared_ptr<RC_ARTICULATED_BODY> body(_body);
   precalc(body);
 
   M_solve_noprecalc(xb); 
@@ -661,10 +661,10 @@ SHAREDVECTORN& CRBALGORITHM::M_solve(SHAREDVECTORN& xb)
 }
 
 /// Solves for acceleration using the body inertia matrix
-MATRIXN& CRBALGORITHM::M_solve(MATRIXN& XB)
+MATRIXN& CRB_ALGORITHM::M_solve(MATRIXN& XB)
 {
   // do necessary pre-calculations
-  shared_ptr<RCARTICULATEDBODY> body(_body);
+  shared_ptr<RC_ARTICULATED_BODY> body(_body);
   precalc(body);
 
   // setup XB
@@ -675,10 +675,10 @@ MATRIXN& CRBALGORITHM::M_solve(MATRIXN& XB)
 }
 
 /// Solves for acceleration using the body inertia matrix
-SHAREDMATRIXN& CRBALGORITHM::M_solve(SHAREDMATRIXN& XB)
+SHAREDMATRIXN& CRB_ALGORITHM::M_solve(SHAREDMATRIXN& XB)
 {
   // do necessary pre-calculations
-  shared_ptr<RCARTICULATEDBODY> body(_body);
+  shared_ptr<RC_ARTICULATED_BODY> body(_body);
   precalc(body);
 
   M_solve_noprecalc(XB); 
@@ -686,7 +686,7 @@ SHAREDMATRIXN& CRBALGORITHM::M_solve(SHAREDMATRIXN& XB)
 }
 
 /// Solves for acceleration using the body inertia matrix
-VECTORN& CRBALGORITHM::M_solve_noprecalc(VECTORN& xb)
+VECTORN& CRB_ALGORITHM::M_solve_noprecalc(VECTORN& xb)
 {
   // setup xb
   SHAREDVECTORN xb_shared = xb.segment(0, xb.rows());
@@ -698,7 +698,7 @@ VECTORN& CRBALGORITHM::M_solve_noprecalc(VECTORN& xb)
 }
 
 /// Solves for acceleration using the body inertia matrix
-SHAREDVECTORN& CRBALGORITHM::M_solve_noprecalc(SHAREDVECTORN& xb)
+SHAREDVECTORN& CRB_ALGORITHM::M_solve_noprecalc(SHAREDVECTORN& xb)
 {
   // determine whether the matrix is rank-deficient
   if (this->_rank_deficient)
@@ -710,7 +710,7 @@ SHAREDVECTORN& CRBALGORITHM::M_solve_noprecalc(SHAREDVECTORN& xb)
 }
 
 /// Solves for acceleration using the body inertia matrix
-MATRIXN& CRBALGORITHM::M_solve_noprecalc(MATRIXN& XB)
+MATRIXN& CRB_ALGORITHM::M_solve_noprecalc(MATRIXN& XB)
 {
   // get a shared matrix
   SHAREDMATRIXN XB_shared = XB.block(0, XB.rows(), 0, XB.columns());
@@ -722,7 +722,7 @@ MATRIXN& CRBALGORITHM::M_solve_noprecalc(MATRIXN& XB)
 }
 
 /// Solves for acceleration using the body inertia matrix
-SHAREDMATRIXN& CRBALGORITHM::M_solve_noprecalc(SHAREDMATRIXN& XB)
+SHAREDMATRIXN& CRB_ALGORITHM::M_solve_noprecalc(SHAREDMATRIXN& XB)
 {
   // determine whether the matrix is rank-deficient
   if (this->_rank_deficient)
@@ -734,7 +734,7 @@ SHAREDMATRIXN& CRBALGORITHM::M_solve_noprecalc(SHAREDMATRIXN& XB)
 }
 
 /// Executes the composite rigid-body method on an articulated body with a fixed base
-void CRBALGORITHM::calc_fwd_dyn_fixed_base(shared_ptr<RCARTICULATEDBODY> body)
+void CRB_ALGORITHM::calc_fwd_dyn_fixed_base(shared_ptr<RC_ARTICULATED_BODY> body)
 {
   // get the set of links and joints for the articulated body
   const vector<shared_ptr<RIGIDBODY> >& links = body->get_links();
@@ -797,7 +797,7 @@ void CRBALGORITHM::calc_fwd_dyn_fixed_base(shared_ptr<RCARTICULATEDBODY> body)
  * This algorithm is taken from [Featherstone, 1987], p. 123.  This is only
  * calculated in the global frame.
  */
-void CRBALGORITHM::calc_fwd_dyn_floating_base(shared_ptr<RCARTICULATEDBODY> body)
+void CRB_ALGORITHM::calc_fwd_dyn_floating_base(shared_ptr<RC_ARTICULATED_BODY> body)
 {
   const boost::shared_ptr<const POSE3> GLOBAL;
   FILE_LOG(LOG_DYNAMICS) << "CRBAlgorithm::calc_fwd_dyn_floating_base() entered" << std::endl;
@@ -886,14 +886,14 @@ void CRBALGORITHM::calc_fwd_dyn_floating_base(shared_ptr<RCARTICULATEDBODY> body
 /**
  * \return the spatial vector of forces on the base, which can be ignored for forward dynamics for fixed bases
  */
-void CRBALGORITHM::calc_generalized_forces(SFORCE& f0, VECTORN& C)
+void CRB_ALGORITHM::calc_generalized_forces(SFORCE& f0, VECTORN& C)
 {
   const unsigned SPATIAL_DIM = 6;
   queue<shared_ptr<RIGIDBODY> > link_queue;
   SFORCE w;
 
   // get the body and the reference frame
-  shared_ptr<RCARTICULATEDBODY> body(_body);
+  shared_ptr<RC_ARTICULATED_BODY> body(_body);
 
   // get the set of links and joints
   const vector<shared_ptr<RIGIDBODY> >& links = body->get_links();
@@ -1109,14 +1109,14 @@ void CRBALGORITHM::calc_generalized_forces(SFORCE& f0, VECTORN& C)
 /**
  * \return the spatial vector of forces on the base, which can be ignored for forward dynamics for fixed bases
  */
-void CRBALGORITHM::calc_generalized_forces_noinertial(SFORCE& f0, VECTORN& C)
+void CRB_ALGORITHM::calc_generalized_forces_noinertial(SFORCE& f0, VECTORN& C)
 {
   const unsigned SPATIAL_DIM = 6;
   queue<shared_ptr<RIGIDBODY> > link_queue;
   SFORCE w;
 
   // get the body and the reference frame
-  shared_ptr<RCARTICULATEDBODY> body(_body);
+  shared_ptr<RC_ARTICULATED_BODY> body(_body);
 
   // get the set of links and joints
   const vector<shared_ptr<RIGIDBODY> >& links = body->get_links();
@@ -1251,7 +1251,7 @@ void CRBALGORITHM::calc_generalized_forces_noinertial(SFORCE& f0, VECTORN& C)
 }
 
 /// Updates all link accelerations (except the base)
-void CRBALGORITHM::update_link_accelerations(shared_ptr<RCARTICULATEDBODY> body)
+void CRB_ALGORITHM::update_link_accelerations(shared_ptr<RC_ARTICULATED_BODY> body)
 {
   queue<shared_ptr<RIGIDBODY> > link_queue;
 
@@ -1333,7 +1333,7 @@ void CRBALGORITHM::update_link_accelerations(shared_ptr<RCARTICULATEDBODY> body)
 
 /*
 /// Implements RCArticulatedBodyFwdDynAlgo::apply_impulse()
-void CRBALGORITHM::apply_impulse(const SFORCE& w, shared_ptr<RIGIDBODY> link)
+void CRB_ALGORITHM::apply_impulse(const SFORCE& w, shared_ptr<RIGIDBODY> link)
 {
   // An alternative method for applying impulses using generalized coordinates
   // below...
@@ -1386,7 +1386,7 @@ void CRBALGORITHM::apply_impulse(const SFORCE& w, shared_ptr<RIGIDBODY> link)
 
 /// TODO: fix this for bodies with kinematic loops
 /// Applies an impulse to an articulated body with a floating base; complexity O(n^2)
-void CRBALGORITHM::apply_impulse(const SMOMENTUM& w, shared_ptr<RIGIDBODY> link)
+void CRB_ALGORITHM::apply_impulse(const SMOMENTUM& w, shared_ptr<RIGIDBODY> link)
 {
   const boost::shared_ptr<const POSE3> GLOBAL;
   const unsigned OPSPACE_DIM = 6;
@@ -1396,7 +1396,7 @@ void CRBALGORITHM::apply_impulse(const SMOMENTUM& w, shared_ptr<RIGIDBODY> link)
   VECTORN& workv = _workv;
 
   // get the body
-  shared_ptr<RCARTICULATEDBODY> body(_body);
+  shared_ptr<RC_ARTICULATED_BODY> body(_body);
 
   // do necessary pre-calculations
   precalc(body); 

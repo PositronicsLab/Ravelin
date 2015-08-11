@@ -4,18 +4,18 @@
  * License (obtainable from http://www.apache.org/licenses/LICENSE-2.0).
  ****************************************************************************/
 
-#ifndef SINGLEBODY 
+#ifndef SINGLE_BODY 
 #error This class is not to be included by the user directly. Use SingleBodyd.h or SingleBodyf.h instead.
 #endif
 
-class ARTICULATEDBODY;
+class ARTICULATED_BODY;
 
 /// Superclass for both rigid and deformable bodies 
-class SINGLEBODY : public DYNAMICBODY 
+class SINGLE_BODY : public DYNAMIC_BODY 
 {
   public:
-    virtual ~SINGLEBODY() {}
-    virtual boost::shared_ptr<DYNAMICBODY> get_super_body() const;
+    virtual ~SINGLE_BODY() {}
+    virtual boost::shared_ptr<DYNAMIC_BODY> get_super_body() const;
 
     /// Gets the computation frame for the body
     virtual boost::shared_ptr<const POSE3> get_computation_frame() const = 0;
@@ -39,7 +39,7 @@ class SINGLEBODY : public DYNAMICBODY
     virtual REAL calc_mass() const = 0;
 
     /// Gets the articulated body that this body is a part of (if any)
-    virtual boost::shared_ptr<ARTICULATEDBODY> get_articulated_body() const = 0;
+    virtual boost::shared_ptr<ARTICULATED_BODY> get_articulated_body() const = 0;
 
     /// Determines whether the body is enabled
     virtual bool is_enabled() const = 0;

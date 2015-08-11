@@ -48,14 +48,14 @@
 #define UNIVERSALJOINT UniversalJointf
 #define MOVINGTRANSFORM3 MovingTransform3f
 #define RIGIDBODY RigidBodyf
-#define ARTICULATEDBODY ArticulatedBodyf 
-#define RCARTICULATEDBODY RCArticulatedBodyf 
-#define SINGLEBODY SingleBodyf
-#define DYNAMICBODY DynamicBodyf
+#define ARTICULATED_BODY ArticulatedBodyf 
+#define RC_ARTICULATED_BODY RCArticulatedBodyf 
+#define SINGLE_BODY SingleBodyf
+#define DYNAMIC_BODY DynamicBodyf
 #define SPARITH SpArithf 
-#define CRBALGORITHM CRBAlgorithmf
-#define FSABALGORITHM FSABAlgorithmf
-#define RNEALGORITHM RNEAlgorithmf
+#define CRB_ALGORITHM CRBAlgorithmf
+#define FSAB_ALGORITHM FSABAlgorithmf
+#define RNE_ALGORITHM RNEAlgorithmf
 #define URDFREADER URDFReaderf 
 
  

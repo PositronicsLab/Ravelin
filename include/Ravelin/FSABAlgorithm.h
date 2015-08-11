@@ -4,11 +4,11 @@
  * License (obtainable from http://www.apache.org/licenses/LICENSE-2.0).
  ****************************************************************************/
 
-#ifndef FSABALGORITHM 
+#ifndef FSAB_ALGORITHM 
 #error This class is not to be included by the user directly. Use FSABAlgorithmd.h or FSABAlgorithmf.h instead.
 #endif
 
-class RCARTICULATEDBODY;
+class RC_ARTICULATED_BODY;
 
 /// Implements Featherstone's algorithm for forward dynamics
 /**
@@ -32,25 +32,25 @@ class RCARTICULATEDBODY;
  * Note that one critical note for manipulator setup is that the base is the 
  * first link in the list of links.
  */
-class FSABALGORITHM 
+class FSAB_ALGORITHM 
 {
-  friend class RCARTICULATEDBODY;
+  friend class RC_ARTICULATED_BODY;
 
   public:
-    FSABALGORITHM();
-    ~FSABALGORITHM() {}
-    boost::shared_ptr<RCARTICULATEDBODY> get_body() const { return boost::shared_ptr<RCARTICULATEDBODY>(_body); }
-    void set_body(boost::shared_ptr<RCARTICULATEDBODY> body) { _body = body; }
+    FSAB_ALGORITHM();
+    ~FSAB_ALGORITHM() {}
+    boost::shared_ptr<RC_ARTICULATED_BODY> get_body() const { return boost::shared_ptr<RC_ARTICULATED_BODY>(_body); }
+    void set_body(boost::shared_ptr<RC_ARTICULATED_BODY> body) { _body = body; }
     void calc_fwd_dyn();
     void calc_inverse_generalized_inertia_noprecalc(MATRIXN& iM);
     void solve_generalized_inertia_noprecalc(SHAREDVECTORN& v);
     void solve_generalized_inertia_noprecalc(SHAREDMATRIXN& Y);
     void apply_generalized_impulse(const VECTORN& gj);
     void apply_impulse(const SMOMENTUM& j, boost::shared_ptr<RIGIDBODY> link);
-    void calc_spatial_inertias(boost::shared_ptr<RCARTICULATEDBODY> body);
+    void calc_spatial_inertias(boost::shared_ptr<RC_ARTICULATED_BODY> body);
 
     /// The body that this algorithm operates on
-    boost::weak_ptr<RCARTICULATEDBODY> _body;
+    boost::weak_ptr<RC_ARTICULATED_BODY> _body;
 
     /// The spatial accelerations
     std::vector<SACCEL> _a;
@@ -98,12 +98,12 @@ class FSABALGORITHM
     void calc_fwd_dyn_special();
     static REAL sgn(REAL x);
     static void push_children(boost::shared_ptr<RIGIDBODY> link, std::queue<boost::shared_ptr<RIGIDBODY> >& q);
-    void apply_coulomb_joint_friction(boost::shared_ptr<RCARTICULATEDBODY> body);
+    void apply_coulomb_joint_friction(boost::shared_ptr<RC_ARTICULATED_BODY> body);
     void apply_generalized_impulse(unsigned index, VECTORN& vgj);
-    void set_spatial_velocities(boost::shared_ptr<RCARTICULATEDBODY> body);
-    void calc_spatial_accelerations(boost::shared_ptr<RCARTICULATEDBODY> body);
-    void calc_spatial_zero_accelerations(boost::shared_ptr<RCARTICULATEDBODY> body);
-    void calc_spatial_coriolis_vectors(boost::shared_ptr<RCARTICULATEDBODY> body);
+    void set_spatial_velocities(boost::shared_ptr<RC_ARTICULATED_BODY> body);
+    void calc_spatial_accelerations(boost::shared_ptr<RC_ARTICULATED_BODY> body);
+    void calc_spatial_zero_accelerations(boost::shared_ptr<RC_ARTICULATED_BODY> body);
+    void calc_spatial_coriolis_vectors(boost::shared_ptr<RC_ARTICULATED_BODY> body);
     VECTORN& solve_sIs(unsigned idx, const VECTORN& v, VECTORN& result) const;
     MATRIXN& solve_sIs(unsigned idx, const MATRIXN& v, MATRIXN& result) const;
     MATRIXN& transpose_solve_sIs(unsigned idx, const std::vector<SVELOCITY>& m, MATRIXN& result) const;

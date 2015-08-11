@@ -24,7 +24,7 @@ OutputIterator RIGIDBODY::get_child_links(OutputIterator begin) const
 
 /// Sets generalized coordinates using a templated vector
 template <class V>
-void RIGIDBODY::get_generalized_coordinates_generic(DYNAMICBODY::GeneralizedCoordinateType gctype, V& gc) 
+void RIGIDBODY::get_generalized_coordinates_generic(DYNAMIC_BODY::GeneralizedCoordinateType gctype, V& gc) 
 {
   const unsigned N_SPATIAL = 6, N_EULER = 7;
   const boost::shared_ptr<const POSE3> GLOBAL;
@@ -39,8 +39,8 @@ void RIGIDBODY::get_generalized_coordinates_generic(DYNAMICBODY::GeneralizedCoor
   // resize vector
   switch (gctype)
   {
-    case DYNAMICBODY::eEuler:   gc.resize(N_EULER); break;
-    case DYNAMICBODY::eSpatial: gc.resize(N_SPATIAL); break;
+    case DYNAMIC_BODY::eEuler:   gc.resize(N_EULER); break;
+    case DYNAMIC_BODY::eSpatial: gc.resize(N_SPATIAL); break;
   }
 
   // get current inertial pose 
@@ -53,12 +53,12 @@ void RIGIDBODY::get_generalized_coordinates_generic(DYNAMICBODY::GeneralizedCoor
   gc[2] = P.x[2];
 
   // get angular components 
-  if (gctype == DYNAMICBODY::eSpatial)
+  if (gctype == DYNAMIC_BODY::eSpatial)
     P.q.to_rpy(gc[3], gc[4], gc[5]);
   else
   {
     // return the generalized position using Euler parameters
-    assert(gctype == DYNAMICBODY::eEuler);
+    assert(gctype == DYNAMIC_BODY::eEuler);
     gc[3] = P.q.x;
     gc[4] = P.q.y;
     gc[5] = P.q.z;
@@ -68,14 +68,14 @@ void RIGIDBODY::get_generalized_coordinates_generic(DYNAMICBODY::GeneralizedCoor
 
 /// Sets the generalized coordinates of this rigid body (does not call articulated body)
 template <class V>
-void RIGIDBODY::set_generalized_coordinates_generic(DYNAMICBODY::GeneralizedCoordinateType gctype, V& gc)
+void RIGIDBODY::set_generalized_coordinates_generic(DYNAMIC_BODY::GeneralizedCoordinateType gctype, V& gc)
 {
   // special case: disabled body
   if (!_enabled)
     return;
 
   // do easiest case first 
-  if (gctype == DYNAMICBODY::eSpatial)
+  if (gctype == DYNAMIC_BODY::eSpatial)
   {
     // this isn't correct
     assert(false);
@@ -97,7 +97,7 @@ void RIGIDBODY::set_generalized_coordinates_generic(DYNAMICBODY::GeneralizedCoor
   }
   else
   {
-    assert(gctype == DYNAMICBODY::eEuler);
+    assert(gctype == DYNAMIC_BODY::eEuler);
 
     // get the position
     ORIGIN3 x(gc[0], gc[1], gc[2]);
@@ -132,7 +132,7 @@ void RIGIDBODY::set_generalized_coordinates_generic(DYNAMICBODY::GeneralizedCoor
 
 /// Sets the generalized velocity of this rigid body (does not call articulated body version)
 template <class V>
-void RIGIDBODY::set_generalized_velocity_generic(DYNAMICBODY::GeneralizedCoordinateType gctype, V& gv)
+void RIGIDBODY::set_generalized_velocity_generic(DYNAMIC_BODY::GeneralizedCoordinateType gctype, V& gv)
 {
   const boost::shared_ptr<const POSE3> GLOBAL;
 
@@ -148,11 +148,11 @@ void RIGIDBODY::set_generalized_velocity_generic(DYNAMICBODY::GeneralizedCoordin
   xd.set_linear(VECTOR3(gv[0], gv[1], gv[2]));
  
   // simplest case: spatial coordinates
-  if (gctype == DYNAMICBODY::eSpatial)
+  if (gctype == DYNAMIC_BODY::eSpatial)
     xd.set_angular(VECTOR3(gv[3], gv[4], gv[5]));
   else
   {
-    assert(gctype == DYNAMICBODY::eEuler);
+    assert(gctype == DYNAMIC_BODY::eEuler);
 
     // get the quaternion derivatives
     QUAT qd;
@@ -175,7 +175,7 @@ void RIGIDBODY::set_generalized_velocity_generic(DYNAMICBODY::GeneralizedCoordin
 
 /// Gets the generalized velocity of this rigid body (does not call articulated body version)
 template <class V>
-void RIGIDBODY::get_generalized_velocity_generic(DYNAMICBODY::GeneralizedCoordinateType gctype, V& gv) 
+void RIGIDBODY::get_generalized_velocity_generic(DYNAMIC_BODY::GeneralizedCoordinateType gctype, V& gv) 
 {
   const unsigned N_SPATIAL = 6, N_EULER = 7;
   const boost::shared_ptr<const POSE3> GLOBAL;
@@ -190,8 +190,8 @@ void RIGIDBODY::get_generalized_velocity_generic(DYNAMICBODY::GeneralizedCoordin
   // resize the generalized velocity vector
   switch (gctype)
   {
-    case DYNAMICBODY::eEuler:   gv.resize(N_EULER); break;
-    case DYNAMICBODY::eSpatial: gv.resize(N_SPATIAL); break;
+    case DYNAMIC_BODY::eEuler:   gv.resize(N_EULER); break;
+    case DYNAMIC_BODY::eSpatial: gv.resize(N_SPATIAL); break;
   }
 
   // get/set linear components of velocity
@@ -201,7 +201,7 @@ void RIGIDBODY::get_generalized_velocity_generic(DYNAMICBODY::GeneralizedCoordin
   gv[2] = lv[2];
 
   // determine the proper generalized coordinate type
-  if (gctype == DYNAMICBODY::eSpatial)
+  if (gctype == DYNAMIC_BODY::eSpatial)
   {
     // get/set angular components of velocity
     VECTOR3 av = _xdcom.get_angular();
@@ -211,7 +211,7 @@ void RIGIDBODY::get_generalized_velocity_generic(DYNAMICBODY::GeneralizedCoordin
   }
   else
   {
-    assert(gctype == DYNAMICBODY::eEuler);
+    assert(gctype == DYNAMIC_BODY::eEuler);
 
     // going to need Euler coordinate derivatives
     POSE3 F = *_F;

@@ -230,4 +230,13 @@ void REVOLUTEJOINT::calc_constraint_jacobian(bool inboard, SHAREDMATRIXN& Cq)
   }
 }
 
+/// Computes the time derivative of the constraint jacobian with respect to a body
+/**
+ * TODO: implement this
+ */
+void REVOLUTEJOINT::calc_constraint_jacobian_dot(bool inboard, SHAREDMATRIXN& Cq)
+{
+  throw std::runtime_error("Implementation required");
+}
+
 

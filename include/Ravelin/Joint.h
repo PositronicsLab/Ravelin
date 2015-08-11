@@ -7,11 +7,11 @@
 #error This class is not to be included by the user directly. Use Jointd.h or Jointf.h instead.
 #endif
 
-class ARTICULATEDBODY;
+class ARTICULATED_BODY;
 class RIGIDBODY;
 
 /// Defines a bilateral constraint (a joint)
-class JOINT
+class JOINT : public boost::enable_shared_from_this<JOINT>
 {
   public:
     enum ConstraintType { eUnknown, eExplicit, eImplicit };
@@ -34,14 +34,14 @@ class JOINT
      * \return a pointer to the articulated body, or NULL if this body is not 
      *         a link an articulated body
      */
-    boost::shared_ptr<ARTICULATEDBODY> get_articulated_body() { return (_abody.expired()) ? boost::shared_ptr<ARTICULATEDBODY>() : boost::shared_ptr<ARTICULATEDBODY>(_abody); }
+    boost::shared_ptr<ARTICULATED_BODY> get_articulated_body() { return (_abody.expired()) ? boost::shared_ptr<ARTICULATED_BODY>() : boost::shared_ptr<ARTICULATED_BODY>(_abody); }
 
     /// Sets the articulated body corresponding to this body
     /**
      * \param body a pointer to the articulated body or NULL if this body is
      *        not a link in an articulated body
      */
-    void set_articulated_body(boost::shared_ptr<ARTICULATEDBODY> abody) { _abody = abody; }
+    void set_articulated_body(boost::shared_ptr<ARTICULATED_BODY> abody) { _abody = abody; }
 
  
     virtual void set_inboard_link(boost::shared_ptr<RIGIDBODY> link, bool update_pose);
@@ -163,8 +163,8 @@ class JOINT
 
   protected:
     void invalidate_pose_vectors() { get_outboard_link()->invalidate_pose_vectors(); }
-    boost::shared_ptr<const POSE3> get_inboard_pose() { return get_inboard_link()->get_pose(); }
-    boost::shared_ptr<const POSE3> get_outboard_pose() { return get_outboard_link()->get_pose(); }
+    boost::shared_ptr<const POSE3> get_inboard_pose() { if (_inboard_link.expired()) return boost::shared_ptr<const POSE3>(); return get_inboard_link()->get_pose(); }
+    boost::shared_ptr<const POSE3> get_outboard_pose() { if (_outboard_link.expired()) return boost::shared_ptr<const POSE3>(); return get_outboard_link()->get_pose(); }
 
     /// The frame induced by the joint 
     boost::shared_ptr<POSE3> _Fprime;
@@ -200,7 +200,7 @@ class JOINT
 
     boost::weak_ptr<RIGIDBODY> _inboard_link;
     boost::weak_ptr<RIGIDBODY> _outboard_link;
-    boost::weak_ptr<ARTICULATEDBODY> _abody;
+    boost::weak_ptr<ARTICULATED_BODY> _abody;
     ConstraintType _constraint_type;
     unsigned _joint_idx;
     unsigned _coord_idx;

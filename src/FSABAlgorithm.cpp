@@ -12,7 +12,7 @@ using std::vector;
 using std::queue;
 using std::endl;
 
-FSABALGORITHM::FSABALGORITHM()
+FSAB_ALGORITHM::FSAB_ALGORITHM()
 {
 }
 
@@ -21,18 +21,18 @@ FSABALGORITHM::FSABALGORITHM()
  * \param Y the matrix B on entry, the matrix X on return
  * \pre spatial inertias already computed for the body's current configuration 
  */
-void FSABALGORITHM::solve_generalized_inertia_noprecalc(SHAREDMATRIXN& Y)
+void FSAB_ALGORITHM::solve_generalized_inertia_noprecalc(SHAREDMATRIXN& Y)
 {
   VECTORN gv;
 
   // get the body
-  shared_ptr<RCARTICULATEDBODY> body(_body);
+  shared_ptr<RC_ARTICULATED_BODY> body(_body);
 
   // store the current generalized velocity
-  body->get_generalized_velocity(DYNAMICBODY::eSpatial, gv);
+  body->get_generalized_velocity(DYNAMIC_BODY::eSpatial, gv);
 
   // get the number of generalized coords
-  const unsigned NGC = body->num_generalized_coordinates(DYNAMICBODY::eSpatial);
+  const unsigned NGC = body->num_generalized_coordinates(DYNAMIC_BODY::eSpatial);
   if (Y.rows() != NGC)
     throw MissizeException();
 
@@ -49,13 +49,13 @@ void FSABALGORITHM::solve_generalized_inertia_noprecalc(SHAREDMATRIXN& Y)
     Y.get_column(i, _workv);
 
     // get the current generalized velocity
-    body->get_generalized_velocity(DYNAMICBODY::eSpatial, _workv2);
+    body->get_generalized_velocity(DYNAMIC_BODY::eSpatial, _workv2);
 
     // apply the generalized impulse
     apply_generalized_impulse(_workv);
 
     // get the new velocity out
-    body->get_generalized_velocity(DYNAMICBODY::eSpatial, _workv);
+    body->get_generalized_velocity(DYNAMIC_BODY::eSpatial, _workv);
     _workv -= _workv2;
 
     // set the appropriate column of Y 
@@ -63,7 +63,7 @@ void FSABALGORITHM::solve_generalized_inertia_noprecalc(SHAREDMATRIXN& Y)
   } 
 
   // restore the current generalized velocity
-  body->set_generalized_velocity(DYNAMICBODY::eSpatial, gv);
+  body->set_generalized_velocity(DYNAMIC_BODY::eSpatial, gv);
 }
 
 /// Solves the equation Mx = b, where M is the generalized inertia matrix
@@ -71,13 +71,13 @@ void FSABALGORITHM::solve_generalized_inertia_noprecalc(SHAREDMATRIXN& Y)
  * \param v the vector b on entry, the vector x on return
  * \pre spatial inertias already computed for the body's current configuration 
  */
-void FSABALGORITHM::solve_generalized_inertia_noprecalc(SHAREDVECTORN& v)
+void FSAB_ALGORITHM::solve_generalized_inertia_noprecalc(SHAREDVECTORN& v)
 {
   // get the body
-  shared_ptr<RCARTICULATEDBODY> body(_body);
+  shared_ptr<RC_ARTICULATED_BODY> body(_body);
 
   // store the current generalized velocity
-  body->get_generalized_velocity(DYNAMICBODY::eSpatial, _workv);
+  body->get_generalized_velocity(DYNAMIC_BODY::eSpatial, _workv);
   if (v.rows() != _workv.rows())
     throw MissizeException();
 
@@ -86,27 +86,27 @@ void FSABALGORITHM::solve_generalized_inertia_noprecalc(SHAREDVECTORN& v)
   apply_generalized_impulse(_workv2);
 
   // get the new velocity out
-  body->get_generalized_velocity(DYNAMICBODY::eSpatial, _workv2);
+  body->get_generalized_velocity(DYNAMIC_BODY::eSpatial, _workv2);
   _workv2 -= _workv;
 
   // restore the current generalized velocity
-  body->set_generalized_velocity(DYNAMICBODY::eSpatial, _workv);
+  body->set_generalized_velocity(DYNAMIC_BODY::eSpatial, _workv);
 
   // store the change in velocity
   v = _workv2;
 }
 
 /// Calculates the inverse generalized inertia matrix
-void FSABALGORITHM::calc_inverse_generalized_inertia_noprecalc(MATRIXN& iM)
+void FSAB_ALGORITHM::calc_inverse_generalized_inertia_noprecalc(MATRIXN& iM)
 {
   // get the body
-  shared_ptr<RCARTICULATEDBODY> body(_body);
+  shared_ptr<RC_ARTICULATED_BODY> body(_body);
 
   // store the current generalized velocity
-  body->get_generalized_velocity(DYNAMICBODY::eSpatial, _workv2);
+  body->get_generalized_velocity(DYNAMIC_BODY::eSpatial, _workv2);
 
   // get the number of generalized coords
-  const unsigned NGC = body->num_generalized_coordinates(DYNAMICBODY::eSpatial);
+  const unsigned NGC = body->num_generalized_coordinates(DYNAMIC_BODY::eSpatial);
 
   // resize inv(M)
   iM.resize(NGC, NGC);
@@ -136,13 +136,13 @@ void FSABALGORITHM::calc_inverse_generalized_inertia_noprecalc(MATRIXN& iM)
   }
 
   // restore the current generalized velocity
-  body->set_generalized_velocity(DYNAMICBODY::eSpatial, _workv2);
+  body->set_generalized_velocity(DYNAMIC_BODY::eSpatial, _workv2);
  
   FILE_LOG(LOG_DYNAMICS) << "inverse M: " << std::endl << iM;
 }
 
 /// Applies a generalized impulse using the algorithm of Drumwright
-void FSABALGORITHM::apply_generalized_impulse(unsigned index, VECTORN& vgj)
+void FSAB_ALGORITHM::apply_generalized_impulse(unsigned index, VECTORN& vgj)
 {
   queue<shared_ptr<RIGIDBODY> > link_queue;
   const unsigned SPATIAL_DIM = 6;
@@ -150,14 +150,14 @@ void FSABALGORITHM::apply_generalized_impulse(unsigned index, VECTORN& vgj)
   vector<SVELOCITY> sprime;
 
   // get the body as well as sets of links and joints
-  shared_ptr<RCARTICULATEDBODY> body(_body);
+  shared_ptr<RC_ARTICULATED_BODY> body(_body);
   const vector<shared_ptr<RIGIDBODY> >& links = body->get_links();
   const vector<boost::shared_ptr<JOINT> >& joints = body->get_explicit_joints();
 
   // determine the number of generalized coordinates for the base
   const unsigned N_BASE_GC = (body->is_floating_base()) ? SPATIAL_DIM : 0;
 
-  FILE_LOG(LOG_DYNAMICS) << "FSABALGORITHM::apply_generalized_impulse() entered" << endl;
+  FILE_LOG(LOG_DYNAMICS) << "FSAB_ALGORITHM::apply_generalized_impulse() entered" << endl;
   FILE_LOG(LOG_DYNAMICS) << "gj: " << vgj << endl;
 
   // clear values for vectors
@@ -369,11 +369,11 @@ void FSABALGORITHM::apply_generalized_impulse(unsigned index, VECTORN& vgj)
       vgj[CSTART+k] = _qd_delta[k];
   }
 
-  FILE_LOG(LOG_DYNAMICS) << "FSABALGORITHM::apply_generalized_impulse() exited" << endl;
+  FILE_LOG(LOG_DYNAMICS) << "FSAB_ALGORITHM::apply_generalized_impulse() exited" << endl;
 }
 
 /// Applies a generalized impulse using the algorithm of Drumwright
-void FSABALGORITHM::apply_generalized_impulse(const VECTORN& gj)
+void FSAB_ALGORITHM::apply_generalized_impulse(const VECTORN& gj)
 {
   static VECTORN tmp, tmp2;
   static vector<VECTORN> mu;
@@ -384,9 +384,9 @@ void FSABALGORITHM::apply_generalized_impulse(const VECTORN& gj)
   const unsigned N_BASE_GC = 6;
 
   // get the body
-  shared_ptr<RCARTICULATEDBODY> body(_body);
+  shared_ptr<RC_ARTICULATED_BODY> body(_body);
 
-  FILE_LOG(LOG_DYNAMICS) << "FSABALGORITHM::apply_generalized_impulse() entered" << endl;
+  FILE_LOG(LOG_DYNAMICS) << "FSAB_ALGORITHM::apply_generalized_impulse() entered" << endl;
   FILE_LOG(LOG_DYNAMICS) << "gj: " << gj << endl;
 
   // get the sets of links and joints
@@ -592,11 +592,11 @@ void FSABALGORITHM::apply_generalized_impulse(const VECTORN& gj)
   // reset all force and torque accumulators -- impulses drive them to zero
   body->reset_accumulators();
 
-  FILE_LOG(LOG_DYNAMICS) << "FSABALGORITHM::apply_generalized_impulse() exited" << endl;
+  FILE_LOG(LOG_DYNAMICS) << "FSAB_ALGORITHM::apply_generalized_impulse() exited" << endl;
 }
 
 /// Computes the combined spatial coriolis / centrifugal forces vectors for the body
-void FSABALGORITHM::calc_spatial_coriolis_vectors(shared_ptr<RCARTICULATEDBODY> body)
+void FSAB_ALGORITHM::calc_spatial_coriolis_vectors(shared_ptr<RC_ARTICULATED_BODY> body)
 {
   FILE_LOG(LOG_DYNAMICS) << "calc_spatial_coriolis_vectors() entered" << endl;
   vector<SVELOCITY> sprime;
@@ -638,7 +638,7 @@ void FSABALGORITHM::calc_spatial_coriolis_vectors(shared_ptr<RCARTICULATEDBODY> 
 }
 
 /// Computes articulated body zero acceleration forces used for computing forward dynamics
-void FSABALGORITHM::calc_spatial_zero_accelerations(shared_ptr<RCARTICULATEDBODY> body)
+void FSAB_ALGORITHM::calc_spatial_zero_accelerations(shared_ptr<RC_ARTICULATED_BODY> body)
 {
   VECTORN tmp, workv;
   MATRIXN workM;
@@ -763,7 +763,7 @@ void FSABALGORITHM::calc_spatial_zero_accelerations(shared_ptr<RCARTICULATEDBODY
 }
 
 /// Computes articulated body inertias used for computing forward dynamics
-void FSABALGORITHM::calc_spatial_inertias(shared_ptr<RCARTICULATEDBODY> body)
+void FSAB_ALGORITHM::calc_spatial_inertias(shared_ptr<RC_ARTICULATED_BODY> body)
 {
   FILE_LOG(LOG_DYNAMICS) << "calc_spatial_zero_accelerations() entered" << endl;
   vector<SVELOCITY> sprime;
@@ -910,7 +910,7 @@ FILE_LOG(LOG_DYNAMICS) << "added link " << parent << " to queue for processing" 
 }
 
 /// Computes joint and spatial link accelerations 
-void FSABALGORITHM::calc_spatial_accelerations(shared_ptr<RCARTICULATEDBODY> body)
+void FSAB_ALGORITHM::calc_spatial_accelerations(shared_ptr<RC_ARTICULATED_BODY> body)
 {
   queue<shared_ptr<RIGIDBODY> > link_queue;
   VECTORN result;
@@ -1029,14 +1029,14 @@ void FSABALGORITHM::calc_spatial_accelerations(shared_ptr<RCARTICULATEDBODY> bod
  * numbering is a little funny, so I decrement his joint indices by one, while 
  * leaving his link indices intact.
  */
-void FSABALGORITHM::calc_fwd_dyn()
+void FSAB_ALGORITHM::calc_fwd_dyn()
 {
   FILE_LOG(LOG_DYNAMICS) << "FSABAlgorith::calc_fwd_dyn() entered" << endl;
 
   // get the body and the reference frame
-  shared_ptr<RCARTICULATEDBODY> body(_body);
+  shared_ptr<RC_ARTICULATED_BODY> body(_body);
   if (!body->_ijoints.empty())
-    throw std::runtime_error("FSABALGORITHM cannot process bodies with kinematic loops!");
+    throw std::runtime_error("FSAB_ALGORITHM cannot process bodies with kinematic loops!");
 
   // get the links and joints for the body
   const vector<shared_ptr<RIGIDBODY> >& links = body->get_links();
@@ -1066,14 +1066,14 @@ void FSABALGORITHM::calc_fwd_dyn()
  * numbering is a little funny, so I decrement his joint indices by one, while 
  * leaving his link indices intact.
  */
-void FSABALGORITHM::calc_fwd_dyn_special()
+void FSAB_ALGORITHM::calc_fwd_dyn_special()
 {
   FILE_LOG(LOG_DYNAMICS) << "FSABAlgorith::calc_fwd_dyn() entered" << endl;
 
   // get the body and the reference frame
-  shared_ptr<RCARTICULATEDBODY> body(_body);
+  shared_ptr<RC_ARTICULATED_BODY> body(_body);
   if (!body->_ijoints.empty())
-    throw std::runtime_error("FSABALGORITHM cannot process bodies with kinematic loops!");
+    throw std::runtime_error("FSAB_ALGORITHM cannot process bodies with kinematic loops!");
 
   // get the links and joints for the body
   const vector<shared_ptr<RIGIDBODY> >& links = body->get_links();
@@ -1095,7 +1095,7 @@ void FSABALGORITHM::calc_fwd_dyn_special()
 }
 
 /// Signum function with NEAR_ZERO cutoff
-REAL FSABALGORITHM::sgn(REAL x)
+REAL FSAB_ALGORITHM::sgn(REAL x)
 {
   const REAL NEAR_ZERO = std::sqrt(std::numeric_limits<REAL>::epsilon());
   if (x > NEAR_ZERO)
@@ -1107,7 +1107,7 @@ REAL FSABALGORITHM::sgn(REAL x)
 }
 
 /// Pushes all children of the given link onto the given queue
-void FSABALGORITHM::push_children(shared_ptr<RIGIDBODY> link, queue<shared_ptr<RIGIDBODY> >& q)
+void FSAB_ALGORITHM::push_children(shared_ptr<RIGIDBODY> link, queue<shared_ptr<RIGIDBODY> >& q)
 {
   const set<boost::shared_ptr<JOINT> >& ojs = link->get_outer_joints();
   BOOST_FOREACH(boost::shared_ptr<JOINT> j, ojs)
@@ -1121,19 +1121,19 @@ void FSABALGORITHM::push_children(shared_ptr<RIGIDBODY> link, queue<shared_ptr<R
 /**
  * \pre spatial inertias already computed for the body's current configuration 
  */
-void FSABALGORITHM::apply_impulse(const SMOMENTUM& w, shared_ptr<RIGIDBODY> link)
+void FSAB_ALGORITHM::apply_impulse(const SMOMENTUM& w, shared_ptr<RIGIDBODY> link)
 {
   static MATRIXN tmp;
   static VECTORN tmp2, workv;
   vector<SVELOCITY> sprime;
 
-  FILE_LOG(LOG_DYNAMICS) << "FSABALGORITHM::apply_impulse() entered" << endl;
+  FILE_LOG(LOG_DYNAMICS) << "FSAB_ALGORITHM::apply_impulse() entered" << endl;
   FILE_LOG(LOG_DYNAMICS) << " -- applying impulse " << w << endl;
 
   // get the computation reference frame
-  shared_ptr<RCARTICULATEDBODY> body(_body);   
+  shared_ptr<RC_ARTICULATED_BODY> body(_body);   
   if (!body->_ijoints.empty())
-    throw std::runtime_error("FSABALGORITHM cannot process bodies with kinematic loops!");
+    throw std::runtime_error("FSAB_ALGORITHM cannot process bodies with kinematic loops!");
 
   // initialize spatial zero velocity deltas to zeros
   const vector<shared_ptr<RIGIDBODY> >& links = body->get_links();
@@ -1289,11 +1289,11 @@ void FSABALGORITHM::apply_impulse(const SMOMENTUM& w, shared_ptr<RIGIDBODY> link
   // reset all force and torque accumulators -- impulses drive them to zero
   body->reset_accumulators();
 
-  FILE_LOG(LOG_DYNAMICS) << "FSABALGORITHM::appl_impulse() exited" << endl;
+  FILE_LOG(LOG_DYNAMICS) << "FSAB_ALGORITHM::appl_impulse() exited" << endl;
 }
 
 /// Solves a system for sIs*x = m' using a factorization (if sIs is nonsingular) or the pseudo-inverse of sIs otherwise
-MATRIXN& FSABALGORITHM::transpose_solve_sIs(unsigned i, const vector<SVELOCITY>& m, MATRIXN& result) const
+MATRIXN& FSAB_ALGORITHM::transpose_solve_sIs(unsigned i, const vector<SVELOCITY>& m, MATRIXN& result) const
 {
   // transpose m
   SPARITH::transpose_to_matrix(m, result);   
@@ -1315,7 +1315,7 @@ MATRIXN& FSABALGORITHM::transpose_solve_sIs(unsigned i, const vector<SVELOCITY>&
 }
 
 /// Solves a system for sIs*x = m using a factorization (if sIs is nonsingular) or the pseudo-inverse of sIs otherwise
-MATRIXN& FSABALGORITHM::solve_sIs(unsigned i, const MATRIXN& m, MATRIXN& result) const
+MATRIXN& FSAB_ALGORITHM::solve_sIs(unsigned i, const MATRIXN& m, MATRIXN& result) const
 {
   result = m;
 
@@ -1336,7 +1336,7 @@ MATRIXN& FSABALGORITHM::solve_sIs(unsigned i, const MATRIXN& m, MATRIXN& result)
 }
 
 /// Solves a system for sIs*x = v using a factorization (if sIs is nonsingular) or the pseudo-inverse of sIs otherwise
-VECTORN& FSABALGORITHM::solve_sIs(unsigned i, const VECTORN& v, VECTORN& result) const
+VECTORN& FSAB_ALGORITHM::solve_sIs(unsigned i, const VECTORN& v, VECTORN& result) const
 {
   result = v;
 

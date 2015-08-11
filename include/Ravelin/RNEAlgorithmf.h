@@ -4,8 +4,8 @@
  * License (obtainable from http://www.apache.org/licenses/LICENSE-2.0).
  ****************************************************************************/
 
-#ifndef _RAVELIN_RNEALGORITHMF_H
-#define _RAVELIN_RNEALGORITHM_H
+#ifndef _RAVELIN_RNE_ALGORITHMF_H
+#define _RAVELIN_RNE_ALGORITHM_H
 
 #include <boost/shared_ptr.hpp>
 #include <boost/foreach.hpp>

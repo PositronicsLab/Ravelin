@@ -4,7 +4,7 @@
  * License (obtainable from http://www.apache.org/licenses/LICENSE-2.0).
  ****************************************************************************/
 
-#ifndef ARTICULATEDBODY 
+#ifndef ARTICULATED_BODY 
 #error This class is not to be included by the user directly. Use ArticulatedBodyd.h or ArticulatedBodyf.h instead.
 #endif
 
@@ -12,11 +12,11 @@ class RIGIDBODY;
 class JOINT;
 
 /// Abstract class for articulated bodies
-class ARTICULATEDBODY : public DYNAMICBODY
+class ARTICULATED_BODY : public DYNAMIC_BODY
 {
   public:
-    ARTICULATEDBODY();
-    virtual ~ARTICULATEDBODY() {}
+    ARTICULATED_BODY();
+    virtual ~ARTICULATED_BODY() {}
     virtual bool is_floating_base() const = 0;
     virtual boost::shared_ptr<RIGIDBODY> get_base_link() const = 0;
     unsigned num_constraint_eqns_explicit() const;
@@ -24,17 +24,16 @@ class ARTICULATEDBODY : public DYNAMICBODY
     virtual void rotate(const QUAT& q);
     virtual void translate(const ORIGIN3& o);
     virtual REAL calc_kinetic_energy();
-    virtual void update_visualization();
     boost::shared_ptr<RIGIDBODY> find_link(const std::string& id) const; 
     boost::shared_ptr<JOINT> find_joint(const std::string& id) const; 
     void get_adjacent_links(std::list<sorted_pair<boost::shared_ptr<RIGIDBODY> > >& links) const;
     virtual void set_links_and_joints(const std::vector<boost::shared_ptr<RIGIDBODY> >& links, const std::vector<boost::shared_ptr<JOINT> >& joints);
     virtual unsigned num_joint_dof() const;
     void find_loops(std::vector<unsigned>& loop_indices, std::vector<std::vector<unsigned> >& loop_links) const;
-    virtual MATRIXN& calc_jacobian(boost::shared_ptr<const POSE3> source_pose, boost::shared_ptr<const POSE3> target_pose, boost::shared_ptr<DYNAMICBODY> body, MATRIXN& J);
-    virtual MATRIXN& calc_jacobian_dot(boost::shared_ptr<const POSE3> source_pose, boost::shared_ptr<const POSE3> target_pose, boost::shared_ptr<DYNAMICBODY> body, MATRIXN& J);
-    virtual MATRIXN& calc_jacobian(boost::shared_ptr<const POSE3> target_pose, boost::shared_ptr<DYNAMICBODY> body, MATRIXN& J);
-    virtual MATRIXN& calc_jacobian_dot(boost::shared_ptr<const POSE3> target_pose, boost::shared_ptr<DYNAMICBODY> body, MATRIXN& J);
+    virtual MATRIXN& calc_jacobian(boost::shared_ptr<const POSE3> source_pose, boost::shared_ptr<const POSE3> target_pose, boost::shared_ptr<DYNAMIC_BODY> body, MATRIXN& J);
+    virtual MATRIXN& calc_jacobian_dot(boost::shared_ptr<const POSE3> source_pose, boost::shared_ptr<const POSE3> target_pose, boost::shared_ptr<DYNAMIC_BODY> body, MATRIXN& J);
+    virtual MATRIXN& calc_jacobian(boost::shared_ptr<const POSE3> target_pose, boost::shared_ptr<DYNAMIC_BODY> body, MATRIXN& J);
+    virtual MATRIXN& calc_jacobian_dot(boost::shared_ptr<const POSE3> target_pose, boost::shared_ptr<DYNAMIC_BODY> body, MATRIXN& J);
 
     /// Gets the number of degrees-of-freedom permitted by explicit constraints
     virtual unsigned num_joint_dof_explicit() const = 0;
@@ -48,11 +47,11 @@ class ARTICULATEDBODY : public DYNAMICBODY
     /// Gets the set of joints
     virtual const std::vector<boost::shared_ptr<JOINT> >& get_joints() const { return _joints; }
 
-    /// Gets shared pointer to this object as type ARTICULATEDBODY
-    boost::shared_ptr<ARTICULATEDBODY> get_this() { return boost::dynamic_pointer_cast<ARTICULATEDBODY>(shared_from_this()); }
+    /// Gets shared pointer to this object as type ARTICULATED_BODY
+    boost::shared_ptr<ARTICULATED_BODY> get_this() { return boost::dynamic_pointer_cast<ARTICULATED_BODY>(shared_from_this()); }
 
     /// Gets shared pointer to this object as type const ArticulateBody
-    boost::shared_ptr<const ARTICULATEDBODY> get_this() const { return boost::dynamic_pointer_cast<const ARTICULATEDBODY>(shared_from_this()); }
+    boost::shared_ptr<const ARTICULATED_BODY> get_this() const { return boost::dynamic_pointer_cast<const ARTICULATED_BODY>(shared_from_this()); }
 
     /// Abstract method for applying an impulse to this articulated body
     /**
@@ -83,7 +82,7 @@ class ARTICULATEDBODY : public DYNAMICBODY
     std::vector<boost::shared_ptr<JOINT> > _joints;
 
   private:
-    ARTICULATEDBODY(const ARTICULATEDBODY& ab) {}
+    ARTICULATED_BODY(const ARTICULATED_BODY& ab) {}
 
     // joint constraint violation
     std::vector<REAL> _cvio;

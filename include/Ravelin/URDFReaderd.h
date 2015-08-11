@@ -16,6 +16,7 @@
 #include <Ravelin/MatrixNd.h>
 #include <boost/shared_ptr.hpp>
 #include <boost/foreach.hpp>
+#include <Ravelin/XMLTree.h>
 #include <Ravelin/DynamicBodyd.h>
 
 namespace Ravelin {

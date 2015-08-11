@@ -9,7 +9,7 @@
 #endif
 
 class JOINT;
-class ARTICULATEDBODY;
+class ARTICULATED_BODY;
 
 /// Represents a single rigid body
 /**
@@ -20,11 +20,11 @@ class ARTICULATEDBODY;
  *  all member data may be used in the latter.
  * \todo implement rest matrix
  */
-class RIGIDBODY : public SINGLEBODY 
+class RIGIDBODY : public SINGLE_BODY 
 {
-  friend class ARTICULATEDBODY;
-  friend class RCARTICULATEDBODY;
-  friend class MCARTICULATEDBODY;
+  friend class ARTICULATED_BODY;
+  friend class RC_ARTICULATED_BODY;
+  friend class MCARTICULATED_BODY;
   friend class JOINT;
 
   public:
@@ -50,26 +50,26 @@ class RIGIDBODY : public SINGLEBODY
     virtual const SACCEL& get_accel();
     void set_velocity(const SACCEL& xdd);
     virtual void set_generalized_forces(const SHAREDVECTORN& gf);
-    virtual void set_generalized_forces(const VECTORN& gf) { DYNAMICBODY::set_generalized_forces(gf); }
+    virtual void set_generalized_forces(const VECTORN& gf) { DYNAMIC_BODY::set_generalized_forces(gf); }
     virtual SHAREDMATRIXN& get_generalized_inertia(SHAREDMATRIXN& M);
-    virtual MATRIXN& get_generalized_inertia(MATRIXN& M) { return DYNAMICBODY::get_generalized_inertia(M); }
-    virtual SHAREDVECTORN& get_generalized_coordinates(DYNAMICBODY::GeneralizedCoordinateType gctype, SHAREDVECTORN& gc);
-    virtual SHAREDVECTORN& get_generalized_velocity(DYNAMICBODY::GeneralizedCoordinateType gctype, SHAREDVECTORN& gv);
+    virtual MATRIXN& get_generalized_inertia(MATRIXN& M) { return DYNAMIC_BODY::get_generalized_inertia(M); }
+    virtual SHAREDVECTORN& get_generalized_coordinates(DYNAMIC_BODY::GeneralizedCoordinateType gctype, SHAREDVECTORN& gc);
+    virtual SHAREDVECTORN& get_generalized_velocity(DYNAMIC_BODY::GeneralizedCoordinateType gctype, SHAREDVECTORN& gv);
     virtual SHAREDVECTORN& get_generalized_acceleration(SHAREDVECTORN& ga);
     virtual void add_generalized_force(const SHAREDVECTORN& gf);
-    virtual void add_generalized_force(const VECTORN& gf) { DYNAMICBODY::add_generalized_force(gf); }
+    virtual void add_generalized_force(const VECTORN& gf) { DYNAMIC_BODY::add_generalized_force(gf); }
     virtual void apply_generalized_impulse(const SHAREDVECTORN& gf);
-    virtual void apply_generalized_impulse(const VECTORN& gj) { DYNAMICBODY::apply_generalized_impulse(gj); }
-    virtual void set_generalized_coordinates(DYNAMICBODY::GeneralizedCoordinateType gctype, const SHAREDVECTORN& gc);
-    virtual void set_generalized_coordinates(DYNAMICBODY::GeneralizedCoordinateType gctype, const VECTORN& gc) { DYNAMICBODY::set_generalized_coordinates(gctype, gc); }
+    virtual void apply_generalized_impulse(const VECTORN& gj) { DYNAMIC_BODY::apply_generalized_impulse(gj); }
+    virtual void set_generalized_coordinates(DYNAMIC_BODY::GeneralizedCoordinateType gctype, const SHAREDVECTORN& gc);
+    virtual void set_generalized_coordinates(DYNAMIC_BODY::GeneralizedCoordinateType gctype, const VECTORN& gc) { DYNAMIC_BODY::set_generalized_coordinates(gctype, gc); }
     virtual void set_generalized_acceleration(const SHAREDVECTORN& ga);
-    virtual void set_generalized_velocity(DYNAMICBODY::GeneralizedCoordinateType gctype, const SHAREDVECTORN& gv);
-    virtual void set_generalized_velocity(DYNAMICBODY::GeneralizedCoordinateType gctype, const VECTORN& gv) { DYNAMICBODY::set_generalized_velocity(gctype, gv); }
+    virtual void set_generalized_velocity(DYNAMIC_BODY::GeneralizedCoordinateType gctype, const SHAREDVECTORN& gv);
+    virtual void set_generalized_velocity(DYNAMIC_BODY::GeneralizedCoordinateType gctype, const VECTORN& gv) { DYNAMIC_BODY::set_generalized_velocity(gctype, gv); }
     virtual SHAREDVECTORN& get_generalized_forces(SHAREDVECTORN& f);
-    virtual VECTORN& get_generalized_forces(VECTORN& f) { return DYNAMICBODY::get_generalized_forces(f); }
-    virtual SHAREDVECTORN& convert_to_generalized_force(boost::shared_ptr<SINGLEBODY> body, const SFORCE& w, SHAREDVECTORN& gf);
-    virtual VECTORN& convert_to_generalized_force(boost::shared_ptr<SINGLEBODY> body, const SFORCE& w, VECTORN& gf) { return DYNAMICBODY::convert_to_generalized_force(body, w, gf); }
-    virtual unsigned num_generalized_coordinates(DYNAMICBODY::GeneralizedCoordinateType gctype) const;
+    virtual VECTORN& get_generalized_forces(VECTORN& f) { return DYNAMIC_BODY::get_generalized_forces(f); }
+    virtual SHAREDVECTORN& convert_to_generalized_force(boost::shared_ptr<SINGLE_BODY> body, const SFORCE& w, SHAREDVECTORN& gf);
+    virtual VECTORN& convert_to_generalized_force(boost::shared_ptr<SINGLE_BODY> body, const SFORCE& w, VECTORN& gf) { return DYNAMIC_BODY::convert_to_generalized_force(body, w, gf); }
+    virtual unsigned num_generalized_coordinates(DYNAMIC_BODY::GeneralizedCoordinateType gctype) const;
     virtual SHAREDMATRIXN& transpose_solve_generalized_inertia(const SHAREDMATRIXN& B, SHAREDMATRIXN& X);
     SHAREDMATRIXN& transpose_solve_generalized_inertia_single(const SHAREDMATRIXN& B, SHAREDMATRIXN& X);
     virtual SHAREDMATRIXN& solve_generalized_inertia(const SHAREDMATRIXN& B, SHAREDMATRIXN& X);
@@ -86,11 +86,12 @@ class RIGIDBODY : public SINGLEBODY
     bool is_ground() const;
     virtual boost::shared_ptr<const POSE3> get_computation_frame() const;
     virtual void set_computation_frame_type(ReferenceFrameType rftype);
-    virtual MATRIXN& calc_jacobian(boost::shared_ptr<const POSE3> source_pose, boost::shared_ptr<const POSE3> target_pose, boost::shared_ptr<DYNAMICBODY> body, MATRIXN& J);
-    virtual MATRIXN& calc_jacobian_dot(boost::shared_ptr<const POSE3> source_pose, boost::shared_ptr<const POSE3> target_pose, boost::shared_ptr<DYNAMICBODY> body, MATRIXN& J);
+    virtual MATRIXN& calc_jacobian(boost::shared_ptr<const POSE3> source_pose, boost::shared_ptr<const POSE3> target_pose, boost::shared_ptr<DYNAMIC_BODY> body, MATRIXN& J);
+    virtual MATRIXN& calc_jacobian_dot(boost::shared_ptr<const POSE3> source_pose, boost::shared_ptr<const POSE3> target_pose, boost::shared_ptr<DYNAMIC_BODY> body, MATRIXN& J);
     const SFORCE& sum_forces();
     void reset_accumulators();
     SFORCE calc_euler_torques();
+    void set_enabled(bool flag);
 
     template <class OutputIterator>
     OutputIterator get_parent_links(OutputIterator begin) const;
@@ -128,14 +129,14 @@ class RIGIDBODY : public SINGLEBODY
      * \return a pointer to the articulated body, or NULL if this body is not
      *         a link an articulated body
      */
-    boost::shared_ptr<ARTICULATEDBODY> get_articulated_body() const { return (_abody.expired()) ? boost::shared_ptr<ARTICULATEDBODY>() : boost::shared_ptr<ARTICULATEDBODY>(_abody); }
+    boost::shared_ptr<ARTICULATED_BODY> get_articulated_body() const { return (_abody.expired()) ? boost::shared_ptr<ARTICULATED_BODY>() : boost::shared_ptr<ARTICULATED_BODY>(_abody); }
 
     /// Sets the articulated body corresponding to this body
     /**
      * \param body a pointer to the articulated body or NULL if this body is
      *        not a link in an articulated body
      */
-    void set_articulated_body(boost::shared_ptr<ARTICULATEDBODY> body) { _abody = body; }
+    void set_articulated_body(boost::shared_ptr<ARTICULATED_BODY> body) { _abody = body; }
 
     /// Gets the number of child links of this link
     unsigned num_child_links() const { return _outer_joints.size(); }
@@ -170,19 +171,19 @@ class RIGIDBODY : public SINGLEBODY
 
   private:
     template <class V>
-    void get_generalized_coordinates_generic(DYNAMICBODY::GeneralizedCoordinateType gctype, V& gc);
+    void get_generalized_coordinates_generic(DYNAMIC_BODY::GeneralizedCoordinateType gctype, V& gc);
 
     template <class V>
-    void get_generalized_velocity_generic(DYNAMICBODY::GeneralizedCoordinateType gctype, V& gv);
+    void get_generalized_velocity_generic(DYNAMIC_BODY::GeneralizedCoordinateType gctype, V& gv);
 
     template <class V>
     void get_generalized_acceleration_generic(V& ga);
 
     template <class V>
-    void set_generalized_coordinates_generic(DYNAMICBODY::GeneralizedCoordinateType gctype, V& gc);
+    void set_generalized_coordinates_generic(DYNAMIC_BODY::GeneralizedCoordinateType gctype, V& gc);
 
     template <class V>
-    void set_generalized_velocity_generic(DYNAMICBODY::GeneralizedCoordinateType gctype, V& gv);
+    void set_generalized_velocity_generic(DYNAMIC_BODY::GeneralizedCoordinateType gctype, V& gv);
 
     template <class V>
     void set_generalized_acceleration_generic(V& ga);
@@ -193,14 +194,13 @@ class RIGIDBODY : public SINGLEBODY
     SHAREDMATRIXN& get_generalized_inertia_single(SHAREDMATRIXN& M);
     virtual SHAREDMATRIXN& get_generalized_inertia_inverse(SHAREDMATRIXN& M) const;
     SHAREDVECTORN& get_generalized_forces_single(SHAREDVECTORN& f);
-    SHAREDVECTORN& convert_to_generalized_force_single(boost::shared_ptr<SINGLEBODY> body, const SFORCE& w, SHAREDVECTORN& gf);
-    unsigned num_generalized_coordinates_single(DYNAMICBODY::GeneralizedCoordinateType gctype) const;
+    SHAREDVECTORN& convert_to_generalized_force_single(boost::shared_ptr<SINGLE_BODY> body, const SFORCE& w, SHAREDVECTORN& gf);
+    unsigned num_generalized_coordinates_single(DYNAMIC_BODY::GeneralizedCoordinateType gctype) const;
     SHAREDMATRIXN& solve_generalized_inertia_single(const SHAREDMATRIXN& B, SHAREDMATRIXN& X);
     SHAREDVECTORN& solve_generalized_inertia_single(const SHAREDVECTORN& b, SHAREDVECTORN& x);
     boost::shared_ptr<RIGIDBODY> get_parent_link(boost::shared_ptr<JOINT> j) const;
     boost::shared_ptr<RIGIDBODY> get_child_link(boost::shared_ptr<JOINT> j) const;
     void invalidate_pose_vectors();
-    void set_enabled(bool flag);
 
     /// Indicates whether link frame velocity is valid (up-to-date)
     bool _xdi_valid;
@@ -326,7 +326,7 @@ class RIGIDBODY : public SINGLEBODY
     bool _enabled;
 
     /// Pointer to articulated body (if this body is a link)
-    boost::weak_ptr<ARTICULATEDBODY> _abody;
+    boost::weak_ptr<ARTICULATED_BODY> _abody;
 
     /// Inner joints and associated data
     std::set<boost::shared_ptr<JOINT> > _inner_joints;
