@@ -147,7 +147,7 @@ void URDFREADER::read_link(shared_ptr<const XMLTree> node, URDFData& data, vecto
 
   // read and construct the link
   shared_ptr<RIGIDBODY> link(new RIGIDBODY);
-  link->id = name_attrib->get_string_value();
+  link->body_id = name_attrib->get_string_value();
 
   // read link properties
   read_inertial(node, data, link);
@@ -312,7 +312,7 @@ void URDFREADER::read_joint(shared_ptr<const XMLTree> node, URDFData& data, cons
   }
 
   // read and verify required properties
-  joint->id = name_attrib->get_string_value();
+  joint->joint_id = name_attrib->get_string_value();
   if (!(inboard = read_parent(node, data, links)))
   {
     std::cerr << "URDFREADER::read_joint() - failed to properly read parent link! not processing further..." << std::endl;
@@ -365,7 +365,7 @@ shared_ptr<RIGIDBODY> URDFREADER::read_parent(shared_ptr<const XMLTree> node, UR
 
       // find parent link
       for (unsigned j=0; j< links.size(); j++)
-        if (links[j]->id == link_id)
+        if (links[j]->body_id == link_id)
           return links[j];
     }
   }
@@ -390,7 +390,7 @@ shared_ptr<RIGIDBODY> URDFREADER::read_child(shared_ptr<const XMLTree> node, URD
 
       // find child link
       for (unsigned j=0; j< links.size(); j++)
-        if (links[j]->id == link_id)
+        if (links[j]->body_id == link_id)
           return links[j];
     }
   }

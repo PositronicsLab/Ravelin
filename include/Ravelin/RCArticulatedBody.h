@@ -26,7 +26,7 @@ class JOINT;
  * Rather, derived classes should operate on copies of the state
  * variables, updating the state variables on conclusion of the algorithms.  
  */
-class RC_ARTICULATED_BODY : public ARTICULATED_BODY
+class RC_ARTICULATED_BODY : public virtual ARTICULATED_BODY
 {
   friend class CRB_ALGORITHM;
   friend class FSAB_ALGORITHM;
@@ -105,6 +105,12 @@ class RC_ARTICULATED_BODY : public ARTICULATED_BODY
     /// The forward dynamics algorithm
     ForwardDynamicsAlgorithmType algorithm_type;
 
+    /// Gets the vector of explicit joint constraints
+    const std::vector<boost::shared_ptr<JOINT> >& get_explicit_joints() const { return _ejoints; }
+
+    /// Gets the vector of explicit joint constraints
+    const std::vector<boost::shared_ptr<JOINT> >& get_implicit_joints() const { return _ijoints; }
+
   protected:
     /// Whether this body uses a floating base
     bool _floating_base;
@@ -113,17 +119,6 @@ class RC_ARTICULATED_BODY : public ARTICULATED_BODY
 
     /// The number of DOF of the explicit joint constraints in the body (does not include floating base DOF!)
     unsigned _n_joint_DOF_explicit;
-
-    /// Gets the vector of explicit joint constraints
-    const std::vector<boost::shared_ptr<JOINT> >& get_explicit_joints() const { return _ejoints; }
-
-  private:
-    RC_ARTICULATED_BODY(const RC_ARTICULATED_BODY& rcab) {}
-    virtual MATRIXN& calc_jacobian_column(boost::shared_ptr<JOINT> joint, const VECTOR3& point, MATRIXN& Jc);
-/*
-    virtual MATRIXN& calc_jacobian_floating_base(const VECTOR3& point, MATRIXN& J);
-*/
-    bool all_children_processed(boost::shared_ptr<RIGIDBODY> link) const;
 
     /// The vector of explicit joint constraints
     std::vector<boost::shared_ptr<JOINT> > _ejoints;
@@ -142,6 +137,15 @@ class RC_ARTICULATED_BODY : public ARTICULATED_BODY
 
     /// Linear algebra object
     boost::shared_ptr<LINALG> _LA;
+
+
+  private:
+    RC_ARTICULATED_BODY(const RC_ARTICULATED_BODY& rcab) {}
+    virtual MATRIXN& calc_jacobian_column(boost::shared_ptr<JOINT> joint, const VECTOR3& point, MATRIXN& Jc);
+/*
+    virtual MATRIXN& calc_jacobian_floating_base(const VECTOR3& point, MATRIXN& J);
+*/
+    bool all_children_processed(boost::shared_ptr<RIGIDBODY> link) const;
 
     static REAL sgn(REAL x);
     bool treat_link_as_leaf(boost::shared_ptr<RIGIDBODY> link) const;

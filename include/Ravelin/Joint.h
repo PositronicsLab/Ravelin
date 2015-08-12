@@ -24,7 +24,7 @@ class JOINT : public boost::enable_shared_from_this<JOINT>
     ConstraintType get_constraint_type() const { return _constraint_type; }
 
     /// The ID of this joint
-    std::string id;
+    std::string joint_id;
 
     /// Sets whether this constraint is implicit or explicit (or unknown)
     void set_constraint_type(ConstraintType type) { _constraint_type = type; }

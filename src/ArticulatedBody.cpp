@@ -338,7 +338,7 @@ unsigned ARTICULATED_BODY::num_joint_dof() const
 shared_ptr<JOINT> ARTICULATED_BODY::find_joint(const string& jointname) const
 {
   for (unsigned i=0; i< _joints.size(); i++)
-    if (_joints[i]->id == jointname)
+    if (_joints[i]->joint_id == jointname)
       return _joints[i];
       
   return shared_ptr<JOINT>();
@@ -403,7 +403,7 @@ void ARTICULATED_BODY::reset_accumulators()
 shared_ptr<RIGIDBODY> ARTICULATED_BODY::find_link(const string& linkid) const
 {
   BOOST_FOREACH(shared_ptr<RIGIDBODY> rb, _links)
-    if (rb->id == linkid)
+    if (rb->body_id == linkid)
       return rb;
 
   return shared_ptr<RIGIDBODY>();

@@ -20,7 +20,7 @@ class ARTICULATED_BODY;
  *  all member data may be used in the latter.
  * \todo implement rest matrix
  */
-class RIGIDBODY : public SINGLE_BODY 
+class RIGIDBODY : public virtual SINGLE_BODY 
 {
   friend class ARTICULATED_BODY;
   friend class RC_ARTICULATED_BODY;
@@ -33,7 +33,7 @@ class RIGIDBODY : public SINGLE_BODY
     virtual ~RIGIDBODY() {}
     void add_force(const SFORCE& w);
     void set_pose(const POSE3& pose);
-    void set_inertial_pose(const POSE3& pose);
+    virtual void set_inertial_pose(const POSE3& pose);
     void apply_impulse(const SMOMENTUM& w);
     virtual void rotate(const QUAT& q);
     virtual void translate(const ORIGIN3& o);
@@ -92,6 +92,7 @@ class RIGIDBODY : public SINGLE_BODY
     void reset_accumulators();
     SFORCE calc_euler_torques();
     void set_enabled(bool flag);
+    void invalidate_pose_vectors();
 
     template <class OutputIterator>
     OutputIterator get_parent_links(OutputIterator begin) const;
@@ -136,7 +137,7 @@ class RIGIDBODY : public SINGLE_BODY
      * \param body a pointer to the articulated body or NULL if this body is
      *        not a link in an articulated body
      */
-    void set_articulated_body(boost::shared_ptr<ARTICULATED_BODY> body) { _abody = body; }
+    virtual void set_articulated_body(boost::shared_ptr<ARTICULATED_BODY> body) { _abody = body; }
 
     /// Gets the number of child links of this link
     unsigned num_child_links() const { return _outer_joints.size(); }
@@ -188,7 +189,6 @@ class RIGIDBODY : public SINGLE_BODY
     template <class V>
     void set_generalized_acceleration_generic(V& ga);
 
-    void update_mixed_pose();
     void set_force(const SFORCE& w);
     void apply_generalized_impulse_single(const SHAREDVECTORN& gf);
     SHAREDMATRIXN& get_generalized_inertia_single(SHAREDMATRIXN& M);
@@ -200,7 +200,6 @@ class RIGIDBODY : public SINGLE_BODY
     SHAREDVECTORN& solve_generalized_inertia_single(const SHAREDVECTORN& b, SHAREDVECTORN& x);
     boost::shared_ptr<RIGIDBODY> get_parent_link(boost::shared_ptr<JOINT> j) const;
     boost::shared_ptr<RIGIDBODY> get_child_link(boost::shared_ptr<JOINT> j) const;
-    void invalidate_pose_vectors();
 
     /// Indicates whether link frame velocity is valid (up-to-date)
     bool _xdi_valid;
@@ -219,9 +218,6 @@ class RIGIDBODY : public SINGLE_BODY
 
     /// Indicates whether global frame acceleration is valid (up-to-date)
     bool _xdd0_valid;
-
-    /// Indicates whether inner joint frame acceleration is valid (up-to-date)
-    bool _xddj_valid;
 
     /// Indicates whether inertial frame acceleration is valid (up-to-date)
     bool _xddm_valid;
@@ -286,18 +282,6 @@ class RIGIDBODY : public SINGLE_BODY
     /// Cumulative force on the body (link frame)
     SFORCE _forcei;
 
-    /// Spatial rigid body inertia matrix (inner joint frame)
-    SPATIAL_RB_INERTIA _Jj;
-
-    /// Velocity (inner joint frame)
-    SVELOCITY _xdj;
-
-    /// Acceleration (inner joint frame)
-    SACCEL _xddj;
-
-    /// Cumulative force on the body (inner joint frame)
-    SFORCE _forcej;
-
     /// Spatial rigid body inertia matrix (link COM frame)
     SPATIAL_RB_INERTIA _Jcom;
 
@@ -310,6 +294,30 @@ class RIGIDBODY : public SINGLE_BODY
     /// Cumulative force on the body (com frame)
     SFORCE _forcecom;
 
+    /// The link index (if a link in an articulated body)
+    unsigned _link_idx;
+
+    /// Flag for determining whether or not the body is physically enabled
+    bool _enabled;
+
+  protected:
+    void update_mixed_pose();
+
+    /// Indicates whether inner joint frame acceleration is valid (up-to-date)
+    bool _xddj_valid;
+
+    /// Spatial rigid body inertia matrix (inner joint frame)
+    SPATIAL_RB_INERTIA _Jj;
+
+    /// Velocity (inner joint frame)
+    SVELOCITY _xdj;
+
+    /// Cumulative force on the body (inner joint frame)
+    SFORCE _forcej;
+
+    /// Acceleration (inner joint frame)
+    SACCEL _xddj;
+
     /// reference pose for this body
     boost::shared_ptr<POSE3> _F;
 
@@ -318,12 +326,6 @@ class RIGIDBODY : public SINGLE_BODY
 
     /// inertial pose for this body
     boost::shared_ptr<POSE3> _jF;
-
-    /// The link index (if a link in an articulated body)
-    unsigned _link_idx;
-
-    /// Flag for determining whether or not the body is physically enabled
-    bool _enabled;
 
     /// Pointer to articulated body (if this body is a link)
     boost::weak_ptr<ARTICULATED_BODY> _abody;

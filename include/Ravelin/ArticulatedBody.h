@@ -12,7 +12,7 @@ class RIGIDBODY;
 class JOINT;
 
 /// Abstract class for articulated bodies
-class ARTICULATED_BODY : public DYNAMIC_BODY
+class ARTICULATED_BODY : public virtual DYNAMIC_BODY
 {
   public:
     ARTICULATED_BODY();

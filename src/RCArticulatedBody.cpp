@@ -531,12 +531,12 @@ void RC_ARTICULATED_BODY::update_link_poses()
     for (unsigned i=0; i< _links.size(); i++)
     {
       TRANSFORM3 Tx = POSE3::calc_relative_pose(_links[i]->get_pose(), GLOBAL);
-      FILE_LOG(LOG_DYNAMICS) << "  link " << _links[i]->id << " pose (relative to global frame): " << Tx.x << " " << AANGLE(Tx.q) << std::endl;
+      FILE_LOG(LOG_DYNAMICS) << "  link " << _links[i]->body_id << " pose (relative to global frame): " << Tx.x << " " << AANGLE(Tx.q) << std::endl;
     }
     for (unsigned i=0; i< _joints.size(); i++)
     {
       TRANSFORM3 Tx = POSE3::calc_relative_pose(_joints[i]->get_pose(), GLOBAL);
-      FILE_LOG(LOG_DYNAMICS) << "  joint " << _joints[i]->id << " pose (relative to global frame): " << Tx.x << " " << AANGLE(Tx.q) << std::endl;
+      FILE_LOG(LOG_DYNAMICS) << "  joint " << _joints[i]->joint_id << " pose (relative to global frame): " << Tx.x << " " << AANGLE(Tx.q) << std::endl;
     }
   }
 
@@ -607,7 +607,7 @@ void RC_ARTICULATED_BODY::update_link_velocities()
     // indicate that the link has been processed
     _processed[i] = true;
 
-    FILE_LOG(LOG_DYNAMICS) << "    -- updating link " << outboard->id << std::endl;
+    FILE_LOG(LOG_DYNAMICS) << "    -- updating link " << outboard->body_id << std::endl;
     FILE_LOG(LOG_DYNAMICS) << "      -- parent velocity: " << inboard->get_velocity() << std::endl;
     FILE_LOG(LOG_DYNAMICS) << "      -- qd: " << joint->qd << std::endl;
     FILE_LOG(LOG_DYNAMICS) << "      -- link velocity : " << outboard->get_velocity()  << std::endl;

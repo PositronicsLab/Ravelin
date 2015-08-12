@@ -11,7 +11,7 @@
 class ARTICULATED_BODY;
 
 /// Superclass for both rigid and deformable bodies 
-class SINGLE_BODY : public DYNAMIC_BODY 
+class SINGLE_BODY : public virtual DYNAMIC_BODY 
 {
   public:
     virtual ~SINGLE_BODY() {}

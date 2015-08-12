@@ -638,7 +638,7 @@ void RIGIDBODY::reset_accumulators()
 /// Computes the torques (w x Jw) that come from the Euler component of the Newton-Euler equations
 SFORCE RIGIDBODY::calc_euler_torques()
 {
-  FILE_LOG(LOG_DYNAMICS) << "Calculating Euler torques for " << id << std::endl;
+  FILE_LOG(LOG_DYNAMICS) << "Calculating Euler torques for " << body_id << std::endl;
   VECTOR3 omega = get_velocity().get_angular();
   MATRIX3 J = get_inertia().J;
   ORIGIN3 w(omega);

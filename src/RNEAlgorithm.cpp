@@ -114,7 +114,7 @@ map<shared_ptr<JOINT>, VECTORN> RNE_ALGORITHM::calc_inv_dyn_fixed_base(shared_pt
     // now add parent's contribution
     a[i] += SPARITH::transform_accel(a[i].pose, a[h]);
 
-    FILE_LOG(LOG_DYNAMICS) << " computing link velocity / acceleration; processing link " << link->id << endl;
+    FILE_LOG(LOG_DYNAMICS) << " computing link velocity / acceleration; processing link " << link->body_id << endl;
 //    FILE_LOG(LOG_DYNAMICS) << "  spatial axes: " << s << endl;
     FILE_LOG(LOG_DYNAMICS) << "  link velocity: " << v << endl;
     FILE_LOG(LOG_DYNAMICS) << "  link accel: " << a[i] << endl;
@@ -154,7 +154,7 @@ map<shared_ptr<JOINT>, VECTORN> RNE_ALGORITHM::calc_inv_dyn_fixed_base(shared_pt
     link_queue.push(parent);
     unsigned h = parent->get_index();
    
-    FILE_LOG(LOG_DYNAMICS) << " computing necessary force; processing link " << link->id << endl;
+    FILE_LOG(LOG_DYNAMICS) << " computing necessary force; processing link " << link->body_id << endl;
     FILE_LOG(LOG_DYNAMICS) << "  currently determined link force: " << f[i] << endl;    
     FILE_LOG(LOG_DYNAMICS) << "  I * a = " << (link->get_inertia() * a[i]) << endl;
 
@@ -205,7 +205,7 @@ map<shared_ptr<JOINT>, VECTORN> RNE_ALGORITHM::calc_inv_dyn_fixed_base(shared_pt
     SFORCE w = POSE3::transform(joint->get_pose(), f[i]); 
     SPARITH::transpose_mult(s, w, Q);
   
-    FILE_LOG(LOG_DYNAMICS) << "joint " << joint->id << " inner joint force: " << actuator_forces[joint] << endl;
+    FILE_LOG(LOG_DYNAMICS) << "joint " << joint->joint_id << " inner joint force: " << actuator_forces[joint] << endl;
   }
 
   FILE_LOG(LOG_DYNAMICS) << "RNEAlgorithm::calc_inv_dyn_fixed_base() exited" << endl;
@@ -458,8 +458,8 @@ map<shared_ptr<JOINT>, VECTORN> RNE_ALGORITHM::calc_inv_dyn_floating_base(shared
     a[i] += SACCEL(SPARITH::mult(sprime, joint->qd));
 
 //    FILE_LOG(LOG_DYNAMICS) << "  s: " << s << endl;
-    FILE_LOG(LOG_DYNAMICS) << "  velocity for link " << links[i]->id << ": " << v[i] << endl;
-    FILE_LOG(LOG_DYNAMICS) << "  relative accel for link " << links[i]->id << ": " << a[i] << endl;
+    FILE_LOG(LOG_DYNAMICS) << "  velocity for link " << links[i]->body_id << ": " << v[i] << endl;
+    FILE_LOG(LOG_DYNAMICS) << "  relative accel for link " << links[i]->body_id << ": " << a[i] << endl;
   }
   
   // ** STEP 2: compute composite inertias and Z.A. forces
@@ -500,7 +500,7 @@ map<shared_ptr<JOINT>, VECTORN> RNE_ALGORITHM::calc_inv_dyn_floating_base(shared
     // subtract external force from Z.A. vector
     Z[i] -= wx;
 
-    FILE_LOG(LOG_DYNAMICS) << " -- processing link " << link->id << endl;
+    FILE_LOG(LOG_DYNAMICS) << " -- processing link " << link->body_id << endl;
     FILE_LOG(LOG_DYNAMICS) << "   external force: " << wx << endl;
     FILE_LOG(LOG_DYNAMICS) << "   ZA vector: " << Z[i] << endl;
   }
@@ -570,7 +570,7 @@ map<shared_ptr<JOINT>, VECTORN> RNE_ALGORITHM::calc_inv_dyn_floating_base(shared
     SFORCE w = I[i] * a.front() + Z[i];
     SPARITH::transpose_mult(s, POSE3::transform(joint->get_pose(), w), Q);
 
-    FILE_LOG(LOG_DYNAMICS) << "  processing link: " << links[j]->id << endl;
+    FILE_LOG(LOG_DYNAMICS) << "  processing link: " << links[j]->body_id << endl;
 //    FILE_LOG(LOG_DYNAMICS) << "    spatial axis: " << endl << s;
     FILE_LOG(LOG_DYNAMICS) << "    I: " << endl << I[i];
     FILE_LOG(LOG_DYNAMICS) << "    Z: " << endl << Z[i];

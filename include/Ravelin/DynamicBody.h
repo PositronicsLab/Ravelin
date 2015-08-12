@@ -11,7 +11,7 @@
 class SINGLE_BODY;
 
 /// Superclass for deformable bodies and single and multi-rigid bodies  
-class DYNAMIC_BODY : public boost::enable_shared_from_this<DYNAMIC_BODY>
+class DYNAMIC_BODY : public virtual boost::enable_shared_from_this<DYNAMIC_BODY>
 {
   public:
     enum GeneralizedCoordinateType { eEuler, eSpatial };
@@ -19,7 +19,7 @@ class DYNAMIC_BODY : public boost::enable_shared_from_this<DYNAMIC_BODY>
     virtual ~DYNAMIC_BODY() {}
 
     /// The identifier for this body
-    std::string id;
+    std::string body_id;
 
     /// The Jacobian transforms from the generalized coordinate from to the given frame
     virtual MATRIXN& calc_jacobian(boost::shared_ptr<const POSE3> source_pose, boost::shared_ptr<const POSE3> target_pose, boost::shared_ptr<DYNAMIC_BODY> body, MATRIXN& J) = 0;
