@@ -9,6 +9,7 @@
 
 #include <boost/shared_ptr.hpp>
 #include <boost/foreach.hpp>
+#include <Ravelin/virtual_enable_shared_from_this.hpp>
 #include <Ravelin/Types.h>
 #include <Ravelin/Log.h>
 #include <Ravelin/VectorNf.h>

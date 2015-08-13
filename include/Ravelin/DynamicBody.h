@@ -11,7 +11,7 @@
 class SINGLE_BODY;
 
 /// Superclass for deformable bodies and single and multi-rigid bodies  
-class DYNAMIC_BODY : public virtual boost::enable_shared_from_this<DYNAMIC_BODY>
+class DYNAMIC_BODY : public virtual_enable_shared_from_this<DYNAMIC_BODY>
 {
   public:
     enum GeneralizedCoordinateType { eEuler, eSpatial };
