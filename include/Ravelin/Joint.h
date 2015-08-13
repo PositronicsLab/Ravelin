@@ -11,7 +11,7 @@ class ARTICULATED_BODY;
 class RIGIDBODY;
 
 /// Defines a bilateral constraint (a joint)
-class JOINT : public boost::enable_shared_from_this<JOINT>
+class JOINT : public virtual_enable_shared_from_this<JOINT>
 {
   public:
     enum ConstraintType { eUnknown, eExplicit, eImplicit };

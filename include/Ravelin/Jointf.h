@@ -20,6 +20,7 @@
 #include <Ravelin/SAccelf.h>
 #include <Ravelin/LinAlgf.h>
 #include <Ravelin/FrameException.h>
+#include <Ravelin/virtual_enable_shared_from_this.hpp>
 
 namespace Ravelin {
 

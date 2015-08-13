@@ -100,7 +100,7 @@ class CRB_ALGORITHM
     std::vector<std::vector<SMOMENTUM> > _momenta;
 
     // temporaries for calc_fwd_dyn_fixed_base(), calc_fwd_dyn_floating_base()
-    VECTORN _C, _Q, _Qi, _b, _augV;
+    VECTORN _C, _Q, _b, _augV;
 
     // temporaries for applying impulse
     VECTORN _workv;

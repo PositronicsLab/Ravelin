@@ -24,7 +24,7 @@ void CRB_ALGORITHM::setup_parent_array()
   const unsigned N = body->num_generalized_coordinates(DYNAMIC_BODY::eSpatial);
 
   // get explicit joints
-  const vector<shared_ptr<JOINT> >& ijoints = body->get_explicit_joints();
+  const vector<shared_ptr<JOINT> >& ejoints = body->get_explicit_joints();
 
   // determine parent array (lambda)
   _lambda.resize(N);
@@ -34,20 +34,20 @@ void CRB_ALGORITHM::setup_parent_array()
     _lambda[i] = std::numeric_limits<unsigned>::max();
   
   // loop over all explicit joints
-  for (unsigned i=0; i< ijoints.size(); i++)
+  for (unsigned i=0; i< ejoints.size(); i++)
   {
     // get the index of this joint
-    unsigned idx = ijoints[i]->get_coord_index();
+    unsigned idx = ejoints[i]->get_coord_index();
 
     // get the parent joint and its index
-    shared_ptr<RIGIDBODY> inboard = ijoints[i]->get_inboard_link();
+    shared_ptr<RIGIDBODY> inboard = ejoints[i]->get_inboard_link();
     shared_ptr<JOINT> parent = inboard->get_inner_joint_explicit();
     if (!parent)
       continue;
     unsigned pidx = parent->get_coord_index();
 
     // now set the elements of lambda
-    for (unsigned j=0; j< ijoints[i]->num_dof(); j++)
+    for (unsigned j=0; j< ejoints[i]->num_dof(); j++)
     {
       _lambda[idx] = pidx;
       pidx = idx;
@@ -171,7 +171,7 @@ void CRB_ALGORITHM::calc_generalized_inertia(shared_ptr<RC_ARTICULATED_BODY> bod
   const vector<shared_ptr<RIGIDBODY> >& links = body->get_links();
 
   // get explicit joints
-  const vector<shared_ptr<JOINT> >& ijoints = body->get_explicit_joints();
+  const vector<shared_ptr<JOINT> >& ejoints = body->get_explicit_joints();
 
   // compute the joint space inertia
   calc_joint_space_inertia(body, _H, _Ic);
@@ -208,10 +208,10 @@ void CRB_ALGORITHM::calc_generalized_inertia(shared_ptr<RC_ARTICULATED_BODY> bod
   FILE_LOG(LOG_DYNAMICS) << "Ic0: " << std::endl << Ic0;
 
   // compute K
-  for (unsigned i=0; i< ijoints.size(); i++)
+  for (unsigned i=0; i< ejoints.size(); i++)
   {
     // get the spatial axes for the joint
-    shared_ptr<JOINT> joint = ijoints[i];
+    shared_ptr<JOINT> joint = ejoints[i];
     const std::vector<SVELOCITY>& s = joint->get_spatial_axes();
     if (joint->num_dof() == 0)
       continue;
@@ -247,7 +247,7 @@ void CRB_ALGORITHM::calc_joint_space_inertia(shared_ptr<RC_ARTICULATED_BODY> bod
 
   // get the sets of links and joints
   const vector<shared_ptr<RIGIDBODY> >& links = body->get_links();
-  const vector<shared_ptr<JOINT> >& ijoints = body->get_explicit_joints();
+  const vector<shared_ptr<JOINT> >& ejoints = body->get_explicit_joints();
   const vector<shared_ptr<JOINT> >& joints = body->get_joints();
 
   // set the composite inertias to the isolated inertias initially 
@@ -411,16 +411,16 @@ void CRB_ALGORITHM::calc_joint_space_inertia(shared_ptr<RC_ARTICULATED_BODY> bod
 
   // compute the forces
   _momenta.resize(links.size());
-  for (unsigned i=0; i < ijoints.size(); i++)
+  for (unsigned i=0; i < ejoints.size(); i++)
   {
-    shared_ptr<RIGIDBODY> outboard = ijoints[i]->get_outboard_link(); 
+    shared_ptr<RIGIDBODY> outboard = ejoints[i]->get_outboard_link(); 
     unsigned oidx = outboard->get_index();
-    const std::vector<SVELOCITY>& s = ijoints[i]->get_spatial_axes();
+    const std::vector<SVELOCITY>& s = ejoints[i]->get_spatial_axes();
     POSE3::transform(Ic[oidx].pose, s, _sprime);
     SPARITH::mult(Ic[oidx], _sprime, _momenta[oidx]);
     if (_sprime.size() > 0)
     {
-      for (unsigned j=0; j< ijoints[i]->num_dof(); j++)
+      for (unsigned j=0; j< ejoints[i]->num_dof(); j++)
       {
         FILE_LOG(LOG_DYNAMICS) << "s[ " << j << "]: " << _sprime[j] << std::endl;
         FILE_LOG(LOG_DYNAMICS) << "Is[" << j << "]: " << _momenta[oidx][j] << std::endl;
@@ -429,20 +429,20 @@ void CRB_ALGORITHM::calc_joint_space_inertia(shared_ptr<RC_ARTICULATED_BODY> bod
   } 
 
   // setup H
-  for (unsigned i=0; i< ijoints.size(); i++)
+  for (unsigned i=0; i< ejoints.size(); i++)
   {
     // get the number of degrees of freedom for joint i
-    const unsigned NiDOF = ijoints[i]->num_dof();
+    const unsigned NiDOF = ejoints[i]->num_dof();
 
     // get the starting coordinate index for this joint
-    unsigned iidx = ijoints[i]->get_coord_index();
+    unsigned iidx = ejoints[i]->get_coord_index();
 
     // get the outboard link for joint i
-    shared_ptr<RIGIDBODY> obi = ijoints[i]->get_outboard_link();
+    shared_ptr<RIGIDBODY> obi = ejoints[i]->get_outboard_link();
     unsigned oiidx = obi->get_index();
 
     // get the spatial axes for jointi
-    const std::vector<SVELOCITY>& s = ijoints[i]->get_spatial_axes();
+    const std::vector<SVELOCITY>& s = ejoints[i]->get_spatial_axes();
 
     // get the appropriate submatrix of H
     SHAREDMATRIXN subi = H.block(iidx, iidx+NiDOF, iidx, iidx+NiDOF); 
@@ -451,21 +451,21 @@ void CRB_ALGORITHM::calc_joint_space_inertia(shared_ptr<RC_ARTICULATED_BODY> bod
     transform_and_transpose_mult(s, _momenta[oiidx], subi);
 
     // determine what will be the new value for m
-    for (unsigned j=i+1; j< ijoints.size(); j++)
+    for (unsigned j=i+1; j< ejoints.size(); j++)
     {
       // get the number of degrees of freedom for joint j 
-      const unsigned NjDOF = ijoints[j]->num_dof();
+      const unsigned NjDOF = ejoints[j]->num_dof();
 
       // get the outboard link for joint j
-      shared_ptr<RIGIDBODY> obj = ijoints[j]->get_outboard_link();
+      shared_ptr<RIGIDBODY> obj = ejoints[j]->get_outboard_link();
       unsigned ojidx = obj->get_index();
 
       // if link j is not supported by joint i, contribution to H is zero
-      if (!_supports[ijoints[i]->get_index()][ojidx])
+      if (!_supports[ejoints[i]->get_index()][ojidx])
         continue;
 
       // get the starting coordinate index for joint j
-      unsigned jidx = ijoints[j]->get_coord_index();
+      unsigned jidx = ejoints[j]->get_coord_index();
 
       // get the appropriate submatrices of H
       SHAREDMATRIXN subj = H.block(iidx, iidx+NiDOF, jidx, jidx+NjDOF); 
@@ -495,7 +495,7 @@ void CRB_ALGORITHM::calc_generalized_inertia(SHAREDMATRIXN& M)
   // get the set of links
   ReferenceFrameType rftype = body->get_computation_frame_type();
   const vector<shared_ptr<RIGIDBODY> >& links = body->get_links();
-  const vector<shared_ptr<JOINT> >& ijoints = body->get_explicit_joints();
+  const vector<shared_ptr<JOINT> >& ejoints = body->get_explicit_joints();
 
 // TODO: this should be able to be removed; this function should already be
 //       computed using precalc(.)
@@ -535,10 +535,10 @@ void CRB_ALGORITHM::calc_generalized_inertia(SHAREDMATRIXN& M)
   POSE3::transform(P, _Ic[base->get_index()]).to_PD_matrix(Ic0); 
 
   // compute K
-  for (unsigned i=0; i< ijoints.size(); i++)
+  for (unsigned i=0; i< ejoints.size(); i++)
   {
     // get the spatial axes for the joint
-    shared_ptr<JOINT> joint = ijoints[i];
+    shared_ptr<JOINT> joint = ejoints[i];
     const std::vector<SVELOCITY>& s = joint->get_spatial_axes();
     if (joint->num_dof() == 0)
       continue;
@@ -738,7 +738,7 @@ void CRB_ALGORITHM::calc_fwd_dyn_fixed_base(shared_ptr<RC_ARTICULATED_BODY> body
 {
   // get the set of links and joints for the articulated body
   const vector<shared_ptr<RIGIDBODY> >& links = body->get_links();
-  const vector<shared_ptr<JOINT> >& ijoints = body->get_explicit_joints();
+  const vector<shared_ptr<JOINT> >& ejoints = body->get_explicit_joints();
 
   // ***********************************************************************
   // first, calculate C
@@ -757,11 +757,10 @@ void CRB_ALGORITHM::calc_fwd_dyn_fixed_base(shared_ptr<RC_ARTICULATED_BODY> body
   // change this
   // ***********************************************************************
   _Q.resize(nDOF);
-  for (unsigned i=0; i< ijoints.size(); i++)
+  for (unsigned i=0; i< ejoints.size(); i++)
   {
-    _Qi += ijoints[i]->force;
-    unsigned j = ijoints[i]->get_coord_index();
-    _Q.set_sub_vec(j, _Qi);
+    unsigned j = ejoints[i]->get_coord_index();
+    _Q.set_sub_vec(j, ejoints[i]->force);
   }
 
   FILE_LOG(LOG_DYNAMICS) << "H: " << std::endl << _M;
@@ -780,10 +779,10 @@ void CRB_ALGORITHM::calc_fwd_dyn_fixed_base(shared_ptr<RC_ARTICULATED_BODY> body
   FILE_LOG(LOG_DYNAMICS) << "qdd: " << qdd << std::endl;
 
   // set qdd
-  for (unsigned i=0; i< ijoints.size(); i++)
+  for (unsigned i=0; i< ejoints.size(); i++)
   {
-    unsigned j = ijoints[i]->get_coord_index();
-    qdd.get_sub_vec(j, j+ijoints[i]->num_dof(), ijoints[i]->qdd);
+    unsigned j = ejoints[i]->get_coord_index();
+    qdd.get_sub_vec(j, j+ejoints[i]->num_dof(), ejoints[i]->qdd);
   }
 
   // set spatial acceleration of the base
@@ -804,7 +803,7 @@ void CRB_ALGORITHM::calc_fwd_dyn_floating_base(shared_ptr<RC_ARTICULATED_BODY> b
 
   // get the set of links and explicit joints
   const vector<shared_ptr<RIGIDBODY> >& links = body->get_links();
-  const vector<shared_ptr<JOINT> >& ijoints = body->get_explicit_joints();
+  const vector<shared_ptr<JOINT> >& ejoints = body->get_explicit_joints();
 
   // calculate C
   SFORCE f0;
@@ -823,11 +822,10 @@ void CRB_ALGORITHM::calc_fwd_dyn_floating_base(shared_ptr<RC_ARTICULATED_BODY> b
   // ***********************************************************************
 
   _Q.resize(nDOF);
-  for (unsigned i=0; i< ijoints.size(); i++)
+  for (unsigned i=0; i< ejoints.size(); i++)
   {
-    _Qi = ijoints[i]->force;
-    unsigned j = ijoints[i]->get_coord_index();
-    _Q.set_sub_vec(j, _Qi);
+     unsigned j = ejoints[i]->get_coord_index();
+    _Q.set_sub_vec(j, ejoints[i]->force);
   }
 
   if (LOGGING(LOG_DYNAMICS))
@@ -872,10 +870,10 @@ void CRB_ALGORITHM::calc_fwd_dyn_floating_base(shared_ptr<RC_ARTICULATED_BODY> b
   FILE_LOG(LOG_DYNAMICS) << "joint accelerations:";
 
   // set qdd
-  for (unsigned i=0; i< ijoints.size(); i++)
+  for (unsigned i=0; i< ejoints.size(); i++)
   {
-    unsigned j = ijoints[i]->get_coord_index();
-    qdd.get_sub_vec(j, j+ijoints[i]->num_dof(), ijoints[i]->qdd);
+    unsigned j = ejoints[i]->get_coord_index();
+    qdd.get_sub_vec(j, j+ejoints[i]->num_dof(), ejoints[i]->qdd);
   }
 
   FILE_LOG(LOG_DYNAMICS) << qdd << std::endl;
@@ -897,7 +895,7 @@ void CRB_ALGORITHM::calc_generalized_forces(SFORCE& f0, VECTORN& C)
 
   // get the set of links and joints
   const vector<shared_ptr<RIGIDBODY> >& links = body->get_links();
-  const vector<shared_ptr<JOINT> >& ijoints = body->get_explicit_joints();
+  const vector<shared_ptr<JOINT> >& ejoints = body->get_explicit_joints();
   if (links.empty())
   {
     C.resize(0);
@@ -1064,10 +1062,10 @@ void CRB_ALGORITHM::calc_generalized_forces(SFORCE& f0, VECTORN& C)
 
   // compute C
   C.resize(nDOF);
-  for (unsigned i=0; i< ijoints.size(); i++)
+  for (unsigned i=0; i< ejoints.size(); i++)
   {
     // get links, joints, etc.
-    shared_ptr<JOINT> joint = ijoints[i];
+    shared_ptr<JOINT> joint = ejoints[i];
     shared_ptr<RIGIDBODY> ob = joint->get_outboard_link();
 
     // get indices
@@ -1120,7 +1118,7 @@ void CRB_ALGORITHM::calc_generalized_forces_noinertial(SFORCE& f0, VECTORN& C)
 
   // get the set of links and joints
   const vector<shared_ptr<RIGIDBODY> >& links = body->get_links();
-  const vector<shared_ptr<JOINT> >& ijoints = body->get_explicit_joints();
+  const vector<shared_ptr<JOINT> >& ejoints = body->get_explicit_joints();
   if (links.empty())
   {
     C.resize(0);
@@ -1211,10 +1209,10 @@ void CRB_ALGORITHM::calc_generalized_forces_noinertial(SFORCE& f0, VECTORN& C)
 
   // compute C
   C.resize(nDOF);
-  for (unsigned i=0; i< ijoints.size(); i++)
+  for (unsigned i=0; i< ejoints.size(); i++)
   {
     // get links, joints, etc.
-    shared_ptr<JOINT> joint = ijoints[i];
+    shared_ptr<JOINT> joint = ejoints[i];
     shared_ptr<RIGIDBODY> ob = joint->get_outboard_link();
 
     // get indices
@@ -1402,7 +1400,7 @@ void CRB_ALGORITHM::apply_impulse(const SMOMENTUM& w, shared_ptr<RIGIDBODY> link
   precalc(body); 
 
   // does not work for bodies with kinematic loops
-  assert(body->_ijoints.empty());
+  assert(body->_ejoints.empty());
 
   // get the base link
   shared_ptr<RIGIDBODY> base = body->get_base_link();
@@ -1474,12 +1472,12 @@ void CRB_ALGORITHM::apply_impulse(const SMOMENTUM& w, shared_ptr<RIGIDBODY> link
   }
 
   // apply the change and update link velocities
-  const vector<shared_ptr<JOINT> >& ijoints = body->get_explicit_joints();
-  for (unsigned i=0; i< ijoints.size(); i++)
+  const vector<shared_ptr<JOINT> >& ejoints = body->get_explicit_joints();
+  for (unsigned i=0; i< ejoints.size(); i++)
   {
-    unsigned idx = ijoints[i]->get_coord_index();
-    FILE_LOG(LOG_DYNAMICS) << " joint " << ijoints[i] << " qd: " << ijoints[i]->qd << "  dqd: " << workv.segment(idx, idx+ijoints[i]->num_dof()) << std::endl;  
-    ijoints[i]->qd += workv.segment(idx, idx+ijoints[i]->num_dof());
+    unsigned idx = ejoints[i]->get_coord_index();
+    FILE_LOG(LOG_DYNAMICS) << " joint " << ejoints[i] << " qd: " << ejoints[i]->qd << "  dqd: " << workv.segment(idx, idx+ejoints[i]->num_dof()) << std::endl;  
+    ejoints[i]->qd += workv.segment(idx, idx+ejoints[i]->num_dof());
   }  
   body->update_link_velocities();
 
