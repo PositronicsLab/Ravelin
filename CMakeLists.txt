@@ -61,7 +61,7 @@ endforeach (i)
 
 # create the library
 add_library(Ravelin "" "" ${LIBSOURCES})
-target_link_libraries (Ravelin ${BLAS_LIBRARIES} ${LAPACK_LIBRARIES} ${EXTRA_LIBRARIES})
+target_link_libraries (Ravelin ${BLAS_LIBRARIES} ${LAPACK_LIBRARIES} ${LIBXML2_LIBRARIES} ${EXTRA_LIBRARIES})
 
 # setup install locations
 install (TARGETS Ravelin DESTINATION lib)
