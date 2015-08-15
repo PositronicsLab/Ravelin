@@ -27,8 +27,8 @@ RC_ARTICULATED_BODY::RC_ARTICULATED_BODY()
   _fsab._LA = _LA;
   _crb._LA = _LA;
 
-  // set default algorithm to FSAB and computation frame to link c.o.m. 
-  algorithm_type = eFeatherstone;
+  // set default algorithm to CRB and computation frame to link c.o.m. 
+  algorithm_type = eCRB;
   set_computation_frame_type(eLinkCOM);
 
   // invalidate position quanitites
