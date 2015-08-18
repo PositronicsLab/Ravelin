@@ -489,7 +489,7 @@ XVECTORN& set(ForwardIterator idx_begin, ForwardIterator idx_end, const V& v)
 }
 
 /// Sets a subvector; other components are unchanged
-template <class ForwardIterator, class V>
+template <class V>
 XVECTORN& set(std::vector<bool>& indices, const V& v)
 {
   // count the length of the vector
