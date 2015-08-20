@@ -47,6 +47,12 @@ class ARTICULATED_BODY : public virtual DYNAMIC_BODY
     /// Gets the set of joints
     virtual const std::vector<boost::shared_ptr<JOINT> >& get_joints() const { return _joints; }
 
+    /// Gets the set of explicit joints
+    virtual const std::vector<boost::shared_ptr<JOINT> >& get_explicit_joints() const = 0; 
+
+    /// Gets the set of implicit joints
+    virtual const std::vector<boost::shared_ptr<JOINT> >& get_implicit_joints() const = 0; 
+
     /// Gets shared pointer to this object as type ARTICULATED_BODY
     boost::shared_ptr<ARTICULATED_BODY> get_this() { return boost::dynamic_pointer_cast<ARTICULATED_BODY>(shared_from_this()); }
 

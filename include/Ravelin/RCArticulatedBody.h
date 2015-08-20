@@ -106,10 +106,10 @@ class RC_ARTICULATED_BODY : public virtual ARTICULATED_BODY
     ForwardDynamicsAlgorithmType algorithm_type;
 
     /// Gets the vector of explicit joint constraints
-    const std::vector<boost::shared_ptr<JOINT> >& get_explicit_joints() const { return _ejoints; }
+    virtual const std::vector<boost::shared_ptr<JOINT> >& get_explicit_joints() const { return _ejoints; }
 
     /// Gets the vector of explicit joint constraints
-    const std::vector<boost::shared_ptr<JOINT> >& get_implicit_joints() const { return _ijoints; }
+    virtual const std::vector<boost::shared_ptr<JOINT> >& get_implicit_joints() const { return _ijoints; }
 
   protected:
     /// Whether this body uses a floating base
