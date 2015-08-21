@@ -25,6 +25,12 @@ void JOINT::reset_force()
   force.set_zero(num_dof());
 }
 
+/// Adds a force to the joint
+void JOINT::add_force(const VECTORN& f)
+{
+  force += f;
+}
+
 /// Sets inboard link
 void JOINT::set_inboard_link(shared_ptr<RIGIDBODY> inboard, bool update_pose)
 {
