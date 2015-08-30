@@ -113,6 +113,7 @@ void RIGIDBODY::set_generalized_coordinates_generic(DYNAMIC_BODY::GeneralizedCoo
     q.normalize();
 
     POSE3 P(q, x);
+    P.update_relative_pose(get_pose()->rpose);
     set_pose(P);
 /*
     // get the transform from the link pose to the inertial pose

@@ -212,7 +212,7 @@ void PRISMATICJOINT::calc_constraint_jacobian(bool inboard, SHAREDMATRIXN& Cq)
     ORIGIN3 result = MATRIX3::skew_symmetric(R*ORIGIN3(_v1i)) * v2w;
     SHAREDVECTORN first_row = Cq.row(0);
     first_row.segment(0, 3).set_zero();
-    first_row.segment(4, 6) = result; 
+    first_row.segment(3, 6) = result; 
 
     // Jacobian of dot(Ri* _v1j, Ro*_v2) w.r.t. inboard is
     // dot(w x Ri*_v1j, Ro*_v2) = (_v2*Ro)' * (-Ri*_v1j) x w 
@@ -220,7 +220,7 @@ void PRISMATICJOINT::calc_constraint_jacobian(bool inboard, SHAREDMATRIXN& Cq)
     result = MATRIX3::skew_symmetric(R*ORIGIN3(_v1j)) * v2w;
     SHAREDVECTORN second_row = Cq.row(1);
     second_row.segment(0, 3).set_zero();
-    second_row.segment(4, 6) = result; 
+    second_row.segment(3, 6) = result; 
 
     // Jacobian of dot(Ri * _v1i, xi + Ri*ti - xo - Ro*to) w.r.t. inboard
     // dot(wi x Ri * _v1i, r12) + dot(Ri * _v1i, \dot{xi} + wi x Ri*ti)
@@ -247,7 +247,7 @@ void PRISMATICJOINT::calc_constraint_jacobian(bool inboard, SHAREDMATRIXN& Cq)
     result = MATRIX3::skew_symmetric(R*ORIGIN3(_ui)) * ujw;
     SHAREDVECTORN last_row = Cq.row(4);
     last_row.segment(0, 3).set_zero();
-    last_row.segment(4, 6) = result; 
+    last_row.segment(3, 6) = result; 
   }
   else
   {
@@ -265,7 +265,7 @@ void PRISMATICJOINT::calc_constraint_jacobian(bool inboard, SHAREDMATRIXN& Cq)
     ORIGIN3 result = MATRIX3::skew_symmetric(R*ORIGIN3(_v2)) * v1w;
     SHAREDVECTORN first_row = Cq.row(0);
     first_row.segment(0, 3).set_zero();
-    first_row.segment(4, 6) = result; 
+    first_row.segment(3, 6) = result; 
 
     // Jacobian of dot(Ri*_v1j, Ro*_v2) w.r.t. outboard is
     // dot(Ri*_v1j, Ro*_v2) = (Ri*_v1j)' * (-Ro*_v2) x w 
@@ -274,21 +274,21 @@ void PRISMATICJOINT::calc_constraint_jacobian(bool inboard, SHAREDMATRIXN& Cq)
     result = MATRIX3::skew_symmetric(R*ORIGIN3(_v2)) * v1w;
     SHAREDVECTORN second_row = Cq.row(1);
     second_row.segment(0, 3).set_zero();
-    second_row.segment(4, 6) = result; 
+    second_row.segment(3, 6) = result; 
 
     // Jacobian of dot(Ri * _v1i, xi + Ri*ti - xo - Ro*to) w.r.t. outboard
     // dot(Ri * _v1i, -\dot{xo} - wo x Ro*to)
     // = (skew(-Ro * to)*Ri*_v1i*wo + (Ri*_v1i)*\dot{xo}
     SHAREDVECTORN third_row = Cq.row(2);
     third_row.segment(0, 3) = Ri*ORIGIN3(_v1i);
-    third_row.segment(4, 6) = MATRIX3::skew_symmetric(-(Ro * to))*(Ri*ORIGIN3(_v1i));
+    third_row.segment(3, 6) = MATRIX3::skew_symmetric(-(Ro * to))*(Ri*ORIGIN3(_v1i));
 
     // Jacobian of dot(Ri * _v1j, xi + Ri*ti - xo - Ro*to) w.r.t. outboard
     // dot(Ri * _v1j, -\dot{xo} - wo x Ro*to)
     // = (skew(-Ro * to)*Ri*_v1j*wo + (Ri*_v1j)*\dot{xo}
     SHAREDVECTORN fourth_row = Cq.row(3);
     fourth_row.segment(0, 3) = Ri*ORIGIN3(_v1j);
-    fourth_row.segment(4, 6) = MATRIX3::skew_symmetric(-(Ro * to))*(Ri*ORIGIN3(_v1j));
+    fourth_row.segment(3, 6) = MATRIX3::skew_symmetric(-(Ro * to))*(Ri*ORIGIN3(_v1j));
 
     // Jacobian of dot(Ri*_ui, Ro*_uj) w.r.t. outboard is
     // dot(Ri*_ui, Ro*_uj) = (Ri*_ui)' * (-Ro*_uj) x w 
@@ -297,7 +297,7 @@ void PRISMATICJOINT::calc_constraint_jacobian(bool inboard, SHAREDMATRIXN& Cq)
     result = MATRIX3::skew_symmetric(R*ORIGIN3(_uj)) * uiw;
     SHAREDVECTORN last_row = Cq.row(4);
     last_row.segment(0, 3).set_zero();
-    last_row.segment(4, 6) = result; 
+    last_row.segment(3, 6) = result; 
   }
 }
 

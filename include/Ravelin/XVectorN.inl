@@ -499,7 +499,7 @@ XVECTORN& set(std::vector<bool>& indices, const V& v)
       len++;
 
   #ifndef NEXCEPT
-  if (indices.size() != v.size())
+  if (len != v.size())
     throw MissizeException();
   if (sizeof(data()) != sizeof(v.data()))
     throw DataMismatchException();

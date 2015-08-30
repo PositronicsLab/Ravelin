@@ -184,7 +184,7 @@ void REVOLUTEJOINT::calc_constraint_jacobian(bool inboard, SHAREDMATRIXN& Cq)
     ORIGIN3 result = MATRIX3::skew_symmetric(R*ORIGIN3(_ui)) * v2w;
     SHAREDVECTORN second_to_last_row = Cq.row(3);
     second_to_last_row.segment(0, 3).set_zero();
-    second_to_last_row.segment(4, 6) = result; 
+    second_to_last_row.segment(3, 6) = result; 
 
     // Jacobian of dot(Ri* _uj, Ro*_v2) w.r.t. inboard is
     // dot(w x Ri*_uj, Ro*h2) = (_v2*Ro)' * (-Ri*_uj) x w 
@@ -192,7 +192,7 @@ void REVOLUTEJOINT::calc_constraint_jacobian(bool inboard, SHAREDMATRIXN& Cq)
     result = MATRIX3::skew_symmetric(R*ORIGIN3(_uj)) * v2w;
     SHAREDVECTORN last_row = Cq.row(4);
     last_row.segment(0, 3).set_zero();
-    last_row.segment(4, 6) = result; 
+    last_row.segment(3, 6) = result; 
   }
   else
   {
@@ -217,7 +217,7 @@ void REVOLUTEJOINT::calc_constraint_jacobian(bool inboard, SHAREDMATRIXN& Cq)
     ORIGIN3 result = MATRIX3::skew_symmetric(R*ORIGIN3(_v2)) * v1w;
     SHAREDVECTORN second_to_last_row = Cq.row(3);
     second_to_last_row.segment(0, 3).set_zero();
-    second_to_last_row.segment(4, 6) = result; 
+    second_to_last_row.segment(3, 6) = result; 
 
     // Jacobian of dot(Ri*_uj, Ro*_v2) w.r.t. outboard is
     // dot(Ri*_uj, Ro*_v2) = (Ri*_uj)' * (-Ro*_v2) x w 
@@ -226,7 +226,7 @@ void REVOLUTEJOINT::calc_constraint_jacobian(bool inboard, SHAREDMATRIXN& Cq)
     result = MATRIX3::skew_symmetric(R*ORIGIN3(_v2)) * v1w;
     SHAREDVECTORN last_row = Cq.row(4);
     last_row.segment(0, 3).set_zero();
-    last_row.segment(4, 6) = result; 
+    last_row.segment(3, 6) = result; 
   }
 }
 
