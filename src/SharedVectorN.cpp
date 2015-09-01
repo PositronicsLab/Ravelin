@@ -44,7 +44,7 @@ SHAREDVECTORN SHAREDVECTORN::segment(unsigned start, unsigned end)
   x._data = _data;
   x._start = _start + start;
   x._len = end - start;
-  x._inc = 1;
+  x._inc = _inc;
   return x;
 }
 
@@ -60,7 +60,7 @@ CONST_SHAREDVECTORN SHAREDVECTORN::segment(unsigned start, unsigned end) const
   x._data = _data;
   x._start = _start + start;
   x._len = end - start;
-  x._inc = 1;
+  x._inc = _inc;
   return x;
 }
 
@@ -199,7 +199,7 @@ CONST_SHAREDVECTORN CONST_SHAREDVECTORN::segment(unsigned start, unsigned end) c
   x._data = _data;
   x._start = _start + start;
   x._len = end - start;
-  x._inc = 1;
+  x._inc = _inc;
   return x;
 }
 
