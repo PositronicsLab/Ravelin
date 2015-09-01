@@ -7,15 +7,46 @@
 #error This class is not to be included by the user directly. Use Jointd.h or Jointf.h instead.
 #endif
 
+class ARTICULATED_BODY;
+class RIGIDBODY;
+
 /// Defines a bilateral constraint (a joint)
-class JOINT
+class JOINT : public virtual_enable_shared_from_this<JOINT>
 {
   public:
+    enum ConstraintType { eUnknown, eExplicit, eImplicit };
     enum DOFs { DOF_1=0, DOF_2=1, DOF_3=2, DOF_4=3, DOF_5=4, DOF_6=5 };
 
     JOINT();
     virtual const std::vector<SVELOCITY>& get_spatial_axes();
-    void set_location(const VECTOR3& p);
+    void add_force(const VECTORN& force);
+    void reset_force(); 
+    ConstraintType get_constraint_type() const { return _constraint_type; }
+
+    /// The ID of this joint
+    std::string joint_id;
+
+    /// Sets whether this constraint is implicit or explicit (or unknown)
+    void set_constraint_type(ConstraintType type) { _constraint_type = type; }
+
+    /// Gets the articulated body corresponding to this body
+    /**
+     * \return a pointer to the articulated body, or NULL if this body is not 
+     *         a link an articulated body
+     */
+    boost::shared_ptr<ARTICULATED_BODY> get_articulated_body() { return (_abody.expired()) ? boost::shared_ptr<ARTICULATED_BODY>() : boost::shared_ptr<ARTICULATED_BODY>(_abody); }
+
+    /// Sets the articulated body corresponding to this body
+    /**
+     * \param body a pointer to the articulated body or NULL if this body is
+     *        not a link in an articulated body
+     */
+    void set_articulated_body(boost::shared_ptr<ARTICULATED_BODY> abody) { _abody = abody; }
+
+ 
+    virtual void set_inboard_link(boost::shared_ptr<RIGIDBODY> link, bool update_pose);
+    virtual void set_outboard_link(boost::shared_ptr<RIGIDBODY> link, bool update_pose);
+    void set_location(const VECTOR3& p, boost::shared_ptr<RIGIDBODY> inboard, boost::shared_ptr<RIGIDBODY> outboard);
     VECTOR3 get_location(bool use_outboard = false) const;
     virtual void set_inboard_pose(boost::shared_ptr<const POSE3> inboard_pose, bool update_joint_pose);
     virtual void set_outboard_pose(boost::shared_ptr<POSE3> outboard_pose, bool update_joint_pose);
@@ -23,14 +54,49 @@ class JOINT
     void evaluate_constraints_dot(REAL C[]);
     virtual void determine_q_tare();
 
+    /// Gets the inboard link for this joint
+    boost::shared_ptr<RIGIDBODY> get_inboard_link() const { return (_inboard_link.expired()) ? boost::shared_ptr<RIGIDBODY>() : boost::shared_ptr<RIGIDBODY>(_inboard_link); }
+
+    /// Gets the outboard link for this joint
+    boost::shared_ptr<RIGIDBODY> get_outboard_link() const { return (_outboard_link.expired()) ? boost::shared_ptr<RIGIDBODY>() : boost::shared_ptr<RIGIDBODY>(_outboard_link); }
+
+    /// The acceleration of this joint
+    VECTORN qdd;
+
+    /// The actuator force (user/controller sets this)
+    VECTORN force;
+
+    /// Constraint forces calculated by forward dynamics
+    VECTORN lambda;
+
+    /// Gets the joint index (returns UINT_MAX if not set)
+    unsigned get_index() const { return _joint_idx; }
+
+    /// Sets the joint index
+    /**
+     * This is set automatically by the articulated body. Users should not
+     * change this index or unknown behavior will result.
+     */
+    void set_index(unsigned index) { _joint_idx = index; }
+
+    /// Gets the constraint index for this joint
+    unsigned get_constraint_index() const { return _constraint_idx; }
+
+    /// Sets the constraint index for this joint
+    void set_constraint_index(unsigned idx) { _constraint_idx = idx; } 
+
+    /// Sets the coordinate index for this joint
+    /**
+     * This is set automatically by the articulated body. Users should not
+     * change this index or unknown behavior will result.
+     */
+    void set_coord_index(unsigned index) { _coord_idx = index; }
+
+    /// Gets the starting coordinate index for this joint
+    unsigned get_coord_index() const { return _coord_idx; }
+
     /// Gets the pose of this joint (relative to the inboard pose instead of the outboard pose as returned by get_pose_from_outboard())
     boost::shared_ptr<const POSE3> get_pose() const { return _F; };
-
-    // Gets the inboard pose 
-    boost::shared_ptr<const POSE3> get_inboard_pose() const { return _F->rpose; } 
-
-    // Gets the outboard pose 
-    boost::shared_ptr<const POSE3> get_outboard_pose() const { return _Fb->rpose; } 
 
     /// Gets the pose of this joint relative to the outboard pose (rather than the inboard pose as returned by get_pose())
     boost::shared_ptr<const POSE3> get_pose_from_outboard() const { return _Fb; };
@@ -96,6 +162,9 @@ class JOINT
     virtual void calc_constraint_jacobian_dot(bool inboard, SHAREDMATRIXN& Cq) = 0;
 
   protected:
+    void invalidate_pose_vectors() { get_outboard_link()->invalidate_pose_vectors(); }
+    boost::shared_ptr<const POSE3> get_inboard_pose() { if (_inboard_link.expired()) return boost::shared_ptr<const POSE3>(); return get_inboard_link()->get_pose(); }
+    boost::shared_ptr<const POSE3> get_outboard_pose() { if (_outboard_link.expired()) return boost::shared_ptr<const POSE3>(); return get_outboard_link()->get_pose(); }
 
     /// The frame induced by the joint 
     boost::shared_ptr<POSE3> _Fprime;
@@ -128,6 +197,14 @@ class JOINT
      * re-enters the initial configuration.
      */
     VECTORN _q_tare;
+
+    boost::weak_ptr<RIGIDBODY> _inboard_link;
+    boost::weak_ptr<RIGIDBODY> _outboard_link;
+    boost::weak_ptr<ARTICULATED_BODY> _abody;
+    ConstraintType _constraint_type;
+    unsigned _joint_idx;
+    unsigned _coord_idx;
+    unsigned _constraint_idx;
 }; // end class
 
 

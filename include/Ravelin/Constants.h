@@ -18,6 +18,7 @@ namespace Ravelin {
 enum Transposition { eNoTranspose, eTranspose };
 
 // constants
+const unsigned LOG_DYNAMICS = 4;
 const double EPS_DOUBLE = std::sqrt(std::numeric_limits<double>::epsilon());
 const float EPS_FLOAT = std::sqrt(std::numeric_limits<float>::epsilon());
 

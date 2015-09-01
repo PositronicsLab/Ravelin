@@ -300,7 +300,7 @@ void UNIVERSALJOINT::calc_constraint_jacobian(bool inboard, SHAREDMATRIXN& Cq)
     ORIGIN3 result = MATRIX3::skew_symmetric(R*ORIGIN3(_u[DOF_1])) * h2w;
     SHAREDVECTORN last_row = Cq.row(3);
     last_row.segment(0, 3).set_zero();
-    last_row.segment(4, 6) = result; 
+    last_row.segment(3, 6) = result; 
   }
   else
   {
@@ -325,8 +325,17 @@ void UNIVERSALJOINT::calc_constraint_jacobian(bool inboard, SHAREDMATRIXN& Cq)
     ORIGIN3 result = MATRIX3::skew_symmetric(R*ORIGIN3(_h2)) * h1w;
     SHAREDVECTORN last_row = Cq.row(3);
     last_row.segment(0, 3).set_zero();
-    last_row.segment(4, 6) = result; 
+    last_row.segment(3, 6) = result; 
   }
+}
+
+/// Computes the time derivative of the constraint jacobian with respect to a body
+/**
+ * TODO: implement this
+ */
+void UNIVERSALJOINT::calc_constraint_jacobian_dot(bool inboard, SHAREDMATRIXN& Cq)
+{
+  throw std::runtime_error("Implementation required");
 }
 
 /// Evaluates the constraint equations

@@ -399,55 +399,11 @@ void SPHERICALJOINT::calc_constraint_jacobian(bool inboard, SHAREDMATRIXN& Cq)
 }
 
 /// Computes the time derivative of the constraint jacobian with respect to a body
+/**
+ * TODO: implement this
+ */
 void SPHERICALJOINT::calc_constraint_jacobian_dot(bool inboard, SHAREDMATRIXN& Cq)
 {
-  const unsigned X = 0, Y = 1, Z = 2, SPATIAL_DIM = 6;
-  const shared_ptr<const POSE3> GLOBAL;
-
-  // get the two links
-  shared_ptr<const POSE3> Pi = get_inboard_pose();
-  shared_ptr<const POSE3> Po = get_outboard_pose();
-
-  // get the attachment frames in the global frame
-  TRANSFORM3 wPi = POSE3::calc_relative_pose(_F, GLOBAL);
-  TRANSFORM3 wPo = POSE3::calc_relative_pose(_Fb, GLOBAL);
-
-  // get the vector from the inboard and outboard poses to the joint pose 
-  VECTOR3 joint_pos(0.0, 0.0, 0.0, _F);
-  VECTOR3 ui = POSE3::transform_vector(Pi, joint_pos);
-  VECTOR3 uo = POSE3::transform_vector(Po, joint_pos);
-
-  // setup the constraint equations (from Shabana, p. 432)
-  if (inboard)
-  {
-    // get the vector from the inboard pose to the joint pose 
-    ORIGIN3 u = ORIGIN3(POSE3::transform_point(Pi, joint_pos));
-
-    // get the information necessary to compute the constraint equations
-    MATRIX3 R = wPi.q;
-    ORIGIN3 Ru = R*u;
-
-    // get positional components of Cq
-    SHAREDMATRIXN Cq_trans = Cq.block(0, 3, 0, 3);
-    Cq_trans.set_zero();
-    SHAREDMATRIXN Cq_rot = Cq.block(0, 3, 3, 6);
-    Cq_rot = MATRIX3::skew_symmetric(-Ru);
-  }
-  else
-  {
-    // get the vector from the outboard pose to the joint pose 
-    ORIGIN3 u = ORIGIN3(POSE3::transform_point(Po, joint_pos));
-
-    // get the information necessary to compute the constraint equations
-    MATRIX3 R = wPo.q;
-    ORIGIN3 Ru = R*u;
-
-    // get positional components of Cq
-    SHAREDMATRIXN Cq_trans = Cq.block(0, 3, 0, 3);
-    Cq_trans.set_zero();
-    SHAREDMATRIXN Cq_rot = Cq.block(0, 3, 3, 6);
-    Cq_rot = MATRIX3::skew_symmetric(Ru);
-  }
-
+  throw std::runtime_error("Implementation required");
 }
 

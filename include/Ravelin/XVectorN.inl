@@ -488,6 +488,34 @@ XVECTORN& set(ForwardIterator idx_begin, ForwardIterator idx_end, const V& v)
   return *this;
 }
 
+/// Sets a subvector; other components are unchanged
+template <class V>
+XVECTORN& set(std::vector<bool>& indices, const V& v)
+{
+  // count the length of the vector
+  unsigned len = 0;
+  for (unsigned i=0; i< indices.size(); i++)
+    if (indices[i])
+      len++;
+
+  #ifndef NEXCEPT
+  if (len != v.size())
+    throw MissizeException();
+  if (sizeof(data()) != sizeof(v.data()))
+    throw DataMismatchException();
+  #endif
+
+  // use iterator
+  COLUMN_ITERATOR iter = column_iterator_begin();
+  CONST_COLUMN_ITERATOR viter = v.column_iterator_begin();
+  for (unsigned i=0, j=0; i< indices.size(); i++, iter++)
+    if (indices[i])
+      *iter = *viter++;
+
+  return *this;
+}
+
+
 /// Gets a sub-vector from this vector
 /**
  * \param start_idx the starting index (inclusive)
