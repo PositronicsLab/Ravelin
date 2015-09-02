@@ -130,8 +130,8 @@ void REVOLUTEJOINT::evaluate_constraints(REAL C[])
   VECTOR3 v2 = POSE3::transform_vector(GLOBAL, _v2);
 
   // determine the global positions of the attachment points and subtract them
-  VECTOR3 r1 = get_location(false);
-  VECTOR3 r2 = get_location(true);
+  VECTOR3 r1 = POSE3::transform_point(GLOBAL, get_location(false));
+  VECTOR3 r2 = POSE3::transform_point(GLOBAL, get_location(true));
   VECTOR3 r12 = r1 - r2; 
 
   // evaluate the constraint equations
