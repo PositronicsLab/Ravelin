@@ -356,8 +356,8 @@ void UNIVERSALJOINT::evaluate_constraints(REAL C[])
   VECTOR3 h2 = outer->transform_vector(GLOBAL, _h2);
 
   // determine the global positions of the attachment points and subtract them
-  VECTOR3 r1 = get_location(false);
-  VECTOR3 r2 = get_location(true);
+  VECTOR3 r1 = POSE3::transform_point(GLOBAL, get_location(false));
+  VECTOR3 r2 = POSE3::transform_point(GLOBAL, get_location(true));
   VECTOR3 r12 = r1 - r2;
 
   // evaluate the constraint equations
