@@ -151,7 +151,7 @@ class JOINT : public virtual_enable_shared_from_this<JOINT>
      *        inboard link; 'false' for the outboard
      * \param Cq a 6 x ndof matrix for the given body (on return) 
      */
-    virtual void calc_constraint_jacobian(bool inboard, SHAREDMATRIXN& Cq) = 0;
+    virtual void calc_constraint_jacobian(bool inboard, MATRIXN& Cq) = 0;
  
      /// Computes the time derivative of the constraint Jacobian for this joint with respect to the given body
     /**
@@ -159,9 +159,10 @@ class JOINT : public virtual_enable_shared_from_this<JOINT>
      *        inboard link; 'false' for the outboard
      * \param Cq a 6 x ndof matrix for the given body (on return)
      */
-    virtual void calc_constraint_jacobian_dot(bool inboard, SHAREDMATRIXN& Cq) = 0;
+    virtual void calc_constraint_jacobian_dot(bool inboard, MATRIXN& Cq) = 0;
 
   protected:
+    bool transform_jacobian(MATRIXN& J, bool use_inboard, MATRIXN& output);
     void invalidate_pose_vectors() { get_outboard_link()->invalidate_pose_vectors(); }
     boost::shared_ptr<const POSE3> get_inboard_pose() { if (_inboard_link.expired()) return boost::shared_ptr<const POSE3>(); return get_inboard_link()->get_pose(); }
     boost::shared_ptr<const POSE3> get_outboard_pose() { if (_outboard_link.expired()) return boost::shared_ptr<const POSE3>(); return get_outboard_link()->get_pose(); }

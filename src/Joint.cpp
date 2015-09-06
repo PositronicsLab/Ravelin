@@ -275,4 +275,34 @@ const vector<SVELOCITY>& JOINT::get_spatial_axes()
   return _s;
 }
 
+/// Transforms a Jacobian (if necessary)
+/**
+ * If the inboard/outboard link is part of an articulated body, transforms
+ * the Jacobian to the coordinates of that body.
+ * \return true if any transformation is done (will be found in output)
+ */
+bool JOINT::transform_jacobian(MATRIXN& J, bool use_inboard, MATRIXN& output)
+{
+  const shared_ptr<const POSE3> GLOBAL_3D;
+  MATRIXN Jm;
+
+  // get the appropriate link
+  shared_ptr<RIGIDBODY> rb = (use_inboard) ? get_inboard_link() : get_outboard_link();
+
+  // see whether it is part of an articulated body
+  shared_ptr<ARTICULATED_BODY> ab = rb->get_articulated_body();
+  if (ab)
+  {
+    shared_ptr<RC_ARTICULATED_BODY> rcab = dynamic_pointer_cast<RC_ARTICULATED_BODY>(ab);
+    if (rcab)
+    {
+      rcab->calc_jacobian(GLOBAL_3D, rb, Jm);
+      J.mult(Jm, output);
+      return true;
+    }
+  }
+
+  // no transformation necessary
+  return false;
+}
 

@@ -22,8 +22,8 @@ class SPHERICALJOINT : public virtual JOINT
     virtual void evaluate_constraints(REAL C[]);
     VECTOR3 get_axis(Axis a) const;
     void set_axis(const VECTOR3& axis, Axis a);
-    virtual void calc_constraint_jacobian(bool inboard, SHAREDMATRIXN& Cq);
-    virtual void calc_constraint_jacobian_dot(bool inboard, SHAREDMATRIXN& Cq);
+    virtual void calc_constraint_jacobian(bool inboard, MATRIXN& Cq);
+    virtual void calc_constraint_jacobian_dot(bool inboard, MATRIXN& Cq);
 
     /// Spherical joint is singular if sin(q1) = 0 and cos(q2) = 0
     virtual bool is_singular_config() const { return std::fabs(std::sin(q[DOF_1])) < SINGULAR_TOL && std::fabs(std::cos(q[DOF_2])) < SINGULAR_TOL; }

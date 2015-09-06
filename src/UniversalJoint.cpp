@@ -259,10 +259,11 @@ shared_ptr<const POSE3> UNIVERSALJOINT::get_induced_pose()
 }
 
 /// Computes the constraint jacobian with respect to a body
-void UNIVERSALJOINT::calc_constraint_jacobian(bool inboard, SHAREDMATRIXN& Cq)
+void UNIVERSALJOINT::calc_constraint_jacobian(bool inboard, MATRIXN& Cq)
 {
   const unsigned X = 0, Y = 1, Z = 2, SPATIAL_DIM = 6;
   const shared_ptr<const POSE3> GLOBAL;
+  MATRIXN tmp;
 
   // get the two links
   shared_ptr<const POSE3> Pi = get_inboard_pose();
@@ -327,13 +328,17 @@ void UNIVERSALJOINT::calc_constraint_jacobian(bool inboard, SHAREDMATRIXN& Cq)
     last_row.segment(0, 3).set_zero();
     last_row.segment(3, 6) = result; 
   }
+
+  // transform the Jacobian as necessary
+  if (transform_jacobian(Cq, inboard, tmp))
+    Cq = tmp;
 }
 
 /// Computes the time derivative of the constraint jacobian with respect to a body
 /**
  * TODO: implement this
  */
-void UNIVERSALJOINT::calc_constraint_jacobian_dot(bool inboard, SHAREDMATRIXN& Cq)
+void UNIVERSALJOINT::calc_constraint_jacobian_dot(bool inboard, MATRIXN& Cq)
 {
   throw std::runtime_error("Implementation required");
 }

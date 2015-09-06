@@ -946,6 +946,7 @@ void RC_ARTICULATED_BODY::determine_implicit_constraint_jacobian(MATRIXN& J)
 {
   const unsigned NGC = num_generalized_coordinates(DYNAMIC_BODY::eSpatial);
   const unsigned NSPATIAL = 6;
+  MATRIXN tmp2;
 
   // determine the number of implicit constraint equations
   unsigned NEQ = 0;
@@ -982,8 +983,8 @@ void RC_ARTICULATED_BODY::determine_implicit_constraint_jacobian(MATRIXN& J)
     SHAREDMATRIXN Cqo = tmp.block(0, tmp.rows(), 0, NGC);
 
     // get constraint equations for inner and outer links
-    _ijoints[i]->calc_constraint_jacobian(true, Cqi);
-    _ijoints[i]->calc_constraint_jacobian(false, Cqo);
+    _ijoints[i]->calc_constraint_jacobian(true, tmp2); Cqi = tmp2;
+    _ijoints[i]->calc_constraint_jacobian(false, tmp2); Cqo = tmp2;
 
     // add Cqo to Cqi
     Cqi += Cqo; 
@@ -1000,6 +1001,7 @@ void RC_ARTICULATED_BODY::determine_implicit_constraint_jacobian_dot(MATRIXN& J)
 {
   const unsigned NGC = num_generalized_coordinates(DYNAMIC_BODY::eSpatial);
   const unsigned NSPATIAL = 6;
+  MATRIXN tmp2;
 
   // determine the number of implicit constraint equations
   unsigned NEQ = 0;
@@ -1036,8 +1038,8 @@ void RC_ARTICULATED_BODY::determine_implicit_constraint_jacobian_dot(MATRIXN& J)
     SHAREDMATRIXN Cqo = tmp.block(0, tmp.rows(), 0, NGC);
 
     // get constraint equations for inner and outer links
-    _ijoints[i]->calc_constraint_jacobian_dot(true, Cqi);
-    _ijoints[i]->calc_constraint_jacobian_dot(false, Cqo);
+    _ijoints[i]->calc_constraint_jacobian_dot(true, tmp2); Cqi = tmp2;
+    _ijoints[i]->calc_constraint_jacobian_dot(false, tmp2); Cqo = tmp2;
 
     // add Cqo to Cqi
     Cqi += Cqo; 

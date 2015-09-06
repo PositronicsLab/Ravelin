@@ -62,7 +62,7 @@ void FIXEDJOINT::setup_joint()
   _rconst[Z] = VECTOR3(Ri.get_row(Z), GLOBAL).dot(VECTOR3(Ro.get_row(Z), GLOBAL));
 }
 
-/// Sets the inboard link
+/// Sets the inboard pose 
 void FIXEDJOINT::set_inboard_pose(shared_ptr<const POSE3> inboard_pose, bool update_joint_pose)
 {
   // call parent method since it does all of the work
@@ -70,7 +70,7 @@ void FIXEDJOINT::set_inboard_pose(shared_ptr<const POSE3> inboard_pose, bool upd
   setup_joint();
 }
 
-/// Sets the outboard link
+/// Sets the outboard pose 
 void FIXEDJOINT::set_outboard_pose(shared_ptr<POSE3> outboard_pose, bool update_joint_pose)
 {
   // call parent method since it does all of the work
@@ -92,16 +92,23 @@ const vector<SVELOCITY>& FIXEDJOINT::get_spatial_axes_dot()
 }
 
 /// Computes the constraint Jacobian
-void FIXEDJOINT::calc_constraint_jacobian(bool inboard, SHAREDMATRIXN& Cq)
+void FIXEDJOINT::calc_constraint_jacobian(bool inboard, MATRIXN& Cq)
 {
+  const unsigned SPATIAL_DIM = 6;
+  MATRIXN tmp;
+
   // set the index
-  Cq.set_identity();
+  Cq.set_identity(SPATIAL_DIM);
   if (!inboard)
-    Cq *= -1.0;
+    Cq.negate();
+
+  // transform the Jacobian, if necessary
+  if (transform_jacobian(Cq, inboard, tmp))
+    Cq = tmp;  
 }
 
 /// Computes the constraint Jacobian
-void FIXEDJOINT::calc_constraint_jacobian_dot(bool inboard, SHAREDMATRIXN& Cq)
+void FIXEDJOINT::calc_constraint_jacobian_dot(bool inboard, MATRIXN& Cq)
 {
   // set the index
   Cq.set_zero();

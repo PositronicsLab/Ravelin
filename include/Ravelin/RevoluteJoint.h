@@ -20,8 +20,8 @@ class REVOLUTEJOINT : public virtual JOINT
     virtual void evaluate_constraints(REAL C[]);
     VECTOR3 get_axis() const;
     void set_axis(const VECTOR3& axis);
-    virtual void calc_constraint_jacobian(bool inboard, SHAREDMATRIXN& Cq);
-    virtual void calc_constraint_jacobian_dot(bool inboard, SHAREDMATRIXN& Cq);
+    virtual void calc_constraint_jacobian(bool inboard, MATRIXN& Cq);
+    virtual void calc_constraint_jacobian_dot(bool inboard, MATRIXN& Cq);
 
     /// Revolute joint can never be in a singular configuration
     virtual bool is_singular_config() const { return false; }
