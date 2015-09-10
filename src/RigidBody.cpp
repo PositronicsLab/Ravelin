@@ -1525,15 +1525,20 @@ unsigned RIGIDBODY::num_generalized_coordinates_single(DYNAMIC_BODY::Generalized
 /// Gets the first parent link of this link; returns NULL if there is no parent
 shared_ptr<RIGIDBODY> RIGIDBODY::get_parent_link() const
 {
-  if (_inner_joints.size() > 1)
-    throw std::runtime_error("Called RIGIDBODY::get_parent_link() when multiple parent links present! It's not reasonable to call this method for links in maximal-coordinate articulated bodies.");
-
   // special case (no parent!)
   if (_inner_joints.empty())
     return shared_ptr<RIGIDBODY>();
 
-  shared_ptr<JOINT> inner = *_inner_joints.begin();
-  return shared_ptr<RIGIDBODY>(inner->get_inboard_link());
+  // iterate through joints, looking for explicit constraint
+  BOOST_FOREACH(shared_ptr<JOINT> j, _inner_joints)
+  {
+    if (j->get_constraint_type() == JOINT::eExplicit)
+      return shared_ptr<RIGIDBODY>(j->get_inboard_link());
+  }
+
+  // should not still be here
+  assert(false);
+  return shared_ptr<RIGIDBODY>();
 }
 
 /// Gets the explicit inner joint of this link; returns NULL if there is no explicit inner joint

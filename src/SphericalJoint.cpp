@@ -352,6 +352,9 @@ void SPHERICALJOINT::calc_constraint_jacobian(bool inboard, MATRIXN& Cq)
   const shared_ptr<const POSE3> GLOBAL;
   MATRIXN tmp;
 
+  // resize the matrix
+  Cq.resize(num_constraint_eqns(), SPATIAL_DIM);
+
   // get the two links
   shared_ptr<const POSE3> Pi = get_inboard_pose();
   shared_ptr<const POSE3> Po = get_outboard_pose();
