@@ -395,45 +395,14 @@ void RC_ARTICULATED_BODY::set_links_and_joints(const vector<shared_ptr<RIGIDBODY
   // clear the vectors of joints
   _ejoints.clear();
   _ijoints.clear();
-
-  // set the computation frame type on all links
-  for (unsigned i=0; i< links.size(); i++)
-    links[i]->set_computation_frame_type(_rftype);
-
-  // find the base link and setup a processed map
-  map<shared_ptr<RIGIDBODY>, bool> processed;
-  shared_ptr<RIGIDBODY> base;
-  for (unsigned i=0; i< joints.size(); i++)
-  {
-    shared_ptr<RIGIDBODY> inboard = joints[i]->get_inboard_link();
-    shared_ptr<RIGIDBODY> outboard = joints[i]->get_outboard_link();
-    shared_ptr<RIGIDBODY> parent = inboard->get_parent_link();
-    if (!parent)
-    {
-      if (base && inboard != base)
-        throw std::runtime_error("Multiple base links detected!");
-      base = inboard;
-    }
-    processed[inboard] = false;
-    processed[outboard] = false;
-  }
-
-  // if there is no clearly defined base link, there are no links *and* there
-  // are joints, we can't do anything
-  if (joints.empty() && links.size() == 1)
-    base = links.front();
-  if (!base)
-    throw std::runtime_error("Could not find base link!");
-
+  
   // start processed at the base link
-  queue<shared_ptr<RIGIDBODY> > link_queue;
-  link_queue.push(base);
-  while (!link_queue.empty())
+  map<shared_ptr<RIGIDBODY>, bool> processed;
+  //queue<shared_ptr<RIGIDBODY> > link_queue;
+  //link_queue.push(base);
+  //while (!link_queue.empty())
+  BOOST_FOREACH(boost::shared_ptr<RIGIDBODY> link, links)
   {
-    // get the link at the front of the queue
-    shared_ptr<RIGIDBODY> link = link_queue.front();
-    link_queue.pop();
-
     // if the link has already been processed, no need to process it again
     if (processed[link])
       continue;
@@ -447,7 +416,6 @@ void RC_ARTICULATED_BODY::set_links_and_joints(const vector<shared_ptr<RIGIDBODY
         _ijoints.push_back(joint);
       else
       {
-        link_queue.push(child);
         _ejoints.push_back(joint);
       }
     }
@@ -455,7 +423,7 @@ void RC_ARTICULATED_BODY::set_links_and_joints(const vector<shared_ptr<RIGIDBODY
     // indicate that the link has been processed
     processed[link] = true;
   }
-
+  
   // recalculate the explicit joint degrees-of-freedom of this body
   _n_joint_DOF_explicit = 0;
   for (unsigned i=0; i< _ejoints.size(); i++)
@@ -466,6 +434,35 @@ void RC_ARTICULATED_BODY::set_links_and_joints(const vector<shared_ptr<RIGIDBODY
     _ejoints[i]->set_constraint_type(JOINT::eExplicit);
   for (unsigned i=0; i< _ijoints.size(); i++)
     _ijoints[i]->set_constraint_type(JOINT::eImplicit);
+
+  // set the computation frame type on all links
+  for (unsigned i=0; i< links.size(); i++)
+    links[i]->set_computation_frame_type(_rftype);
+
+  // find the base link and setup a processed map
+  shared_ptr<RIGIDBODY> base;
+  for (unsigned i=0; i< joints.size(); i++)
+  {
+    shared_ptr<RIGIDBODY> inboard = joints[i]->get_inboard_link();
+    shared_ptr<RIGIDBODY> outboard = joints[i]->get_outboard_link();
+    shared_ptr<RIGIDBODY> parent = inboard->get_parent_link();
+    if (!parent)
+    {
+      if (base && inboard != base)
+        throw std::runtime_error("Multiple base links detected!");
+      base = inboard;
+    }
+//    processed[inboard] = false;
+//    processed[outboard] = false;
+  }
+
+  // if there is no clearly defined base link, there are no links *and* there
+  // are joints, we can't do anything
+  if (joints.empty() && links.size() == 1)
+    base = links.front();
+  if (!base)
+    throw std::runtime_error("Could not find base link!");
+
 
   // check to see whether user's numbering scheme is acceptable
   for (unsigned i=1; i< links.size(); i++)
@@ -517,12 +514,14 @@ void RC_ARTICULATED_BODY::update_link_poses()
   _position_invalidated = true;
 
   // update all joint poses
-  for (unsigned i=0; i< _joints.size(); i++)
+  for (unsigned i=0; i< _joints.size(); i++){
     _joints[i]->get_induced_pose();
+  }
 
   // update the center-of-mass centered / global aligned frame in all links
-  for (unsigned i=0; i< _links.size(); i++)
+  for (unsigned i=0; i< _links.size(); i++){
     _links[i]->update_mixed_pose();
+  }
 
   // print all link poses and joint poses
   if (LOGGING(LOG_DYNAMICS))
