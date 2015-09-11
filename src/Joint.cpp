@@ -17,6 +17,7 @@ JOINT::JOINT()
   _Fb = shared_ptr<POSE3>(new POSE3);
   _Fprime = shared_ptr<POSE3>(new POSE3);
   _Fprime->rpose = _F;
+  _constraint_type = eUnknown;
 }
 
 /// Resets the force on the joint
