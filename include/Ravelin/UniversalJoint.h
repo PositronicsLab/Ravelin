@@ -22,6 +22,7 @@ class UNIVERSALJOINT : public virtual JOINT
     virtual const std::vector<SVELOCITY>& get_spatial_axes_dot();
     virtual unsigned num_dof() const { return 2; }
     virtual void evaluate_constraints(REAL C[]);
+    virtual void evaluate_constraints_dot(REAL C[]);
     virtual void calc_constraint_jacobian(bool inboard, MATRIXN& Cq);
     virtual void calc_constraint_jacobian_dot(bool inboard, MATRIXN& Cq);
 

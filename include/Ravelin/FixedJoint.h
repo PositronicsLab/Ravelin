@@ -22,6 +22,7 @@ class FIXEDJOINT : public virtual JOINT
     virtual void set_outboard_pose(boost::shared_ptr<POSE3> outboard_pose, bool update_joint_pose);
     virtual void calc_constraint_jacobian(bool inboard, MATRIXN& Cq);
     virtual void calc_constraint_jacobian_dot(bool inboard, MATRIXN& Cq);
+    virtual void evaluate_constraints_dot(REAL C[]);
 
     /// Fixed joint can never be in a singular configuration
     virtual bool is_singular_config() const { return false; }

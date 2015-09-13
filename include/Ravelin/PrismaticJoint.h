@@ -18,6 +18,7 @@ class PRISMATICJOINT : public virtual JOINT
     virtual const std::vector<SVELOCITY>& get_spatial_axes_dot();
     virtual unsigned num_dof() const { return 1; }
     virtual void evaluate_constraints(REAL C[]);
+    virtual void evaluate_constraints_dot(REAL C[]);
     VECTOR3 get_axis() const { return _u; }
     void set_axis(const VECTOR3& axis);
     virtual void calc_constraint_jacobian(bool inboard, MATRIXN& Cq);

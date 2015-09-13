@@ -51,7 +51,7 @@ class JOINT : public virtual_enable_shared_from_this<JOINT>
     virtual void set_inboard_pose(boost::shared_ptr<const POSE3> inboard_pose, bool update_joint_pose);
     virtual void set_outboard_pose(boost::shared_ptr<POSE3> outboard_pose, bool update_joint_pose);
     virtual void update_spatial_axes();
-    void evaluate_constraints_dot(REAL C[]);
+    virtual void evaluate_constraints_dot(REAL C[]) = 0;
     virtual void determine_q_tare();
 
     /// Gets the inboard link for this joint
@@ -162,6 +162,7 @@ class JOINT : public virtual_enable_shared_from_this<JOINT>
     virtual void calc_constraint_jacobian_dot(bool inboard, MATRIXN& Cq) = 0;
 
   protected:
+    void calc_constraint_jacobian_numeric(bool inboard, MATRIXN& Cq);
     bool transform_jacobian(MATRIXN& J, bool use_inboard, MATRIXN& output);
     void invalidate_pose_vectors() { get_outboard_link()->invalidate_pose_vectors(); }
     boost::shared_ptr<const POSE3> get_inboard_pose() { if (_inboard_link.expired()) return boost::shared_ptr<const POSE3>(); return get_inboard_link()->get_pose(); }

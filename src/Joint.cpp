@@ -114,41 +114,6 @@ void JOINT::determine_q_tare()
   determine_q(_q_tare);
 }
 
-/// Evaluates the time derivative of the constraint
-void JOINT::evaluate_constraints_dot(REAL C[6])
-{
-  REAL Cx[6];
-
-/*
-  // get the inboard and outboard links
-  RigidBodyPtr in = get_inboard_link();
-  RigidBodyPtr out = get_outboard_link();
-
-  // get the linear angular velocities
-  const SVELOCITY& inv = in->get_velocity();
-  const SVELOCITY& outv = out->get_velocity();
-  VECTOR3 lvi = inv.get_linear();
-  VECTOR3 lvo = outv.get_linear();
-  VECTOR3 avi = inv.get_angular();
-  VECTOR3 avo = outv.get_angular();
-
-  // compute
-  const unsigned NEQ = num_constraint_eqns();
-  for (unsigned i=0; i< NEQ; i++)
-  {
-    // TODO: fix this to do frame calculations
-    calc_constraint_jacobian(DynamicBody::eSpatial, in, i, Cx);
-    VECTOR3 lv(Cx[0], Cx[1], Cx[2]);
-    VECTOR3 av(Cx[3], Cx[4], Cx[5]);
-    C[i] = lv.dot(lvi) + av.dot(avi);
-    calc_constraint_jacobian(DynamicBody::eSpatial, out, i, Cx);
-    lv = VECTOR3(Cx[0], Cx[1], Cx[2]);
-    av = VECTOR3(Cx[3], Cx[4], Cx[5]);
-    C[i] += -lv.dot(lvo) - av.dot(avo);
-  }
-*/
-}
-
 /// Abstract method to update the local spatial axes
 /**
  * Only applicable for reduced-coordinate articulated bodies
@@ -307,5 +272,58 @@ bool JOINT::transform_jacobian(MATRIXN& J, bool use_inboard, MATRIXN& output)
 
   // no transformation necessary
   return false;
+}
+
+/// Computes the constraint jacobian with respect to a body *numerically*
+void JOINT::calc_constraint_jacobian_numeric(bool inboard, MATRIXN& Cq)
+{
+  const unsigned X = 0, Y = 1, Z = 2, SPATIAL_DIM = 6;
+  const shared_ptr<const POSE3> GLOBAL;
+  MATRIXN tmp;
+  REAL C[SPATIAL_DIM];
+
+  // get the inboard and outboard links
+  shared_ptr<RIGIDBODY> board = (inboard) ? get_inboard_link() : get_outboard_link();
+
+  // if the body is disabled, quit now
+  if (!board->is_enabled())
+  {
+    Cq.resize(num_constraint_eqns(), 0);
+    return;
+  }
+
+  // get the super body and the number of generalized coordinates 
+  shared_ptr<DYNAMIC_BODY> super = board->get_super_body();
+  const unsigned NGC = super->num_generalized_coordinates(DYNAMIC_BODY::eSpatial);
+
+  // initialize Cq
+  Cq.set_zero(num_constraint_eqns(), NGC);
+  
+  // store the current generalized velocity
+  VECTORN vsave;
+  super->get_generalized_velocity(DYNAMIC_BODY::eSpatial, vsave);
+
+  // we want to find J such that J*v = \dot{\phi}, where \dot{\phi} is the
+  // constraint velocities 
+  // J*v = \dot{\phi}
+  // J = inv(V)*\dot{\Phi}
+  // if V is the identity matrix, no inversion is necessary
+  VECTORN v;
+  for (unsigned i=0; i< NGC; i++)
+  {
+    // set the generalized velocity to all zeros and a single one
+    v.set_zero(NGC);
+    v[i] = 1.0;
+    super->set_generalized_velocity(DYNAMIC_BODY::eSpatial, v);     
+
+    // evaluate the time derivative of the constraint equation and set
+    // the appropriate column of the matrix 
+    evaluate_constraints_dot(C);
+    for (unsigned j=0; j< num_constraint_eqns(); j++)
+      Cq(j,i) = C[j];
+  }
+
+  // restore the generalized velocity
+  super->set_generalized_velocity(DYNAMIC_BODY::eSpatial, vsave);     
 }
 
