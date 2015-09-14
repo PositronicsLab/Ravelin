@@ -20,7 +20,6 @@ class SPHERICALJOINT : public virtual JOINT
     virtual const std::vector<SVELOCITY>& get_spatial_axes_dot();
     virtual unsigned num_dof() const { return 3; }
     virtual void evaluate_constraints(REAL C[]);
-    virtual void evaluate_constraints_dot(REAL C[]);
     VECTOR3 get_axis(Axis a) const;
     void set_axis(const VECTOR3& axis, Axis a);
     virtual void calc_constraint_jacobian(bool inboard, MATRIXN& Cq);

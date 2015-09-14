@@ -167,14 +167,6 @@ void PRISMATICJOINT::evaluate_constraints(REAL C[])
   C[4] = h1.dot(h2);
 }
 
-/// Evaluates the time derivative of the constraint equations
-void PRISMATICJOINT::evaluate_constraints_dot(REAL C[])
-{
-  // TODO: implement me
-  assert(false);
-}
-
-
 /// Computes the constraint jacobian with respect to a body
 void PRISMATICJOINT::calc_constraint_jacobian(bool inboard, MATRIXN& Cq)
 {

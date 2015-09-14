@@ -327,3 +327,61 @@ void JOINT::calc_constraint_jacobian_numeric(bool inboard, MATRIXN& Cq)
   super->set_generalized_velocity(DYNAMIC_BODY::eSpatial, vsave);     
 }
 
+/// Evaluates the time derivative of the constraint equations
+void JOINT::evaluate_constraints_dot(REAL C_dot[])
+{
+  const unsigned SPATIAL_D = 6;
+  REAL C_before[SPATIAL_D];
+  const REAL DT = 1e-5;
+  vector<VECTORN> q;
+  vector<shared_ptr<DYNAMIC_BODY> > supers;
+
+  // get the inboard and outboard links
+  shared_ptr<RIGIDBODY> inboard = get_inboard_link();
+  shared_ptr<RIGIDBODY> outboard = get_outboard_link();
+
+  // get the inboard and outboard super bodies
+  shared_ptr<DYNAMIC_BODY> inboard_sb = inboard->get_super_body();
+  shared_ptr<DYNAMIC_BODY> outboard_sb = outboard->get_super_body();
+
+  // make super bodies unique, if necessary
+  supers.push_back(inboard_sb);
+  supers.push_back(outboard_sb);
+  std::sort(supers.begin(), supers.end());
+  supers.erase(std::unique(supers.begin(), supers.end()), supers.end());
+
+  // save configurations of super bodies
+  for (unsigned i=0; i< supers.size(); i++)
+  {
+    q.push_back(VECTORN());
+    supers[i]->get_generalized_coordinates(DYNAMIC_BODY::eEuler, q.back());
+  }
+
+  // evaluate constraint equations
+  evaluate_constraints(C_before);
+  
+  // integrate configurations of super bodies forward
+  for (unsigned i=0; i< supers.size(); i++)
+  {
+    VECTORN qd;
+    supers[i]->get_generalized_velocity(DYNAMIC_BODY::eEuler, qd);
+    qd *= DT;
+    qd += q[i];
+    supers[i]->set_generalized_coordinates(DYNAMIC_BODY::eEuler, qd);
+  }
+
+  // re-evaluate constraint equations
+  evaluate_constraints(C_dot);
+
+  // compute time derivative
+  for (unsigned i=0; i< num_constraint_eqns(); i++)
+  {
+    C_dot[i] -= C_before[i];
+    C_dot[i] /= DT;
+  }
+
+  // restore configurations of super bodies
+  for (unsigned i=0; i< supers.size(); i++)
+    supers[i]->set_generalized_coordinates(DYNAMIC_BODY::eEuler, q[i]);
+}
+

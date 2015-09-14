@@ -345,68 +345,6 @@ void SPHERICALJOINT::evaluate_constraints(REAL C[])
   C[2] = r12[Z];
 }
 
-/// Evaluates the time derivative of the constraint equations
-void SPHERICALJOINT::evaluate_constraints_dot(REAL C_dot[])
-{
-  VECTORN point_v, tmpv;
-  MATRIXN Jib, Job;
-  const shared_ptr<const POSE3> GLOBAL_3D;
-
-  // get the inboard and outboard links
-  shared_ptr<RIGIDBODY> inboard = get_inboard_link();
-  shared_ptr<RIGIDBODY> outboard = get_outboard_link();
-
-  // get the inboard and outboard super bodies
-  shared_ptr<DYNAMIC_BODY> inboard_sb = inboard->get_super_body();
-  shared_ptr<DYNAMIC_BODY> outboard_sb = outboard->get_super_body();
-
-  // get the velocities for the two bodies
-  VECTORN inboard_v, outboard_v;
-  inboard_sb->get_generalized_velocity(DYNAMIC_BODY::eSpatial, inboard_v);
-  outboard_sb->get_generalized_velocity(DYNAMIC_BODY::eSpatial, outboard_v);
-
-  // get the joint pose centered in the global frame
-  shared_ptr<POSE3> joint_c_pose(new POSE3);
-  *joint_c_pose = *_F;
-  joint_c_pose->update_relative_pose(GLOBAL_3D);
-  joint_c_pose->q.set_identity();
-
-  // attempt to cast both supers to articulated bodies
-  shared_ptr<RC_ARTICULATED_BODY> inboard_rcab = dynamic_pointer_cast<RC_ARTICULATED_BODY>(inboard_sb);
-  shared_ptr<RC_ARTICULATED_BODY> outboard_rcab = dynamic_pointer_cast<RC_ARTICULATED_BODY>(outboard_sb);
-
-  // setup the source pose for the inboard
-  shared_ptr<POSE3> source_ib;
-  if (inboard_rcab)
-  {
-    if (inboard_rcab->is_floating_base())
-      source_ib = const_pointer_cast<POSE3>(inboard_rcab->get_base_link()->get_pose());
-  }
-  else
-    source_ib = const_pointer_cast<POSE3>(inboard->get_pose());
-
-  // setup the source pose for the outboard
-  shared_ptr<POSE3> source_ob;
-  if (outboard_rcab)
-  {
-    if (outboard_rcab->is_floating_base())
-      source_ob = const_pointer_cast<POSE3>(outboard_rcab->get_base_link()->get_pose());
-  }
-  else
-    source_ob = const_pointer_cast<POSE3>(outboard->get_pose());
-
-  // we need the velocity at the joint pose, taken w.r.t. each link
-  inboard_sb->calc_jacobian(source_ib, joint_c_pose, inboard, Jib);
-  outboard_sb->calc_jacobian(source_ob, joint_c_pose, outboard, Job);
-
-  // do both multiplications and the subtraction
-  Jib.mult(inboard_v, point_v);
-  point_v -= Job.mult(outboard_v, tmpv);
-
-  // constraints are just first three values
-  std::copy(point_v.begin(), point_v.begin()+3, C_dot);
-}
-
 /// Computes the constraint jacobian with respect to a body
 void SPHERICALJOINT::calc_constraint_jacobian(bool inboard, MATRIXN& Cq)
 {

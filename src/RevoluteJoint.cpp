@@ -35,17 +35,21 @@ void REVOLUTEJOINT::set_axis(const VECTOR3& axis)
   // update the spatial axes
   update_spatial_axes(); 
 
+  // make sure that the inboard and outboard link are set 
+  shared_ptr<RIGIDBODY> inboard_link = get_inboard_link();
+  shared_ptr<RIGIDBODY> outboard_link = get_outboard_link();
+  if (!inboard_link || !outboard_link)
+    throw std::runtime_error("Attempt to set joint axis without setting inboard and outboard links first!");
+
   // setup ui and uj
   VECTOR3::determine_orthonormal_basis(_u, _ui, _uj);
- 
-  // make sure that the two poss are set 
-  shared_ptr<const POSE3> b1 = get_inboard_pose();
-  shared_ptr<const POSE3> b2 = get_outboard_pose();
-  if (!b1 || !b2)
-    throw std::runtime_error("Attempt to set joint axis without setting inboard and outboard links first!");
- 
-  // compute joint axis in outer link frame 
-  _v2 = POSE3::transform_vector(b2, naxis); 
+
+  // transform ui and uj to inboard link inertial pose
+  _ui = POSE3::transform_vector(inboard_link->get_inertial_pose(), _ui);
+  _uj = POSE3::transform_vector(inboard_link->get_inertial_pose(), _uj);
+
+  // transform normalized axis to outboard link inertial pose
+  _v2 = POSE3::transform_vector(outboard_link->get_inertial_pose(), naxis); 
 }        
 
 /// Updates the spatial axis for this joint
@@ -116,15 +120,15 @@ void REVOLUTEJOINT::evaluate_constraints(REAL C[])
   shared_ptr<const POSE3> GLOBAL;
   const unsigned X = 0, Y = 1, Z = 2;
 
-  // get the two poses 
-  shared_ptr<const POSE3> b1 = get_inboard_pose();
-  shared_ptr<const POSE3> b2 = get_outboard_pose();
+  // get the inertial pose for the inboard link 
+  shared_ptr<RIGIDBODY> inboard = get_inboard_link(); 
+  shared_ptr<const POSE3> inboard_pose = inboard->get_inertial_pose();
 
   // This code was developed using [Shabana, 2003], p. 435-436; variable names
   // have been altered however
 
   // determine v1, v1i, v1j, and v2 (all in global coordinates)
-  TRANSFORM3 wPi = POSE3::calc_relative_pose(_F, GLOBAL);
+  TRANSFORM3 wPi = POSE3::calc_relative_pose(inboard_pose, GLOBAL);
   VECTOR3 v1i = wPi.transform_vector(_ui);
   VECTOR3 v1j = wPi.transform_vector(_uj);
   VECTOR3 v2 = POSE3::transform_vector(GLOBAL, _v2);
@@ -140,68 +144,6 @@ void REVOLUTEJOINT::evaluate_constraints(REAL C[])
   C[2] = r12[Z];
   C[3] = v1i.dot(v2);
   C[4] = v1j.dot(v2); 
-}
-
-/// Evaluates the time derivative of the constraint equations
-void REVOLUTEJOINT::evaluate_constraints_dot(REAL C_dot[])
-{
-  VECTORN point_v, tmpv;
-  MATRIXN Jib, Job;
-  const shared_ptr<const POSE3> GLOBAL_3D;
-
-  // get the inboard and outboard links
-  shared_ptr<RIGIDBODY> inboard = get_inboard_link();
-  shared_ptr<RIGIDBODY> outboard = get_outboard_link();
-
-  // get the inboard and outboard super bodies
-  shared_ptr<DYNAMIC_BODY> inboard_sb = inboard->get_super_body();
-  shared_ptr<DYNAMIC_BODY> outboard_sb = outboard->get_super_body();
-
-  // get the velocities for the two bodies
-  VECTORN inboard_v, outboard_v;
-  inboard_sb->get_generalized_velocity(DYNAMIC_BODY::eSpatial, inboard_v);
-  outboard_sb->get_generalized_velocity(DYNAMIC_BODY::eSpatial, outboard_v);
-
-  // get the joint pose centered in the global frame
-  shared_ptr<POSE3> joint_c_pose(new POSE3);
-  *joint_c_pose = *_F;
-  joint_c_pose->update_relative_pose(GLOBAL_3D);
-  joint_c_pose->q.set_identity();
-
-  // attempt to cast both supers to articulated bodies
-  shared_ptr<RC_ARTICULATED_BODY> inboard_rcab = dynamic_pointer_cast<RC_ARTICULATED_BODY>(inboard_sb);
-  shared_ptr<RC_ARTICULATED_BODY> outboard_rcab = dynamic_pointer_cast<RC_ARTICULATED_BODY>(outboard_sb);
-
-  // setup the source pose for the inboard
-  shared_ptr<POSE3> source_ib;
-  if (inboard_rcab)
-  {
-    if (inboard_rcab->is_floating_base())
-      source_ib = const_pointer_cast<POSE3>(inboard_rcab->get_base_link()->get_pose());
-  }
-  else
-    source_ib = const_pointer_cast<POSE3>(inboard->get_pose());
-
-  // setup the source pose for the outboard
-  shared_ptr<POSE3> source_ob;
-  if (outboard_rcab)
-  {
-    if (outboard_rcab->is_floating_base())
-      source_ob = const_pointer_cast<POSE3>(outboard_rcab->get_base_link()->get_pose());
-  }
-  else
-    source_ob = const_pointer_cast<POSE3>(outboard->get_pose());
-
-  // we need the velocity at the joint pose, taken w.r.t. each link
-  inboard_sb->calc_jacobian(source_ib, joint_c_pose, inboard, Jib);
-  outboard_sb->calc_jacobian(source_ob, joint_c_pose, outboard, Job);
-
-  // do both multiplications and the subtraction
-  Jib.mult(inboard_v, point_v);
-  point_v -= Job.mult(outboard_v, tmpv);
-
-  // first three constraints are just first three values
-  std::copy(point_v.begin(), point_v.begin()+3, C_dot);
 }
 
 /// Computes the constraint jacobian with respect to a body
@@ -266,6 +208,7 @@ void REVOLUTEJOINT::calc_constraint_jacobian(bool inboard, MATRIXN& Cq)
     ORIGIN3 u = ORIGIN3(POSE3::transform_point(Po, joint_pos));
 
     // get the information necessary to compute the constraint equations
+    MATRIX3 Ri = wPi.q;
     MATRIX3 R = wPo.q;
     ORIGIN3 Ru = R*u;
 
@@ -279,7 +222,7 @@ void REVOLUTEJOINT::calc_constraint_jacobian(bool inboard, MATRIXN& Cq)
     // Jacobian of dot(Ri*_ui, Ro*_v2) w.r.t. outboard is
     // dot(Ri*_ui, Ro*_v2) = (Ri*_ui)' * (-Ro*_v2) x w 
     // transpose((Ri * _ui)' * skew(-Ro*_v2)) = skew(Ro * _v2) * Ri * _ui 
-    ORIGIN3 v1w = R * ORIGIN3(_ui);
+    ORIGIN3 v1w = Ri * ORIGIN3(_ui);
     ORIGIN3 result = MATRIX3::skew_symmetric(R*ORIGIN3(_v2)) * v1w;
     SHAREDVECTORN second_to_last_row = Cq.row(3);
     second_to_last_row.segment(0, 3).set_zero();
@@ -288,7 +231,7 @@ void REVOLUTEJOINT::calc_constraint_jacobian(bool inboard, MATRIXN& Cq)
     // Jacobian of dot(Ri*_uj, Ro*_v2) w.r.t. outboard is
     // dot(Ri*_uj, Ro*_v2) = (Ri*_uj)' * (-Ro*_v2) x w 
     // transpose((Ri * _uj)' * skew(-Ro*_v2)) = skew(Ro * _v2) * Ri * _uj 
-    v1w = R * ORIGIN3(_uj);
+    v1w = Ri * ORIGIN3(_uj);
     result = MATRIX3::skew_symmetric(R*ORIGIN3(_v2)) * v1w;
     SHAREDVECTORN last_row = Cq.row(4);
     last_row.segment(0, 3).set_zero();

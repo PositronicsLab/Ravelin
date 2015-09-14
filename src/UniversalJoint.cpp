@@ -375,11 +375,4 @@ void UNIVERSALJOINT::evaluate_constraints(REAL C[])
   C[3] = h1.dot(h2);
 }
 
-/// Evaluates the time derivative of the constraint equations
-void UNIVERSALJOINT::evaluate_constraints_dot(REAL C[])
-{
-  // TODO: implement me
-  assert(false);
-}
-
 

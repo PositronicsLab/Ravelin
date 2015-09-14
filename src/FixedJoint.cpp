@@ -152,11 +152,4 @@ void FIXEDJOINT::evaluate_constraints(REAL C[])
   C[5] = ZZ - _rconst[Z];
 }
 
-/// Evaluates the time derivative of the constraint equations
-void FIXEDJOINT::evaluate_constraints_dot(REAL C[])
-{
-  // TODO: implement me
-  assert(false);
-}
-
 
