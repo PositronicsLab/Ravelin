@@ -176,7 +176,7 @@ void REVOLUTEJOINT::calc_constraint_jacobian(bool inboard, MATRIXN& Cq)
     ORIGIN3 u = ORIGIN3(POSE3::transform_point(Pi, joint_pos));
 
     // get the information necessary to compute the constraint equations
-    MATRIX3 R = wPi.q;
+    const QUAT& R = wPi.q;
     ORIGIN3 Ru = R*u;
 
     // get positional components of Cq
@@ -208,8 +208,8 @@ void REVOLUTEJOINT::calc_constraint_jacobian(bool inboard, MATRIXN& Cq)
     ORIGIN3 u = ORIGIN3(POSE3::transform_point(Po, joint_pos));
 
     // get the information necessary to compute the constraint equations
-    MATRIX3 Ri = wPi.q;
-    MATRIX3 R = wPo.q;
+    const QUAT& Ri = wPi.q;
+    const QUAT& R = wPo.q;
     ORIGIN3 Ru = R*u;
 
     // get positional components of Cq

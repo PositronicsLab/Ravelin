@@ -312,6 +312,7 @@ void UNIVERSALJOINT::calc_constraint_jacobian(bool inboard, MATRIXN& Cq)
     ORIGIN3 u = ORIGIN3(POSE3::transform_point(Po, joint_pos));
 
     // get the information necessary to compute the constraint equations
+    QUAT& Ri = wPi.q;
     MATRIX3 R = wPo.q;
     ORIGIN3 Ru = R*u;
 
@@ -325,7 +326,7 @@ void UNIVERSALJOINT::calc_constraint_jacobian(bool inboard, MATRIXN& Cq)
     // Jacobian of dot(Ri*_u[DOF_1], Ro*_h2) w.r.t. outboard is
     // dot(Ri*_u[DOF_1], Ro*h2) = (Ri*_h1)' * (-Ro*u) x w 
     // transpose((Ri * _h1)' * skew(-Ro*u)) = skew(Ro * u) * Ri * h1 
-    ORIGIN3 h1w = R * ORIGIN3(_u[DOF_1]);
+    ORIGIN3 h1w = Ri * ORIGIN3(_u[DOF_1]);
     ORIGIN3 result = MATRIX3::skew_symmetric(R*ORIGIN3(_h2)) * h1w;
     SHAREDVECTORN last_row = Cq.row(3);
     last_row.segment(0, 3).set_zero();
