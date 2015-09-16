@@ -377,6 +377,14 @@ void RC_ARTICULATED_BODY::compile()
     ridx += _ijoints[i]->num_constraint_eqns();
   }
 
+  // update relative poses for explicit joints only
+  for (unsigned i=0; i< _ejoints.size(); i++)
+  {
+    shared_ptr<RIGIDBODY> outboard = _ejoints[i]->get_outboard_link();
+    shared_ptr<POSE3> pose = boost::const_pointer_cast<POSE3>(outboard->get_pose());
+    pose->update_relative_pose(_ejoints[i]->get_induced_pose());
+  }
+
   // point both algorithms to this body
   _crb.set_body(get_this());
   _fsab.set_body(get_this());

@@ -178,9 +178,6 @@ void JOINT::set_outboard_pose(shared_ptr<POSE3> pose, bool update_joint_pose)
   else
     _Fb->rpose = pose;
 
-  // set the pose to be relative to Fprime
-  pose->update_relative_pose(_Fprime);
-
   // update spatial axes if both poses are set
   if (_F->rpose && _Fb->rpose)
     update_spatial_axes();
