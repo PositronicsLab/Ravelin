@@ -460,17 +460,31 @@ void RC_ARTICULATED_BODY::set_links_and_joints(const vector<shared_ptr<RIGIDBODY
         throw std::runtime_error("Multiple base links detected!");
       base = inboard;
     }
-//    processed[inboard] = false;
-//    processed[outboard] = false;
   }
 
   // if there is no clearly defined base link, there are no links *and* there
   // are joints, we can't do anything
-  if (joints.empty() && links.size() == 1)
-    base = links.front();
   if (!base)
-    throw std::runtime_error("Could not find base link!");
-
+  {
+    if (joints.empty() && links.size() == 1)
+      base = links.front();
+    else
+    {
+      // look for a disabled link
+      for (unsigned i=0; i< links.size(); i++)
+      {
+        if (!links[i]->is_enabled())
+        {
+          if (base)
+            throw std::runtime_error("Could not find unique base link!");
+          else
+            base = links[i];
+        }
+      }
+    }
+    if (!base)
+      throw std::runtime_error("Could not find base link!");
+  }
 
   // check to see whether user's numbering scheme is acceptable
   for (unsigned i=1; i< links.size(); i++)
