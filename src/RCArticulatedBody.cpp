@@ -405,9 +405,6 @@ shared_ptr<const POSE3> GLOBAL;
 
   // update link transforms and velocities
   update_link_poses();
-std::cout << "link poses (after)" << std::endl;
-for (unsigned i=0; i< _links.size(); i++)
-  std::cout << POSE3::calc_relative_pose(_links[i]->get_pose(), GLOBAL) << std::endl;
   update_link_velocities();
 }
 
