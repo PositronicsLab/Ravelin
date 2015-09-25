@@ -12,7 +12,7 @@
 class POSE2 : public boost::enable_shared_from_this<POSE2>
 {
   public:
-    POSE2(boost::shared_ptr<const POSE2> relative_pose = boost::shared_ptr<const POSE2>());
+    POSE2();
     POSE2(const POSE2& source) { operator=(source); }
     POSE2(const ROT2& r, const ORIGIN2& x, boost::shared_ptr<const POSE2> relative_pose = boost::shared_ptr<const POSE2>());
     POSE2(const ORIGIN2& x, boost::shared_ptr<const POSE2> relative_pose = boost::shared_ptr<const POSE2>());

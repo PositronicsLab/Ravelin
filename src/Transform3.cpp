@@ -276,7 +276,8 @@ TRANSFORM3 TRANSFORM3::operator*(const TRANSFORM3& T) const
  */
 POSE3 TRANSFORM3::apply_transform() const
 {
-  POSE3 result(target->rpose);
+  POSE3 result;
+  result.rpose = target->rpose;
   result.q = source->q * q.inverse();
   result.x = source->x - result.q * x; 
 
@@ -291,7 +292,8 @@ POSE3 TRANSFORM3::apply_transform() const
  */
 POSE3 TRANSFORM3::apply_inverse_transform() const
 {
-  POSE3 result(source->rpose);
+  POSE3 result;
+  result.rpose = source->rpose;
   result.q = target->q * q;
   result.x = target->q * x + target->x;
  
@@ -306,7 +308,8 @@ POSE3 TRANSFORM3::transform(const POSE3& p) const
     throw FrameException();
   #endif
 
-  POSE3 result(target);
+  POSE3 result;
+  result.rpose = target;
   result.q = q * p.q;
   result.x = ORIGIN3(q * p.x) + x; 
  
@@ -321,7 +324,8 @@ POSE3 TRANSFORM3::inverse_transform(const POSE3& p) const
     throw FrameException();
   #endif
 
-  POSE3 result(source);
+  POSE3 result;
+  result.rpose = source;
   QUAT qi = QUAT::invert(q);
   result.q = qi * p.q;
   result.x = ORIGIN3(qi * p.x) - qi*x; 

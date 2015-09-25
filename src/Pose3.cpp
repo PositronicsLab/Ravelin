@@ -10,10 +10,9 @@ using boost::shared_ptr;
 /**
  * Sets matrix to the identity matrix
  */
-POSE3::POSE3(boost::shared_ptr<const POSE3> relative_pose)
+POSE3::POSE3()
 {
   set_identity();
-  rpose = relative_pose;
 }
 
 /// Constructs a pose from a unit quaternion and translation vector

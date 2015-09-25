@@ -173,7 +173,18 @@ MATRIXN& RIGIDBODY::calc_jacobian(shared_ptr<const POSE3> source_pose, shared_pt
   POSE3::spatial_transform_to_matrix2(source_pose, target_pose, J);
 
   FILE_LOG(LOG_DYNAMICS) << "RigidBody::calc_jacobian() entered" << std::endl;
-  FILE_LOG(LOG_DYNAMICS) << "  pose: " << ((target_pose) ? POSE3(*target_pose).update_relative_pose(GLOBAL) : GLOBAL) << std::endl;
+  if (LOGGING(LOG_DYNAMICS))
+  {
+    POSE3 P;
+    if (target_pose)
+    {
+      P.rpose = target_pose;
+      P.update_relative_pose(GLOBAL);
+      FILE_LOG(LOG_DYNAMICS) << "  pose: " << P << std::endl;
+    }
+    else
+      FILE_LOG(LOG_DYNAMICS) << "  pose: " << GLOBAL << std::endl;
+  } 
 
   return J;
 }

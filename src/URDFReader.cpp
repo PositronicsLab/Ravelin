@@ -40,7 +40,7 @@ bool URDFREADER::read(const string& fname, std::string& name, vector<shared_ptr<
       break;
     if (errno != ERANGE)
     {
-      std::cerr << "URDFREADER::read() - unable to allocate sufficient memory!" << std::endl;
+      std::cerr << "URDFReader::read() - unable to allocate sufficient memory!" << std::endl;
       return false;
     }
     BUFSIZE *= 2;
@@ -64,7 +64,7 @@ bool URDFREADER::read(const string& fname, std::string& name, vector<shared_ptr<
   shared_ptr<const XMLTree> tree = XMLTree::read_from_xml(filename);
   if (!tree)
   {
-    std::cerr << "URDFREADER::read() - unable to open file " << fname;
+    std::cerr << "URDFReader::read() - unable to open file " << fname;
     std::cerr << " for reading" << std::endl;
     chdir(cwd.get());
     return false;
@@ -87,7 +87,7 @@ bool URDFREADER::read(const string& fname, std::string& name, vector<shared_ptr<
   }
   else
   {
-    std::cerr << "URDFREADER::read() error - root element of URDF file is not a 'Robot' tag" << std::endl;
+    std::cerr << "URDFReader::read() error - root element of URDF file is not a 'Robot' tag" << std::endl;
     return false;
   }
 
@@ -110,7 +110,7 @@ bool URDFREADER::read_robot(shared_ptr<const XMLTree> node, URDFData& data, stri
   }
   else
   {
-    std::cerr << "URDFREADER::read_robot() - robot name not specified! not processing further..." << std::endl;
+    std::cerr << "URDFReader::read_robot() - robot name not specified! not processing further..." << std::endl;
     return false;
   }
 
@@ -143,7 +143,7 @@ void URDFREADER::read_link(shared_ptr<const XMLTree> node, URDFData& data, vecto
   // link must have the name attribute
   XMLAttrib* name_attrib = node->get_attrib("name");
   if (!name_attrib)
-    std::cerr << "URDFREADER::read_link() - link name not specified! not processing further..." << std::endl;
+    std::cerr << "URDFReader::read_link() - link name not specified! not processing further..." << std::endl;
 
   // read and construct the link
   shared_ptr<RIGIDBODY> link(new RIGIDBODY);
@@ -234,18 +234,18 @@ void URDFREADER::output_data(const URDFData& data, shared_ptr<RIGIDBODY> link)
   shared_ptr<JOINT> joint = find_joint(data, link);
   if (joint)
   {
-    std::cout << "  Moby joint position: " << joint->get_local() << std::endl;
+    std::cout << "  Ravelin joint position: " << joint->get_local() << std::endl;
     shared_ptr<REVOLUTEJOINT> rj = dynamic_pointer_cast<REVOLUTEJOINT>(joint);
     shared_ptr<PRISMATICJOINT> pj = dynamic_pointer_cast<PRISMATICJOINT>(joint);
     if (rj)
-      std::cout << "  Moby joint axis: " << rj->get_axis() << std::endl;
+      std::cout << "  Ravelin joint axis: " << rj->get_axis() << std::endl;
     else if (pj)
-      std::cout << "  Moby joint axis: " << pj->get_axis() << std::endl;
+      std::cout << "  Ravelin joint axis: " << pj->get_axis() << std::endl;
   }
-  std::cout << "  Moby pose: " << std::endl << *link->get_pose();
+  std::cout << "  Ravelin pose: " << std::endl << *link->get_pose();
   if (!link->geometries.empty())
   {
-    std::cout << "  Moby collision pose: " << std::endl << *link->geometries.front()->get_pose();
+    std::cout << "  Ravelin collision pose: " << std::endl << *link->geometries.front()->get_pose();
   }
   #endif
 }
@@ -265,7 +265,7 @@ void URDFREADER::read_joint(shared_ptr<const XMLTree> node, URDFData& data, cons
   XMLAttrib* name_attrib = node->get_attrib("name");
   if (!name_attrib)
   {
-    std::cerr << "URDFREADER::read_joint() - joint name not specified! not processing further..." << std::endl;
+    std::cerr << "URDFReader::read_joint() - joint name not specified! not processing further..." << std::endl;
     return;
   }
 
@@ -273,7 +273,7 @@ void URDFREADER::read_joint(shared_ptr<const XMLTree> node, URDFData& data, cons
   XMLAttrib* type_attrib = node->get_attrib("type");
   if (!type_attrib)
   {
-    std::cerr << "URDFREADER::read_joint() - joint type not specified! not processing further..." << std::endl;
+    std::cerr << "URDFReader::read_joint() - joint type not specified! not processing further..." << std::endl;
     return;
   }
 
@@ -297,17 +297,17 @@ void URDFREADER::read_joint(shared_ptr<const XMLTree> node, URDFData& data, cons
     joint = shared_ptr<FIXEDJOINT>(new FIXEDJOINT);
   else if (strcasecmp(type_attrib->get_string_value().c_str(), "floating") == 0)
   {
-    std::cerr << "URDFREADER::read_joint() - [deprecated] floating joint type specified! not processing further..." << std::endl;
+    std::cerr << "URDFReader::read_joint() - [deprecated] floating joint type specified! not processing further..." << std::endl;
     return;
   }
   else if (strcasecmp(type_attrib->get_string_value().c_str(), "planar") == 0)
   {
-    std::cerr << "URDFREADER::read_joint() - planar joint type currently unsupported in Moby! not processing further..." << std::endl;
+    std::cerr << "URDFReader::read_joint() - planar joint type currently unsupported in Ravelin! not processing further..." << std::endl;
     return;
   }
   else
   {
-    std::cerr << "URDFREADER::read_joint() - invalid joint type specified! not processing further..." << std::endl;
+    std::cerr << "URDFReader::read_joint() - invalid joint type specified! not processing further..." << std::endl;
     return;
   }
 
@@ -315,12 +315,12 @@ void URDFREADER::read_joint(shared_ptr<const XMLTree> node, URDFData& data, cons
   joint->joint_id = name_attrib->get_string_value();
   if (!(inboard = read_parent(node, data, links)))
   {
-    std::cerr << "URDFREADER::read_joint() - failed to properly read parent link! not processing further..." << std::endl;
+    std::cerr << "URDFReader::read_joint() - failed to properly read parent link! not processing further..." << std::endl;
     return;
   }
   if (!(outboard = read_child(node, data, links)))
   {
-    std::cerr << "URDFREADER::read_joint() - failed to properly read child link! not processing further..." << std::endl;
+    std::cerr << "URDFReader::read_joint() - failed to properly read child link! not processing further..." << std::endl;
     return;
   }
 
@@ -438,7 +438,7 @@ void URDFREADER::read_axis(shared_ptr<const XMLTree> node, URDFData& data, share
       assert(false);
   }
   else if (axis_specified)
-    std::cerr << "URDFREADER::read_axis() - joint axis specified for joint w/o axis!" << std::endl;
+    std::cerr << "URDFReader::read_axis() - joint axis specified for joint w/o axis!" << std::endl;
 }
 
 /// Attempts to read and set link inertial properties 

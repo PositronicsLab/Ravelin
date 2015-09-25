@@ -1,5 +1,7 @@
 #include <Ravelin/URDFReaderd.h>
 #include <Ravelin/RCArticulatedBodyd.h>
+#include <Ravelin/Log.h>
+#include <Ravelin/Constants.h>
 
 using std::vector;
 using boost::shared_ptr;
@@ -20,7 +22,6 @@ void integrate(shared_ptr<RCArticulatedBodyd> body, double t, double dt)
   {
     for (unsigned i=0; i< gc.size(); i++)
       std::cout << " " << gc[i];
-    std::cout << std::endl;
   }
   else
   {
@@ -31,15 +32,24 @@ void integrate(shared_ptr<RCArticulatedBodyd> body, double t, double dt)
   // clear the force accumulator on the body
   body->reset_accumulators();
 
-  // add a force to the center of the body
+  // add forces to the center of the last link 
   SForced f(last_link->get_inertial_pose());
+/*
   f[0] = std::cos(t);
   f[1] = std::sin(t);
   f[2] = std::cos(2*t);
   f[3] = std::sin(-3*t);
   f[4] = std::cos(3*t);
   f[5] = std::sin(5*t);
+*/
+  f.set_zero();
+  f[1] = last_link->get_mass() * -9.81;
   last_link->add_force(f);
+
+  // add forces to the center of the second to last link
+  f.pose = body->get_links()[1]->get_inertial_pose();
+  f[1] = body->get_links()[1]->get_mass() * -9.81;
+  body->get_links()[1]->add_force(f); 
 
   // compute forward dynamics
   body->calc_fwd_dyn();
@@ -51,12 +61,19 @@ void integrate(shared_ptr<RCArticulatedBodyd> body, double t, double dt)
   gv += ga;
   body->set_generalized_velocity(DynamicBodyd::eSpatial, gv);
 
+  if (gc.size() > 0)
+  {
+    for (unsigned i=0; i< ga.size(); i++)
+      std::cout << " " << ga[i];
+    std::cout << std::endl;
+  }
+
   // integrate the generalized position forward
   body->get_generalized_velocity(DynamicBodyd::eEuler, gv);
   body->get_generalized_coordinates(DynamicBodyd::eEuler, gc);
   gv *= dt;
   gc += gv;
-  body->set_generalized_coordinates(DynamicBodyd::eSpatial, gc);
+  body->set_generalized_coordinates(DynamicBodyd::eEuler, gc);
 } 
 
 int main(int argc, char* argv[])
@@ -66,6 +83,10 @@ int main(int argc, char* argv[])
     std::cerr << "syntax: TestJoint <urdf file>" << std::endl;
     return -1;
   }
+
+  // log dynamics
+  Log<OutputToFile>::reporting_level = LOG_DYNAMICS;
+  OutputToFile::stream.open("dynamics.log");
 
   // read in the body file
   std::string fname = std::string(argv[1]);
@@ -78,7 +99,22 @@ int main(int argc, char* argv[])
   shared_ptr<RCArticulatedBodyd> rcab(new RCArticulatedBodyd);
   rcab->set_links_and_joints(links, joints); 
 
+  // TBR
+/*
+  VectorNd gc;
+  rcab->get_generalized_coordinates(DynamicBodyd::eEuler, gc);
+  gc[0] = -M_PI_2;
+  rcab->set_generalized_coordinates(DynamicBodyd::eEuler, gc);
+*/
+  
+
+  // set dynamics algorithm and frame
+  rcab->set_computation_frame_type(eLinkCOM);
+  rcab->algorithm_type = RCArticulatedBodyd::eCRB;
+
   for (unsigned i=0; i< 1000; i++)
     integrate(rcab, i/1000.0, 1.0/1000);
+
+  OutputToFile::stream.close();
 }
 

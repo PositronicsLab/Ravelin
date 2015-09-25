@@ -99,7 +99,7 @@ MATRIXN& ARTICULATED_BODY::calc_jacobian(boost::shared_ptr<const POSE3> target_p
   // get the generalized coordinate pose
   if (is_floating_base())
   {
-    boost::shared_ptr<const POSE3> gc_pose = get_base_link()->get_pose();
+    boost::shared_ptr<const POSE3> gc_pose = get_base_link()->get_mixed_pose();
     return calc_jacobian(gc_pose, target_pose, body, J);
   }
   else

@@ -830,7 +830,7 @@ void CRB_ALGORITHM::calc_fwd_dyn_floating_base(shared_ptr<RC_ARTICULATED_BODY> b
 
   if (LOGGING(LOG_DYNAMICS))
   {
-    POSE3 base_pose = links[0]->get_pose();
+    POSE3 base_pose = *links[0]->get_pose();
     base_pose.update_relative_pose(GLOBAL);
     FILE_LOG(LOG_DYNAMICS) << "base pose: " << base_pose << std::endl;
   }
@@ -1032,12 +1032,11 @@ void CRB_ALGORITHM::calc_generalized_forces(SFORCE& f0, VECTORN& C)
     // add I*a to the link force and Euler torque components 
     const SVELOCITY& vx = link->get_velocity(); 
     _w[i] += link->get_inertia() * _a[i];
-    _w[i] += vx.cross(link->get_inertia() * vx);
-
+    FILE_LOG(LOG_DYNAMICS) << "  inertial force: " << vx.cross(link->get_inertia() * vx) << std::endl;
     FILE_LOG(LOG_DYNAMICS) << "  force (+ I*a): " << _w[i] << std::endl;
 
     // subtract external forces
-    SFORCE wext = link->sum_forces(); 
+    SFORCE wext = link->sum_forces() - link->calc_euler_torques(); 
     _w[i] -= wext;
     FILE_LOG(LOG_DYNAMICS) << "  external forces: " << wext << std::endl;
     FILE_LOG(LOG_DYNAMICS) << "  force on link after subtracting external force: " << _w[i] << std::endl;

@@ -17,7 +17,7 @@ class POSE3 : public boost::enable_shared_from_this<POSE3>
   friend class MOVINGTRANSFORM3;
 
   public:
-    POSE3(boost::shared_ptr<const POSE3> relative_pose = boost::shared_ptr<const POSE3>());
+    POSE3();
     POSE3(const POSE3& source) { operator=(source); }
     POSE3(const AANGLE& a, boost::shared_ptr<const POSE3> relative_pose = boost::shared_ptr<const POSE3>());
     POSE3(const MATRIX3& m, boost::shared_ptr<const POSE3> relative_pose = boost::shared_ptr<const POSE3>());

@@ -8,10 +8,9 @@
 /**
  * Sets matrix to the identity matrix
  */
-POSE2::POSE2(boost::shared_ptr<const POSE2> relative_pose)
+POSE2::POSE2()
 {
   set_identity();
-  rpose = relative_pose;
 }
 
 /// Constructs a 2D pose from a rotation and translation vector
