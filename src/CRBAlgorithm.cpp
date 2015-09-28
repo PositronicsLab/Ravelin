@@ -1031,12 +1031,12 @@ void CRB_ALGORITHM::calc_generalized_forces(SFORCE& f0, VECTORN& C)
 
     // add I*a to the link force and Euler torque components 
     const SVELOCITY& vx = link->get_velocity(); 
-    _w[i] += link->get_inertia() * _a[i];
+    _w[i] += link->get_inertia() * _a[i] + vx.cross(link->get_inertia() * vx);
     FILE_LOG(LOG_DYNAMICS) << "  inertial force: " << vx.cross(link->get_inertia() * vx) << std::endl;
     FILE_LOG(LOG_DYNAMICS) << "  force (+ I*a): " << _w[i] << std::endl;
 
     // subtract external forces
-    SFORCE wext = link->sum_forces() - link->calc_euler_torques(); 
+    SFORCE wext = link->sum_forces();// - link->calc_euler_torques(); 
     _w[i] -= wext;
     FILE_LOG(LOG_DYNAMICS) << "  external forces: " << wext << std::endl;
     FILE_LOG(LOG_DYNAMICS) << "  force on link after subtracting external force: " << _w[i] << std::endl;

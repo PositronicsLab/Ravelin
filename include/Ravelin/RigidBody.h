@@ -80,7 +80,7 @@ class RIGIDBODY : public virtual SINGLE_BODY
     void add_outer_joint(boost::shared_ptr<JOINT> j);
     void remove_inner_joint(boost::shared_ptr<JOINT> joint);
     void remove_outer_joint(boost::shared_ptr<JOINT> joint);
-    virtual REAL calc_kinetic_energy();
+    virtual REAL calc_kinetic_energy(boost::shared_ptr<const POSE3> P = boost::shared_ptr<const POSE3>());
     virtual VECTOR3 calc_point_vel(const VECTOR3& p) const;
     bool is_base() const;
     bool is_ground() const;

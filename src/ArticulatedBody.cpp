@@ -379,12 +379,12 @@ void ARTICULATED_BODY::rotate(const QUAT& q)
 }
 
 /// Calculates the combined kinetic energy of all links in this body with respect to the base frame
-REAL ARTICULATED_BODY::calc_kinetic_energy() 
+REAL ARTICULATED_BODY::calc_kinetic_energy(boost::shared_ptr<const POSE3> P) 
 {
   // TODO: fix this to do computation in the base frame
   REAL KE = 0;
   BOOST_FOREACH(shared_ptr<RIGIDBODY> rb, _links)
-    KE += rb->calc_kinetic_energy();
+    KE += rb->calc_kinetic_energy(P);
 
   return KE;
 }

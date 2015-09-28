@@ -1486,7 +1486,7 @@ SHAREDVECTORN& RIGIDBODY::convert_to_generalized_force_single(shared_ptr<SINGLE_
 }
 
 /// Calculates the kinetic energy of the body with respect to the inertial frame
-REAL RIGIDBODY::calc_kinetic_energy()
+REAL RIGIDBODY::calc_kinetic_energy(shared_ptr<const POSE3> P)
 {
   if (!_enabled)
     return (REAL) 0.0;
@@ -1495,13 +1495,13 @@ REAL RIGIDBODY::calc_kinetic_energy()
   const SVELOCITY& xd = get_velocity();
   const SPATIAL_RB_INERTIA& J = get_inertia();
 */
-  SVELOCITY xd = POSE3::transform(get_gc_pose(), get_velocity());
-  SPATIAL_RB_INERTIA J = POSE3::transform(get_gc_pose(), get_inertia());
+  SVELOCITY xd = POSE3::transform(P, get_velocity());
+  SPATIAL_RB_INERTIA J = POSE3::transform(P, get_inertia());
 
   VECTOR3 v = xd.get_linear();
   VECTOR3 w = xd.get_angular();
   VECTOR3 wx = VECTOR3(J.J*ORIGIN3(w), w.pose);
-  return (v.norm_sq()*J.m + w.dot(wx))*0.5;
+  return (v.norm_sq()*J.m + w.dot(wx))*(REAL) 0.5;
 
 // return xd.dot(J * xd) * 0.5;
 }

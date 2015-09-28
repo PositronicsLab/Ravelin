@@ -23,7 +23,7 @@ class ARTICULATED_BODY : public virtual DYNAMIC_BODY
     unsigned num_constraint_eqns_implicit() const;
     virtual void rotate(const QUAT& q);
     virtual void translate(const ORIGIN3& o);
-    virtual REAL calc_kinetic_energy();
+    virtual REAL calc_kinetic_energy(boost::shared_ptr<const POSE3> P = boost::shared_ptr<const POSE3>());
     boost::shared_ptr<RIGIDBODY> find_link(const std::string& id) const; 
     boost::shared_ptr<JOINT> find_joint(const std::string& id) const; 
     void get_adjacent_links(std::list<sorted_pair<boost::shared_ptr<RIGIDBODY> > >& links) const;

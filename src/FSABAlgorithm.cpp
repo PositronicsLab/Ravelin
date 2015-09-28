@@ -668,7 +668,7 @@ void FSAB_ALGORITHM::calc_spatial_zero_accelerations(shared_ptr<RC_ARTICULATED_B
     shared_ptr<RIGIDBODY> link = links[j];
     const unsigned i = link->get_index();
 
-    // get the spatial link velocity
+    // calculate inertial and Coriolis forces 
     const SVELOCITY& v = link->get_velocity();
 
     // set 6-dimensional spatial isolated zero-acceleration vector of link  
@@ -738,6 +738,7 @@ void FSAB_ALGORITHM::calc_spatial_zero_accelerations(shared_ptr<RC_ARTICULATED_B
     if (LOGGING(LOG_DYNAMICS) && !sprime.empty()) 
     FILE_LOG(LOG_DYNAMICS) << "    s': " << sprime.front() << endl;  
     FILE_LOG(LOG_DYNAMICS) << "    I: " << I << endl;
+    FILE_LOG(LOG_DYNAMICS) << "    Is: " << Is.front() << endl;
     FILE_LOG(LOG_DYNAMICS) << "    c: " << c << endl;
     FILE_LOG(LOG_DYNAMICS) << "    qm subexp: " << mu << endl;
     FILE_LOG(LOG_DYNAMICS) << "    recursive Z: " << Z << endl;

@@ -50,7 +50,7 @@ class DYNAMIC_BODY : public virtual_enable_shared_from_this<DYNAMIC_BODY>
     virtual void translate(const ORIGIN3& o) = 0;
 
     /// Calculates the kinetic energy of the body in an arbitrary frame
-    virtual REAL calc_kinetic_energy() = 0;
+    virtual REAL calc_kinetic_energy(boost::shared_ptr<const POSE3> P = boost::shared_ptr<const POSE3>()) = 0;
 
     /// Gets the frame for generalized coordinates
     virtual boost::shared_ptr<const POSE3> get_gc_pose() const = 0;
