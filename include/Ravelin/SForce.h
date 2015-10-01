@@ -12,6 +12,8 @@ class SAXIS;
 
 class SFORCE : public SVECTOR6 
 {
+  friend class SMOMENTUM;
+
   public:
     /// Constructs a spatial force with zero force and torque components
     SFORCE(boost::shared_ptr<const POSE3> pose = boost::shared_ptr<const POSE3>()) : SVECTOR6(pose) {} 
@@ -80,6 +82,8 @@ class SFORCE : public SVECTOR6
     VECTOR3 get_torque() const { return get_lower(); }
     SFORCE& operator=(const SFORCE& source) { SVECTOR6::operator=(source); return *this; } 
     SFORCE& operator=(const SVECTOR6& source) { SVECTOR6::operator=(source); return *this; } 
+    SFORCE& operator+=(const SMOMENTUM& v);
+    SFORCE& operator-=(const SMOMENTUM& v);
 
     /// Returns the negation of this vector
     SFORCE operator-() const
@@ -132,6 +136,8 @@ class SFORCE : public SVECTOR6
 
     SFORCE operator+(const SFORCE& v) const { SFORCE x = *this; x += v; return x; }
     SFORCE operator-(const SFORCE& v) const { SFORCE x = *this; x -= v; return x; }
+    SFORCE operator+(const SMOMENTUM& v) const { SFORCE x = *this; x += v; return x; }
+    SFORCE operator-(const SMOMENTUM& v) const { SFORCE x = *this; x -= v; return x; }
     SFORCE operator*(REAL scalar) const { SFORCE v = *this; v*= scalar; return v;}
     SFORCE operator/(REAL scalar) const { SFORCE v = *this; v/= scalar; return v;}
 /*

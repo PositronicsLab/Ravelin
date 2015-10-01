@@ -71,9 +71,18 @@ void SPATIAL_RB_INERTIA::mult_spatial(const SVECTOR6& t, SVECTOR6& result) const
   MATRIX3 hx = MATRIX3::skew_symmetric(h);
   MATRIX3 hxm = MATRIX3::skew_symmetric(h*m);
 
+  // Featherstone's code uses this format:
+  // J-hx*hx*m hx*m
+  // -hx*m     mI
+
+  // our format is:
+  // -hx*m     mI
+  // J-hx*hx*m hx*m
+  
+
   // compute result
   VECTOR3 rtop(tbot*m + hxm.transpose_mult(ttop), pose);
-  VECTOR3 rbot((J-hx*hxm)*ttop + hxm*tbot, pose);
+  VECTOR3 rbot(J*ttop-(hx*(hxm*ttop)) + hxm*tbot, pose);
   result.pose = pose;
   result.set_upper(rtop);
   result.set_lower(rbot);  

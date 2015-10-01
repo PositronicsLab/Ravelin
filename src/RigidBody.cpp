@@ -41,15 +41,15 @@ RIGIDBODY::RIGIDBODY()
   // invalidate everything
   _forcei_valid = false;
   _forcej_valid = false;
-  _forcem_valid = false;
+  _forcecom_valid = false;
   _force0_valid = false;
   _xdi_valid = false;
   _xdj_valid = false;
-  _xdm_valid = false;
+  _xdcom_valid = false;
   _xd0_valid = false;
   _xddi_valid = false;
   _xddj_valid = false;
-  _xddm_valid = false;
+  _xddcom_valid = false;
   _xdd0_valid = false;
   _Ji_valid = false;
   _Jj_valid = false;
@@ -111,9 +111,9 @@ void RIGIDBODY::rotate(const QUAT& q)
   update_mixed_pose();
 
   // invalidate vector quantities
-  _forcei_valid = _forcem_valid = _force0_valid = false;
-  _xdi_valid = _xdm_valid = _xd0_valid = false;
-  _xddi_valid = _xddm_valid = _xdd0_valid = false;
+  _forcei_valid = _forcecom_valid = _force0_valid = false;
+  _xdi_valid = _xdcom_valid = _xd0_valid = false;
+  _xddi_valid = _xddcom_valid = _xdd0_valid = false;
 
   // invalidate inertias
   _Ji_valid = false;
@@ -206,9 +206,9 @@ void RIGIDBODY::translate(const ORIGIN3& x)
   update_mixed_pose();
 
   // invalidate vector quantities
-  _forcei_valid = _forcem_valid = _force0_valid = false;
-  _xdi_valid = _xdm_valid = _xd0_valid = false;
-  _xddi_valid = _xddm_valid = _xdd0_valid = false;
+  _forcei_valid = _forcecom_valid = _force0_valid = false;
+  _xdi_valid = _xdcom_valid = _xd0_valid = false;
+  _xddi_valid = _xddcom_valid = _xdd0_valid = false;
 
   // invalidate inertias
   _Ji_valid = false;
@@ -261,40 +261,43 @@ void RIGIDBODY::calc_fwd_dyn()
     SFORCE f = sum_forces() - calc_euler_torques();
     SACCEL xdd = J.inverse_mult(f);
 
+    // get current velocity
+    SVELOCITY xd = get_velocity();
+
     FILE_LOG(LOG_DYNAMICS) << "Dynamics: " << POSE3::transform(_F2, xdd, _xdcom) << std::endl;
     // set the acceleration
     switch (_rftype)
     {
       case eGlobal:
         _xdd0 = xdd;
-        _xddcom = POSE3::transform(_F2, xdd, _xdcom);
-        _xddi_valid = _xddj_valid = _xddm_valid = false;
+        _xddm = POSE3::transform(_jF, xdd, xd);
+        _xddi_valid = _xddj_valid = _xddcom_valid = false;
         break;
 
       case eLinkCOM:
         _xddcom = xdd;
-        _xddi_valid = _xddj_valid = _xddm_valid = _xdd0_valid = false;
+        _xddcom_valid = true;
+        _xddm = POSE3::transform(_jF, xdd, xd);
+        _xddi_valid = _xddj_valid = _xdd0_valid = false;
         break;
 
       case eLink:
         _xddi = xdd;
-        _xddcom = POSE3::transform(_F2, xdd, _xdcom);
+        _xddm = POSE3::transform(_jF, xdd, xd);
         _xddi_valid = true;
-        _xddj_valid = _xddm_valid = _xdd0_valid = false;
+        _xddj_valid = _xddcom_valid = _xdd0_valid = false;
         break;
 
       case eLinkInertia:
         _xddm = xdd;
-        _xddcom = POSE3::transform(_F2, xdd, _xdcom);
-        _xddm_valid = true;
-        _xddi_valid = _xddj_valid = _xdd0_valid = false;
+        _xddcom_valid = _xddi_valid = _xddj_valid = _xdd0_valid = false;
         break;
 
       case eJoint:
         _xddj = xdd;
-        _xddcom = POSE3::transform(_F2, xdd, _xdcom);
+        _xddcom = POSE3::transform(_jF, xdd, xd);
         _xddj_valid = true;
-        _xddi_valid = _xddm_valid = _xdd0_valid = false;
+        _xddi_valid = _xddcom_valid = _xdd0_valid = false;
         break;
 
       default:
@@ -335,8 +338,8 @@ void RIGIDBODY::set_enabled(bool flag)
     _xddj.set_zero();
     _xdm.set_zero();
     _xddm.set_zero();
-    _xdi_valid = _xdj_valid = _xdm_valid = _xd0_valid = true;
-    _xddi_valid = _xddj_valid = _xddm_valid = _xdd0_valid = true;
+    _xdi_valid = _xdj_valid = _xdcom_valid = _xd0_valid = true;
+    _xddi_valid = _xddj_valid = _xddcom_valid = _xdd0_valid = true;
   }
 }
 
@@ -346,10 +349,10 @@ void RIGIDBODY::set_velocity(const SVELOCITY& xd)
   const shared_ptr<const POSE3> GLOBAL;
 
   // set the velocity
-  _xdcom = POSE3::transform(const_pointer_cast<const POSE3>(_F2), xd);
+  _xdm = POSE3::transform(dynamic_pointer_cast<const POSE3>(_jF), xd);
 
   // invalidate the remaining velocities
-  _xdi_valid = _xdj_valid = _xdm_valid = _xd0_valid = false;
+  _xdi_valid = _xdj_valid = _xdcom_valid = _xd0_valid = false;
 
   // see whether we can re-validate a velocity
   if (xd.pose == _F)
@@ -357,10 +360,10 @@ void RIGIDBODY::set_velocity(const SVELOCITY& xd)
     _xdi_valid = true;
     _xdi = xd;
   }
-  else if (xd.pose == _jF)
+  else if (xd.pose == _F2)
   {
-    _xdm_valid = true;
-    _xdm = xd;
+    _xdcom_valid = true;
+    _xdcom = xd;
   }
   else if (!is_base() && xd.pose == get_inner_joint_explicit()->get_pose())
   {
@@ -380,13 +383,13 @@ void RIGIDBODY::set_accel(const SACCEL& xdd)
   const shared_ptr<const POSE3> GLOBAL;
 
   // get the velocity
-  SVELOCITY xd = POSE3::transform(xdd.pose, _xdcom);
+  SVELOCITY xd = POSE3::transform(xdd.pose, _xdm);
 
   // set the acceleration
-  _xddcom = POSE3::transform(_F2, xdd, xd);
+  _xddm = POSE3::transform(_jF, xdd, xd);
 
   // invalidate the remaining accelerations
-  _xddi_valid = _xddj_valid = _xddm_valid = _xdd0_valid = false;
+  _xddi_valid = _xddj_valid = _xddcom_valid = _xdd0_valid = false;
 
   // see whether we can re-validate an acceleration
   if (xdd.pose == _F)
@@ -394,10 +397,10 @@ void RIGIDBODY::set_accel(const SACCEL& xdd)
     _xddi_valid = true;
     _xddi = xdd;
   }
-  else if (xdd.pose == _jF)
+  else if (xdd.pose == _F2)
   {
-    _xddm_valid = true;
-    _xddm = xdd;
+    _xddcom_valid = true;
+    _xddcom = xdd;
   }
   else if (!is_base() && xdd.pose == get_inner_joint_explicit()->get_pose())
   {
@@ -464,7 +467,7 @@ void RIGIDBODY::set_inertial_pose(const POSE3& P)
   update_mixed_pose();
 
   // invalidate vectors using inertial frame
-  _xdm_valid = _xddm_valid = _forcem_valid = false;
+  _xdcom_valid = _xddcom_valid = _forcecom_valid = false;
 }
 
 /// Gets the current sum of forces on this body
@@ -476,28 +479,28 @@ const SFORCE& RIGIDBODY::sum_forces()
   {
     case eGlobal:
       if (!_force0_valid)
-        _force0 = POSE3::transform(GLOBAL, _forcecom);
+        _force0 = POSE3::transform(GLOBAL, _forcem);
       _force0_valid = true;
       return _force0;
 
     case eLink:
       if (!_forcei_valid)
-        _forcei = POSE3::transform(_F, _forcecom);
+        _forcei = POSE3::transform(_F, _forcem);
       _forcei_valid = true;
       return _forcei;
 
-    case eLinkInertia:
-      if (!_forcem_valid)
-        _forcem = POSE3::transform(_jF, _forcecom);
-      _forcem_valid = true;
-      return _forcem;
-
     case eLinkCOM:
+      if (!_forcecom_valid)
+        _forcecom = POSE3::transform(_F2, _forcem);
+      _forcecom_valid = true;
       return _forcecom;
+
+    case eLinkInertia:
+      return _forcem;
 
     case eJoint:
       if (!_forcej_valid)
-        _forcej = POSE3::transform((is_base()) ? _F : get_inner_joint_explicit()->get_pose(), _forcecom);
+        _forcej = POSE3::transform((is_base()) ? _F : get_inner_joint_explicit()->get_pose(), _forcem);
       _forcej_valid = true;
       return _forcej;
 
@@ -513,8 +516,8 @@ const SVELOCITY& RIGIDBODY::get_velocity()
 
   switch (_rftype)
   {
-    case eLinkCOM:
-      return _xdcom;
+    case eLinkInertia:
+      return _xdm;
 
     case eLink:
       if (!_xdi_valid)
@@ -522,21 +525,21 @@ const SVELOCITY& RIGIDBODY::get_velocity()
       _xdi_valid = true;
       return _xdi;
 
-    case eLinkInertia:
-      if (!_xdm_valid)
-        _xdm = POSE3::transform(const_pointer_cast<const POSE3>(_jF), _xdcom);
-      _xdm_valid = true;
-      return _xdm;
+    case eLinkCOM:
+      if (!_xdcom_valid)
+        _xdcom = POSE3::transform(const_pointer_cast<const POSE3>(_F2), _xdm);
+      _xdcom_valid = true;
+      return _xdcom;
 
     case eJoint:
       if (!_xdj_valid)
-        _xdj = POSE3::transform((is_base()) ? _F : get_inner_joint_explicit()->get_pose(), _xdcom);
+        _xdj = POSE3::transform((is_base()) ? _F : get_inner_joint_explicit()->get_pose(), _xdm);
       _xdj_valid = true;
       return _xdj;
 
     case eGlobal:
       if (!_xd0_valid)
-        _xd0 = POSE3::transform(GLOBAL, _xdcom);
+        _xd0 = POSE3::transform(GLOBAL, _xdm);
       _xd0_valid = true;
       return _xd0;
 
@@ -592,35 +595,35 @@ const SACCEL& RIGIDBODY::get_accel()
   // do simplified case where body is disabled
   if (!is_enabled())
   {
-    _xddi_valid = _xddm_valid = _xddj_valid = _xdd0_valid = true;
+    _xddi_valid = _xddcom_valid = _xddj_valid = _xdd0_valid = true;
   }
 
   switch (_rftype)
   {
-    case eLinkCOM:
-      return _xddcom;
+    case eLinkInertia:
+      return _xddm;
 
     case eLink:
       if (!_xddi_valid)
-        _xddi = POSE3::transform(_F, _xddcom, _xdcom);
+        _xddi = POSE3::transform(_F, _xddm, _xdm);
       _xddi_valid = true;
       return _xddi;
 
-    case eLinkInertia:
-      if (!_xddm_valid)
-        _xddm = POSE3::transform(_jF, _xddcom, _xdcom);
-      _xddm_valid = true;
-      return _xddm;
+    case eLinkCOM:
+      if (!_xddcom_valid)
+        _xddcom = POSE3::transform(_F2, _xddm, _xdm);
+      _xddcom_valid = true;
+      return _xddcom;
 
     case eJoint:
       if (!_xddj_valid)
-        _xddj = POSE3::transform((is_base()) ? _F : get_inner_joint_explicit()->get_pose(), _xddcom, _xdcom);
+        _xddj = POSE3::transform((is_base()) ? _F : get_inner_joint_explicit()->get_pose(), _xddm, _xdm);
       _xddj_valid = true;
       return _xddj;
 
     case eGlobal:
       if (!_xdd0_valid)
-        _xdd0 = POSE3::transform(GLOBAL, _xddcom, _xdcom);
+        _xdd0 = POSE3::transform(GLOBAL, _xddm, _xdm);
       _xdd0_valid = true;
       return _xdd0;
 
@@ -641,7 +644,7 @@ void RIGIDBODY::reset_accumulators()
 
   // validate all forces
   _forcei_valid = true;
-  _forcem_valid = true;
+  _forcecom_valid = true;
   _forcej_valid = true;
   _force0_valid = true;
 }
@@ -679,6 +682,9 @@ void RIGIDBODY::update_mixed_pose()
   _F2->rpose = _jF;
   _F2->update_relative_pose(GLOBAL);
   _F2->q.set_identity();
+
+  // invalidate pose vectors
+  invalidate_pose_vectors();
 }
 
 /// Sets the current 3D pose for this rigid body
@@ -696,18 +702,15 @@ void RIGIDBODY::set_pose(const POSE3& p)
 
   // update the mixed pose
   update_mixed_pose();
-
-  // invalidate pose vectors
-  invalidate_pose_vectors();
 }
 
 /// Invalidates pose quantities
 void RIGIDBODY::invalidate_pose_vectors()
 {
   // invalidate vector quantities
-  _forcei_valid = _forcem_valid = _force0_valid = false;
-  _xdi_valid = _xdm_valid = _xd0_valid = false;
-  _xddi_valid = _xddm_valid = _xdd0_valid = false;
+  _forcei_valid = _forcecom_valid = _force0_valid = false;
+  _xdi_valid = _xdcom_valid = _xd0_valid = false;
+  _xddi_valid = _xddcom_valid = _xdd0_valid = false;
 
   // invalidate inertias
   _Ji_valid = false;
@@ -744,7 +747,7 @@ void RIGIDBODY::set_force(const SFORCE& w)
     return;
 
   // update the force
-  _forcecom = POSE3::transform(_F2, w);
+  _forcem = POSE3::transform(_jF, w);
 
   // see whether we update a force
   if (w.pose == _F)
@@ -753,12 +756,12 @@ void RIGIDBODY::set_force(const SFORCE& w)
     _forcei = w;
 
     // invalidate the remaining forces
-    _forcej_valid = _forcem_valid = _force0_valid = false;
+    _forcej_valid = _forcecom_valid = _force0_valid = false;
   }
-  else if (w.pose == _jF)
+  else if (w.pose == _F2)
   {
-    _forcem_valid = true;
-    _forcem = w;
+    _forcecom_valid = true;
+    _forcecom = w;
 
     // invalidate the remaining forces
     _forcei_valid = _forcej_valid = _force0_valid = false;
@@ -769,7 +772,7 @@ void RIGIDBODY::set_force(const SFORCE& w)
     _forcej = w;
 
     // invalidate the remaining forces
-    _forcei_valid = _forcem_valid = _force0_valid = false;
+    _forcei_valid = _forcecom_valid = _force0_valid = false;
   }
   else if (w.pose == GLOBAL)
   {
@@ -777,11 +780,11 @@ void RIGIDBODY::set_force(const SFORCE& w)
     _force0 = w;
 
     // invalidate the remaining forces
-    _forcei_valid = _forcem_valid = _forcej_valid = false;
+    _forcei_valid = _forcecom_valid = _forcej_valid = false;
   }
   else
     // invalidate the remaining forces
-    _forcei_valid = _forcej_valid = _forcem_valid = _force0_valid = false;
+    _forcei_valid = _forcej_valid = _forcecom_valid = _force0_valid = false;
 }
 
 /// Adds a force to the body
@@ -794,7 +797,7 @@ void RIGIDBODY::add_force(const SFORCE& w)
     return;
 
   // update the force
-  _forcecom += POSE3::transform(_F2, w);
+  _forcem += POSE3::transform(_jF, w);
 
   // see whether we update a force
   if (w.pose == _F)
@@ -803,12 +806,12 @@ void RIGIDBODY::add_force(const SFORCE& w)
       _forcei += w;
 
     // invalidate the remaining forces
-    _forcej_valid = _forcem_valid = _force0_valid = false;
+    _forcej_valid = _forcecom_valid = _force0_valid = false;
   }
-  else if (w.pose == _jF)
+  else if (w.pose == _F2)
   {
-    if (_forcem_valid)
-      _forcem += w;
+    if (_forcecom_valid)
+      _forcecom += w;
 
     // invalidate the remaining forces
     _forcei_valid = _forcej_valid = _force0_valid = false;
@@ -819,7 +822,7 @@ void RIGIDBODY::add_force(const SFORCE& w)
       _forcej += w;
 
     // invalidate the remaining forces
-    _forcei_valid = _forcem_valid = _force0_valid  = false;
+    _forcei_valid = _forcecom_valid = _force0_valid  = false;
   }
   else if (w.pose == GLOBAL)
   {
@@ -827,11 +830,11 @@ void RIGIDBODY::add_force(const SFORCE& w)
       _force0 += w;
 
     // invalidate the remaining forces
-    _forcei_valid = _forcem_valid = _forcej_valid  = false;
+    _forcei_valid = _forcecom_valid = _forcej_valid  = false;
   }
   else
     // invalidate the remaining forces
-    _forcei_valid = _forcej_valid = _forcem_valid = _force0_valid  = false;
+    _forcei_valid = _forcej_valid = _forcecom_valid = _force0_valid  = false;
 }
 
 /// Calculates the velocity of a point on this rigid body in the body frame
@@ -993,35 +996,35 @@ void RIGIDBODY::apply_impulse(const SMOMENTUM& w)
     SVELOCITY dxd = get_inertia().inverse_mult(wx);
 
     // update linear and angular velocities
-    _xdcom += POSE3::transform(const_pointer_cast<const POSE3>(_F2), dxd);
+    _xdm += POSE3::transform(const_pointer_cast<const POSE3>(_jF), dxd);
 
     // see whether we can update any velocities
     if (dxd.pose == _F)
     {
       if (_xdi_valid)
         _xdi += dxd;
-      _xdj_valid = _xdm_valid = _xd0_valid = false;
+      _xdj_valid = _xdcom_valid = _xd0_valid = false;
     }
-    else if (dxd.pose == _jF)
+    else if (dxd.pose == _F2)
     {
-      if (_xdm_valid)
-        _xdm += dxd;
+      if (_xdcom_valid)
+        _xdcom += dxd;
       _xdj_valid = _xdi_valid = _xd0_valid = false;
     }
     else if (!is_base() && dxd.pose == get_inner_joint_explicit()->get_pose())
     {
       if (_xdj_valid)
         _xdj += dxd;
-      _xdm_valid = _xdi_valid = _xd0_valid = false;
+      _xdcom_valid = _xdi_valid = _xd0_valid = false;
     }
     else if (dxd.pose == GLOBAL)
     {
       if (_xd0_valid)
         _xd0 += dxd;
-      _xdm_valid = _xdi_valid = _xdj_valid = false;
+      _xdcom_valid = _xdi_valid = _xdj_valid = false;
     }
     else
-      _xdm_valid = _xdi_valid = _xdj_valid = _xd0_valid = false;
+      _xdcom_valid = _xdi_valid = _xdj_valid = _xd0_valid = false;
 
 
     // reset the force and torque accumulators for this body
@@ -1142,18 +1145,14 @@ void RIGIDBODY::apply_generalized_impulse_single(const SHAREDVECTORN& gj)
   w.set_angular(VECTOR3(gj[3], gj[4], gj[5]));
   w.pose = _F2;
 
-  // get the inertia in the link COM frame
-  if (!_Jcom_valid)
-  {
-    _Jcom = POSE3::transform(_F2, _Jm);
-    _Jcom_valid = true;
-  }
+  // get the impulse in the inertial frame
+  SMOMENTUM wj = POSE3::transform(_jF, w);
 
   // get the current velocity in the inertial frame
-  SVELOCITY v = _xdcom;
+  SVELOCITY v = _xdm;
 
   // update the velocity
-  v += _Jcom.inverse_mult(w);
+  v += _Jm.inverse_mult(wj);
 
   set_velocity(v);
 }

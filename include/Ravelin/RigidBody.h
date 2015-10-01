@@ -207,8 +207,8 @@ class RIGIDBODY : public virtual SINGLE_BODY
     /// Indicates whether inner joint frame velocity is valid (up-to-date)
     bool _xdj_valid;
 
-    /// Indicates whether inertial frame velocity is valid (up-to-date)
-    bool _xdm_valid;
+    /// Indicates whether mixed frame velocity is valid (up-to-date)
+    bool _xdcom_valid;
 
     /// Indicates whether global frame velocity is valid (up-to-date)
     bool _xd0_valid;
@@ -220,7 +220,7 @@ class RIGIDBODY : public virtual SINGLE_BODY
     bool _xdd0_valid;
 
     /// Indicates whether inertial frame acceleration is valid (up-to-date)
-    bool _xddm_valid;
+    bool _xddcom_valid;
 
     /// Indicates whether link frame force is valid (up-to-date)
     bool _forcei_valid;
@@ -228,8 +228,8 @@ class RIGIDBODY : public virtual SINGLE_BODY
     /// Indicates whether inner joint frame force is valid (up-to-date)
     bool _forcej_valid;
 
-    /// Indicates whether inertial frame force is valid (up-to-date)
-    bool _forcem_valid;
+    /// Indicates whether mixed frame force is valid (up-to-date)
+    bool _forcecom_valid;
 
     /// Indicates whether global frame force is valid (up-to-date)
     bool _force0_valid;

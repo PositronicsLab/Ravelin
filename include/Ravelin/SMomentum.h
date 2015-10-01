@@ -10,6 +10,8 @@
 
 class SMOMENTUM : public SVECTOR6 
 {
+  friend class SFORCE;
+
   public:
     /// Constructs a spatial momentum with zero linear and angular components
     SMOMENTUM(boost::shared_ptr<const POSE3> pose = boost::shared_ptr<const POSE3>()) : SVECTOR6(pose) {} 
@@ -75,8 +77,11 @@ class SMOMENTUM : public SVECTOR6
     VECTOR3 get_linear() const { return get_upper(); }
     VECTOR3 get_angular() const { return get_lower(); }
     SMOMENTUM& operator=(const SMOMENTUM& source) { SVECTOR6::operator=(source); return *this; } 
+    SMOMENTUM& operator=(const SFORCE& source) { SVECTOR6::operator=(source); return *this; } 
     SMOMENTUM& operator=(const SVECTOR6& source) { SVECTOR6::operator=(source); return *this; } 
     REAL dot(const SVELOCITY& s) const;
+    SMOMENTUM& operator-=(const SFORCE& v);
+    SMOMENTUM& operator+=(const SFORCE& v);
 
     /// Returns the negation of this vector
     SMOMENTUM operator-() const
@@ -128,7 +133,9 @@ class SMOMENTUM : public SVECTOR6
     }
 
     SMOMENTUM operator+(const SMOMENTUM& v) const { SMOMENTUM x = *this; x += v; return x; }
+    SMOMENTUM operator+(const SFORCE& v) const { SMOMENTUM x = *this; x += v; return x; }
     SMOMENTUM operator-(const SMOMENTUM& v) const { SMOMENTUM x = *this; x -= v; return x; }
+    SMOMENTUM operator-(const SFORCE& v) const { SMOMENTUM x = *this; x -= v; return x; }
     SMOMENTUM operator*(REAL scalar) const { SMOMENTUM v = *this; v*= scalar; return v; }
     SMOMENTUM operator/(REAL scalar) const { SMOMENTUM v = *this; v/= scalar; return v; }
 /*

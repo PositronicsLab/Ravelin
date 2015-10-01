@@ -1290,7 +1290,7 @@ void FSAB_ALGORITHM::apply_impulse(const SMOMENTUM& w, shared_ptr<RIGIDBODY> lin
   // reset all force and torque accumulators -- impulses drive them to zero
   body->reset_accumulators();
 
-  FILE_LOG(LOG_DYNAMICS) << "FSAB_ALGORITHM::appl_impulse() exited" << endl;
+  FILE_LOG(LOG_DYNAMICS) << "FSAB_ALGORITHM::apply_impulse() exited" << endl;
 }
 
 /// Solves a system for sIs*x = m' using a factorization (if sIs is nonsingular) or the pseudo-inverse of sIs otherwise

@@ -268,7 +268,7 @@ void CRB_ALGORITHM::calc_joint_space_inertia(shared_ptr<RC_ARTICULATED_BODY> bod
     {
       MATRIXN X;
       Ic[links[i]->get_index()].to_matrix(X);
-      FILE_LOG(LOG_DYNAMICS) << "isolated inertia for link " << links[i] << ": " << endl << X;
+      FILE_LOG(LOG_DYNAMICS) << "isolated inertia for link " << links[i]->body_id << ": " << endl << X;
     }
   }
 
@@ -969,13 +969,12 @@ void CRB_ALGORITHM::calc_generalized_forces(SFORCE& f0, VECTORN& C)
     // **** compute acceleration
 
     // add this link's contribution
-    POSE3::transform(_a[i].pose, s, _sprime);
+    POSE3::transform(vx.pose, s, _sprime);
     if (_sprime.empty())
       _a[i].set_zero(vx.pose);
     else
     {
       SVELOCITY sqd = SPARITH::mult(_sprime, qd);
-      sqd.pose = vx.pose;
       _a[i] = vx.cross(sqd);
     }
     if (!sdot.empty())
@@ -983,7 +982,7 @@ void CRB_ALGORITHM::calc_generalized_forces(SFORCE& f0, VECTORN& C)
 
     // now add parent's contribution
     _a[i] += SPARITH::transform_accel(_a[i].pose, _a[h]);
-    FILE_LOG(LOG_DYNAMICS) << " computing link velocity / acceleration; processing link " << link << std::endl;
+    FILE_LOG(LOG_DYNAMICS) << " computing link velocity / acceleration; processing link " << link->body_id << std::endl;
     if (s.size() > 0)
       FILE_LOG(LOG_DYNAMICS) << "  spatial joint velocity: " << (SPARITH::mult(s,qd)) << std::endl;
     FILE_LOG(LOG_DYNAMICS) << "  link velocity: " << link->get_velocity() << std::endl;
@@ -1024,16 +1023,22 @@ void CRB_ALGORITHM::calc_generalized_forces(SFORCE& f0, VECTORN& C)
     if (!body->all_children_processed(link))
       continue;
    
-    FILE_LOG(LOG_DYNAMICS) << " computing necessary force; processing link " << link << std::endl;
+    FILE_LOG(LOG_DYNAMICS) << " computing necessary force; processing link " << link->body_id << std::endl;
     FILE_LOG(LOG_DYNAMICS) << "  currently determined link force: " << _w[i] << std::endl;    
     if (LOGGING(LOG_DYNAMICS) && link != body->get_base_link())
       FILE_LOG(LOG_DYNAMICS) << "  I * a = " << (link->get_inertia() * _a[i]) << std::endl;
 
     // add I*a to the link force and Euler torque components 
     const SVELOCITY& vx = link->get_velocity(); 
+    FILE_LOG(LOG_DYNAMICS) << "  I * v = " << (link->get_inertia() * vx) << std::endl;
+    FILE_LOG(LOG_DYNAMICS) << "  v x I * v = " << vx.cross(link->get_inertia() * vx) << std::endl;
+    FILE_LOG(LOG_DYNAMICS) << "  force (before inertial forces): " << _w[i] << std::endl;
+    // I*(v x s*qd) = momentum x momentum
+    
     _w[i] += link->get_inertia() * _a[i] + vx.cross(link->get_inertia() * vx);
-    FILE_LOG(LOG_DYNAMICS) << "  inertial force: " << vx.cross(link->get_inertia() * vx) << std::endl;
-    FILE_LOG(LOG_DYNAMICS) << "  force (+ I*a): " << _w[i] << std::endl;
+//    _w[i] += fprime + vx.cross(link->get_inertia() * vx);
+    FILE_LOG(LOG_DYNAMICS) << "  inertial force: " << (link->get_inertia() * _a[i] + vx.cross(link->get_inertia() * vx)) << std::endl;
+    FILE_LOG(LOG_DYNAMICS) << "  force (+ I*a + v x Iv): " << _w[i] << std::endl;
 
     // subtract external forces
     SFORCE wext = link->sum_forces();// - link->calc_euler_torques(); 
@@ -1177,7 +1182,7 @@ void CRB_ALGORITHM::calc_generalized_forces_noinertial(SFORCE& f0, VECTORN& C)
     if (!body->all_children_processed(link))
       continue;
    
-    FILE_LOG(LOG_DYNAMICS) << " computing necessary force; processing link " << link << std::endl;
+    FILE_LOG(LOG_DYNAMICS) << " computing necessary force; processing link " << link->body_id << std::endl;
     FILE_LOG(LOG_DYNAMICS) << "  currently determined link force: " << _w[i] << std::endl;    
     if (LOGGING(LOG_DYNAMICS) && link != body->get_base_link())
       FILE_LOG(LOG_DYNAMICS) << "  I * a = " << (link->get_inertia() * _a[i]) << std::endl;
