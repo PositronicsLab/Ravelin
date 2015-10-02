@@ -1041,7 +1041,7 @@ void CRB_ALGORITHM::calc_generalized_forces(SFORCE& f0, VECTORN& C)
     FILE_LOG(LOG_DYNAMICS) << "  force (+ I*a + v x Iv): " << _w[i] << std::endl;
 
     // subtract external forces
-    SFORCE wext = link->sum_forces();// - link->calc_euler_torques(); 
+    SFORCE wext = link->sum_forces(); 
     _w[i] -= wext;
     FILE_LOG(LOG_DYNAMICS) << "  external forces: " << wext << std::endl;
     FILE_LOG(LOG_DYNAMICS) << "  force on link after subtracting external force: " << _w[i] << std::endl;
