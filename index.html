@@ -35,14 +35,25 @@
 
 <p><strong>Ravelin</strong> is a library for multi-rigid body kinematics and dynamics. <strong>Ravelin</strong> was spun-off from the <a href="http://positronicslab.github.io/Moby">Moby</a> simulator and provides the following features:</p>
 
+<!--
+![A Ravelin](http://www.kuk-wehrmacht.de/gefechte/img/landau2.jpg)
+
+[Installation instructions](Installation instructions)
+
+[Examples](Examples)
+
+[Documentation](Documentation)
+-->
+
 <ul>
-<li>Straightforward semantics on memory allocation toward programming for real-time systems</li>
-<li>Rigid body kinematics and dynamics computation, including poses, velocities, accelerations, inertias (both rigid body and articulated body), momenta, and forces</li>
-<li>Currently supports revolute, prismatic, spherical, universal, and fixed joints</li>
-<li>Bodies can have "floating" bases and kinematic loops</li>
-<li>Dynamics can be computed in minimal coordinates (using the <em>Composite Rigid Body</em> and <em>Featherstone's Articulated Body</em> algorithms) or in absolute coordinates </li>
-<li>
-<em>Frame checking</em>: operations on kinematic and dynamic quantities defined in different frames throw exceptions</li>
+<li>Composite Rigid Body Algorithm and Featherstone Articulated Body Algorithm implementations</li> 
+<li> Rigid body and multi-rigid body kinematics and dynamics computation, including poses, velocities, accelerations, inertias, momenta, forces, and Jacobians</li> 
+<li> Both explicit and implicit joint constraints supported: dynamics computable in minimal coordinates and absolute coordinates</li> 
+<li> Floating bases, tree-like kinematic topologies, and mechanisms with kinematic loops supported</li> 
+<li> <strong>Frame checking</strong>: operations on kinematic and dynamic quantities defined in different frames throw exceptions</li> 
+<li> Supports reading in multi-rigid body kinematics and dynamics from URDF</li> 
+<li> Results from all dynamics algorithms have been verified against Featherstone's MATLAB-based code </li> 
+ <li> Reference points for rigid bodies need not be collocated with centers-of-mass</li> 
 </ul>
 
 <p><strong>Ravelin</strong>'s matrix/vector arithmetic and linear algebra use very reliable BLAS and LAPACK libraries. The following features are provided:</p>
