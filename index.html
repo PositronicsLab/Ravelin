@@ -1,80 +1,63 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="en-us">
   <head>
-    <meta charset='utf-8'>
-    <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <meta name="description" content="Ravelin : Robotics Matrix Vector Linear Algebra library">
-
-    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
-
-    <title>Ravelin</title>
+    <meta charset="UTF-8">
+    <title>Ravelin by PositronicsLab</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
   </head>
-
   <body>
+    <section class="page-header">
+      <h1 class="project-name">Ravelin</h1>
+      <h2 class="project-tagline">Robotics Matrix Vector Linear Algebra library</h2>
+      <a href="https://github.com/PositronicsLab/Ravelin" class="btn">View on GitHub</a>
+      <a href="https://github.com/PositronicsLab/Ravelin/zipball/master" class="btn">Download .zip</a>
+      <a href="https://github.com/PositronicsLab/Ravelin/tarball/master" class="btn">Download .tar.gz</a>
+    </section>
 
-    <!-- HEADER -->
-    <div id="header_wrap" class="outer">
-        <header class="inner">
-          <a id="forkme_banner" href="https://github.com/PositronicsLab/Ravelin">View on GitHub</a>
+    <section class="main-content">
+      <p><img src="https://camo.githubusercontent.com/f9db64acc89e492a5425de8bb20adffd04f2b6bf/687474703a2f2f7777772e6b756b2d776568726d616368742e64652f67656665636874652f696d672f6c616e646175322e6a7067" alt="Ravelin"></p>
 
-          <h1 id="project_title">Ravelin</h1>
-          <h2 id="project_tagline">Robotics Matrix Vector Linear Algebra library</h2>
+<h2>
+<a id="documentation-links" class="anchor" href="#documentation-links" aria-hidden="true"><span class="octicon octicon-link"></span></a>Documentation links</h2>
 
-            <section id="downloads">
-              <a class="zip_download_link" href="https://github.com/PositronicsLab/Ravelin/zipball/master">Download this project as a .zip file</a>
-              <a class="tar_download_link" href="https://github.com/PositronicsLab/Ravelin/tarball/master">Download this project as a tar.gz file</a>
-            </section>
-        </header>
-    </div>
+<p><a href="https://github.com/PositronicsLab/Ravelin/wiki">Wiki documentation</a>
+<a href="http://positronicslab.github.io/Ravelin/doxygen/index.html">Doxygen documentation</a> </p>
 
-    <!-- MAIN CONTENT -->
-    <div id="main_content_wrap" class="outer">
-      <section id="main_content" class="inner">
-        <p><img src="https://camo.githubusercontent.com/f9db64acc89e492a5425de8bb20adffd04f2b6bf/687474703a2f2f7777772e6b756b2d776568726d616368742e64652f67656665636874652f696d672f6c616e646175322e6a7067" alt="Ravelin"></p>
+<h2>
+<a id="about" class="anchor" href="#about" aria-hidden="true"><span class="octicon octicon-link"></span></a>About</h2>
 
 <p><strong>Ravelin</strong> is a library for multi-rigid body kinematics and dynamics. <strong>Ravelin</strong> was spun-off from the <a href="http://positronicslab.github.io/Moby">Moby</a> simulator and provides the following features:</p>
 
-<!--
-![A Ravelin](http://www.kuk-wehrmacht.de/gefechte/img/landau2.jpg)
-
-[Installation instructions](Installation instructions)
-
-[Examples](Examples)
-
-[Documentation](Documentation)
--->
-
 <ul>
-<li>Composite Rigid Body Algorithm and Featherstone Articulated Body Algorithm implementations</li> 
-<li> Rigid body and multi-rigid body kinematics and dynamics computation, including poses, velocities, accelerations, inertias, momenta, forces, and Jacobians</li> 
-<li> Both explicit and implicit joint constraints supported: dynamics computable in minimal coordinates and absolute coordinates</li> 
-<li> Floating bases, tree-like kinematic topologies, and mechanisms with kinematic loops supported</li> 
-<li> <strong>Frame checking</strong>: performing operations on kinematic and dynamic quantities defined in different frames throws exceptions</li> 
-<li> Can read multi-rigid body kinematics and dynamics from URDF</li> 
-<li> All dynamics algorithms have been verified against Featherstone's MATLAB-based code </li> 
- <li> Reference points for rigid bodies need not be collocated with centers-of-mass</li> 
+<li>Straightforward semantics on memory allocation toward programming for real-time systems</li>
+<li>Rigid body kinematics and dynamics computation, including poses, velocities, accelerations, inertias (both rigid body and articulated body), momenta, and forces</li>
+<li>Currently supports revolute, prismatic, spherical, universal, and fixed joints</li>
+<li>Bodies can have "floating" bases and kinematic loops</li>
+<li>Dynamics can be computed in minimal coordinates (using the <em>Composite Rigid Body</em> and <em>Featherstone's Articulated Body</em> algorithms) or in absolute coordinates </li>
+<li>
+<em>Frame checking</em>: operations on kinematic and dynamic quantities defined in different frames throw exceptions</li>
 </ul>
 
-<p><strong>Ravelin</strong>'s matrix/vector arithmetic and linear algebra wrap very reliable BLAS and LAPACK libraries. The following features are provided:</p>
+<p><strong>Ravelin</strong>'s matrix/vector arithmetic and linear algebra use very reliable BLAS and LAPACK libraries. The following features are provided:</p>
 
 <ul>
 <li>Efficient block operations on matrices and vectors (similar to Eigen's segment() and block() functions)</li>
 <li>Minimum templated C++ code for fast compilation</li>
 <li>Iterators, which provides compatibility with STL and Boost algorithms</li>
 </ul>
-      </section>
-    </div>
 
-    <!-- FOOTER  -->
-    <div id="footer_wrap" class="outer">
-      <footer class="inner">
-        <p class="copyright">Ravelin maintained by <a href="https://github.com/PositronicsLab">PositronicsLab</a></p>
-        <p>Published with <a href="https://pages.github.com">GitHub Pages</a></p>
+      <footer class="site-footer">
+        <span class="site-footer-owner"><a href="https://github.com/PositronicsLab/Ravelin">Ravelin</a> is maintained by <a href="https://github.com/PositronicsLab">PositronicsLab</a>.</span>
+
+        <span class="site-footer-credits">This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the <a href="https://github.com/jasonlong/cayman-theme">Cayman theme</a> by <a href="https://twitter.com/jasonlong">Jason Long</a>.</span>
       </footer>
-    </div>
 
-    
+    </section>
 
+  
   </body>
 </html>
