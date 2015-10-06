@@ -60,42 +60,41 @@
 <div class="line"><a name="l00008"></a><span class="lineno">    8</span>&#160;<span class="preprocessor"></span><span class="preprocessor">#define _RC_ARTICULATED_BODY_INV_DYN_ALGO_H</span></div>
 <div class="line"><a name="l00009"></a><span class="lineno">    9</span>&#160;<span class="preprocessor"></span></div>
 <div class="line"><a name="l00010"></a><span class="lineno">   10</span>&#160;<span class="preprocessor">#include &lt;map&gt;</span></div>
-<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;<span class="preprocessor">#include &lt;Moby/Base.h&gt;</span></div>
-<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;</div>
-<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;<span class="keyword">namespace </span>Moby {</div>
-<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;</div>
-<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;<span class="keyword">class </span>RCArticulatedBody;</div>
-<div class="line"><a name="l00016"></a><span class="lineno">   16</span>&#160;</div>
-<div class="line"><a name="l00018"></a><span class="lineno"><a class="line" href="classMoby_1_1RCArticulatedBodyInvDynData.html">   18</a></span>&#160;<span class="keyword">class </span><a class="code" href="classMoby_1_1RCArticulatedBodyInvDynData.html">RCArticulatedBodyInvDynData</a></div>
-<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;{</div>
-<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;  <span class="keyword">public</span>:</div>
-<div class="line"><a name="l00021"></a><span class="lineno">   21</span>&#160;</div>
-<div class="line"><a name="l00023"></a><span class="lineno"><a class="line" href="classMoby_1_1RCArticulatedBodyInvDynData.html#ae9364585293b12472b1ea9f95cffa1de">   23</a></span>&#160;    Ravelin::SForced <a class="code" href="classMoby_1_1RCArticulatedBodyInvDynData.html#ae9364585293b12472b1ea9f95cffa1de">wext</a>;</div>
-<div class="line"><a name="l00024"></a><span class="lineno">   24</span>&#160;</div>
-<div class="line"><a name="l00026"></a><span class="lineno"><a class="line" href="classMoby_1_1RCArticulatedBodyInvDynData.html#a258a1da2fbd02c1b4aae0b5ac1a4c6ea">   26</a></span>&#160;    Ravelin::VectorNd <a class="code" href="classMoby_1_1RCArticulatedBodyInvDynData.html#a258a1da2fbd02c1b4aae0b5ac1a4c6ea">qdd</a>;</div>
-<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;};</div>
-<div class="line"><a name="l00028"></a><span class="lineno">   28</span>&#160;  </div>
-<div class="line"><a name="l00030"></a><span class="lineno"><a class="line" href="classMoby_1_1RCArticulatedBodyInvDynAlgo.html">   30</a></span>&#160;<span class="keyword">class </span><a class="code" href="classMoby_1_1RCArticulatedBodyInvDynAlgo.html">RCArticulatedBodyInvDynAlgo</a> : <span class="keyword">public</span> <span class="keyword">virtual</span> Base</div>
-<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;{</div>
-<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;  <span class="keyword">public</span>:</div>
-<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;    <a class="code" href="classMoby_1_1RCArticulatedBodyInvDynAlgo.html">RCArticulatedBodyInvDynAlgo</a>() { }</div>
-<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;    <span class="keyword">virtual</span> ~<a class="code" href="classMoby_1_1RCArticulatedBodyInvDynAlgo.html">RCArticulatedBodyInvDynAlgo</a>() {}</div>
-<div class="line"><a name="l00035"></a><span class="lineno">   35</span>&#160;</div>
-<div class="line"><a name="l00037"></a><span class="lineno">   37</span>&#160;</div>
-<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;    <span class="keyword">virtual</span> std::map&lt;boost::shared_ptr&lt;Joint&gt;, Ravelin::VectorNd&gt; <a class="code" href="classMoby_1_1RCArticulatedBodyInvDynAlgo.html#acb5f5edb8cb4ed336570c7519350ad9a">calc_inv_dyn</a>(boost::shared_ptr&lt;RCArticulatedBody&gt; body, <span class="keyword">const</span> std::map&lt;boost::shared_ptr&lt;RigidBody&gt;, <a class="code" href="classMoby_1_1RCArticulatedBodyInvDynData.html">RCArticulatedBodyInvDynData</a>&gt;&amp; inv_dyn_data) = 0;</div>
-<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;}; <span class="comment">// end class</span></div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;} <span class="comment">// end namespace</span></div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;</div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;<span class="preprocessor">#endif</span></div>
-<div class="ttc" id="classMoby_1_1RCArticulatedBodyInvDynData_html_ae9364585293b12472b1ea9f95cffa1de"><div class="ttname"><a href="classMoby_1_1RCArticulatedBodyInvDynData.html#ae9364585293b12472b1ea9f95cffa1de">Moby::RCArticulatedBodyInvDynData::wext</a></div><div class="ttdeci">Ravelin::SForced wext</div><div class="ttdoc">External force applied to this link. </div><div class="ttdef"><b>Definition:</b> RCArticulatedBodyInvDynAlgo.h:23</div></div>
-<div class="ttc" id="classMoby_1_1RCArticulatedBodyInvDynAlgo_html_acb5f5edb8cb4ed336570c7519350ad9a"><div class="ttname"><a href="classMoby_1_1RCArticulatedBodyInvDynAlgo.html#acb5f5edb8cb4ed336570c7519350ad9a">Moby::RCArticulatedBodyInvDynAlgo::calc_inv_dyn</a></div><div class="ttdeci">virtual std::map&lt; boost::shared_ptr&lt; Joint &gt;, Ravelin::VectorNd &gt; calc_inv_dyn(boost::shared_ptr&lt; RCArticulatedBody &gt; body, const std::map&lt; boost::shared_ptr&lt; RigidBody &gt;, RCArticulatedBodyInvDynData &gt; &amp;inv_dyn_data)=0</div><div class="ttdoc">Classes must implement the method below. </div></div>
-<div class="ttc" id="classMoby_1_1RCArticulatedBodyInvDynAlgo_html"><div class="ttname"><a href="classMoby_1_1RCArticulatedBodyInvDynAlgo.html">Moby::RCArticulatedBodyInvDynAlgo</a></div><div class="ttdoc">Abstract class for performing inverse dynamics computation on a reduced-coordinate articulatedc body...</div><div class="ttdef"><b>Definition:</b> RCArticulatedBodyInvDynAlgo.h:30</div></div>
-<div class="ttc" id="classMoby_1_1RCArticulatedBodyInvDynData_html_a258a1da2fbd02c1b4aae0b5ac1a4c6ea"><div class="ttname"><a href="classMoby_1_1RCArticulatedBodyInvDynData.html#a258a1da2fbd02c1b4aae0b5ac1a4c6ea">Moby::RCArticulatedBodyInvDynData::qdd</a></div><div class="ttdeci">Ravelin::VectorNd qdd</div><div class="ttdoc">Inner joint acceleration (desired) </div><div class="ttdef"><b>Definition:</b> RCArticulatedBodyInvDynAlgo.h:26</div></div>
-<div class="ttc" id="classMoby_1_1RCArticulatedBodyInvDynData_html"><div class="ttname"><a href="classMoby_1_1RCArticulatedBodyInvDynData.html">Moby::RCArticulatedBodyInvDynData</a></div><div class="ttdoc">Wrapper class for passing data to and from inverse dynamics algorithms. </div><div class="ttdef"><b>Definition:</b> RCArticulatedBodyInvDynAlgo.h:18</div></div>
+<div class="line"><a name="l00011"></a><span class="lineno">   11</span>&#160;</div>
+<div class="line"><a name="l00012"></a><span class="lineno">   12</span>&#160;<span class="keyword">namespace </span>Ravelin {</div>
+<div class="line"><a name="l00013"></a><span class="lineno">   13</span>&#160;</div>
+<div class="line"><a name="l00014"></a><span class="lineno">   14</span>&#160;<span class="keyword">class </span>RCArticulatedBody;</div>
+<div class="line"><a name="l00015"></a><span class="lineno">   15</span>&#160;</div>
+<div class="line"><a name="l00017"></a><span class="lineno"><a class="line" href="classRavelin_1_1RCArticulatedBodyInvDynData.html">   17</a></span>&#160;<span class="keyword">class </span><a class="code" href="classRavelin_1_1RCArticulatedBodyInvDynData.html">RCArticulatedBodyInvDynData</a></div>
+<div class="line"><a name="l00018"></a><span class="lineno">   18</span>&#160;{</div>
+<div class="line"><a name="l00019"></a><span class="lineno">   19</span>&#160;  <span class="keyword">public</span>:</div>
+<div class="line"><a name="l00020"></a><span class="lineno">   20</span>&#160;</div>
+<div class="line"><a name="l00022"></a><span class="lineno"><a class="line" href="classRavelin_1_1RCArticulatedBodyInvDynData.html#a9d711bd1af0fdfbd44d4b89fa6d56f19">   22</a></span>&#160;    Ravelin::SForced <a class="code" href="classRavelin_1_1RCArticulatedBodyInvDynData.html#a9d711bd1af0fdfbd44d4b89fa6d56f19">wext</a>;</div>
+<div class="line"><a name="l00023"></a><span class="lineno">   23</span>&#160;</div>
+<div class="line"><a name="l00025"></a><span class="lineno"><a class="line" href="classRavelin_1_1RCArticulatedBodyInvDynData.html#a37d451af0d259e20934e6c9a1ede7021">   25</a></span>&#160;    Ravelin::VectorNd <a class="code" href="classRavelin_1_1RCArticulatedBodyInvDynData.html#a37d451af0d259e20934e6c9a1ede7021">qdd</a>;</div>
+<div class="line"><a name="l00026"></a><span class="lineno">   26</span>&#160;};</div>
+<div class="line"><a name="l00027"></a><span class="lineno">   27</span>&#160;  </div>
+<div class="line"><a name="l00029"></a><span class="lineno"><a class="line" href="classRavelin_1_1RCArticulatedBodyInvDynAlgo.html">   29</a></span>&#160;<span class="keyword">class </span><a class="code" href="classRavelin_1_1RCArticulatedBodyInvDynAlgo.html">RCArticulatedBodyInvDynAlgo</a> : <span class="keyword">public</span> <span class="keyword">virtual</span> Base</div>
+<div class="line"><a name="l00030"></a><span class="lineno">   30</span>&#160;{</div>
+<div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160;  <span class="keyword">public</span>:</div>
+<div class="line"><a name="l00032"></a><span class="lineno">   32</span>&#160;    <a class="code" href="classRavelin_1_1RCArticulatedBodyInvDynAlgo.html">RCArticulatedBodyInvDynAlgo</a>() { }</div>
+<div class="line"><a name="l00033"></a><span class="lineno">   33</span>&#160;    <span class="keyword">virtual</span> ~<a class="code" href="classRavelin_1_1RCArticulatedBodyInvDynAlgo.html">RCArticulatedBodyInvDynAlgo</a>() {}</div>
+<div class="line"><a name="l00034"></a><span class="lineno">   34</span>&#160;</div>
+<div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160;</div>
+<div class="line"><a name="l00044"></a><span class="lineno">   44</span>&#160;    <span class="keyword">virtual</span> std::map&lt;boost::shared_ptr&lt;Joint&gt;, Ravelin::VectorNd&gt; <a class="code" href="classRavelin_1_1RCArticulatedBodyInvDynAlgo.html#a598531a1b2d2afe8af995bbb2157d93a">calc_inv_dyn</a>(boost::shared_ptr&lt;RCArticulatedBody&gt; body, <span class="keyword">const</span> std::map&lt;boost::shared_ptr&lt;RigidBody&gt;, <a class="code" href="classRavelin_1_1RCArticulatedBodyInvDynData.html">RCArticulatedBodyInvDynData</a>&gt;&amp; inv_dyn_data) = 0;</div>
+<div class="line"><a name="l00045"></a><span class="lineno">   45</span>&#160;}; <span class="comment">// end class</span></div>
+<div class="line"><a name="l00046"></a><span class="lineno">   46</span>&#160;} <span class="comment">// end namespace</span></div>
+<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;</div>
+<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160;<span class="preprocessor">#endif</span></div>
+<div class="ttc" id="classRavelin_1_1RCArticulatedBodyInvDynAlgo_html"><div class="ttname"><a href="classRavelin_1_1RCArticulatedBodyInvDynAlgo.html">Ravelin::RCArticulatedBodyInvDynAlgo</a></div><div class="ttdoc">Abstract class for performing inverse dynamics computation on a reduced-coordinate articulatedc body...</div><div class="ttdef"><b>Definition:</b> RCArticulatedBodyInvDynAlgo.h:29</div></div>
+<div class="ttc" id="classRavelin_1_1RCArticulatedBodyInvDynData_html_a9d711bd1af0fdfbd44d4b89fa6d56f19"><div class="ttname"><a href="classRavelin_1_1RCArticulatedBodyInvDynData.html#a9d711bd1af0fdfbd44d4b89fa6d56f19">Ravelin::RCArticulatedBodyInvDynData::wext</a></div><div class="ttdeci">Ravelin::SForced wext</div><div class="ttdoc">External force applied to this link. </div><div class="ttdef"><b>Definition:</b> RCArticulatedBodyInvDynAlgo.h:22</div></div>
+<div class="ttc" id="classRavelin_1_1RCArticulatedBodyInvDynData_html_a37d451af0d259e20934e6c9a1ede7021"><div class="ttname"><a href="classRavelin_1_1RCArticulatedBodyInvDynData.html#a37d451af0d259e20934e6c9a1ede7021">Ravelin::RCArticulatedBodyInvDynData::qdd</a></div><div class="ttdeci">Ravelin::VectorNd qdd</div><div class="ttdoc">Inner joint acceleration (desired) </div><div class="ttdef"><b>Definition:</b> RCArticulatedBodyInvDynAlgo.h:25</div></div>
+<div class="ttc" id="classRavelin_1_1RCArticulatedBodyInvDynAlgo_html_a598531a1b2d2afe8af995bbb2157d93a"><div class="ttname"><a href="classRavelin_1_1RCArticulatedBodyInvDynAlgo.html#a598531a1b2d2afe8af995bbb2157d93a">Ravelin::RCArticulatedBodyInvDynAlgo::calc_inv_dyn</a></div><div class="ttdeci">virtual std::map&lt; boost::shared_ptr&lt; Joint &gt;, Ravelin::VectorNd &gt; calc_inv_dyn(boost::shared_ptr&lt; RCArticulatedBody &gt; body, const std::map&lt; boost::shared_ptr&lt; RigidBody &gt;, RCArticulatedBodyInvDynData &gt; &amp;inv_dyn_data)=0</div><div class="ttdoc">Classes must implement the method below. </div></div>
+<div class="ttc" id="classRavelin_1_1RCArticulatedBodyInvDynData_html"><div class="ttname"><a href="classRavelin_1_1RCArticulatedBodyInvDynData.html">Ravelin::RCArticulatedBodyInvDynData</a></div><div class="ttdoc">Wrapper class for passing data to and from inverse dynamics algorithms. </div><div class="ttdef"><b>Definition:</b> RCArticulatedBodyInvDynAlgo.h:17</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Oct 5 2015 18:20:56 for Ravelin by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Mon Oct 5 2015 22:38:29 for Ravelin by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>
