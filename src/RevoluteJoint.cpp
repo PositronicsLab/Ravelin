@@ -23,7 +23,7 @@ REVOLUTEJOINT::REVOLUTEJOINT() : JOINT()
   _s_dot.clear();
 }
 
-/// Sets the axis of rotation for this joint
+/// Sets the axis of rotation for this joint (MUST BE CALLED AFTER set_location(.))
 void REVOLUTEJOINT::set_axis(const VECTOR3& axis) 
 { 
   // normalize the joint axis, in case the caller didn't 

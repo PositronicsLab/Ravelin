@@ -67,10 +67,10 @@ void RC_ARTICULATED_BODY::get_generalized_acceleration_generic(V& ga)
 
 /// Gets the generalized coordinates of this body
 template <class V>
-void RC_ARTICULATED_BODY::get_generalized_coordinates_generic(DYNAMIC_BODY::GeneralizedCoordinateType gctype, V& gc)
+void RC_ARTICULATED_BODY::get_generalized_coordinates_euler_generic(V& gc)
 {
   // resize gc
-  gc.resize(num_generalized_coordinates(gctype));
+  gc.resize(num_generalized_coordinates(DYNAMIC_BODY::eEuler));
 
   // get the joint positions of all explicit joints
   for (unsigned i=0; i < _ejoints.size(); i++)
@@ -88,15 +88,13 @@ void RC_ARTICULATED_BODY::get_generalized_coordinates_generic(DYNAMIC_BODY::Gene
   assert(!_links.empty());
   boost::shared_ptr<RIGIDBODY> base = _links.front();
   SHAREDVECTORN base_gc = gc.segment(num_joint_dof_explicit(), gc.size());
-  base->get_generalized_coordinates_generic(gctype, base_gc);
+  base->get_generalized_coordinates_euler_generic(base_gc);
 }
 
 /// Sets the generalized position of this body
 template <class V>
-void RC_ARTICULATED_BODY::set_generalized_coordinates_generic(DYNAMIC_BODY::GeneralizedCoordinateType gctype, V& gc)
+void RC_ARTICULATED_BODY::set_generalized_coordinates_euler_generic(V& gc)
 {
-  assert(num_generalized_coordinates(gctype) == gc.size());
-
   // set the generalized coordinates for the implicit joints
   for (unsigned i=0; i < _ejoints.size(); i++)
   {
@@ -110,7 +108,7 @@ void RC_ARTICULATED_BODY::set_generalized_coordinates_generic(DYNAMIC_BODY::Gene
     assert(!_links.empty());
     boost::shared_ptr<RIGIDBODY> base = _links.front();
     CONST_SHAREDVECTORN base_gc = gc.segment(num_joint_dof_explicit(), gc.size());
-    base->set_generalized_coordinates_generic(gctype, base_gc);
+    base->set_generalized_coordinates_euler_generic(base_gc);
   }
 
   // link transforms must now be updated

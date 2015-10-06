@@ -88,16 +88,16 @@ class DYNAMIC_BODY : public virtual_enable_shared_from_this<DYNAMIC_BODY>
       apply_generalized_impulse(gj_shared);
     }
 
-    /// Gets the generalized coordinates of this body
-    virtual SHAREDVECTORN& get_generalized_coordinates(GeneralizedCoordinateType gctype, SHAREDVECTORN& gc) = 0;
+    /// Gets the generalized coordinates of this body (using Euler parameters for any rigid body orientations, if relevant)
+    virtual SHAREDVECTORN& get_generalized_coordinates_euler(SHAREDVECTORN& gc) = 0;
 
-    /// Gets the generalized coordinates of this body
-    virtual VECTORN& get_generalized_coordinates(GeneralizedCoordinateType gctype, VECTORN& gc)
+    /// Gets the generalized coordinates of this body (using Euler parameters for any rigid body orientations, if relevant)
+    virtual VECTORN& get_generalized_coordinates_euler(VECTORN& gc)
     {
-      const unsigned NGC = num_generalized_coordinates(gctype);
+      const unsigned NGC = num_generalized_coordinates(eEuler);
       gc.resize(NGC);
       SHAREDVECTORN gc_shared = gc.segment(0, gc.size());
-      get_generalized_coordinates(gctype, gc_shared);
+      get_generalized_coordinates_euler(gc_shared);
       return gc;
     }
 
@@ -137,14 +137,14 @@ class DYNAMIC_BODY : public virtual_enable_shared_from_this<DYNAMIC_BODY>
       return ga; 
     }
 
-    /// Sets the generalized coordinates of this body
-    virtual void set_generalized_coordinates(GeneralizedCoordinateType gctype, const SHAREDVECTORN& gc) = 0;
+    /// Sets the generalized coordinates of this body (using Euler parameters for any rigid body orientations, if relevant)
+    virtual void set_generalized_coordinates_euler(const SHAREDVECTORN& gc) = 0;
 
-    /// Sets the generalized coordinates of this body
-    virtual void set_generalized_coordinates(GeneralizedCoordinateType gctype, const VECTORN& gc) 
+    /// Sets the generalized coordinates of this body (using Euler parameters for any rigid body orientations, if relevant)
+    virtual void set_generalized_coordinates_euler(const VECTORN& gc) 
     {
       const SHAREDVECTORN gc_shared = gc.segment(0, gc.size()).get();
-      set_generalized_coordinates(gctype, gc_shared);
+      set_generalized_coordinates_euler(gc_shared);
     }
 
     /// Sets the generalized velocity of this body

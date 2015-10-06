@@ -78,7 +78,7 @@ VECTOR3 SPHERICALJOINT::get_axis(Axis a) const
   return u;
 }
 
-/// Sets the local axis of translation for this joint
+/// Sets the local axis of rotation for this joint (MUST BE CALLED AFTER set_location(.))
 /**
  * The local axis for this joint does not take the orientation of the 
  * inboard link into account; thus, if the orientation of the inboard link 

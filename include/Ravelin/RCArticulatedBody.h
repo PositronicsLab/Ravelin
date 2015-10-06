@@ -48,8 +48,8 @@ class RC_ARTICULATED_BODY : public virtual ARTICULATED_BODY
     virtual void add_generalized_force(const VECTORN& gf) { DYNAMIC_BODY::add_generalized_force(gf); }
     virtual void apply_generalized_impulse(const SHAREDVECTORN& gj);
     virtual void apply_generalized_impulse(const VECTORN& gj) { DYNAMIC_BODY::apply_generalized_impulse(gj); }
-    virtual void set_generalized_coordinates(DYNAMIC_BODY::GeneralizedCoordinateType gctype, const SHAREDVECTORN& gc);
-    virtual void set_generalized_coordinates(DYNAMIC_BODY::GeneralizedCoordinateType gctype, const VECTORN& gc) { DYNAMIC_BODY::set_generalized_coordinates(gctype, gc); }
+    virtual void set_generalized_coordinates_euler(const SHAREDVECTORN& gc);
+    virtual void set_generalized_coordinates_euler(const VECTORN& gc) { DYNAMIC_BODY::set_generalized_coordinates_euler(gc); }
     virtual void set_generalized_velocity(DYNAMIC_BODY::GeneralizedCoordinateType gctype, const SHAREDVECTORN& gv);
     virtual void set_generalized_velocity(DYNAMIC_BODY::GeneralizedCoordinateType gctype, const VECTORN& gv) { DYNAMIC_BODY::set_generalized_velocity(gctype, gv); }
     virtual SHAREDMATRIXN& get_generalized_inertia(SHAREDMATRIXN& M);
@@ -70,8 +70,8 @@ class RC_ARTICULATED_BODY : public virtual ARTICULATED_BODY
     virtual SHAREDMATRIXN& solve_generalized_inertia(const SHAREDMATRIXN& m, SHAREDMATRIXN& result);
     virtual boost::shared_ptr<const POSE3> get_gc_pose() const; 
     virtual void validate_position_variables();
-    virtual SHAREDVECTORN& get_generalized_coordinates(DYNAMIC_BODY::GeneralizedCoordinateType gctype, SHAREDVECTORN& gc);
-    virtual VECTORN& get_generalized_coordinates(DYNAMIC_BODY::GeneralizedCoordinateType gctype, VECTORN& gc) { return DYNAMIC_BODY::get_generalized_coordinates(gctype, gc); }
+    virtual SHAREDVECTORN& get_generalized_coordinates_euler(SHAREDVECTORN& gc);
+    virtual VECTORN& get_generalized_coordinates_euler(VECTORN& gc) { return DYNAMIC_BODY::get_generalized_coordinates_euler(gc); }
     virtual SHAREDVECTORN& get_generalized_velocity(DYNAMIC_BODY::GeneralizedCoordinateType gctype, SHAREDVECTORN& gv);
     virtual VECTORN& get_generalized_velocity(DYNAMIC_BODY::GeneralizedCoordinateType gctype, VECTORN& gv) { return DYNAMIC_BODY::get_generalized_velocity(gctype, gv); }
     virtual SHAREDVECTORN& get_generalized_acceleration(SHAREDVECTORN& ga);
@@ -82,10 +82,10 @@ class RC_ARTICULATED_BODY : public virtual ARTICULATED_BODY
     void get_generalized_acceleration_generic(V& ga);
 
     template <class V>
-    void get_generalized_coordinates_generic(DYNAMIC_BODY::GeneralizedCoordinateType gctype, V& gc);
+    void get_generalized_coordinates_euler_generic(V& gc);
 
     template <class V>
-    void set_generalized_coordinates_generic(DYNAMIC_BODY::GeneralizedCoordinateType gctype, V& gc);
+    void set_generalized_coordinates_euler_generic(V& gc);
 
     template <class V>
     void set_generalized_velocity_generic(DYNAMIC_BODY::GeneralizedCoordinateType gctype, V& gv);
