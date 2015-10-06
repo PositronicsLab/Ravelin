@@ -1425,9 +1425,18 @@ SHAREDVECTORN& RIGIDBODY::get_generalized_forces_single(SHAREDVECTORN& gf)
   const unsigned NGC = num_generalized_coordinates(DYNAMIC_BODY::eSpatial);
   gf.resize(NGC);
 
+  // get the forces in the c.o.m. frame
+  if (!_forecom_valid)
+    _forcecom = POSE3::transform(_F2, _forcem);
+  _forcecom_valid = true;
+  
+  // get the Euler torques in the c.o.m. frame
+  SFORCE euler = calc_euler_torques();
+  assert(euler.get_force().norm() < NEAR_ZERO);
+
   // get force and torque
   VECTOR3 f = _forcecom.get_force();
-  VECTOR3 t = _forcecom.get_torque();
+  VECTOR3 t = _forcecom.get_torque() - euler.get_torque();
 
   // setup the linear components of f
   gf[0] = f[0];

@@ -1036,7 +1036,6 @@ void CRB_ALGORITHM::calc_generalized_forces(SFORCE& f0, VECTORN& C)
     // I*(v x s*qd) = momentum x momentum
     
     _w[i] += link->get_inertia() * _a[i] + vx.cross(link->get_inertia() * vx);
-//    _w[i] += fprime + vx.cross(link->get_inertia() * vx);
     FILE_LOG(LOG_DYNAMICS) << "  inertial force: " << (link->get_inertia() * _a[i] + vx.cross(link->get_inertia() * vx)) << std::endl;
     FILE_LOG(LOG_DYNAMICS) << "  force (+ I*a + v x Iv): " << _w[i] << std::endl;
 
@@ -1085,10 +1084,8 @@ void CRB_ALGORITHM::calc_generalized_forces(SFORCE& f0, VECTORN& C)
     if (LOGGING(LOG_DYNAMICS))
     {
       SFORCE w_mixed = POSE3::transform(ob->get_mixed_pose(), _w[oidx]);
-//      SFORCE w_mixed = POSE3::transform(_w[oidx].pose, _w[oidx]);
       std::vector<SVELOCITY> s_mixed;
       POSE3::transform(ob->get_mixed_pose(), s, s_mixed);
-//      POSE3::transform(_w[oidx].pose, s, s_mixed);
       if (!s.empty())
       {
         FILE_LOG(LOG_DYNAMICS) << " -- s' (mixed pose): " << s_mixed[0] << std::endl;
