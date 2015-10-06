@@ -8,9 +8,8 @@
 #define _RC_ARTICULATED_BODY_INV_DYN_ALGO_H
 
 #include <map>
-#include <Moby/Base.h>
 
-namespace Moby {
+namespace Ravelin {
 
 class RCArticulatedBody;
 

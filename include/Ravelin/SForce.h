@@ -10,6 +10,7 @@
 
 class SAXIS;
 
+/// A spatial force (a wrench)
 class SFORCE : public SVECTOR6 
 {
   friend class SMOMENTUM;

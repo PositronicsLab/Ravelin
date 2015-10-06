@@ -10,6 +10,7 @@
 
 class SFORCE;
 
+/// A spatial (six dimensional) acceleration
 class SACCEL : public SVECTOR6 
 {
   public:

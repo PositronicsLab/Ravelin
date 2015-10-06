@@ -11,6 +11,7 @@
 class SFORCE;
 class SMOMENTUM;
 
+/// A spatial velocity (a twist)
 class SVELOCITY : public SVECTOR6 
 {
   public:

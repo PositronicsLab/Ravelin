@@ -8,6 +8,7 @@
 #error This class is not to be included by the user directly. Use SMomentumd.h or SMomentumf.h instead.
 #endif
 
+/// A spatial (six dimensional) momentum 
 class SMOMENTUM : public SVECTOR6 
 {
   friend class SFORCE;
