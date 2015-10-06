@@ -1131,16 +1131,16 @@ void RC_ARTICULATED_BODY::apply_impulse(const SMOMENTUM& w, shared_ptr<RIGIDBODY
 }
 
 /// Gets the generalized coordinates of this body
-SHAREDVECTORN& RC_ARTICULATED_BODY::get_generalized_coordinates(DYNAMIC_BODY::GeneralizedCoordinateType gctype, SHAREDVECTORN& gc)
+SHAREDVECTORN& RC_ARTICULATED_BODY::get_generalized_coordinates_euler(SHAREDVECTORN& gc)
 {
-  get_generalized_coordinates_generic(gctype, gc);
+  get_generalized_coordinates_euler_generic(gc);
   return gc;
 }
 
 /// Sets the generalized position of this body
-void RC_ARTICULATED_BODY::set_generalized_coordinates(DYNAMIC_BODY::GeneralizedCoordinateType gctype, const SHAREDVECTORN& gc)
+void RC_ARTICULATED_BODY::set_generalized_coordinates_euler(const SHAREDVECTORN& gc)
 {
-  set_generalized_coordinates_generic(gctype, gc);
+  set_generalized_coordinates_euler_generic(gc);
 }
 
 /// Sets the generalized velocity of this body

@@ -16,9 +16,7 @@ option (BUILD_SHARED_LIBS "Build Ravelin as a shared library?" ON)
 option (PROFILE "Build for profiling?" OFF)
 option (REENTRANT "Build Ravelin to be reentrant ? (slower)" OFF)
 option (DISABLE_EXCEPT "Disable user-level exceptions for extra speed (not recommended)?" OFF)
-
-# superLU directories
-set (SUPERLU_PATH /usr/local)
+option (BUILD_EXAMPLES "Build example program binaries?" ON)
 
 # modify C++ flags
 if (REENTRANT)
@@ -62,6 +60,18 @@ endforeach (i)
 # create the library
 add_library(Ravelin "" "" ${LIBSOURCES})
 target_link_libraries (Ravelin ${BLAS_LIBRARIES} ${LAPACK_LIBRARIES} ${LIBXML2_LIBRARIES} ${EXTRA_LIBRARIES})
+
+# build examples
+if (BUILD_EXAMPLES)
+  add_executable(Ravelin-block example/block.cpp)
+  add_executable(Ravelin-pendulum example/pendulum.cpp)
+  add_executable(Ravelin-double-pendulum example/doublependulum.cpp)
+  add_executable(Ravelin-urdf example/urdf.cpp)
+  target_link_libraries(Ravelin-block Ravelin)
+  target_link_libraries(Ravelin-pendulum Ravelin)
+  target_link_libraries(Ravelin-double-pendulum Ravelin)
+  target_link_libraries(Ravelin-urdf Ravelin)
+endif (BUILD_EXAMPLES)
 
 # setup install locations
 install (TARGETS Ravelin DESTINATION lib)

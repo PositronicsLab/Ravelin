@@ -351,7 +351,7 @@ void JOINT::evaluate_constraints_dot(REAL C_dot[])
   for (unsigned i=0; i< supers.size(); i++)
   {
     q.push_back(VECTORN());
-    supers[i]->get_generalized_coordinates(DYNAMIC_BODY::eEuler, q.back());
+    supers[i]->get_generalized_coordinates_euler(q.back());
   }
 
   // evaluate constraint equations
@@ -364,7 +364,7 @@ void JOINT::evaluate_constraints_dot(REAL C_dot[])
     supers[i]->get_generalized_velocity(DYNAMIC_BODY::eEuler, qd);
     qd *= DT;
     qd += q[i];
-    supers[i]->set_generalized_coordinates(DYNAMIC_BODY::eEuler, qd);
+    supers[i]->set_generalized_coordinates_euler(qd);
   }
 
   // re-evaluate constraint equations
@@ -379,6 +379,6 @@ void JOINT::evaluate_constraints_dot(REAL C_dot[])
 
   // restore configurations of super bodies
   for (unsigned i=0; i< supers.size(); i++)
-    supers[i]->set_generalized_coordinates(DYNAMIC_BODY::eEuler, q[i]);
+    supers[i]->set_generalized_coordinates_euler(q[i]);
 }
 

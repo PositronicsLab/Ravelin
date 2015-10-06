@@ -1248,31 +1248,31 @@ SHAREDVECTORN& RIGIDBODY::solve_generalized_inertia_single(const SHAREDVECTORN& 
 }
 
 /// Gets the generalized position of this rigid body
-SHAREDVECTORN& RIGIDBODY::get_generalized_coordinates(GeneralizedCoordinateType gctype, SHAREDVECTORN& gc)
+SHAREDVECTORN& RIGIDBODY::get_generalized_coordinates_euler(SHAREDVECTORN& gc)
 {
   // if this body part of an articulated body, call that function instead
   if (!_abody.expired())
   {
     shared_ptr<ARTICULATED_BODY> ab(_abody);
-    ab->get_generalized_coordinates(gctype, gc);
+    ab->get_generalized_coordinates_euler(gc);
   }
   else
-    get_generalized_coordinates_generic(gctype, gc);
+    get_generalized_coordinates_euler_generic(gc);
 
   return gc;
 }
 
 /// Sets the generalized coordinates of this rigid body
-void RIGIDBODY::set_generalized_coordinates(GeneralizedCoordinateType gctype, const SHAREDVECTORN& gc)
+void RIGIDBODY::set_generalized_coordinates_euler(const SHAREDVECTORN& gc)
 {
   // if this body part of an articulated body, call that function instead
   if (!_abody.expired())
   {
     shared_ptr<ARTICULATED_BODY> ab(_abody);
-    ab->set_generalized_coordinates(gctype, gc);
+    ab->set_generalized_coordinates_euler(gc);
   }
   else
-    set_generalized_coordinates_generic(gctype, gc);
+    set_generalized_coordinates_euler_generic(gc);
 }
 
 /// Sets the generalized velocity of this rigid body

@@ -567,14 +567,14 @@ void CRB_ALGORITHM::calc_generalized_inertia(SHAREDMATRIXN& M)
 void CRB_ALGORITHM::precalc(shared_ptr<RC_ARTICULATED_BODY> body)
 {
   // tolerance for not recomputing/refactorizing inertia matrix
-  const double REFACTOR_TOL = 1e-4;
+  const double REFACTOR_TOL = 1e-8;
 
   // get the links and joints for the body
   const vector<shared_ptr<JOINT> >& joints = body->get_explicit_joints();
 
   // get the generalized coordinates
   static VECTORN gc, tmpv;
-  body->get_generalized_coordinates(DYNAMIC_BODY::eEuler, gc);
+  body->get_generalized_coordinates_euler(gc);
   if (_gc_last.size() == 0 || ((tmpv = gc) -= _gc_last).norm_inf() > REFACTOR_TOL)
   {
     // compute spatial isolated inertias and generalized inertia matrix

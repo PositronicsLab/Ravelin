@@ -24,9 +24,9 @@ OutputIterator RIGIDBODY::get_child_links(OutputIterator begin) const
 
 /// Sets generalized coordinates using a templated vector
 template <class V>
-void RIGIDBODY::get_generalized_coordinates_generic(DYNAMIC_BODY::GeneralizedCoordinateType gctype, V& gc) 
+void RIGIDBODY::get_generalized_coordinates_euler_generic(V& gc) 
 {
-  const unsigned N_SPATIAL = 6, N_EULER = 7;
+  const unsigned N_EULER = 7;
   const boost::shared_ptr<const POSE3> GLOBAL;
 
   // special case: disabled body
@@ -37,11 +37,7 @@ void RIGIDBODY::get_generalized_coordinates_generic(DYNAMIC_BODY::GeneralizedCoo
   }
 
   // resize vector
-  switch (gctype)
-  {
-    case DYNAMIC_BODY::eEuler:   gc.resize(N_EULER); break;
-    case DYNAMIC_BODY::eSpatial: gc.resize(N_SPATIAL); break;
-  }
+  gc.resize(N_EULER); 
 
   // get current inertial pose 
   POSE3 P = *_F;
@@ -52,83 +48,40 @@ void RIGIDBODY::get_generalized_coordinates_generic(DYNAMIC_BODY::GeneralizedCoo
   gc[1] = P.x[1];
   gc[2] = P.x[2];
 
-  // get angular components 
-  if (gctype == DYNAMIC_BODY::eSpatial)
-    P.q.to_rpy(gc[3], gc[4], gc[5]);
-  else
-  {
-    // return the generalized position using Euler parameters
-    assert(gctype == DYNAMIC_BODY::eEuler);
-    gc[3] = P.q.x;
-    gc[4] = P.q.y;
-    gc[5] = P.q.z;
-    gc[6] = P.q.w;
-  }
+  // return the generalized position using Euler parameters
+  gc[3] = P.q.x;
+  gc[4] = P.q.y;
+  gc[5] = P.q.z;
+  gc[6] = P.q.w;
 }
 
 /// Sets the generalized coordinates of this rigid body (does not call articulated body)
 template <class V>
-void RIGIDBODY::set_generalized_coordinates_generic(DYNAMIC_BODY::GeneralizedCoordinateType gctype, V& gc)
+void RIGIDBODY::set_generalized_coordinates_euler_generic(V& gc)
 {
   // special case: disabled body
   if (!_enabled)
     return;
 
-  // do easiest case first 
-  if (gctype == DYNAMIC_BODY::eSpatial)
-  {
-    // this isn't correct
-    assert(false);
-/*
-    // note: generalized coordinates in eSpatial are always set with regard to 
-    // the global frame
-    Origin3d x(gc[0], gc[1], gc[2]);
-    QUAT q = QUAT::rpy(gc[3], gc[4], gc[5]); 
+  // get the position
+  ORIGIN3 x(gc[0], gc[1], gc[2]);
 
-    // convert the pose to the correct relative frame
-    POSE3 P(q, x);
+  // get the unit quaternion
+  QUAT q;
+  q.x = gc[3];
+  q.y = gc[4];
+  q.z = gc[5];
+  q.w = gc[6];
 
+  // normalize the unit quaternion, just in case
+  q.normalize();
 
-    P.update_relative_pose(_F->rpose);
-
-    // set the transform
-    set_pose(P);
-*/
-  }
-  else
-  {
-    assert(gctype == DYNAMIC_BODY::eEuler);
-
-    // get the position
-    ORIGIN3 x(gc[0], gc[1], gc[2]);
-
-    // get the unit quaternion
-    QUAT q;
-    q.x = gc[3];
-    q.y = gc[4];
-    q.z = gc[5];
-    q.w = gc[6];
-
-    // normalize the unit quaternion, just in case
-    q.normalize();
-
-    POSE3 P(q, x);
-    P.update_relative_pose(get_pose()->rpose);
-    set_pose(P);
-/*
-    // get the transform from the link pose to the inertial pose
-    Transform3d lTm = POSE3::calc_relative_pose(_jF, _F);
-
-    // set the pose 
-    *_jF = P;
-    *_F = lTm.apply_transform();
-    _jF->update_relative_pose(_F);
-*/
+  POSE3 P(q, x);
+  P.update_relative_pose(get_pose()->rpose);
+  set_pose(P);
     
-
-    // invalidate the pose vectors 
-    invalidate_pose_vectors();    
-  }
+  // invalidate the pose vectors 
+  invalidate_pose_vectors();    
 }
 
 /// Sets the generalized velocity of this rigid body (does not call articulated body version)
