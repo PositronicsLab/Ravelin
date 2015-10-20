@@ -16,6 +16,7 @@ option (BUILD_SHARED_LIBS "Build Ravelin as a shared library?" ON)
 option (PROFILE "Build for profiling?" OFF)
 option (REENTRANT "Build Ravelin to be reentrant ? (slower)" OFF)
 option (DISABLE_EXCEPT "Disable user-level exceptions for extra speed (not recommended)?" OFF)
+option (BUILD_TESTS "Build test program binaries?" ON)
 
 # superLU directories
 set (SUPERLU_PATH /usr/local)
@@ -55,6 +56,13 @@ endforeach (i)
 # create the library
 add_library(Ravelin "" "" ${LIBSOURCES})
 target_link_libraries (Ravelin ${BLAS_LIBRARIES} ${LAPACK_LIBRARIES} ${EXTRA_LIBRARIES})
+
+if (BUILD_TESTS)
+include_directories(test /usr/include/eigen3 include)
+link_directories(${PROJECT_BINARY_DIR})
+add_executable(RavelinTest test/LinearAlgebra.cpp test/BlockOperations.cpp test/Arithmetic.cpp test/TestUtils.cpp)
+target_link_libraries(RavelinTest Ravelin gtest gtest_main)
+endif (BUILD_TESTS)
 
 # setup install locations
 install (TARGETS Ravelin DESTINATION lib)
