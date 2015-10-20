@@ -28,7 +28,7 @@ static const unsigned MIN_SIZE = 0, MAX_SIZE = 7;
                         MatR::mult(R1,R2, resultR);
 
                         // Check if the error between the matricies is small
-                        checkError(std::cout, "MatrixNd*MatrixNd", resultE, resultR);
+                        checkError(std::cerr, "MatrixNd*MatrixNd", resultE, resultR);
                 }
             }
         }
@@ -58,7 +58,7 @@ static const unsigned MIN_SIZE = 0, MAX_SIZE = 7;
                      R1.transpose_mult(R2, resultR);
 
                      // Check if the error between the matricies is small
-                     checkError(std::cout, "MatrixNd\'*MatrixNd", resultE,  resultR);
+                     checkError(std::cerr, "MatrixNd\'*MatrixNd", resultE,  resultR);
                  }
             }
         }
@@ -84,7 +84,7 @@ static const unsigned MIN_SIZE = 0, MAX_SIZE = 7;
                  MatR::mult(R1,R2, resultR);
 
                  // Check if the error between the matricies is small
-                 checkError(std::cout, "MatrixNd*VectorNd", resultE,  resultR);
+                 checkError(std::cerr, "MatrixNd*VectorNd", resultE,  resultR);
             }
         }
     }
@@ -105,7 +105,7 @@ static const unsigned MIN_SIZE = 0, MAX_SIZE = 7;
             VecR resultR(1);
             resultR = R1.dot(R2);
             // Check if the error between the matricies is small
-            checkError(std::cout, "VectorNd\'*VectorNd", resultE,  resultR);
+            checkError(std::cerr, "VectorNd\'*VectorNd", resultE,  resultR);
         }
     }
 
@@ -129,7 +129,7 @@ static const unsigned MIN_SIZE = 0, MAX_SIZE = 7;
                  R1.transpose_mult(R2, resultR);
 
                  // Check if the error between the matricies is small
-                 checkError(std::cout, "MatrixNd*VectorNd", resultE,  resultR);
+                 checkError(std::cerr, "MatrixNd*VectorNd", resultE,  resultR);
              }
         }
     }
@@ -149,7 +149,7 @@ static const unsigned MIN_SIZE = 0, MAX_SIZE = 7;
 
                 MatE resultE = E1 + E2;
                 resultR += R1;
-                checkError(std::cout, "MatrixNd+MatrixNd", resultE,  resultR);
+                checkError(std::cerr, "MatrixNd+MatrixNd", resultE,  resultR);
             }
         }
     }
@@ -169,7 +169,7 @@ static const unsigned MIN_SIZE = 0, MAX_SIZE = 7;
                 VecE resultE = E1 + E2;
                 resultR += R1;
                 // Check if the error between the matricies is small
-                checkError(std::cout, "VectorNd+VectorNd", resultE,  resultR);
+                checkError(std::cerr, "VectorNd+VectorNd", resultE,  resultR);
         }
     }
 
@@ -188,7 +188,7 @@ static const unsigned MIN_SIZE = 0, MAX_SIZE = 7;
             VecE resultE = E1 - E2;
             resultR -= R2;
             // Check if the error between the matricies is small
-            checkError(std::cout, "VectorNd-VectorNd", resultE, resultR);
+            checkError(std::cerr, "VectorNd-VectorNd", resultE, resultR);
         }
     }
     
@@ -208,7 +208,7 @@ static const unsigned MIN_SIZE = 0, MAX_SIZE = 7;
 
                         MatE resultE = E2 - E1;
                         resultR -= R1;
-                        checkError(std::cout, "MatrixNd-MatrixNd", resultE,  resultR);
+                        checkError(std::cerr, "MatrixNd-MatrixNd", resultE,  resultR);
 
                 }
         }
@@ -236,13 +236,13 @@ static const unsigned MIN_SIZE = 0, MAX_SIZE = 7;
              MatR::diag_mult(r1, R2, resultR);
 
              // Check if the error between the matricies is small
-             checkError(std::cout, "diag_mult()", resultE,  resultR);
+             checkError(std::cerr, "diag_mult()", resultE,  resultR);
 
              // Perform multiplication on matricies
              resultE = e1.asDiagonal() * E2.transpose();
              MatR::diag_mult_transpose(r1,R2, resultR);
 
              // Check if the error between the matricies is small
-             checkError(std::cout, "diag_mult_transpose()", resultE,  resultR);
+             checkError(std::cerr, "diag_mult_transpose()", resultE,  resultR);
         }
     }

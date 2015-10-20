@@ -254,12 +254,12 @@ TEST(MovingFrameTest, AccelConversion)
 
   // now compute the transformation of the acceleration to pose
   SAcceld pose_a = M5.transform(body_a);
-std::cout << "body_v: " << body_v << std::endl;
-std::cout << "body_a: " << body_a << std::endl;
-std::cout << "r: " << M5.r << std::endl;
-std::cout << "E: " << std::endl << M5.E;
-std::cout << "\\dot{r}: " << M5.rdot << std::endl;
-std::cout << "\\dot{E}: " << std::endl << M5.Edot;
+std::cerr << "body_v: " << body_v << std::endl;
+std::cerr << "body_a: " << body_a << std::endl;
+std::cerr << "r: " << M5.r << std::endl;
+std::cerr << "E: " << std::endl << M5.E;
+std::cerr << "\\dot{r}: " << M5.rdot << std::endl;
+std::cerr << "\\dot{E}: " << std::endl << M5.Edot;
 
   // *** now numerically integrate body_frame forward by dt
   // update the body frame origin
