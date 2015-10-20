@@ -1,18 +1,14 @@
 cmake_minimum_required(VERSION 2.8.3)
 
-project(Ravelin_Test)
-
-find_package(Boost REQUIRED)
-
-option(BUILD_SHARED_LIBS "Build Controller as a shared library?" ON)
+project(RavelinTest CXX C)
 
 # you may have to add additional includes in here...
 add_definitions(-DBUILD_DOUBLE)
-add_definitions(-DUSE_OSG)
-add_definitions(-DSAFESTATIC=static)
-add_definitions(-DUSE_GLPK)
-include_directories(/usr/local/include ./ ${Boost_INCLUDE_DIR} /usr/include/eigen3 ../include)
-link_directories(/usr/local/lib ../debug/)
+#include_directories(/usr/local/include ./ ${Boost_INCLUDE_DIR} /usr/include/eigen3 ../include)
+include_directories(/usr/local/include ./ /usr/include/eigen3 ../include)
+link_directories(/usr/local/lib ../release/)
 
-add_executable(${PROJECT_NAME} Test.cpp Arithmetic.cpp TestUtils.cpp BlockOperations.cpp LinearAlgebra.cpp)
-target_link_libraries(${PROJECT_NAME} Ravelin)
+#add_executable(${PROJECT_NAME} Test.cpp Arithmetic.cpp TestUtils.cpp BlockOperations.cpp LinearAlgebra.cpp)
+add_executable(RavelinTest LinearAlgebra.cpp BlockOperations.cpp Arithmetic.cpp TestUtils.cpp)
+target_link_libraries(RavelinTest Ravelin gtest gtest_main)
+

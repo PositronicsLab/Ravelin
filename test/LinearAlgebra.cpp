@@ -10,11 +10,11 @@ static const unsigned MIN_SIZE = 0, MAX_SIZE = 7;
     typedef Ravelin::LinAlgd LinAlg;
 #endif
 
-LinAlg * LA;
+#include <gtest/gtest.h>
 
-void testSVD(){
-    std::cout << ">> testSVD: " << std::endl;
 
+TEST(LinAlgTest,SVD){
+    LinAlg * LA = new LinAlg();
     for(int i=1;i<MAX_SIZE;i++){
         unsigned r = 1 << (i-1),c = r;
 //        std::cout << "SIZE: " << r << std::endl;
@@ -97,15 +97,14 @@ void testSVD(){
     }
 }
 
-void testQR(){
-    std::cout << ">> testQR: " << std::endl;
-
-    for(int i=2;i<MAX_SIZE;i++){
-        for(int j=2;j<MAX_SIZE;j++){
+TEST(LinAlgTest,factor_QR_AR_Q){
+    LinAlg * LA = new LinAlg();
+    for(int j=2;j<MAX_SIZE;j++){
+        for(int i=j;i<MAX_SIZE;i++){
+            std::cout << i << " " << j << std::endl;
             unsigned m = i;//1 << (i-1);
             unsigned n = j, c = n;//1 << (j-1);
             /// factor_QR only works for m<=n
-            if(m>n) continue;
 
             MatR A,AR(m,n),Q(m,m);
 
@@ -119,8 +118,25 @@ void testQR(){
 
             Q.mult(AR,QR);
             checkError(std::cout, "factor_QR(AR,Q)", A,QR);
+        }
+    }
+}
 
-            /// factor_QR(AR,Q,PI) only works for m!=n
+TEST(LinAlgTest,factor_QR_AR_Q_PI){
+    LinAlg * LA = new LinAlg();
+    for(int j=2;j<MAX_SIZE;j++){
+        for(int i=j;i<MAX_SIZE;i++){
+            std::cout << i << " " << j << std::endl;
+            unsigned m = i;//1 << (i-1);
+            unsigned n = j, c = n;//1 << (j-1);
+            /// factor_QR only works for m<=n
+
+            MatR A,AR(m,n),Q(m,m);
+
+            // Create PD matrix A
+            AR = randM(m,n);
+
+            A = AR;
             if(m==n) continue;
 
             AR = A;
@@ -129,6 +145,7 @@ void testQR(){
             std::vector<int> PI;
             LA->factor_QR(AR,Q,PI);
 
+            MatR QR(Q.rows(),AR.columns());
             QR.set_zero();
             VecR workv(AR.columns());
 
@@ -144,6 +161,8 @@ void testQR(){
                   R.set_column(PI[ii]-1,AR.get_column(ii,workv));
             }
             QR.resize(Q.rows(),R.columns());
+            std::cout << "Q: " << Q.rows() << " " << Q.columns() << std::endl;
+            std::cout << "R: " << R.rows() << " " << R.columns() << std::endl;
 
             Q.mult(R,QR);
             checkError(std::cout, "factor_QR(AR,Q,PI)", A,QR);
@@ -151,9 +170,8 @@ void testQR(){
     }
 }
 
-void testLU(){
-    std::cout << ">> testLU: " << std::endl;
-
+TEST(LinAlgTest,factor_LU){
+    LinAlg * LA = new LinAlg();
     for(int i=1;i<MAX_SIZE;i++){
         unsigned s = 1 << (i-1),c = 2;
         MatR A,B,AB(s,s);
@@ -194,6 +212,43 @@ void testLU(){
 
 
         checkError(std::cout, "factor_LU", A,A2);
+    }
+    std::cout << "<< [PASS] testLU: " << std::endl;
+}
+
+TEST(LinAlgTest,solve_LU_fast){
+    LinAlg * LA = new LinAlg();
+    for(int i=1;i<MAX_SIZE;i++){
+        unsigned s = 1 << (i-1),c = 2;
+        MatR A,B,AB(s,s);
+
+        // Create PD matrix A
+        A = randM(s,s);
+        B = A;
+        B.transpose();
+        A.mult(B,AB);
+        A = AB;
+        std::vector<int> P;
+
+        MatR LU = A;
+        LA->factor_LU(LU,P);
+
+        MatR L(s,s), U(s,s);
+        L.set_zero();
+        U.set_zero();
+        /// Test the SVD Decomp
+        for(unsigned ii=0;ii<s;ii++){
+            L(ii,ii) = 1;
+            for(unsigned jj=0;jj<s;jj++){
+                if(jj<ii){
+                    L(ii,jj) = LU(ii,jj);
+                } else {
+                    U(ii,jj) = LU(ii,jj);
+                }
+            }
+        }
+        MatR LU2(s,s);
+        L.mult(U,LU2);
 
         /// Test SVD Solve
         MatR x = randM(s,1),b(s,1);
@@ -210,7 +265,8 @@ void testLU(){
     std::cout << "<< [PASS] testLU: " << std::endl;
 }
 
-void testChol(){
+TEST(LinAlgTest,Chol){
+    LinAlg * LA = new LinAlg();
     std::cout << ">> testChol: " << std::endl;
 
     for(int i=1;i<MAX_SIZE;i++){
@@ -238,11 +294,7 @@ void testChol(){
 
             /// Test SPSD
                 AB =A;
-                if(LA->is_SPSD(AB,ZERO_TOL * S.rows() * (*std::max_element(S.begin(),S.end()))))
-                    std::cout << "[PASS] is_SPSD(SPSD): " << std::endl;
-                else
-                    std::cout << "[FAIL] is_SPSD(SPSD): " << std::endl;
-
+                EXPECT_TRUE(LA->is_SPSD(AB,ZERO_TOL * S.rows() * (*std::max_element(S.begin(),S.end()))));
 
             /// Test Eigen
                 AB =A;
@@ -275,17 +327,10 @@ void testChol(){
 
             /// Test SPD
                 AB =A;
-                if(LA->is_SPD(AB,ZERO_TOL * S.rows() * (*std::max_element(S.begin(),S.end()))))
-                    std::cout << "[PASS] is_SPD: " << std::endl;
-                else
-                    std::cout << "[FAIL] is_SPD: " << std::endl;
+                EXPECT_TRUE(LA->is_SPD(AB,ZERO_TOL * S.rows() * (*std::max_element(S.begin(),S.end()))));
             /// Test SPSD
                 AB =A;
-                if(LA->is_SPSD(AB,ZERO_TOL * S.rows() * (*std::max_element(S.begin(),S.end()))))
-                    std::cout << "[PASS] is_SPSD(SPD): " << std::endl;
-                else
-                    std::cout << "[FAIL] is_SPSD(SPD): " << std::endl;
-
+                EXPECT_TRUE(LA->is_SPSD(AB,ZERO_TOL * S.rows() * (*std::max_element(S.begin(),S.end()))));
         }
 
         // Invert A
@@ -325,12 +370,12 @@ void testChol(){
             // I == A*B ?
             I.set_identity();
             checkError(std::cout, "inverse_SPD", AB,I);
-
     }
 
 }
 
-void testLA(){
+TEST(LinAlgTest,LA){
+    LinAlg * LA = new LinAlg();
     std::cout << ">> testLA: " << std::endl;
 
     for(int i=1;i<MAX_SIZE;i++){
@@ -412,13 +457,5 @@ void testLA(){
 
 }
 
-void TestLinearAlgebra(){
-    LA = new LinAlg();
-    testSVD();
-    testChol();
-    testLA();
-    testLU();
-    testQR();
-}
 
 

@@ -1,9 +1,10 @@
 #include <UnitTesting.hpp>
+#include <gtest/gtest.h>
 
 static const unsigned MIN_SIZE = 0, MAX_SIZE = 7;
 
     // MatrixNd*MatrixNd
-    void MM_Mult()
+    TEST(Arithmetic, MM_Mult)
     {
         // Loop Through all column and vector sizes
         for(int i=0;i<MAX_SIZE;i++){
@@ -34,7 +35,7 @@ static const unsigned MIN_SIZE = 0, MAX_SIZE = 7;
     }
 
     // MatrixNd'*MatrixNd
-    void MM_TMult()
+    TEST(Arithmetic, MM_TMult)
     {
         // Loop Through all column and vector sizes
         for(int i=0;i<MAX_SIZE;i++){
@@ -64,7 +65,7 @@ static const unsigned MIN_SIZE = 0, MAX_SIZE = 7;
     }
 
     // MatrixNd*VectorNd
-    void MV_Mult()
+    TEST(Arithmetic, MV_Mult)
     {
         for(int i=0;i<MAX_SIZE;i++){
              for(int j=0;j<MAX_SIZE;j++){
@@ -89,7 +90,7 @@ static const unsigned MIN_SIZE = 0, MAX_SIZE = 7;
     }
 
     // VectorNd'*VectorNd
-    void VV_Dot()
+    TEST(Arithmetic, VV_Dot)
     {
         for(int i=0;i<MAX_SIZE;i++){
             // Determine matrix size
@@ -109,7 +110,7 @@ static const unsigned MIN_SIZE = 0, MAX_SIZE = 7;
     }
 
     // MatrixNd*VectorNd
-    void VM_Mult()
+    TEST(Arithmetic, VM_Mult)
     {
         for(int i=0;i<MAX_SIZE;i++){
              for(int j=0;j<MAX_SIZE;j++){
@@ -134,7 +135,8 @@ static const unsigned MIN_SIZE = 0, MAX_SIZE = 7;
     }
 
     // Addition Subtraction
-    void MM_Add() {
+    TEST(Arithmetic, MM_Add)
+    {
         for(int i = 0; i < 10; i++) {
             for(int j = 0; j < 10; j++) {
                 MatE E1(1 << i,1 << j);
@@ -153,7 +155,7 @@ static const unsigned MIN_SIZE = 0, MAX_SIZE = 7;
     }
 
     // VectorNd+VectorNd
-    void VV_Add()
+    TEST(Arithmetic, VV_Add)
     {
         for(int i=0;i<MAX_SIZE;i++){
         // Determine matrix size
@@ -172,7 +174,7 @@ static const unsigned MIN_SIZE = 0, MAX_SIZE = 7;
     }
 
      // VectorNd-VectorNd
-    void VV_Sub() {
+    TEST(Arithmetic, VV_Sub){
     for(int i=0;i<MAX_SIZE;i++){
         // Determine matrix size
             unsigned r = 1 << i;
@@ -192,7 +194,7 @@ static const unsigned MIN_SIZE = 0, MAX_SIZE = 7;
     
 
     // MatrixNd-MatrixNd
-    void MM_Sub()
+    TEST(Arithmetic, MM_Sub)
     {
         for(int i = 0; i < 10; i++) {
                 for(int j = 0; j < 10; j++) {
@@ -213,7 +215,7 @@ static const unsigned MIN_SIZE = 0, MAX_SIZE = 7;
     }
 
     // Diag(VectorNd)*MatrixNd
-    void Diag_Mult()
+    TEST(Arithmetic, Diag_Mult)
     {
         for(int i=0;i<MAX_SIZE;i++){
              int r = 1 << i;
@@ -244,16 +246,3 @@ static const unsigned MIN_SIZE = 0, MAX_SIZE = 7;
              checkError(std::cout, "diag_mult_transpose()", resultE,  resultR);
         }
     }
-    /// Run Unit Tests
-void TestArithmetic() {
-    MM_Mult();
-    MM_TMult();
-    MV_Mult();
-    VM_Mult();
-    VV_Dot();
-    VV_Add();
-    MM_Add();
-    VV_Sub();
-    MM_Sub();
-    Diag_Mult();
-}

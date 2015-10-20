@@ -1,5 +1,6 @@
 #include <UnitTesting.hpp>
 #include <iostream>
+#include <gtest/gtest.h>
 
     /// Checks the error between the final value of the Eigen and Ravelin Arithmetic 
     double checkError(std::ostream& out, const std::string& str, const MatE& E, const MatR& R)
@@ -11,6 +12,7 @@
                 error = std::max(error, std::fabs(err));
             } 
         } 
+        EXPECT_GT(TOL*R.norm_inf()*std::max(R.rows(), R.columns()),error);
         if (error > TOL*R.norm_inf()*std::max(R.rows(), R.columns()))
           out << "[FAIL] " << str << " [err=" << error << "]" << std::endl;
         else
@@ -25,6 +27,8 @@
                 double err = R[i] - E(i); 
                 error = std::max(error, std::fabs(err));
         }
+        
+        EXPECT_GT(TOL*R.norm_inf()*R.rows(),error);
         if (error > TOL*R.norm_inf()*R.rows())
           out << "[FAIL] " << str << " [err=" << error << "]" << std::endl;
         else
@@ -42,6 +46,8 @@
                 error = std::max(error, std::fabs(err));
             } 
         } 
+         
+        EXPECT_GT(TOL,error);
         if (error > TOL)
           out << "[FAIL] " << str << " [err=" << error << "]" << std::endl;
         else
@@ -57,7 +63,9 @@
                 double err = R[i] - E[i]; 
                 error += err*err; 
         }
-        error = std::sqrt(error); 
+        error = std::sqrt(error);
+        
+        EXPECT_GT(TOL,error);
         if (error > TOL)
           out << "[FAIL] " << str << " [err=" << error << "]" << std::endl;
         else
