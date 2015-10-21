@@ -1426,13 +1426,13 @@ SHAREDVECTORN& RIGIDBODY::get_generalized_forces_single(SHAREDVECTORN& gf)
   gf.resize(NGC);
 
   // get the forces in the c.o.m. frame
-  if (!_forecom_valid)
+  if (!_forcecom_valid)
     _forcecom = POSE3::transform(_F2, _forcem);
   _forcecom_valid = true;
   
   // get the Euler torques in the c.o.m. frame
   SFORCE euler = calc_euler_torques();
-  assert(euler.get_force().norm() < NEAR_ZERO);
+  assert(euler.get_force().norm() < EPS_DOUBLE);
 
   // get force and torque
   VECTOR3 f = _forcecom.get_force();
