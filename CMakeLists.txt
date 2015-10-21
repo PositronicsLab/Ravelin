@@ -17,6 +17,7 @@ option (PROFILE "Build for profiling?" OFF)
 option (REENTRANT "Build Ravelin to be reentrant ? (slower)" OFF)
 option (DISABLE_EXCEPT "Disable user-level exceptions for extra speed (not recommended)?" OFF)
 option (BUILD_EXAMPLES "Build example program binaries?" ON)
+option (BUILD_TESTS "Build test program binaries?" ON)
 
 # modify C++ flags
 if (REENTRANT)
@@ -72,6 +73,14 @@ if (BUILD_EXAMPLES)
   target_link_libraries(Ravelin-double-pendulum Ravelin)
   target_link_libraries(Ravelin-urdf Ravelin)
 endif (BUILD_EXAMPLES)
+
+# build examples
+if (BUILD_TESTS)
+include_directories(test /usr/include/eigen3 include)
+link_directories(${PROJECT_BINARY_DIR})
+add_executable(RavelinTest test/LinearAlgebra.cpp test/BlockOperations.cpp test/Arithmetic.cpp test/TestUtils.cpp)
+target_link_libraries(RavelinTest Ravelin gtest gtest_main)
+endif (BUILD_TESTS)
 
 # setup install locations
 install (TARGETS Ravelin DESTINATION lib)
