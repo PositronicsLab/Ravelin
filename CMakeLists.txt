@@ -16,7 +16,7 @@ option (BUILD_SHARED_LIBS "Build Ravelin as a shared library?" ON)
 option (PROFILE "Build for profiling?" OFF)
 option (REENTRANT "Build Ravelin to be reentrant ? (slower)" OFF)
 option (DISABLE_EXCEPT "Disable user-level exceptions for extra speed (not recommended)?" OFF)
-option (BUILD_TESTS "Build test program binaries?" ON)
+option (BUILD_TESTS "Build test program binaries?" OFF)
 
 # superLU directories
 set (SUPERLU_PATH /usr/local)
