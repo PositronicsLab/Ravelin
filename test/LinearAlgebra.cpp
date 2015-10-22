@@ -153,13 +153,8 @@ TEST(LinAlgTest,factor_QR_AR_Q_PI){
             // permute rows using piv
             MatR R(AR.rows(), AR.columns());
             R.set_zero();
-            if(AR.rows()>=AR.columns()){
-               for(int ii = AR.columns()-1;ii>=0;ii--)
-                  R.set_row(PI[ii]-1,AR.get_row(ii,workv));
-            } else {
-               for(int ii = AR.columns()-1;ii>=0;ii--)
-                  R.set_column(PI[ii]-1,AR.get_column(ii,workv));
-            }
+            for(int ii = AR.columns()-1;ii>=0;ii--)
+              R.set_column(PI[ii]-1,AR.get_column(ii,workv));
             std::cerr << "Q: " << Q.rows() << " " << Q.columns() << std::endl;
             std::cerr << "R: " << R.rows() << " " << R.columns() << std::endl;
 
