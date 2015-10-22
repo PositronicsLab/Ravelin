@@ -145,22 +145,21 @@ TEST(LinAlgTest,factor_QR_AR_Q_PI){
             std::vector<int> PI;
             LA->factor_QR(AR,Q,PI);
 
+            // prepare to calculate Q*R 
             MatR QR(Q.rows(),AR.columns());
             QR.set_zero();
             VecR workv(AR.columns());
 
-            MatR R;
-
+            // permute rows using piv
+            MatR R(AR.rows(), AR.columns());
+            R.set_zero();
             if(AR.rows()>=AR.columns()){
-               R.resize(PI.size(),AR.columns());
                for(int ii = AR.columns()-1;ii>=0;ii--)
                   R.set_row(PI[ii]-1,AR.get_row(ii,workv));
             } else {
-               R.resize(AR.rows(),PI.size());
                for(int ii = AR.columns()-1;ii>=0;ii--)
                   R.set_column(PI[ii]-1,AR.get_column(ii,workv));
             }
-            QR.resize(Q.rows(),R.columns());
             std::cerr << "Q: " << Q.rows() << " " << Q.columns() << std::endl;
             std::cerr << "R: " << R.rows() << " " << R.columns() << std::endl;
 
