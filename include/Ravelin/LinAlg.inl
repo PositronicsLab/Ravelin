@@ -1357,15 +1357,15 @@ void factor_QR(ARMat& AR, QMat& Q, std::vector<int>& PI)
   std::copy(AR.data(), AR.data()+m*min_mn, Q.data());
   orgqr_(&M, &MINMN, &MINMN, Q.data(), &M, tau.data(), &INFO);
 
-  // resize AR
-  AR.resize(std::min(AR.rows(), AR.columns()), AR.columns(), true);
-
   // make R upper triangular
   for (unsigned i=0; i< AR.columns(); i++)
   {
-    RowIteratord coli = AR.block_row_iterator_begin(i+1,AR.rows(),i,i+1);
+    ROW_ITERATOR coli = AR.block_row_iterator_begin(i+1,AR.rows(),i,i+1);
     std::fill(coli, coli.end(), 0.0);
   }
+
+  // zero bottom rows of AR
+  AR.block(std::min(m,n), AR.rows(), 0, AR.columns()).set_zero();
 }
 
 /// Performs the QR factorization of a matrix
