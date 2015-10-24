@@ -338,7 +338,7 @@ void RIGIDBODY::set_enabled(bool flag)
     _xddj.set_zero();
     _xdm.set_zero();
     _xddm.set_zero();
-    _xdi_valid = _xdj_valid = _xdcom_valid = _xd0_valid = true;
+    _xdi_valid = _xdj_valid = _xdcom_valid = _xd0_valid = false;
     _xddi_valid = _xddj_valid = _xddcom_valid = _xdd0_valid = true;
   }
 }

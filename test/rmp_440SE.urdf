@@ -1,0 +1,57 @@
+<robot
+  name="RMP_440SE">
+  <link
+    name="base_link">
+    <inertial>
+      <origin
+        xyz="-0.059238 -1.1555E-05 0.23912"
+        rpy="0 0 0" />
+      <mass
+        value="114.77" />
+      <inertia
+        ixx="4.5346"
+        ixy="0.0012745"
+        ixz="-0.58915"
+        iyy="10.891"
+        iyz="0.044748"
+        izz="13.817" />
+    </inertial>
+    <visual>
+      <origin
+        xyz="0 0 0"
+        rpy="0 0 0" />
+      <geometry>
+        <mesh
+          filename="package://RMP_440SE/meshes/base_link.dae" />
+      </geometry>
+      <material
+        name="">
+        <color
+          rgba="0.752941176470588 0.752941176470588 0.752941176470588 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin
+        xyz="0 0 .266"
+        rpy="0 0 0" />
+      <geometry>
+        <box size="1.105 0.828 0.532"/>
+      </geometry>
+    </collision>
+  </link>
+  <link
+    name="bsa_imu_frame" />
+  <joint
+    name="bsa_imu_joint"
+    type="fixed">
+    <origin
+      xyz="0.28575 0 0.1841"
+      rpy="0 0 0" />
+    <parent
+      link="base_link" />
+    <child
+      link="bsa_imu_frame" />
+    <axis
+      xyz="0 0 0" />
+  </joint>
+</robot>
