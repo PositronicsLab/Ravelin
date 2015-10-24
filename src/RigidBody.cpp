@@ -521,7 +521,7 @@ const SVELOCITY& RIGIDBODY::get_velocity()
 
     case eLink:
       if (!_xdi_valid)
-        _xdi = POSE3::transform(const_pointer_cast<const POSE3>(_F), _xdcom);
+        _xdi = POSE3::transform(const_pointer_cast<const POSE3>(_F), _xdm);
       _xdi_valid = true;
       return _xdi;
 
