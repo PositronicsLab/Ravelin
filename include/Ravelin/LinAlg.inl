@@ -1361,11 +1361,12 @@ void factor_QR(ARMat& AR, QMat& Q, std::vector<int>& PI)
   for (unsigned i=0; i< AR.columns(); i++)
   {
     ROW_ITERATOR coli = AR.block_row_iterator_begin(i+1,AR.rows(),i,i+1);
-    std::fill(coli, coli.end(), 0.0);
+    std::fill(coli, coli.end(), (REAL) 0.0);
   }
 
-  // zero bottom rows of AR
-  AR.block(std::min(m,n), AR.rows(), 0, AR.columns()).set_zero();
+  // zero bottom rows of AR zero
+  SHAREDMATRIXN AR_bot = AR.block(std::min(m,n), AR.rows(),  0, AR.columns());
+  AR_bot.set_zero();
 }
 
 /// Performs the QR factorization of a matrix

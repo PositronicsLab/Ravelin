@@ -17,7 +17,7 @@ TEST(LinAlgTest,SVD){
     LinAlg * LA = new LinAlg();
     for(int i=1;i<MAX_SIZE;i++){
         unsigned r = 1 << (i-1),c = r;
-//        std::cout << "SIZE: " << r << std::endl;
+//        std::cerr << "SIZE: " << r << std::endl;
         MatR A,B,AB(r,r);
 
         // Create PD matrix A
@@ -40,7 +40,7 @@ TEST(LinAlgTest,SVD){
 
         U.mult(S,US);
         US.mult_transpose(V,AB);
-        checkError(std::cout, "svd1", A,AB);
+        checkError(std::cerr, "svd1", A,AB);
 
         AB = A;
         /// Test the SVD2 Decomp
@@ -51,7 +51,7 @@ TEST(LinAlgTest,SVD){
 
         U.mult(S,US);
         US.mult_transpose(V,AB);
-        checkError(std::cout, "svd2", A,AB);
+        checkError(std::cerr, "svd2", A,AB);
 
         /// Test SVD Solve
         AB = A;
@@ -64,7 +64,7 @@ TEST(LinAlgTest,SVD){
         //(A^-1)b = x2
         LA->solve_LS_fast(U,s,V,xb);
         // x1 == x2 ?
-        checkError(std::cout, "solve_LS_fast(U,S,V)", x,xb);
+        checkError(std::cerr, "solve_LS_fast(U,S,V)", x,xb);
     }
 
     for(int i=2;i<MAX_SIZE;i++){
@@ -74,7 +74,7 @@ TEST(LinAlgTest,SVD){
                 unsigned n = j;//1 << (j-1);
 //                if(!(n >= m && n >= k)) continue;
                 if(!(n == m && n >= k)) continue;
-                std::cout << "SIZE: " << m << "x" << n << ", k = " << k << std::endl;
+                std::cerr << "SIZE: " << m << "x" << n << ", k = " << k << std::endl;
                 MatR A,AB = randM(m,n);
                 MatR U,V;
                 VecR s;
@@ -90,7 +90,7 @@ TEST(LinAlgTest,SVD){
                 //(A^-1)b = x2
                 LA->solve_LS_fast(U,s,V,xb);
                 // x1 == x2 ?
-                checkError(std::cout, "solve_LS_fast(U,S,V)", x,xb);
+                checkError(std::cerr, "solve_LS_fast(U,S,V)", x,xb);
 
             }
         }
@@ -101,7 +101,7 @@ TEST(LinAlgTest,factor_QR_AR_Q){
     LinAlg * LA = new LinAlg();
     for(int j=2;j<MAX_SIZE;j++){
         for(int i=j;i<MAX_SIZE;i++){
-            std::cout << i << " " << j << std::endl;
+            std::cerr << i << " " << j << std::endl;
             unsigned m = i;//1 << (i-1);
             unsigned n = j, c = n;//1 << (j-1);
             /// factor_QR only works for m<=n
@@ -117,7 +117,7 @@ TEST(LinAlgTest,factor_QR_AR_Q){
             MatR QR(Q.rows(),AR.columns());
 
             Q.mult(AR,QR);
-            checkError(std::cout, "factor_QR(AR,Q)", A,QR);
+            checkError(std::cerr, "factor_QR(AR,Q)", A,QR);
         }
     }
 }
@@ -126,7 +126,7 @@ TEST(LinAlgTest,factor_QR_AR_Q_PI){
     LinAlg * LA = new LinAlg();
     for(int j=2;j<MAX_SIZE;j++){
         for(int i=j;i<MAX_SIZE;i++){
-            std::cout << i << " " << j << std::endl;
+            std::cerr << i << " " << j << std::endl;
             unsigned m = i;//1 << (i-1);
             unsigned n = j, c = n;//1 << (j-1);
             /// factor_QR only works for m<=n
@@ -145,22 +145,21 @@ TEST(LinAlgTest,factor_QR_AR_Q_PI){
             std::vector<int> PI;
             LA->factor_QR(AR,Q,PI);
 
-            // prepare to calculate Q*R
+            // prepare to calculate Q*R 
             MatR QR(Q.rows(),AR.columns());
             QR.set_zero();
             VecR workv(AR.columns());
 
-            // permut columns using pivot array
+            // permute rows using piv
             MatR R(AR.rows(), AR.columns());
             R.set_zero();
             for(int ii = AR.columns()-1;ii>=0;ii--)
               R.set_column(PI[ii]-1,AR.get_column(ii,workv));
-            QR.resize(Q.rows(),R.columns());
-            std::cout << "Q: " << Q.rows() << " " << Q.columns() << std::endl;
-            std::cout << "R: " << R.rows() << " " << R.columns() << std::endl;
+            std::cerr << "Q: " << Q.rows() << " " << Q.columns() << std::endl;
+            std::cerr << "R: " << R.rows() << " " << R.columns() << std::endl;
 
             Q.mult(R,QR);
-            checkError(std::cout, "factor_QR(AR,Q,PI)", A,QR);
+            checkError(std::cerr, "factor_QR(AR,Q,PI)", A,QR);
         }
     }
 }
@@ -206,9 +205,9 @@ TEST(LinAlgTest,factor_LU){
             swaprows(A2,ii,P[ii]-1);
 
 
-        checkError(std::cout, "factor_LU", A,A2);
+        checkError(std::cerr, "factor_LU", A,A2);
     }
-    std::cout << "<< [PASS] testLU: " << std::endl;
+    std::cerr << "<< [PASS] testLU: " << std::endl;
 }
 
 TEST(LinAlgTest,solve_LU_fast){
@@ -254,21 +253,21 @@ TEST(LinAlgTest,solve_LU_fast){
         LA->solve_LU_fast(LU,false,P,xb);
 
         // x1 == x2 ?
-        checkError(std::cout, "solve_LU_fast", x,xb);
+        checkError(std::cerr, "solve_LU_fast", x,xb);
 
     }
-    std::cout << "<< [PASS] testLU: " << std::endl;
+    std::cerr << "<< [PASS] testLU: " << std::endl;
 }
 
 TEST(LinAlgTest,Chol){
     LinAlg * LA = new LinAlg();
-    std::cout << ">> testChol: " << std::endl;
+    std::cerr << ">> testChol: " << std::endl;
 
     for(int i=1;i<MAX_SIZE;i++){
         unsigned s = 1 << (i-1), c = s;
         MatR A,B,AB(s,s);
 
-        std::cout << "SIZE: " << s << std::endl;
+        std::cerr << "SIZE: " << s << std::endl;
 
         /// Test SPSD
         bool PSD = false;
@@ -298,7 +297,7 @@ TEST(LinAlgTest,Chol){
                 LA->eig_symm (AB,evals);
                 // S should be same as eigenvalues
                 std::reverse(evals.begin(),evals.end());
-                checkError(std::cout, "eig_symm", evals,S);
+                checkError(std::cerr, "eig_symm", evals,S);
         }
 
 
@@ -340,7 +339,7 @@ TEST(LinAlgTest,Chol){
             //(A^-1)b = x2
             LA->solve_chol_fast(B,xb);
             // x1 == x2 ?
-            checkError(std::cout, "solve_chol_fast", x,xb);
+            checkError(std::cerr, "solve_chol_fast", x,xb);
 
         B = A;
         LA->factor_chol(B);
@@ -353,7 +352,7 @@ TEST(LinAlgTest,Chol){
             // I == A*B ?
             MatR I(s,s);
             I.set_identity();
-            checkError(std::cout, "inverse_chol", AB,I);
+            checkError(std::cerr, "inverse_chol", AB,I);
 
         B = A;
 
@@ -364,21 +363,21 @@ TEST(LinAlgTest,Chol){
             A.mult(B,AB);
             // I == A*B ?
             I.set_identity();
-            checkError(std::cout, "inverse_SPD", AB,I);
+            checkError(std::cerr, "inverse_SPD", AB,I);
     }
 
 }
 
 TEST(LinAlgTest,LA){
     LinAlg * LA = new LinAlg();
-    std::cout << ">> testLA: " << std::endl;
+    std::cerr << ">> testLA: " << std::endl;
 
     for(int i=1;i<MAX_SIZE;i++){
 
         unsigned s = 1 << (i-1), c = s;
         MatR A,B,AB(s,s);
 
-        std::cout << "SIZE: " << s << std::endl;
+        std::cerr << "SIZE: " << s << std::endl;
 
         // Create PD matrix A
         bool PD = false;
@@ -410,7 +409,7 @@ TEST(LinAlgTest,LA){
             //(A^-1)b = x2
             LA->solve_LS_fast1(B,xb);
             // x1 == x2 ?
-            checkError(std::cout, "solve_LS_fast1", x,xb);
+            checkError(std::cerr, "solve_LS_fast1", x,xb);
 
         B = A;
 
@@ -422,7 +421,7 @@ TEST(LinAlgTest,LA){
             //(A^-1)b = x2
             LA->solve_LS_fast2(B,xb);
             // x1 == x2 ?
-            checkError(std::cout, "solve_LS_fast2", x,xb);
+            checkError(std::cerr, "solve_LS_fast2", x,xb);
 
         B = A;
 
@@ -434,7 +433,7 @@ TEST(LinAlgTest,LA){
             //(A^-1)b = x2
             LA->solve_fast(B,xb);
             // x1 == x2 ?
-            checkError(std::cout, "solve_fast", x,xb);
+            checkError(std::cerr, "solve_fast", x,xb);
 
         B = A;
 
@@ -446,7 +445,7 @@ TEST(LinAlgTest,LA){
             //(A^-1)b = x2
             LA->solve_symmetric_fast(B,xb);
             // x1 == x2 ?
-            checkError(std::cout, "solve_symmetric_fast", x,xb);
+            checkError(std::cerr, "solve_symmetric_fast", x,xb);
 
     }
 
