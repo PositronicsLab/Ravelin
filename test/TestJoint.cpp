@@ -16,7 +16,7 @@ void integrate(shared_ptr<RCArticulatedBodyd> body, double t, double dt)
   shared_ptr<RigidBodyd> last_link = body->get_links().back();
 
   // output the generalized coordinates of the body
-  body->get_generalized_coordinates(DynamicBodyd::eEuler, gc);
+  body->get_generalized_coordinates_euler(gc);
   std::cout << t;
   if (gc.size() > 0)
   {
@@ -70,15 +70,15 @@ void integrate(shared_ptr<RCArticulatedBodyd> body, double t, double dt)
 
   // integrate the generalized position forward
   body->get_generalized_velocity(DynamicBodyd::eEuler, gv);
-  body->get_generalized_coordinates(DynamicBodyd::eEuler, gc);
+  body->get_generalized_coordinates_euler(gc);
   gv *= dt;
   gc += gv;
-  body->set_generalized_coordinates(DynamicBodyd::eEuler, gc);
+  body->set_generalized_coordinates_euler(gc);
 } 
 
 int main(int argc, char* argv[])
 {
-  if (argc < 1)
+  if (argc < 2)
   {
     std::cerr << "syntax: TestJoint <urdf file>" << std::endl;
     return -1;
@@ -99,17 +99,8 @@ int main(int argc, char* argv[])
   shared_ptr<RCArticulatedBodyd> rcab(new RCArticulatedBodyd);
   rcab->set_links_and_joints(links, joints); 
 
-  // TBR
-/*
-  VectorNd gc;
-  rcab->get_generalized_coordinates(DynamicBodyd::eEuler, gc);
-  gc[0] = -M_PI_2;
-  rcab->set_generalized_coordinates(DynamicBodyd::eEuler, gc);
-*/
-  
-
   // set dynamics algorithm and frame
-  rcab->set_computation_frame_type(eLinkCOM);
+  rcab->set_computation_frame_type(eLink);
   rcab->algorithm_type = RCArticulatedBodyd::eCRB;
 
   for (unsigned i=0; i< 1000; i++)

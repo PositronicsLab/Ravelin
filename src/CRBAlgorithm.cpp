@@ -1015,6 +1015,10 @@ void CRB_ALGORITHM::calc_generalized_forces(SFORCE& f0, VECTORN& C)
     link_queue.pop();    
     unsigned i = link->get_index();
 
+    // do not process fixed bases
+    if (!link->get_parent_link() && !body->is_floating_base())
+      continue;
+
     // if this link has already been processed, do not process it again
     if (body->_processed[i])
       continue;
