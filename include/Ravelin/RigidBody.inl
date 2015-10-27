@@ -198,7 +198,7 @@ void RIGIDBODY::get_generalized_acceleration_generic(V& ga)
 
   // see whether xddcom is valid
   if (!_xddcom_valid)
-    _xddcom = POSE3::transform(_F2, _xddm, _xdm);
+    _xddcom = POSE3::transform(_F2, _xddm);
   _xddcom_valid = true;
 
   // get linear and angular components

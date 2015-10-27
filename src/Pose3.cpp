@@ -441,7 +441,7 @@ void POSE3::transform_spatial(boost::shared_ptr<const POSE3> target, const SVECT
 }
 
 /// Transforms an acceleration from one pose to another 
-SACCEL POSE3::inverse_transform(const SACCEL& t, const SVELOCITY& v) const
+SACCEL POSE3::inverse_transform(const SACCEL& t) const
 {
   // determine the resulting frame
   boost::shared_ptr<const POSE3> pose;
@@ -458,11 +458,11 @@ SACCEL POSE3::inverse_transform(const SACCEL& t, const SVELOCITY& v) const
     throw FrameException();
   #endif
 
-  return transform(pose, t, v); 
+  return transform(pose, t); 
 }
 
 /// Transforms the acceleration 
-SACCEL POSE3::transform(boost::shared_ptr<const POSE3> target, const SACCEL& t, const SVELOCITY& v)
+SACCEL POSE3::transform(boost::shared_ptr<const POSE3> target, const SACCEL& t)
 {
   // setup the source pose
   boost::shared_ptr<const POSE3> source = t.pose; 
@@ -486,25 +486,22 @@ SACCEL POSE3::transform(boost::shared_ptr<const POSE3> target, const SACCEL& t, 
   // setup the acceleration 
   SACCEL a;
 
-  // get the components of t and v
+  // get the components of t
   VECTOR3 tang = t.get_angular();
   VECTOR3 tlin = t.get_linear();
-  VECTOR3 vang = v.get_angular();
-  VECTOR3 vlin = v.get_linear();
 
   // do the calculations
   VECTOR3 Etop(E * ORIGIN3(tang), target);
-  VECTOR3 cross1 = VECTOR3::cross(r, tang);
-  VECTOR3 cross2 = VECTOR3::cross(VECTOR3::cross(r, vang), vang);
+  VECTOR3 cross = VECTOR3::cross(r, tang);
   a.set_angular(Etop);
-  a.set_linear(VECTOR3(E * ORIGIN3(tlin - cross1 + cross2), target));
+  a.set_linear(VECTOR3(E * ORIGIN3(tlin - cross), target));
   a.pose = target;
 
   return a;
 }
 
 /// Transforms a vector of accelerations 
-std::vector<SACCEL>& POSE3::transform(boost::shared_ptr<const POSE3> target, const std::vector<SACCEL>& t, const std::vector<SVELOCITY>& v, std::vector<SACCEL>& result)
+std::vector<SACCEL>& POSE3::transform(boost::shared_ptr<const POSE3> target, const std::vector<SACCEL>& t, std::vector<SACCEL>& result)
 {
   // look for empty vector (easy case)
   if (t.empty())
@@ -544,11 +541,9 @@ std::vector<SACCEL>& POSE3::transform(boost::shared_ptr<const POSE3> target, con
   // transform 
   for (unsigned i=0; i< t.size(); i++)
   {
-    // get the components of t[i] and v[i]
+    // get the components of t[i]
     VECTOR3 ttop = t[i].get_upper();
     VECTOR3 tbottom = t[i].get_lower();
-    VECTOR3 vtop = v[i].get_upper();
-    VECTOR3 vbottom = v[i].get_lower();
 
     // do the calculations
     VECTOR3 Etop(E * ORIGIN3(ttop), target);
@@ -818,12 +813,7 @@ VECTOR3 POSE3::transform_point(boost::shared_ptr<const POSE3> target, const VECT
 SMOMENTUM POSE3::transform(const SMOMENTUM& t) const { return transform(rpose, t); }
 SFORCE POSE3::transform(const SFORCE& w) const { return transform(rpose, w); }
 SVELOCITY POSE3::transform(const SVELOCITY& t) const { return transform(rpose, t); }
-
-/// Transforms an acceleration from one pose to another
-SACCEL POSE3::transform(const SACCEL& t, const SVELOCITY& v) const 
-{ 
-  // TODO: fix this
-}
+SACCEL POSE3::transform(const SACCEL& t) const { return transform(rpose, t); } 
 
 /// Transforms a spatial articulated body inertia 
 SPATIAL_AB_INERTIA POSE3::transform(boost::shared_ptr<const POSE3> target, const SPATIAL_AB_INERTIA& m)

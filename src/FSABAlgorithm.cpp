@@ -738,7 +738,8 @@ void FSAB_ALGORITHM::calc_spatial_zero_accelerations(shared_ptr<RC_ARTICULATED_B
     if (LOGGING(LOG_DYNAMICS) && !sprime.empty()) 
     FILE_LOG(LOG_DYNAMICS) << "    s': " << sprime.front() << endl;  
     FILE_LOG(LOG_DYNAMICS) << "    I: " << I << endl;
-    FILE_LOG(LOG_DYNAMICS) << "    Is: " << Is.front() << endl;
+    if (!Is.empty())
+      FILE_LOG(LOG_DYNAMICS) << "    Is: " << Is.front() << endl;
     FILE_LOG(LOG_DYNAMICS) << "    c: " << c << endl;
     FILE_LOG(LOG_DYNAMICS) << "    qm subexp: " << mu << endl;
     FILE_LOG(LOG_DYNAMICS) << "    recursive Z: " << Z << endl;

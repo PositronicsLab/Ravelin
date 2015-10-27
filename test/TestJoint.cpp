@@ -7,13 +7,23 @@ using std::vector;
 using boost::shared_ptr;
 using namespace Ravelin;
 
+/// Sets the velocity for a body using a sequence
+void set_velocity(shared_ptr<RCArticulatedBodyd> body)
+{
+  VectorNd gv;
+  body->get_generalized_velocity(DynamicBodyd::eSpatial, gv);
+  for (unsigned i=0; i< gv.size(); i++)
+    gv[i] = (double) (i+1);
+  body->set_generalized_velocity(DynamicBodyd::eSpatial, gv);
+}
+
 void integrate(shared_ptr<RCArticulatedBodyd> body, double t, double dt)
 {
   const shared_ptr<const Pose3d> GLOBAL_3D;
   VectorNd gc, gv, ga;
 
-  // get the last link on the body
-  shared_ptr<RigidBodyd> last_link = body->get_links().back();
+  // get all links 
+  const vector<shared_ptr<RigidBodyd> >& links = body->get_links();
 
   // output the generalized coordinates of the body
   body->get_generalized_coordinates_euler(gc);
@@ -25,31 +35,25 @@ void integrate(shared_ptr<RCArticulatedBodyd> body, double t, double dt)
   }
   else
   {
-    Transform3d wP = Pose3d::calc_relative_pose(last_link->get_pose(), GLOBAL_3D);
-    std::cout << " " << wP.x[0] << " " << wP.x[1] << " "<< wP.x[2] << " " << wP.q.x << " " << " " << wP.q.y << " " << " " << wP.q.z << " " << " " << wP.q.w << " " << std::endl;
+//    Transform3d wP = Pose3d::calc_relative_pose(last_link->get_pose(), GLOBAL_3D);
+//    std::cout << " " << wP.x[0] << " " << wP.x[1] << " "<< wP.x[2] << " " << wP.q.x << " " << " " << wP.q.y << " " << " " << wP.q.z << " " << " " << wP.q.w << " " << std::endl;
   } 
 
   // clear the force accumulator on the body
   body->reset_accumulators();
 
-  // add forces to the center of the last link 
-  SForced f(last_link->get_inertial_pose());
-/*
-  f[0] = std::cos(t);
-  f[1] = std::sin(t);
-  f[2] = std::cos(2*t);
-  f[3] = std::sin(-3*t);
-  f[4] = std::cos(3*t);
-  f[5] = std::sin(5*t);
-*/
-  f.set_zero();
-  f[1] = last_link->get_mass() * -9.81;
-  last_link->add_force(f);
-
-  // add forces to the center of the second to last link
-  f.pose = body->get_links()[1]->get_inertial_pose();
-  f[1] = body->get_links()[1]->get_mass() * -9.81;
-  body->get_links()[1]->add_force(f); 
+  // add forces to the center of each link
+  for (unsigned i=0; i< links.size(); i++)
+  { 
+    SForced f(links[i]->get_inertial_pose());
+    f[0] = std::cos(t*(i*1.01));
+    f[1] = std::sin(t*(i*1.01));
+    f[2] = std::cos(2*t*(i*1.01));
+    f[3] = std::sin(-2*t*(i*1.01));
+    f[4] = std::cos(3*t*(i*1.01));
+    f[5] = std::sin(-3*t*(i*1.01));
+    links[i]->add_force(f);
+  }
 
   // compute forward dynamics
   body->calc_fwd_dyn();
@@ -78,9 +82,9 @@ void integrate(shared_ptr<RCArticulatedBodyd> body, double t, double dt)
 
 int main(int argc, char* argv[])
 {
-  if (argc < 2)
+  if (argc < 3)
   {
-    std::cerr << "syntax: TestJoint <urdf file>" << std::endl;
+    std::cerr << "syntax: TestJoint <urdf file> <steps>" << std::endl;
     return -1;
   }
 
@@ -102,8 +106,11 @@ int main(int argc, char* argv[])
   // set dynamics algorithm and frame
   rcab->set_computation_frame_type(eLink);
   rcab->algorithm_type = RCArticulatedBodyd::eCRB;
+set_velocity(rcab);
+  // get the number of steps
+  const unsigned STEPS = std::atoi(argv[2]);
 
-  for (unsigned i=0; i< 1000; i++)
+  for (unsigned i=0; i< STEPS; i++)
     integrate(rcab, i/1000.0, 1.0/1000);
 
   OutputToFile::stream.close();

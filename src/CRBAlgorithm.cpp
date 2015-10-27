@@ -1324,6 +1324,7 @@ void CRB_ALGORITHM::update_link_accelerations(shared_ptr<RC_ARTICULATED_BODY> bo
     link->set_accel(ai);
 
     FILE_LOG(LOG_DYNAMICS) << "    -- updating link " << link << std::endl;
+FILE_LOG(LOG_DYNAMICS) << "  parent acceleration frame: " << POSE3::calc_relative_pose(ah.pose, shared_ptr<const POSE3>()) << std::endl;
     FILE_LOG(LOG_DYNAMICS) << "      -- parent acceleration: " << ah << std::endl;
     FILE_LOG(LOG_DYNAMICS) << "      -- velocity: " << link->get_velocity() << std::endl;
     FILE_LOG(LOG_DYNAMICS) << "      -- qd: " << joint->qd << std::endl;

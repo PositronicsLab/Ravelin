@@ -264,26 +264,26 @@ void RIGIDBODY::calc_fwd_dyn()
     // get current velocity
     SVELOCITY xd = get_velocity();
 
-    FILE_LOG(LOG_DYNAMICS) << "Dynamics: " << POSE3::transform(_F2, xdd, _xdcom) << std::endl;
+    FILE_LOG(LOG_DYNAMICS) << "Dynamics: " << POSE3::transform(_F2, xdd) << std::endl;
     // set the acceleration
     switch (_rftype)
     {
       case eGlobal:
         _xdd0 = xdd;
-        _xddm = POSE3::transform(_jF, xdd, xd);
+        _xddm = POSE3::transform(_jF, xdd);
         _xddi_valid = _xddj_valid = _xddcom_valid = false;
         break;
 
       case eLinkCOM:
         _xddcom = xdd;
         _xddcom_valid = true;
-        _xddm = POSE3::transform(_jF, xdd, xd);
+        _xddm = POSE3::transform(_jF, xdd);
         _xddi_valid = _xddj_valid = _xdd0_valid = false;
         break;
 
       case eLink:
         _xddi = xdd;
-        _xddm = POSE3::transform(_jF, xdd, xd);
+        _xddm = POSE3::transform(_jF, xdd);
         _xddi_valid = true;
         _xddj_valid = _xddcom_valid = _xdd0_valid = false;
         break;
@@ -295,7 +295,7 @@ void RIGIDBODY::calc_fwd_dyn()
 
       case eJoint:
         _xddj = xdd;
-        _xddcom = POSE3::transform(_jF, xdd, xd);
+        _xddcom = POSE3::transform(_jF, xdd);
         _xddj_valid = true;
         _xddi_valid = _xddcom_valid = _xdd0_valid = false;
         break;
@@ -386,7 +386,7 @@ void RIGIDBODY::set_accel(const SACCEL& xdd)
   SVELOCITY xd = POSE3::transform(xdd.pose, _xdm);
 
   // set the acceleration
-  _xddm = POSE3::transform(_jF, xdd, xd);
+  _xddm = POSE3::transform(_jF, xdd);
 
   // invalidate the remaining accelerations
   _xddi_valid = _xddj_valid = _xddcom_valid = _xdd0_valid = false;
@@ -605,25 +605,25 @@ const SACCEL& RIGIDBODY::get_accel()
 
     case eLink:
       if (!_xddi_valid)
-        _xddi = POSE3::transform(_F, _xddm, _xdm);
+        _xddi = POSE3::transform(_F, _xddm);
       _xddi_valid = true;
       return _xddi;
 
     case eLinkCOM:
       if (!_xddcom_valid)
-        _xddcom = POSE3::transform(_F2, _xddm, _xdm);
+        _xddcom = POSE3::transform(_F2, _xddm);
       _xddcom_valid = true;
       return _xddcom;
 
     case eJoint:
       if (!_xddj_valid)
-        _xddj = POSE3::transform((is_base()) ? _F : get_inner_joint_explicit()->get_pose(), _xddm, _xdm);
+        _xddj = POSE3::transform((is_base()) ? _F : get_inner_joint_explicit()->get_pose(), _xddm);
       _xddj_valid = true;
       return _xddj;
 
     case eGlobal:
       if (!_xdd0_valid)
-        _xdd0 = POSE3::transform(GLOBAL, _xddm, _xdm);
+        _xdd0 = POSE3::transform(GLOBAL, _xddm);
       _xdd0_valid = true;
       return _xdd0;
 
