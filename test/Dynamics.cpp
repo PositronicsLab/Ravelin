@@ -444,16 +444,26 @@ TEST_F(DynamicsTest, DynamicsInertia)
 
 int main(int argc, char* argv[])
 {
-  if (argc < 2)
-  {
-    std::cerr << "syntax: TestDynamics <urdf file>" << std::endl;
-    return -1;
-  }
-
   // set the filename
-  DynamicsTest::filename = argv[1];
+  DynamicsTest::filename = "pendulum-fixed.urdf";
 
   // run Google tests
+  ::testing::InitGoogleTest(&argc, argv);
+  int test_result = RUN_ALL_TESTS();
+  if (test_result != 0)
+    return test_result;
+
+  // set the filename
+  DynamicsTest::filename = "rmp_440SE.urdf";
+
+  // run Google tests
+  ::testing::InitGoogleTest(&argc, argv);
+  test_result = RUN_ALL_TESTS();
+  if (test_result != 0)
+    return test_result;
+
+  // set the filename
+  DynamicsTest::filename = "07-physics.urdf";
   ::testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();
 }

@@ -74,12 +74,16 @@ if (BUILD_EXAMPLES)
   target_link_libraries(Ravelin-urdf Ravelin)
 endif (BUILD_EXAMPLES)
 
-# build examples
+# build tests 
 if (BUILD_TESTS)
 include_directories(test /usr/include/eigen3 include)
 link_directories(${PROJECT_BINARY_DIR})
-add_executable(RavelinTest test/LinearAlgebra.cpp test/BlockOperations.cpp test/Arithmetic.cpp test/TestUtils.cpp)
-target_link_libraries(RavelinTest Ravelin gtest gtest_main)
+add_executable(RavelinMathTest test/LinearAlgebra.cpp test/BlockOperations.cpp test/Arithmetic.cpp test/Inertia.cpp test/Sparse.cpp test/TestUtils.cpp)
+add_executable(RavelinDynTest test/Dynamics.cpp)
+add_executable(RavelinIntTest test/Integration.cpp)
+target_link_libraries(RavelinMathTest Ravelin gtest gtest_main pthread)
+target_link_libraries(RavelinDynTest Ravelin gtest pthread)
+target_link_libraries(RavelinIntTest Ravelin gtest pthread)
 endif (BUILD_TESTS)
 
 # setup install locations
