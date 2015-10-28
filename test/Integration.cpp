@@ -528,11 +528,10 @@ TEST_F(IntegrationTest, DynamicsInertia)
     ASSERT_NEAR(gc1[i], gc2[i], EPS_DOUBLE);
 }
 
-
 int main(int argc, char* argv[])
 {
   // set the filename
-  IntegrationTest::filename = "pendulum-fixed.urdf";
+  IntegrationTest::filename = "../test/pendulum-fixed.urdf";
 
   // run Google tests
   ::testing::InitGoogleTest(&argc, argv);
@@ -541,7 +540,7 @@ int main(int argc, char* argv[])
     return test_result;
 
   // set the filename
-  IntegrationTest::filename = "rmp_440SE.urdf";
+  IntegrationTest::filename = "../test/rmp_440SE.urdf";
 
   // run Google tests
   ::testing::InitGoogleTest(&argc, argv);
@@ -550,7 +549,7 @@ int main(int argc, char* argv[])
     return test_result;
 
   // set the filename
-  IntegrationTest::filename = "07-physics.urdf";
+  IntegrationTest::filename = "../test/07-physics.urdf";
   ::testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();
 }

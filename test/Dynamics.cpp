@@ -445,7 +445,7 @@ TEST_F(DynamicsTest, DynamicsInertia)
 int main(int argc, char* argv[])
 {
   // set the filename
-  DynamicsTest::filename = "pendulum-fixed.urdf";
+  DynamicsTest::filename = "../test/pendulum-fixed.urdf";
 
   // run Google tests
   ::testing::InitGoogleTest(&argc, argv);
@@ -454,7 +454,7 @@ int main(int argc, char* argv[])
     return test_result;
 
   // set the filename
-  DynamicsTest::filename = "rmp_440SE.urdf";
+  DynamicsTest::filename = "../test/rmp_440SE.urdf";
 
   // run Google tests
   ::testing::InitGoogleTest(&argc, argv);
@@ -463,7 +463,7 @@ int main(int argc, char* argv[])
     return test_result;
 
   // set the filename
-  DynamicsTest::filename = "07-physics.urdf";
+  DynamicsTest::filename = "../test/07-physics.urdf";
   ::testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();
 }
