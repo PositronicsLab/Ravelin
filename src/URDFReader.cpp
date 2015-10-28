@@ -487,6 +487,10 @@ POSE3 URDFREADER::read_origin(shared_ptr<const XMLTree> node, URDFData& data)
   ORIGIN3 xyz;
   VECTOR3 rpy;
 
+  // set both to zero
+  xyz.set_zero();
+  rpy.set_zero();
+
   // look for the tag
   const list<shared_ptr<XMLTree> >& child_nodes = node->children;
   for (list<shared_ptr<XMLTree> >::const_iterator i = child_nodes.begin(); i != child_nodes.end(); i++)

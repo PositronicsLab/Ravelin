@@ -386,7 +386,6 @@ void RC_ARTICULATED_BODY::compile()
     _ejoints[i]->q.set_zero();
   }
 
-shared_ptr<const POSE3> GLOBAL;
   // update relative poses for explicit joints only
   for (unsigned i=0; i< _ejoints.size(); i++)
   {
@@ -420,9 +419,6 @@ void RC_ARTICULATED_BODY::set_links_and_joints(const vector<shared_ptr<RIGIDBODY
   
   // start processed at the base link
   map<shared_ptr<RIGIDBODY>, bool> processed;
-  //queue<shared_ptr<RIGIDBODY> > link_queue;
-  //link_queue.push(base);
-  //while (!link_queue.empty())
   BOOST_FOREACH(boost::shared_ptr<RIGIDBODY> link, links)
   {
     // if the link has already been processed, no need to process it again
@@ -592,6 +588,13 @@ void RC_ARTICULATED_BODY::update_link_velocities()
   shared_ptr<RIGIDBODY> base = _links.front();
 
   FILE_LOG(LOG_DYNAMICS) << "RC_ARTICULATED_BODY::update_link_velocities() entered" << std::endl;
+  if (LOGGING(LOG_DYNAMICS))
+  {
+    for (unsigned i=0; i< _links.size(); i++)
+      FILE_LOG(LOG_DYNAMICS) << " link " << i << " " << _links[i]->body_id << std::endl;
+    for (unsigned i=0; i< _joints.size(); i++)
+      FILE_LOG(LOG_DYNAMICS) << " joint " << i << " " <<  _joints[i]->joint_id << std::endl;
+  }
 
   // add all children of the base to the link queue
   list<shared_ptr<RIGIDBODY> > child_links;

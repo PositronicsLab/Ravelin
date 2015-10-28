@@ -394,10 +394,10 @@ void CRB_ALGORITHM::calc_joint_space_inertia(shared_ptr<RC_ARTICULATED_BODY> bod
       if (LOGGING(LOG_DYNAMICS))
       {
         MATRIXN X;
-        FILE_LOG(LOG_DYNAMICS) << "  composite inertia for (child) link " << link << ": " << std::endl << Ic[i].to_matrix(X);
-        FILE_LOG(LOG_DYNAMICS) << "  composite inertia for (child) link " << link << ": " << std::endl << Ic[i];
-        FILE_LOG(LOG_DYNAMICS) << "  composite inertia for (parent) link " << parent << ": " << std::endl << Ic[h].to_matrix(X);
-        FILE_LOG(LOG_DYNAMICS) << "  composite inertia for (parent) link " << parent << ": " << std::endl << Ic[h];
+        FILE_LOG(LOG_DYNAMICS) << "  composite inertia for (child) link " << link->body_id << ": " << std::endl << Ic[i].to_matrix(X);
+        FILE_LOG(LOG_DYNAMICS) << "  composite inertia for (child) link " << link->body_id << ": " << std::endl << Ic[i];
+        FILE_LOG(LOG_DYNAMICS) << "  composite inertia for (parent) link " << parent->body_id << ": " << std::endl << Ic[h].to_matrix(X);
+        FILE_LOG(LOG_DYNAMICS) << "  composite inertia for (parent) link " << parent->body_id << ": " << std::endl << Ic[h];
       }
     }
 
@@ -982,11 +982,6 @@ void CRB_ALGORITHM::calc_generalized_forces(SFORCE& f0, VECTORN& C)
 
     // now add parent's contribution
     _a[i] += SPARITH::transform_accel(_a[i].pose, _a[h]);
-    FILE_LOG(LOG_DYNAMICS) << " computing link velocity / acceleration; processing link " << link->body_id << std::endl;
-    if (s.size() > 0)
-      FILE_LOG(LOG_DYNAMICS) << "  spatial joint velocity: " << (SPARITH::mult(s,qd)) << std::endl;
-    FILE_LOG(LOG_DYNAMICS) << "  link velocity: " << link->get_velocity() << std::endl;
-    FILE_LOG(LOG_DYNAMICS) << "  link accel: " << _a[i] << std::endl;
   }
   
   // ** STEP 2: compute link forces -- backward recursion

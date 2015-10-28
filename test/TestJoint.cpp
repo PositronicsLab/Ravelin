@@ -17,27 +17,13 @@ void set_velocity(shared_ptr<RCArticulatedBodyd> body)
   body->set_generalized_velocity(DynamicBodyd::eSpatial, gv);
 }
 
-void integrate(shared_ptr<RCArticulatedBodyd> body, double t, double dt)
+void calc_dynamics(shared_ptr<RCArticulatedBodyd> body, double t)
 {
   const shared_ptr<const Pose3d> GLOBAL_3D;
-  VectorNd gc, gv, ga;
+  VectorNd ga;
 
   // get all links 
   const vector<shared_ptr<RigidBodyd> >& links = body->get_links();
-
-  // output the generalized coordinates of the body
-  body->get_generalized_coordinates_euler(gc);
-  std::cout << t;
-  if (gc.size() > 0)
-  {
-    for (unsigned i=0; i< gc.size(); i++)
-      std::cout << " " << gc[i];
-  }
-  else
-  {
-//    Transform3d wP = Pose3d::calc_relative_pose(last_link->get_pose(), GLOBAL_3D);
-//    std::cout << " " << wP.x[0] << " " << wP.x[1] << " "<< wP.x[2] << " " << wP.q.x << " " << " " << wP.q.y << " " << " " << wP.q.z << " " << " " << wP.q.w << " " << std::endl;
-  } 
 
   // clear the force accumulator on the body
   body->reset_accumulators();
@@ -58,33 +44,22 @@ void integrate(shared_ptr<RCArticulatedBodyd> body, double t, double dt)
   // compute forward dynamics
   body->calc_fwd_dyn();
 
-  // integrate the generalized velocity forward
+  // output the generalized acceleration
   body->get_generalized_acceleration(ga);
-  body->get_generalized_velocity(DynamicBodyd::eSpatial, gv);
-  ga *= dt;
-  gv += ga;
-  body->set_generalized_velocity(DynamicBodyd::eSpatial, gv);
-
-  if (gc.size() > 0)
+  std::cout << t;
+  if (ga.size() > 0)
   {
     for (unsigned i=0; i< ga.size(); i++)
       std::cout << " " << ga[i];
     std::cout << std::endl;
   }
-
-  // integrate the generalized position forward
-  body->get_generalized_velocity(DynamicBodyd::eEuler, gv);
-  body->get_generalized_coordinates_euler(gc);
-  gv *= dt;
-  gc += gv;
-  body->set_generalized_coordinates_euler(gc);
 } 
 
 int main(int argc, char* argv[])
 {
-  if (argc < 3)
+  if (argc < 2)
   {
-    std::cerr << "syntax: TestJoint <urdf file> <steps>" << std::endl;
+    std::cerr << "syntax: TestJoint <urdf file>" << std::endl;
     return -1;
   }
 
@@ -106,12 +81,28 @@ int main(int argc, char* argv[])
   // set dynamics algorithm and frame
   rcab->set_computation_frame_type(eLink);
   rcab->algorithm_type = RCArticulatedBodyd::eCRB;
-set_velocity(rcab);
-  // get the number of steps
-  const unsigned STEPS = std::atoi(argv[2]);
 
-  for (unsigned i=0; i< STEPS; i++)
-    integrate(rcab, i/1000.0, 1.0/1000);
+  // set velocity
+  set_velocity(rcab);
+
+  // calculate dynamics
+  calc_dynamics(rcab, 0.0);
+  // prepare to do everything again
+  links.clear();
+  joints.clear();
+  URDFReaderd::read(fname, name, links, joints);
+  rcab = shared_ptr<RCArticulatedBodyd>(new RCArticulatedBodyd);
+  rcab->set_links_and_joints(links, joints); 
+
+  // set dynamics algorithm and frame
+  rcab->set_computation_frame_type(eLink);
+  rcab->algorithm_type = RCArticulatedBodyd::eCRB;
+
+  // set generalized velocity using sequence
+  set_velocity(rcab);
+
+  // calculate accelerations
+  calc_dynamics(rcab, 0.0);
 
   OutputToFile::stream.close();
 }

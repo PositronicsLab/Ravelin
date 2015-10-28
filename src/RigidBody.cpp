@@ -31,11 +31,15 @@ RIGIDBODY::RIGIDBODY()
 
   // setup inertial pose
   _jF = shared_ptr<POSE3>(new POSE3(POSE3::identity()));
+  _jF->x.set_zero();
+  _jF->q.set_identity();
   _jF->rpose = _F;
   _Jm.pose = _xdm.pose = _xddm.pose = _forcem.pose = _jF;
 
   // setup c.o.m. frame link pose
   _F2 = shared_ptr<POSE3>(new POSE3);
+  _F2->x.set_zero();
+  _F2->q.set_identity();
   _Jcom.pose = _xdcom.pose = _xddcom.pose = _forcecom.pose = _F2;
 
   // invalidate everything
