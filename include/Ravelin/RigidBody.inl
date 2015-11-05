@@ -148,6 +148,11 @@ void RIGIDBODY::get_generalized_velocity_generic(DYNAMIC_BODY::GeneralizedCoordi
     case DYNAMIC_BODY::eSpatial: gv.resize(N_SPATIAL); break;
   }
 
+  // get velocity in link frame
+  if (!_xdcom_valid)
+    _xdcom = POSE3::transform(boost::const_pointer_cast<const POSE3>(_F2), _xdm);
+  _xdcom_valid = true;
+
   // get/set linear components of velocity
   VECTOR3 lv = _xdcom.get_linear();
   gv[0] = lv[0];
