@@ -1,37 +1,42 @@
-<!DOCTYPE html>
+<!doctype html>
+<!-- The Time Machine GitHub pages theme was designed and developed by Jon Rohan, on Feb 7, 2012. -->
+<!-- Follow him for fun. http://twitter.com/jonrohan. Tail his code on https://github.com/jonrohan -->
 <html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 
-  <head>
-    <meta charset='utf-8'>
-    <meta http-equiv="X-UA-Compatible" content="chrome=1">
-    <meta name="description" content="Ravelin : Robotics Matrix Vector Linear Algebra library">
+  <link rel="stylesheet" href="stylesheets/stylesheet.css" media="screen">
+  <link rel="stylesheet" href="stylesheets/github-dark.css">
+  <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+  <script type="text/javascript" src="javascripts/script.js"></script>
 
-    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+  <title>Ravelin</title>
+  <meta name="description" content="Robotics Matrix Vector Linear Algebra library">
 
-    <title>Ravelin</title>
-  </head>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
 
-  <body>
+</head>
 
-    <!-- HEADER -->
-    <div id="header_wrap" class="outer">
-        <header class="inner">
-          <a id="forkme_banner" href="https://github.com/PositronicsLab/Ravelin">View on GitHub</a>
+<body>
 
-          <h1 id="project_title">Ravelin</h1>
-          <h2 id="project_tagline">Robotics Matrix Vector Linear Algebra library</h2>
-
-            <section id="downloads">
-              <a class="zip_download_link" href="https://github.com/PositronicsLab/Ravelin/zipball/master">Download this project as a .zip file</a>
-              <a class="tar_download_link" href="https://github.com/PositronicsLab/Ravelin/tarball/master">Download this project as a tar.gz file</a>
-            </section>
-        </header>
-    </div>
-
-    <!-- MAIN CONTENT -->
-    <div id="main_content_wrap" class="outer">
-      <section id="main_content" class="inner">
-        <p><img src="https://camo.githubusercontent.com/f9db64acc89e492a5425de8bb20adffd04f2b6bf/687474703a2f2f7777772e6b756b2d776568726d616368742e64652f67656665636874652f696d672f6c616e646175322e6a7067" alt="Ravelin"></p>
+  <div class="wrapper">
+    <header>
+      <h1 class="title">Ravelin</h1>
+    </header>
+    <div id="container">
+      <p class="tagline">Robotics Matrix Vector Linear Algebra library</p>
+      <div id="main" role="main">
+        <div class="download-bar">
+        <div class="inner">
+          <a href="https://github.com/PositronicsLab/Ravelin/tarball/master" class="download-button tar"><span>Download</span></a>
+          <a href="https://github.com/PositronicsLab/Ravelin/zipball/master" class="download-button zip"><span>Download</span></a>
+          <a href="https://github.com/PositronicsLab/Ravelin" class="code">View Ravelin on GitHub</a>
+        </div>
+        <span class="blc"></span><span class="trc"></span>
+        </div>
+        <article class="markdown-body">
+          <p><img src="https://camo.githubusercontent.com/f9db64acc89e492a5425de8bb20adffd04f2b6bf/687474703a2f2f7777772e6b756b2d776568726d616368742e64652f67656665636874652f696d672f6c616e646175322e6a7067" alt="Ravelin"></p>
 
 <h2>
 <a id="documentation" class="anchor" href="#documentation" aria-hidden="true"><span class="octicon octicon-link"></span></a>Documentation</h2>
@@ -50,9 +55,10 @@
 <ul>
 <li>Straightforward semantics on memory allocation toward programming for real-time systems</li>
 <li>Rigid body kinematics and dynamics computation, including poses, velocities, accelerations, inertias (both rigid body and articulated body), momenta, and forces</li>
-<li>Currently supports revolute, prismatic, spherical, universal, and fixed joints</li>
+<li>Currently supports revolute, prismatic, spherical, ball-and-socket, universal, and fixed joints</li>
 <li>Bodies can have "floating" bases and kinematic loops</li>
-<li>Dynamics can be computed in minimal coordinates (using the <em>Composite Rigid Body</em> and <em>Featherstone's Articulated Body</em> algorithms) or in absolute coordinates </li>
+<li>Forward dynamics can be computed in minimal coordinates (using the <em>Composite Rigid Body</em> and <em>Featherstone's Articulated Body</em> algorithms), in absolute coordinates, or using a mixture of the two (useful for bodies with kinematic loops)</li>
+<li>Inverse dynamics can be computed using the Recursive Newton-Euler Algorithm </li>
 <li>
 <em>Frame checking</em>: operations on kinematic and dynamic quantities defined in different frames throw exceptions</li>
 </ul>
@@ -67,18 +73,26 @@
 <li>Minimum templated C++ code for fast compilation</li>
 <li>Iterators, which provides compatibility with STL and Boost algorithms</li>
 </ul>
-      </section>
+        </article>
+      </div>
     </div>
+    <footer>
+      <div class="owner">
+      <p><a href="https://github.com/PositronicsLab" class="avatar"><img src="https://avatars0.githubusercontent.com/u/9085443?v=3&amp;s=60" width="48" height="48"></a> <a href="https://github.com/PositronicsLab">PositronicsLab</a> maintains <a href="https://github.com/PositronicsLab/Ravelin">Ravelin</a></p>
 
-    <!-- FOOTER  -->
-    <div id="footer_wrap" class="outer">
-      <footer class="inner">
-        <p class="copyright">Ravelin maintained by <a href="https://github.com/PositronicsLab">PositronicsLab</a></p>
-        <p>Published with <a href="https://pages.github.com">GitHub Pages</a></p>
-      </footer>
-    </div>
 
-    
+      </div>
+      <div class="creds">
+        <small>This page generated using <a href="https://pages.github.com/">GitHub Pages</a><br>theme by <a href="https://twitter.com/jonrohan/">Jon Rohan</a></small>
+      </div>
+    </footer>
+  </div>
+  <div class="current-section">
+    <a href="#top">Scroll to top</a>
+    <a href="https://github.com/PositronicsLab/Ravelin/tarball/master" class="tar">tar</a><a href="https://github.com/PositronicsLab/Ravelin/zipball/master" class="zip">zip</a><a href="" class="code">source code</a>
+    <p class="name"></p>
+  </div>
 
-  </body>
+  
+</body>
 </html>
