@@ -41,6 +41,7 @@
 #define TRANSFORM3 Transform3f
 #define TRANSFORM2 Transform2f
 #define JOINT Jointf
+#define PLANARJOINT PlanarJointf
 #define FIXEDJOINT FixedJointf
 #define PRISMATICJOINT PrismaticJointf
 #define REVOLUTEJOINT RevoluteJointf

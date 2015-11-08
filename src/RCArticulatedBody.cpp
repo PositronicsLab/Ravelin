@@ -413,6 +413,25 @@ void RC_ARTICULATED_BODY::set_links_and_joints(const vector<shared_ptr<RIGIDBODY
   // setup the processed vector
   _processed.resize(links.size());
 
+  // setup pointers
+  for (unsigned i=0; i< joints.size(); i++)
+  {
+    // set pointers for inner and outer joints
+    shared_ptr<RIGIDBODY> inboard = joints[i]->get_inboard_link();
+    shared_ptr<RIGIDBODY> outboard = joints[i]->get_outboard_link();
+    outboard->_inner_joints.insert(joints[i]);
+    inboard->_outer_joints.insert(joints[i]);
+
+    // set pointer for articulated body
+    joints[i]->set_articulated_body(dynamic_pointer_cast<RC_ARTICULATED_BODY>(shared_from_this()));
+
+    // set frames for outboard
+    outboard->_xdj.pose = joints[i]->get_pose();
+    outboard->_xddj.pose = joints[i]->get_pose();
+    outboard->_Jj.pose = joints[i]->get_pose();
+    outboard->_forcej.pose = joints[i]->get_pose();
+  }
+
   // clear the vectors of joints
   _ejoints.clear();
   _ijoints.clear();
@@ -512,8 +531,25 @@ void RC_ARTICULATED_BODY::set_links_and_joints(const vector<shared_ptr<RIGIDBODY
   // look whether it's a floating base
   _floating_base = base->is_enabled();
 
-  // call the parent method to update the link indices, etc.
-  ARTICULATED_BODY::set_links_and_joints(links, joints);
+  // copy the vector
+  _links = links;
+
+  // setup the link in the map 
+  for (unsigned i=0; i< _links.size(); i++)
+  {
+    _links[i]->set_index(i);
+    _links[i]->set_articulated_body(get_this());
+  }
+
+  // set vector of joints
+  _joints = joints;
+
+  // iterate over each joint
+  for (unsigned i=0; i< _joints.size(); i++)
+    _joints[i]->set_index(i);
+
+  // compile the body
+  compile();
 }
 
 /// Gets the derivative of the velocity state vector for this articulated body

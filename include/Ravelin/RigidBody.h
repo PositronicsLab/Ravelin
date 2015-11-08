@@ -54,7 +54,9 @@ class RIGIDBODY : public virtual SINGLE_BODY
     virtual SHAREDMATRIXN& get_generalized_inertia(SHAREDMATRIXN& M);
     virtual MATRIXN& get_generalized_inertia(MATRIXN& M) { return DYNAMIC_BODY::get_generalized_inertia(M); }
     virtual SHAREDVECTORN& get_generalized_coordinates_euler(SHAREDVECTORN& gc);
+    virtual VECTORN& get_generalized_coordinates_euler(VECTORN& gc) { return DYNAMIC_BODY::get_generalized_coordinates_euler(gc); }
     virtual SHAREDVECTORN& get_generalized_velocity(DYNAMIC_BODY::GeneralizedCoordinateType gctype, SHAREDVECTORN& gv);
+    virtual VECTORN& get_generalized_velocity(DYNAMIC_BODY::GeneralizedCoordinateType gctype, VECTORN& gv) { return DYNAMIC_BODY::get_generalized_velocity(gctype, gv); }
     virtual SHAREDVECTORN& get_generalized_acceleration(SHAREDVECTORN& ga);
     virtual void add_generalized_force(const SHAREDVECTORN& gf);
     virtual void add_generalized_force(const VECTORN& gf) { DYNAMIC_BODY::add_generalized_force(gf); }

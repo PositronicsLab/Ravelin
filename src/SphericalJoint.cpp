@@ -390,7 +390,7 @@ void SPHERICALJOINT::calc_constraint_jacobian(bool inboard, MATRIXN& Cq)
     ORIGIN3 u = ORIGIN3(POSE3::transform_point(Po, joint_pos));
 
     // get the information necessary to compute the constraint equations
-    MATRIX3 R = wPi.q;
+    MATRIX3 R = wPo.q;
     ORIGIN3 Ru = R*u;
 
     // get positional components of Cq

@@ -41,6 +41,7 @@
 #define TRANSFORM3 Transform3d
 #define TRANSFORM2 Transform2d
 #define JOINT Jointd
+#define PLANARJOINT PlanarJointd
 #define FIXEDJOINT FixedJointd
 #define PRISMATICJOINT PrismaticJointd
 #define REVOLUTEJOINT RevoluteJointd
