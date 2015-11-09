@@ -21,6 +21,9 @@ class DYNAMIC_BODY : public virtual_enable_shared_from_this<DYNAMIC_BODY>
     /// The identifier for this body
     std::string body_id;
 
+    /// Gets whether the body's dynamics are integrated forward
+    virtual bool is_enabled() const = 0;
+
     /// The Jacobian transforms from the generalized coordinate from to the given frame
     virtual MATRIXN& calc_jacobian(boost::shared_ptr<const POSE3> source_pose, boost::shared_ptr<const POSE3> target_pose, boost::shared_ptr<DYNAMIC_BODY> body, MATRIXN& J) = 0;
     virtual MATRIXN& calc_jacobian_dot(boost::shared_ptr<const POSE3> source_pose, boost::shared_ptr<const POSE3> target_pose, boost::shared_ptr<DYNAMIC_BODY> body, MATRIXN& J) = 0;

@@ -35,6 +35,9 @@ class ARTICULATED_BODY : public virtual DYNAMIC_BODY
     virtual MATRIXN& calc_jacobian(boost::shared_ptr<const POSE3> target_pose, boost::shared_ptr<DYNAMIC_BODY> body, MATRIXN& J);
     virtual MATRIXN& calc_jacobian_dot(boost::shared_ptr<const POSE3> target_pose, boost::shared_ptr<DYNAMIC_BODY> body, MATRIXN& J);
 
+    /// Articulated bodies are always enabled
+    virtual bool is_enabled() const { return true; }
+
     /// Gets the number of degrees-of-freedom permitted by explicit constraints
     virtual unsigned num_joint_dof_explicit() const = 0;
 

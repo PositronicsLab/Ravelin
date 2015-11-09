@@ -125,7 +125,7 @@ class RIGIDBODY : public virtual SINGLE_BODY
     virtual REAL get_mass() const { return _Jm.m; }
 
     /// Gets whether this body is enabled
-    bool is_enabled() const { return _enabled; }
+    virtual bool is_enabled() const { return _enabled; }
 
     /// Gets the articulated body corresponding to this body
     /**
