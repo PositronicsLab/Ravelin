@@ -140,9 +140,6 @@ shared_ptr<const POSE3> CRB_ALGORITHM::get_computation_frame(shared_ptr<RC_ARTIC
     case eJoint:
       return base->get_pose();
 
-    case eLinkInertia:
-      return base->get_inertial_pose();
-
     case eLinkCOM:
       return base->get_gc_pose();
 

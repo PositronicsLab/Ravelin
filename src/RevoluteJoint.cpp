@@ -45,11 +45,11 @@ void REVOLUTEJOINT::set_axis(const VECTOR3& axis)
   VECTOR3::determine_orthonormal_basis(_u, _ui, _uj);
 
   // transform ui and uj to inboard link inertial pose
-  _ui = POSE3::transform_vector(inboard_link->get_inertial_pose(), _ui);
-  _uj = POSE3::transform_vector(inboard_link->get_inertial_pose(), _uj);
+  _ui = POSE3::transform_vector(inboard_link->get_pose(), _ui);
+  _uj = POSE3::transform_vector(inboard_link->get_pose(), _uj);
 
   // transform normalized axis to outboard link inertial pose
-  _v2 = POSE3::transform_vector(outboard_link->get_inertial_pose(), naxis); 
+  _v2 = POSE3::transform_vector(outboard_link->get_pose(), naxis); 
 }        
 
 /// Updates the spatial axis for this joint
@@ -122,7 +122,7 @@ void REVOLUTEJOINT::evaluate_constraints(REAL C[])
 
   // get the inertial pose for the inboard link 
   shared_ptr<RIGIDBODY> inboard = get_inboard_link(); 
-  shared_ptr<const POSE3> inboard_pose = inboard->get_inertial_pose();
+  shared_ptr<const POSE3> inboard_pose = inboard->get_pose();
 
   // This code was developed using [Shabana, 2003], p. 435-436; variable names
   // have been altered however

@@ -24,7 +24,7 @@ void integrate(shared_ptr<RCArticulatedBodyd> body, double t, double dt)
   // add forces to the center of each link
   for (unsigned i=0; i< links.size(); i++)
   { 
-    SForced f(links[i]->get_inertial_pose());
+    SForced f(links[i]->get_pose());
     f[0] = std::cos(t*(i*1.01));
     f[1] = std::sin(t*(i*1.01));
     f[2] = std::cos(2*t*(i*1.01));
@@ -68,57 +68,6 @@ class IntegrationTest : public ::testing::Test {
 };
 
 const char* IntegrationTest::filename;
-
-TEST_F(IntegrationTest, DynamicsLinkxLinkCOM)
-{
-  VectorNd gc1, gc2;
-
-  // read in the body file
-  std::string fname(filename);
-  std::string name = "body";
-  vector<shared_ptr<RigidBodyd> > links;
-  vector<shared_ptr<Jointd> > joints;
-  URDFReaderd::read(fname, name, links, joints);
-
-  // create a new articulated body
-  shared_ptr<RCArticulatedBodyd> rcab(new RCArticulatedBodyd);
-  rcab->set_links_and_joints(links, joints); 
-
-  // set dynamics algorithm and frame
-  rcab->set_computation_frame_type(eLink);
-  rcab->algorithm_type = RCArticulatedBodyd::eCRB;
-
-  // save the generalized coordinates
-  VectorNd gc;
-  rcab->get_generalized_coordinates_euler(gc);
-
-  // set generalized velocity using sequence
-  set_velocity(rcab);
-
-  // integrate for one step at a step size of 0.001
-  integrate(rcab, 0.0, DT);
-
-  // get values out
-  rcab->get_generalized_coordinates_euler(gc1);
-
-  // restore the generalized coordinates and velocity
-  rcab->set_generalized_coordinates_euler(gc);
-  set_velocity(rcab);
-
-  // set dynamics algorithm and frame
-  rcab->set_computation_frame_type(eLinkCOM);
-  rcab->algorithm_type = RCArticulatedBodyd::eFeatherstone;
-
-  // integrate for one step at a step size of 0.001
-  integrate(rcab, 0.0, DT);
-
-  // get values out
-  rcab->get_generalized_coordinates_euler(gc2);
-
-  // compare values
-  for (unsigned i=0; i< gc1.size(); i++) 
-    ASSERT_NEAR(gc1[i], gc2[i], EPS_DOUBLE);
-}
 
 TEST_F(IntegrationTest, DynamicsLinkxGlobal)
 {
@@ -259,7 +208,7 @@ TEST_F(IntegrationTest, DynamicsLinkxLinkInertia)
   set_velocity(rcab);
 
   // set dynamics algorithm and frame
-  rcab->set_computation_frame_type(eLinkInertia);
+  rcab->set_computation_frame_type(eLink);
   rcab->algorithm_type = RCArticulatedBodyd::eFeatherstone;
 
   // integrate for one step at a step size of 0.001
@@ -493,7 +442,7 @@ TEST_F(IntegrationTest, DynamicsInertia)
   rcab->set_links_and_joints(links, joints); 
 
   // set dynamics algorithm and frame
-  rcab->set_computation_frame_type(eLinkInertia);
+  rcab->set_computation_frame_type(eLink);
   rcab->algorithm_type = RCArticulatedBodyd::eCRB;
 
   // save the generalized coordinates
@@ -514,7 +463,7 @@ TEST_F(IntegrationTest, DynamicsInertia)
   set_velocity(rcab);
 
   // set dynamics algorithm and frame
-  rcab->set_computation_frame_type(eLinkInertia);
+  rcab->set_computation_frame_type(eLink);
   rcab->algorithm_type = RCArticulatedBodyd::eFeatherstone;
 
   // integrate for one step at a step size of 0.001

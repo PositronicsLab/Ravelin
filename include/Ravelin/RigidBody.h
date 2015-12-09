@@ -33,14 +33,12 @@ class RIGIDBODY : public virtual SINGLE_BODY
     virtual ~RIGIDBODY() {}
     void add_force(const SFORCE& w);
     void set_pose(const POSE3& pose);
-    virtual void set_inertial_pose(const POSE3& pose);
     void apply_impulse(const SMOMENTUM& w);
     virtual void rotate(const QUAT& q);
     virtual void translate(const ORIGIN3& o);
     virtual void calc_fwd_dyn();
     const SPATIAL_RB_INERTIA& get_inertia();
     void set_inertia(const SPATIAL_RB_INERTIA& J);
-    boost::shared_ptr<const POSE3> get_inertial_pose() const { return _jF; }
 
     bool is_child_link(boost::shared_ptr<const RIGIDBODY> query) const;
     bool is_descendant_link(boost::shared_ptr<const RIGIDBODY> query) const;
@@ -114,15 +112,14 @@ class RIGIDBODY : public virtual SINGLE_BODY
     // Gets the pose used in generalized coordinates calculations
     boost::shared_ptr<const POSE3> get_gc_pose() const { return _F2; }
 
-
     // Gets the "mixed" pose of this body (pose origin at the body's reference point but pose aligned with global frame)
     boost::shared_ptr<const POSE3> get_mixed_pose() const { return _F2; }
 
     /// Synonym for get_mass() (implements SingleBody::calc_mass())
-    REAL calc_mass() const { return _Jm.m; }
+    REAL calc_mass() const { return _Ji.m; }
 
     /// Gets the mass of this body
-    virtual REAL get_mass() const { return _Jm.m; }
+    virtual REAL get_mass() const { return _Ji.m; }
 
     /// Gets whether this body is enabled
     virtual bool is_enabled() const { return _enabled; }
@@ -209,9 +206,6 @@ class RIGIDBODY : public virtual SINGLE_BODY
     /// Indicates whether inner joint frame velocity is valid (up-to-date)
     bool _xdj_valid;
 
-    /// Indicates whether mixed frame velocity is valid (up-to-date)
-    bool _xdcom_valid;
-
     /// Indicates whether global frame velocity is valid (up-to-date)
     bool _xd0_valid;
 
@@ -221,26 +215,17 @@ class RIGIDBODY : public virtual SINGLE_BODY
     /// Indicates whether global frame acceleration is valid (up-to-date)
     bool _xdd0_valid;
 
-    /// Indicates whether inertial frame acceleration is valid (up-to-date)
-    bool _xddcom_valid;
-
     /// Indicates whether link frame force is valid (up-to-date)
     bool _forcei_valid;
 
     /// Indicates whether inner joint frame force is valid (up-to-date)
     bool _forcej_valid;
 
-    /// Indicates whether mixed frame force is valid (up-to-date)
-    bool _forcecom_valid;
-
     /// Indicates whether global frame force is valid (up-to-date)
     bool _force0_valid;
 
     /// Indicates whether the global frame inertia matrix is valid
     bool _J0_valid;
-
-    /// Indicates whether the link frame inertia matrix is valid
-    bool _Ji_valid;
 
     /// Indicates whether the link com frame inertia matrix is valid
     bool _Jcom_valid;
@@ -259,18 +244,6 @@ class RIGIDBODY : public virtual SINGLE_BODY
 
     /// Cumulative force on the body (global frame)
     SFORCE _force0;
-
-    /// Spatial rigid body inertia matrix (inertial frame)
-    SPATIAL_RB_INERTIA _Jm;
-
-    /// Velocity (inertial frame)
-    SVELOCITY _xdm;
-
-    /// Acceleration (inertial frame)
-    SACCEL _xddm;
-
-    /// Cumulative force on the body (inertial frame)
-    SFORCE _forcem;
 
     /// Spatial rigid body inertia matrix (link frame)
     SPATIAL_RB_INERTIA _Ji;
@@ -325,9 +298,6 @@ class RIGIDBODY : public virtual SINGLE_BODY
 
     /// secondary pose for this body
     boost::shared_ptr<POSE3> _F2;
-
-    /// inertial pose for this body
-    boost::shared_ptr<POSE3> _jF;
 
     /// Pointer to articulated body (if this body is a link)
     boost::weak_ptr<ARTICULATED_BODY> _abody;

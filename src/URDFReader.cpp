@@ -466,7 +466,6 @@ void URDFREADER::read_inertial(shared_ptr<const XMLTree> node, URDFData& data, s
 
       // set the inertial frame relative to the link frame
       origin->rpose = link->get_pose();
-      link->set_inertial_pose(*origin);
 
       // set inertial properties
       SPATIAL_RB_INERTIA J(origin);

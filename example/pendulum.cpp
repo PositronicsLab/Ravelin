@@ -41,7 +41,7 @@ int main( void ) {
   // set the dynamics computations to take place in link inertia frames
   // (these are frame defined at the center-of-mass of each link and changing
   //  orientation as the link changes orientation)
-  pendulum->set_computation_frame_type(eLinkInertia);
+  pendulum->set_computation_frame_type(eLink);
 
   // vectors of links and joints used to define the body
   std::vector< shared_ptr<RigidBodyd> > links;

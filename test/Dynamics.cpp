@@ -24,7 +24,7 @@ void calc_dynamics(shared_ptr<RCArticulatedBodyd> body, double t)
   // add forces to the center of each link
   for (unsigned i=0; i< links.size(); i++)
   { 
-    SForced f(links[i]->get_inertial_pose());
+    SForced f(links[i]->get_pose());
     f[0] = std::cos(t*(i*1.01));
     f[1] = std::sin(t*(i*1.01));
     f[2] = std::cos(2*t*(i*1.01));
@@ -171,49 +171,6 @@ TEST_F(DynamicsTest, DynamicsLinkxJoint)
 
   // set dynamics algorithm and frame
   rcab->set_computation_frame_type(eJoint);
-  rcab->algorithm_type = RCArticulatedBodyd::eFeatherstone;
-
-  // calculate accelerations
-  calc_dynamics(rcab, 0.0);
-
-  // get values out
-  rcab->get_generalized_acceleration(gc2);
-
-  // compare values
-  for (unsigned i=0; i< gc1.size(); i++) 
-    ASSERT_NEAR(gc1[i], gc2[i], EPS_DOUBLE);
-}
-
-TEST_F(DynamicsTest, DynamicsLinkxLinkInertia)
-{
-  VectorNd gc1, gc2;
-
-  // read in the body file
-  std::string fname(filename);
-  std::string name = "body";
-  vector<shared_ptr<RigidBodyd> > links;
-  vector<shared_ptr<Jointd> > joints;
-  URDFReaderd::read(fname, name, links, joints);
-
-  // create a new articulated body
-  shared_ptr<RCArticulatedBodyd> rcab(new RCArticulatedBodyd);
-  rcab->set_links_and_joints(links, joints); 
-
-  // set dynamics algorithm and frame
-  rcab->set_computation_frame_type(eLink);
-  rcab->algorithm_type = RCArticulatedBodyd::eCRB;
-
-  // set generalized velocity using sequence
-  set_velocity(rcab);
-
-  // calculate accelerations
-  calc_dynamics(rcab, 0.0);
-
-  // get values out
-  rcab->get_generalized_acceleration(gc1);
-
-  // set dynamics algorithm and frame
-  rcab->set_computation_frame_type(eLinkInertia);
   rcab->algorithm_type = RCArticulatedBodyd::eFeatherstone;
 
   // calculate accelerations
@@ -415,7 +372,7 @@ TEST_F(DynamicsTest, DynamicsInertia)
   rcab->set_links_and_joints(links, joints); 
 
   // set dynamics algorithm and frame
-  rcab->set_computation_frame_type(eLinkInertia);
+  rcab->set_computation_frame_type(eLink);
   rcab->algorithm_type = RCArticulatedBodyd::eCRB;
 
   // set generalized velocity using sequence
@@ -428,7 +385,7 @@ TEST_F(DynamicsTest, DynamicsInertia)
   rcab->get_generalized_acceleration(gc1);
 
   // set dynamics algorithm and frame
-  rcab->set_computation_frame_type(eLinkInertia);
+  rcab->set_computation_frame_type(eLink);
   rcab->algorithm_type = RCArticulatedBodyd::eFeatherstone;
 
   // calculate accelerations

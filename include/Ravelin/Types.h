@@ -19,7 +19,7 @@
 namespace Ravelin {
 
 /// reference frame type for reduced-coordinate dynamics computations
-enum ReferenceFrameType { eGlobal, eLink, eLinkInertia, eLinkCOM, eJoint };
+enum ReferenceFrameType { eGlobal, eLink, eLinkCOM, eJoint };
 
 } // end namespace
 

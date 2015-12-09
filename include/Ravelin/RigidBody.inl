@@ -40,7 +40,7 @@ void RIGIDBODY::get_generalized_coordinates_euler_generic(V& gc)
   gc.resize(N_EULER); 
 
   // get current inertial pose 
-  POSE3 P = *_F;
+  POSE3 P = *get_pose();
   P.update_relative_pose(GLOBAL);
 
   // get linear components
@@ -76,6 +76,7 @@ void RIGIDBODY::set_generalized_coordinates_euler_generic(V& gc)
   // normalize the unit quaternion, just in case
   q.normalize();
 
+  // setup the pose at the center of mass
   POSE3 P(q, x);
   P.update_relative_pose(get_pose()->rpose);
   set_pose(P);
@@ -148,11 +149,6 @@ void RIGIDBODY::get_generalized_velocity_generic(DYNAMIC_BODY::GeneralizedCoordi
     case DYNAMIC_BODY::eSpatial: gv.resize(N_SPATIAL); break;
   }
 
-  // get velocity in link frame
-  if (!_xdcom_valid)
-    _xdcom = POSE3::transform(boost::const_pointer_cast<const POSE3>(_F2), _xdm);
-  _xdcom_valid = true;
-
   // get/set linear components of velocity
   VECTOR3 lv = _xdcom.get_linear();
   gv[0] = lv[0];
@@ -200,11 +196,6 @@ void RIGIDBODY::get_generalized_acceleration_generic(V& ga)
 
   // setup the linear components
   ga.resize(N_SPATIAL);
-
-  // see whether xddcom is valid
-  if (!_xddcom_valid)
-    _xddcom = POSE3::transform(_F2, _xddm);
-  _xddcom_valid = true;
 
   // get linear and angular components
   VECTOR3 la = _xddcom.get_linear();
