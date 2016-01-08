@@ -429,7 +429,7 @@ void TRANSFORM3::inverse_transform_spatial(const SVECTOR6& w, SVECTOR6& result) 
   // setup r and E
   MATRIX3 E = QUAT::invert(q);
   const ORIGIN3& r = x;
-  VECTOR3 rv(r, source);
+  VECTOR3 rv(r, target);
 
   // get the components of w
   VECTOR3 top = w.get_upper();
