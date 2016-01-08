@@ -43,19 +43,25 @@ void FIXEDJOINT::setup_joint()
   MATRIX3 Ri = inboard->q;
   MATRIX3 Ro = outboard->q;
 
-  // TODO: fix this
-  // compute the relative transform
-/*
-  MATRIX3 Rrel = MATRIX3::transpose(Ro) * Ri;
-  _T->q = Rrel;
-  _T->x.set_zero();
-  _T->source = ;
+  // get the poses for the two links
+  POSE3 wP1 = *get_inboard_pose();
+  POSE3 wP2 = *get_outboard_pose();
 
-  // compute the vector from the inner link to the outer link in inner link
-  // frame
-  VECTOR3 ox(outboard->x, To);
-//  _ui = inboard->inverse_transform(ox);
-*/
+  // evaluate the relative position
+  VECTOR3 ui0(wP2.x - wP1.x, GLOBAL); 
+
+  // setup ui
+  _ui = wP1.inverse_transform_vector(ui0);
+
+  // get the poses relative to the global frame
+  wP1.update_relative_pose(GLOBAL);
+  wP2.update_relative_pose(GLOBAL);
+
+  // get the transforms and orientations for the two links
+  MATRIX3 R1 = wP1.q;
+  MATRIX3 R2 = wP2.q;
+
+
   // compute the constant orientation term
   _rconst[X] = VECTOR3(Ri.get_row(X), GLOBAL).dot(VECTOR3(Ro.get_row(X), GLOBAL));
   _rconst[Y] = VECTOR3(Ri.get_row(Y), GLOBAL).dot(VECTOR3(Ro.get_row(Y), GLOBAL));
