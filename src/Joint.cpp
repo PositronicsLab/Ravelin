@@ -57,7 +57,7 @@ void JOINT::set_outboard_link(shared_ptr<RIGIDBODY> outboard, bool update_pose)
 
   // get the outboard pose
   if (outboard->_F->rpose)
-    throw std::runtime_error("Joint::set_inboard_link() - relative pose on inboard link already set");
+    throw std::runtime_error("Joint::set_outboard_link() - relative pose on inboard link already set");
 
   // setup Fb's pose relative to the outboard 
   set_outboard_pose(outboard->_F, update_pose);
@@ -139,7 +139,7 @@ void JOINT::set_outboard_pose(shared_ptr<POSE3> pose, bool update_joint_pose)
     update_spatial_axes();
 }
 
-/// Sets the location of this joint
+/// Sets the location of this joint while simultaneously setting the inboard and outboard links
 void JOINT::set_location(const VECTOR3& point, shared_ptr<RIGIDBODY> inboard, shared_ptr<RIGIDBODY> outboard) 
 {
   assert(inboard && outboard);
