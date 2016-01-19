@@ -138,7 +138,8 @@ POSE2 TRANSFORM2::transform(const POSE2& p) const
     throw FrameException();
   #endif
 
-  POSE2 result(target);
+  POSE2 result;
+  result.rpose = target;
   result.r = r * p.r;
   result.x = ORIGIN2(r * p.x) + x; 
  
@@ -153,7 +154,8 @@ POSE2 TRANSFORM2::inverse_transform(const POSE2& p) const
     throw FrameException();
   #endif
 
-  POSE2 result(source);
+  POSE2 result;
+  result.rpose = source;
   ROT2 ri = ROT2::invert(r);
   result.r = ri * p.r;
   result.x = ORIGIN2(ri * p.x) - ri*x; 

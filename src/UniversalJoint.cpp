@@ -48,7 +48,7 @@ VECTOR3 UNIVERSALJOINT::get_axis(Axis a) const
     return _u[DOF_2];
 }
 
-/// Sets an axis of this joint
+/// Sets an axis of rotation of this joint (MUST BE CALLED AFTER set_location(.))
 /**
  * The local axis for this joint does not take the orientation of the 
  * inboard link into account; thus, if the orientation of the inboard link 
@@ -258,595 +258,94 @@ shared_ptr<const POSE3> UNIVERSALJOINT::get_induced_pose()
   return _Fprime;
 }
 
-/// Computes the constraint jacobian
-/*
-void UNIVERSALJOINT::calc_constraint_jacobian(RigidBodyPtr body, unsigned index, REAL Cq[7])
+/// Computes the constraint jacobian with respect to a body
+void UNIVERSALJOINT::calc_constraint_jacobian(bool inboard, MATRIXN& Cq)
 {
-  const unsigned X = 0, Y = 1, Z = 2, SPATIAL_DIM = 7;
+  const unsigned X = 0, Y = 1, Z = 2, SPATIAL_DIM = 6;
+  const shared_ptr<const POSE3> GLOBAL;
+  MATRIXN tmp;
+
+  // resize the matrix
+  Cq.resize(num_constraint_eqns(), SPATIAL_DIM);
 
   // get the two links
-  shared_ptr<const POSE3> inner = get_inboard_pose();
-  shared_ptr<const POSE3> outer = get_outboard_pose();
+  shared_ptr<const POSE3> Pi = get_inboard_pose();
+  shared_ptr<const POSE3> Po = get_outboard_pose();
 
-  // make sure that _u (and by extension _h2) is set
-  if (_u[eAxis1].norm_sq() < std::numeric_limits<REAL>::epsilon() ||
-      _u[eAxis2].norm_sq() < std::numeric_limits<REAL>::epsilon())
-    throw UndefinedAxisException(); 
+  // get the attachment frames in the global frame
+  TRANSFORM3 wPi = POSE3::calc_relative_pose(_F, GLOBAL);
+  TRANSFORM3 wPo = POSE3::calc_relative_pose(_Fb, GLOBAL);
 
-  // mke sure that body is one of the links
-  if (inner != body && outer != body)
+  // get the vector from the inboard and outboard poses to the joint pose 
+  VECTOR3 joint_pos(0.0, 0.0, 0.0, _F);
+  VECTOR3 ui = POSE3::transform_vector(Pi, joint_pos);
+  VECTOR3 uo = POSE3::transform_vector(Po, joint_pos);
+
+  // setup the constraint equations (from Shabana, p. 432)
+  if (inboard)
   {
-    for (unsigned i=0; i< SPATIAL_DIM; i++)
-      Cq[i] = (REAL) 0.0;
-    return;
-  }
+    // get the vector from the inboard pose to the joint pose 
+    ORIGIN3 u = ORIGIN3(POSE3::transform_point(Pi, joint_pos));
 
-  // get the information necessary to compute the constraint equations
-  const Quat& q1 = inner->get_orientation();
-  const Quat& q2 = outer->get_orientation();
-  const VECTOR3& p1 = inner->get_outer_joint_data(outer).com_to_joint_vec;
-  const VECTOR3& p2 = body->get_inner_joint_data(inner).joint_to_com_vec_of;
-  const REAL q1x = q1.x;
-  const REAL q1y = q1.y;
-  const REAL q1z = q1.z;
-  const REAL q1w = q1.w;
-  const REAL p1x = p1[X];
-  const REAL p1y = p1[Y];
-  const REAL p1z = p1[Z];
-  const REAL q2x = q2.x;
-  const REAL q2y = q2.y;
-  const REAL q2z = q2.z;
-  const REAL q2w = q2.w;
-  const REAL p2x = -p2[X];
-  const REAL p2y = -p2[Y];
-  const REAL p2z = -p2[Z];
-  const REAL u0x = _u[DOF_1][X];
-  const REAL u0y = _u[DOF_1][Y];
-  const REAL u0z = _u[DOF_1][Z];
-  const REAL h2x = _h2[X];
-  const REAL h2y = _h2[Y];
-  const REAL h2z = _h2[Z];
+    // get the information necessary to compute the constraint equations
+    QUAT& R = wPi.q;
+    ORIGIN3 Ru = R*u;
 
-  // setup the constraint equations (from Shabana, p. 436), eq. 7.176
-  if (body == inner)
-  {
-    switch (index)
-    {
-      case 0:
-        Cq[0] = 1.0;    
-        Cq[1] = 0.0;    
-        Cq[2] = 0.0;    
-        Cq[3] = 4*p1x*q1w + 2*p1z*q1y - 2*p1y*q1z;
-        Cq[4] = 4*q1x*p1x + 2*q1y*p1y + 2*q1z*p1z;
-        Cq[5] = 2*p1z*q1w + 2*p1y*q1x;
-        Cq[6] = 2*p1z*q1x - 2*p1y*q1w;
-        break;
+    // get positional components of Cq
+    SHAREDMATRIXN Cq_trans = Cq.block(0, 3, 0, 3);
+    Cq_trans.set_identity();
+    SHAREDMATRIXN Cq_rot = Cq.block(0, 3, 3, 6);
+    Cq_rot = MATRIX3::skew_symmetric(-Ru);
 
-      case 1:
-        Cq[0] = 0.0;    
-        Cq[1] = 1.0;    
-        Cq[2] = 0.0;    
-        Cq[3] = 4*p1y*q1w - 2*p1z*q1x + 2*p1x*q1z;
-        Cq[4] = 2*q1y*p1x - 2*q1w*p1z;
-        Cq[5] = 2*p1x*q1x + 4*p1y*q1y + 2*p1z*q1z;
-        Cq[6] = 2*p1x*q1w + 2*p1z*q1y;
-        break;
-
-      case 2:
-        Cq[0] = 0.0;
-        Cq[1] = 0.0;
-        Cq[2] = 1.0;
-        Cq[3] = 4*p1z*q1w + 2*p1y*q1x - 2*p1x*q1y;
-        Cq[4] = 2*q1z*p1x + 2*q1w*p1y;
-        Cq[5] = 2*p1y*q1z - 2*p1x*q1w;
-        Cq[6] = 4*p1z*q1z + 2*p1y*q1y + 2*p1x*q1x;
-        break;
-
-      case 3:
-        Cq[0] = 0.0;
-        Cq[1] = 0.0;
-        Cq[2] = 0.0;
-        Cq[3] = h2x*(2*(-(q2w*q2y) + q2x*q2z)*
-                (-2*q1y*u0x + 2*q1x*u0y + 4*q1w*u0z) + 
-                2*(q2x*q2y + q2w*q2z)*
-                (2*q1z*u0x + 4*q1w*u0y - 2*q1x*u0z) + 
-                (-1 + 2*q2w*q2w + 2*q2x*q2x)*
-                (4*q1w*u0x - 2*q1z*u0y + 2*q1y*u0z)) + 
-                h2y*(2*(q2w*q2x + q2y*q2z)*
-                (-2*q1y*u0x + 2*q1x*u0y + 4*q1w*u0z) + 
-                (-1 + 2*(q2w*q2w + q2y*q2y))*
-                (2*q1z*u0x + 4*q1w*u0y - 2*q1x*u0z) + 
-                2*(q2x*q2y - q2w*q2z)*
-                (4*q1w*u0x - 2*q1z*u0y + 2*q1y*u0z)) + 
-                h2z*((-1 + 2*(q2w*q2w + q2z*q2z))*
-                (-2*q1y*u0x + 2*q1x*u0y + 4*q1w*u0z) + 
-                2*(-(q2w*q2x) + q2y*q2z)*
-                (2*q1z*u0x + 4*q1w*u0y - 2*q1x*u0z) + 
-                2*(q2w*q2y + q2x*q2z)*
-                (4*q1w*u0x - 2*q1z*u0y + 2*q1y*u0z));
-        Cq[4] = h2x*(2*(-(q2w*q2y) + q2x*q2z)*
-                (2*q1z*u0x + 2*q1w*u0y) + 
-                2*(q2x*q2y + q2w*q2z)*(2*q1y*u0x - 2*q1w*u0z) + 
-                (-1 + 2*q2w*q2w + 2*q2x*q2x)*
-                (4*q1x*u0x + 2*q1y*u0y + 2*q1z*u0z)) + 
-                h2y*(2*(q2w*q2x + q2y*q2z)*(2*q1z*u0x + 2*q1w*u0y) + 
-                (-1 + 2*(q2w*q2w + q2y*q2y))*
-                (2*q1y*u0x - 2*q1w*u0z) + 
-                2*(q2x*q2y - q2w*q2z)*
-                (4*q1x*u0x + 2*q1y*u0y + 2*q1z*u0z)) + 
-                h2z*((-1 + 2*(q2w*q2w + q2z*q2z))*
-                (2*q1z*u0x + 2*q1w*u0y) + 
-                2*(-(q2w*q2x) + q2y*q2z)*(2*q1y*u0x - 2*q1w*u0z) + 
-                2*(q2w*q2y + q2x*q2z)*
-                (4*q1x*u0x + 2*q1y*u0y + 2*q1z*u0z));
-        Cq[5] = h2x*(2*(-(q2w*q2y) + q2x*q2z)*
-               (2*q1z*u0x + 2*q1w*u0y) + 
-               2*(q2x*q2y + q2w*q2z)*(2*q1y*u0x - 2*q1w*u0z) + 
-               (-1 + 2*q2w*q2w + 2*q2x*q2x)*
-               (4*q1x*u0x + 2*q1y*u0y + 2*q1z*u0z)) + 
-               h2y*(2*(q2w*q2x + q2y*q2z)*(2*q1z*u0x + 2*q1w*u0y) + 
-               (-1 + 2*(q2w*q2w + q2y*q2y))*
-               (2*q1y*u0x - 2*q1w*u0z) + 
-               2*(q2x*q2y - q2w*q2z)*
-               (4*q1x*u0x + 2*q1y*u0y + 2*q1z*u0z)) + 
-               h2z*((-1 + 2*(q2w*q2w + q2z*q2z))*
-              (2*q1z*u0x + 2*q1w*u0y) + 
-              2*(-(q2w*q2x) + q2y*q2z)*(2*q1y*u0x - 2*q1w*u0z) + 
-              2*(q2w*q2y + q2x*q2z)*
-              (4*q1x*u0x + 2*q1y*u0y + 2*q1z*u0z));
-        Cq[6] = h2x*((-1 + 2*q2w*q2w + 2*q2x*q2x)*
-              (-2*q1w*u0y + 2*q1x*u0z) + 
-              2*(q2x*q2y + q2w*q2z)*(2*q1w*u0x + 2*q1y*u0z) + 
-              2*(-(q2w*q2y) + q2x*q2z)*
-              (2*q1x*u0x + 2*q1y*u0y + 4*q1z*u0z)) + 
-              h2y*(2*(q2x*q2y - q2w*q2z)*(-2*q1w*u0y + 2*q1x*u0z) + 
-              (-1 + 2*(q2w*q2w + q2y*q2y))*
-              (2*q1w*u0x + 2*q1y*u0z) + 
-              2*(q2w*q2x + q2y*q2z)*
-              (2*q1x*u0x + 2*q1y*u0y + 4*q1z*u0z)) + 
-              h2z*(2*(q2w*q2y + q2x*q2z)*(-2*q1w*u0y + 2*q1x*u0z) + 
-              2*(-(q2w*q2x) + q2y*q2z)*(2*q1w*u0x + 2*q1y*u0z) + 
-              (-1 + 2*(q2w*q2w + q2z*q2z))*
-              (2*q1x*u0x + 2*q1y*u0y + 4*q1z*u0z));
-
-      default:
-        throw std::runtime_error("Invalid joint constraint index!");
-    }
+    // Jacobian of dot(Ri*_u[DOF_1], Ro*_h2) w.r.t. inboard is
+    // dot(w x Ri*_u[DOF_1], Ro*h2) = (h2*Ro)' * (-Ri*u) x w 
+    // transpose((h2 * Ro)' * skew(-Ri*u)) = skew(Ri * u) * Ro * h2 
+    ORIGIN3 h2w = wPo.q * ORIGIN3(_h2);
+    ORIGIN3 result = MATRIX3::skew_symmetric(R*ORIGIN3(_u[DOF_1])) * h2w;
+    SHAREDVECTORN last_row = Cq.row(3);
+    last_row.segment(0, 3).set_zero();
+    last_row.segment(3, 6) = result; 
   }
   else
   {
-    switch (index)
-    {
-      case 0:
-        Cq[0] = -1.0;     
-        Cq[1] = 0.0;      
-        Cq[2] = 0.0;      
-        Cq[3] = -(4*p2x*q2w + 2*p2z*q2y - 2*p2y*q2z);
-        Cq[4] = -(4*q2x*p2x + 2*q2y*p2y + 2*q2z*p2z);
-        Cq[5] = -(2*p2z*q2w + 2*p2y*q2x);
-        Cq[6] = -(2*p2z*q2x - 2*p2y*q2w);
-        break;
+    // get the vector from the outboard pose to the joint pose 
+    ORIGIN3 u = ORIGIN3(POSE3::transform_point(Po, joint_pos));
 
-      case 1:
-        Cq[0] = 0.0;      
-        Cq[1] = -1.0;     
-        Cq[2] = 0.0;      
-        Cq[3] = -(4*p2y*q2w - 2*p2z*q2x + 2*p2x*q2z);
-        Cq[4] = -(2*q2y*p2x - 2*q2w*p2z);
-        Cq[5] = -(2*p2x*q2x + 4*p2y*q2y + 2*p2z*q2z);
-        Cq[6] = -(2*p2x*q2w + 2*p2z*q2y);
-        break;
+    // get the information necessary to compute the constraint equations
+    QUAT& Ri = wPi.q;
+    MATRIX3 R = wPo.q;
+    ORIGIN3 Ru = R*u;
 
-      case 2:
-        Cq[0] = 0.0;
-        Cq[1] = 0.0;
-        Cq[2] = -1.0;
-        Cq[3] = -(4*p2z*q2w + 2*p2y*q2x - 2*p2x*q2y);
-        Cq[4] = -(2*q2z*p2x + 2*q2w*p2y);
-        Cq[5] = -(2*p2y*q2z - 2*p2x*q2w);
-        Cq[6] = -(4*p2z*q2z + 2*p2y*q2y + 2*p2x*q2x);
-        break;
+    // get positional components of Cq
+    SHAREDMATRIXN Cq_trans = Cq.block(0, 3, 0, 3);
+    Cq_trans.set_identity();
+    Cq_trans *= -1.0;
+    SHAREDMATRIXN Cq_rot = Cq.block(0, 3, 3, 6);
+    Cq_rot = MATRIX3::skew_symmetric(Ru);
 
-      case 3:
-        Cq[0] = 0.0;
-        Cq[1] = 0.0;
-        Cq[2] = 0.0;
-        Cq[3] = h2z*(2*q2y*((-1 + 2*q1w*q1w + 2*q1x*q1x)*
-                u0x + 2*(q1x*q1y - q1w*q1z)*u0y + 
-                2*(q1w*q1y + q1x*q1z)*u0z) - 
-                2*q2x*(2*(q1x*q1y + q1w*q1z)*u0x + 
-                (-1 + 2*(q1w*q1w + q1y*q1y))*u0y + 
-                2*(-(q1w*q1x) + q1y*q1z)*u0z) + 
-                4*q2w*(2*(-(q1w*q1y) + q1x*q1z)*u0x + 
-                2*(q1w*q1x + q1y*q1z)*u0y + 
-                (-1 + 2*(q1w*q1w + q1z*q1z))*u0z)) + 
-                h2y*(-2*q2z*((-1 + 2*q1w*q1w + 2*q1x*q1x)*u0x + 
-                2*(q1x*q1y - q1w*q1z)*u0y + 2*(q1w*q1y + q1x*q1z)*u0z) + 
-                4*q2w*(2*(q1x*q1y + q1w*q1z)*u0x + 
-                (-1 + 2*(q1w*q1w + q1y*q1y))*u0y + 
-                2*(-(q1w*q1x) + q1y*q1z)*u0z) + 
-                2*q2x*(2*(-(q1w*q1y) + q1x*q1z)*u0x + 
-                2*(q1w*q1x + q1y*q1z)*u0y + 
-                (-1 + 2*(q1w*q1w + q1z*q1z))*u0z)) + 
-                h2x*(4*q2w*((-1 + 2*q1w*q1w + 2*q1x*q1x)*u0x + 
-                2*(q1x*q1y - q1w*q1z)*u0y + 2*(q1w*q1y + q1x*q1z)*u0z) + 
-                2*q2z*(2*(q1x*q1y + q1w*q1z)*u0x + 
-                (-1 + 2*(q1w*q1w + q1y*q1y))*u0y + 
-                2*(-(q1w*q1x) + q1y*q1z)*u0z) - 
-                2*q2y*(2*(-(q1w*q1y) + q1x*q1z)*u0x + 
-                2*(q1w*q1x + q1y*q1z)*u0y + 
-                (-1 + 2*(q1w*q1w + q1z*q1z))*u0z));
-        Cq[4] = h2z*(2*q2z*((-1 + 2*q1w*q1w + 2*q1x*q1x)*
-                u0x + 2*(q1x*q1y - q1w*q1z)*u0y + 
-                2*(q1w*q1y + q1x*q1z)*u0z) - 
-                2*q2w*(2*(q1x*q1y + q1w*q1z)*u0x + 
-                (-1 + 2*(q1w*q1w + q1y*q1y))*u0y + 
-                2*(-(q1w*q1x) + q1y*q1z)*u0z)) + 
-                h2y*(2*q2y*((-1 + 2*q1w*q1w + 2*q1x*q1x)*u0x + 
-                2*(q1x*q1y - q1w*q1z)*u0y + 2*(q1w*q1y + q1x*q1z)*u0z) + 
-                2*q2w*(2*(-(q1w*q1y) + q1x*q1z)*u0x + 
-                2*(q1w*q1x + q1y*q1z)*u0y + 
-                (-1 + 2*(q1w*q1w + q1z*q1z))*u0z)) + 
-                h2x*(4*q2x*((-1 + 2*q1w*q1w + 2*q1x*q1x)*u0x + 
-                2*(q1x*q1y - q1w*q1z)*u0y + 2*(q1w*q1y + q1x*q1z)*u0z) + 
-                2*q2y*(2*(q1x*q1y + q1w*q1z)*u0x + 
-                (-1 + 2*(q1w*q1w + q1y*q1y))*u0y + 
-                2*(-(q1w*q1x) + q1y*q1z)*u0z) + 
-                2*q2z*(2*(-(q1w*q1y) + q1x*q1z)*u0x + 
-                2*(q1w*q1x + q1y*q1z)*u0y + 
-                (-1 + 2*(q1w*q1w + q1z*q1z))*u0z));
-        Cq[5] = h2z*(2*q2w*((-1 + 2*q1w*q1w + 2*q1x*q1x)*
-                u0x + 2*(q1x*q1y - q1w*q1z)*u0y + 
-                2*(q1w*q1y + q1x*q1z)*u0z) + 
-                2*q2z*(2*(q1x*q1y + q1w*q1z)*u0x + 
-                (-1 + 2*(q1w*q1w + q1y*q1y))*u0y + 
-                2*(-(q1w*q1x) + q1y*q1z)*u0z)) + 
-                h2x*(2*q2x*(2*(q1x*q1y + q1w*q1z)*u0x + 
-                (-1 + 2*(q1w*q1w + q1y*q1y))*u0y + 
-                2*(-(q1w*q1x) + q1y*q1z)*u0z) - 
-                2*q2w*(2*(-(q1w*q1y) + q1x*q1z)*u0x + 
-                2*(q1w*q1x + q1y*q1z)*u0y + 
-                (-1 + 2*(q1w*q1w + q1z*q1z))*u0z)) + 
-                h2y*(2*q2x*((-1 + 2*q1w*q1w + 2*q1x*q1x)*u0x + 
-                2*(q1x*q1y - q1w*q1z)*u0y + 2*(q1w*q1y + q1x*q1z)*u0z) + 
-                4*q2y*(2*(q1x*q1y + q1w*q1z)*u0x + 
-                (-1 + 2*(q1w*q1w + q1y*q1y))*u0y + 
-                2*(-(q1w*q1x) + q1y*q1z)*u0z) + 
-                2*q2z*(2*(-(q1w*q1y) + q1x*q1z)*u0x + 
-                2*(q1w*q1x + q1y*q1z)*u0y + 
-                (-1 + 2*(q1w*q1w + q1z*q1z))*u0z));
-        Cq[6] = h2x*(2*q2w*(2*(q1x*q1y + q1w*q1z)*u0x + 
-                (-1 + 2*(q1w*q1w + q1y*q1y))*u0y + 
-                2*(-(q1w*q1x) + q1y*q1z)*u0z) + 
-                2*q2x*(2*(-(q1w*q1y) + q1x*q1z)*u0x + 
-                2*(q1w*q1x + q1y*q1z)*u0y + 
-                (-1 + 2*(q1w*q1w + q1z*q1z))*u0z)) + 
-                h2y*(-2*q2w*((-1 + 2*q1w*q1w + 2*q1x*q1x)*u0x + 
-                2*(q1x*q1y - q1w*q1z)*u0y + 2*(q1w*q1y + q1x*q1z)*u0z) + 
-                2*q2y*(2*(-(q1w*q1y) + q1x*q1z)*u0x + 
-                2*(q1w*q1x + q1y*q1z)*u0y + 
-                (-1 + 2*(q1w*q1w + q1z*q1z))*u0z)) + 
-                h2z*(2*q2x*((-1 + 2*q1w*q1w + 2*q1x*q1x)*u0x + 
-                2*(q1x*q1y - q1w*q1z)*u0y + 2*(q1w*q1y + q1x*q1z)*u0z) + 
-                2*q2y*(2*(q1x*q1y + q1w*q1z)*u0x + 
-                (-1 + 2*(q1w*q1w + q1y*q1y))*u0y + 
-                2*(-(q1w*q1x) + q1y*q1z)*u0z) + 
-                4*q2z*(2*(-(q1w*q1y) + q1x*q1z)*u0x + 
-                2*(q1w*q1x + q1y*q1z)*u0y + 
-                (-1 + 2*(q1w*q1w + q1z*q1z))*u0z));
-
-      default:
-        throw std::runtime_error("Invalid joint constraint index!");
-    }
+    // Jacobian of dot(Ri*_u[DOF_1], Ro*_h2) w.r.t. outboard is
+    // dot(Ri*_u[DOF_1], Ro*h2) = (Ri*_h1)' * (-Ro*u) x w 
+    // transpose((Ri * _h1)' * skew(-Ro*u)) = skew(Ro * u) * Ri * h1 
+    ORIGIN3 h1w = Ri * ORIGIN3(_u[DOF_1]);
+    ORIGIN3 result = MATRIX3::skew_symmetric(R*ORIGIN3(_h2)) * h1w;
+    SHAREDVECTORN last_row = Cq.row(3);
+    last_row.segment(0, 3).set_zero();
+    last_row.segment(3, 6) = result; 
   }
+
+  // transform the Jacobian as necessary
+  if (transform_jacobian(Cq, inboard, tmp))
+    Cq = tmp;
 }
 
-/// Computes the constraint jacobian
-void UNIVERSALJOINT::calc_constraint_jacobian_dot(RigidBodyPtr body, unsigned index, REAL Cq[7])
+/// Computes the time derivative of the constraint jacobian with respect to a body
+/**
+ * TODO: implement this
+ */
+void UNIVERSALJOINT::calc_constraint_jacobian_dot(bool inboard, MATRIXN& Cq)
 {
-  const unsigned X = 0, Y = 1, Z = 2, SPATIAL_DIM = 7;
-
-  // get the two links
-  shared_ptr<const POSE3> inner = get_inboard_pose();
-  shared_ptr<const POSE3> outer = get_outboard_pose();
-
-  // make sure that _u (and by extension _h2) is set
-  if (_u[eAxis1].norm_sq() < std::numeric_limits<REAL>::epsilon() ||
-      _u[eAxis2].norm_sq() < std::numeric_limits<REAL>::epsilon())
-    throw UndefinedAxisException(); 
-
-  // mke sure that body is one of the links
-  if (inner != body && outer != body)
-  {
-    for (unsigned i=0; i< SPATIAL_DIM; i++)
-      Cq[i] = (REAL) 0.0;
-    return;
-  }
-
-  // get the information necessary to compute the constraint equations
-  const Quat& q1 = inner->get_orientation();
-  const Quat& q2 = outer->get_orientation();
-  const Quat qd1 = Quat::deriv(q1, inner->get_avel());
-  const Quat qd2 = Quat::deriv(q2, outer->get_avel());
-  const VECTOR3& p1 = inner->get_outer_joint_data(outer).com_to_joint_vec;
-  const VECTOR3& p2 = body->get_inner_joint_data(inner).joint_to_com_vec_of;
-  const REAL qx1 = q1.x;
-  const REAL qy1 = q1.y;
-  const REAL qz1 = q1.z;
-  const REAL qw1 = q1.w;
-  const REAL p1x = p1[X];
-  const REAL p1y = p1[Y];
-  const REAL p1z = p1[Z];
-  const REAL qx2 = q2.x;
-  const REAL qy2 = q2.y;
-  const REAL qz2 = q2.z;
-  const REAL qw2 = q2.w;
-  const REAL p2x = -p2[X];
-  const REAL p2y = -p2[Y];
-  const REAL p2z = -p2[Z];
-  const REAL ux = _u[DOF_1][X];
-  const REAL uy = _u[DOF_1][Y];
-  const REAL uz = _u[DOF_1][Z];
-  const REAL h2x = _h2[X];
-  const REAL h2y = _h2[Y];
-  const REAL h2z = _h2[Z];
-  const REAL dqw1 = qd1.w;
-  const REAL dqx1 = qd1.x;
-  const REAL dqy1 = qd1.y;
-  const REAL dqz1 = qd1.z;
-  const REAL dqw2 = qd2.w;
-  const REAL dqx2 = qd2.x;
-  const REAL dqy2 = qd2.y;
-  const REAL dqz2 = qd2.z;
-
-  // setup the constraint equations (from Shabana, p. 436), eq. 7.176
-  if (body == inner)
-  {
-    switch (index)
-    {
-      case 0:
-        Cq[0] = (REAL) 0.0;    
-        Cq[1] = (REAL) 0.0;    
-        Cq[2] = (REAL) 0.0;    
-        Cq[3] = 4*p1x*dqw1 + 2*p1z*dqy1 - 2*p1y*dqz1;
-        Cq[4] = 4*dqx1*p1x + 2*dqy1*p1y + 2*dqz1*p1z;
-        Cq[5] = 2*p1z*dqw1 + 2*p1y*dqx1;
-        Cq[6] = 2*p1z*dqx1 - 2*p1y*dqw1;
-        break;
-
-      case 1:
-        Cq[0] = (REAL) 0.0;    
-        Cq[1] = (REAL) 0.0;    
-        Cq[2] = (REAL) 0.0;    
-        Cq[3] = 4*p1y*dqw1 - 2*p1z*dqx1 + 2*p1x*dqz1;
-        Cq[4] = 2*dqy1*p1x - 2*dqw1*p1z;
-        Cq[5] = 2*p1x*dqx1 + 4*p1y*dqy1 + 2*p1z*dqz1;
-        Cq[6] = 2*p1x*dqw1 + 2*p1z*dqy1;
-        break;
-
-      case 2:
-        Cq[0] = (REAL) 0.0;
-        Cq[1] = (REAL) 0.0;
-        Cq[2] = (REAL) 0.0;
-        Cq[3] = 4*p1z*dqw1 + 2*p1y*dqx1 - 2*p1x*dqy1;
-        Cq[4] = 2*dqz1*p1x + 2*dqw1*p1y;
-        Cq[5] = 2*p1y*dqz1 - 2*p1x*dqw1;
-        Cq[6] = 4*p1z*dqz1 + 2*p1y*dqy1 + 2*p1x*dqx1;
-        break;
-
-      case 3:
-        Cq[0] = (REAL) 0.0;
-        Cq[1] = (REAL) 0.0;
-        Cq[2] = (REAL) 0.0;
-        Cq[3] = (2*h2x*(-(qw2*qy2) + qx2*qz2) + 2*h2y*(qw2*qx2 + qy2*qz2) + 
-      h2z*(-1 + 2*(qw2*qw2 + qz2*qz2)))*
-    (-2*dqy1*ux + 2*dqx1*uy + 4*dqw1*uz) + 
-   (h2y*(-1 + 2*(qw2*qw2 + qy2*qy2)) + 
-      2*h2x*(qx2*qy2 + qw2*qz2) + 2*h2z*(-(qw2*qx2) + qy2*qz2))*
-    (2*dqz1*ux + 4*dqw1*uy - 2*dqx1*uz) + 
-   (h2x*(-1 + 2*qw2*qw2 + 2*qx2*qx2) + 
-      2*h2y*(qx2*qy2 - qw2*qz2) + 2*h2z*(qw2*qy2 + qx2*qz2))*
-    (4*dqw1*ux - 2*dqz1*uy + 2*dqy1*uz) + 
-   (2*h2x*(-(dqy2*qw2) + dqz2*qx2 - dqw2*qy2 + dqx2*qz2) + 
-      2*h2y*(dqx2*qw2 + dqw2*qx2 + dqz2*qy2 + dqy2*qz2) + 
-      2*h2z*(2*dqw2*qw2 + 2*dqz2*qz2))*(-2*qy1*ux + 2*qx1*uy + 4*qw1*uz)\
-    + (2*h2y*(2*dqw2*qw2 + 2*dqy2*qy2) + 
-      2*h2x*(dqz2*qw2 + dqy2*qx2 + dqx2*qy2 + dqw2*qz2) + 
-      2*h2z*(-(dqx2*qw2) - dqw2*qx2 + dqz2*qy2 + dqy2*qz2))*
-    (2*qz1*ux + 4*qw1*uy - 2*qx1*uz) + 
-   (h2x*(4*dqw2*qw2 + 4*dqx2*qx2) + 
-      2*h2y*(-(dqz2*qw2) + dqy2*qx2 + dqx2*qy2 - dqw2*qz2) + 
-      2*h2z*(dqy2*qw2 + dqz2*qx2 + dqw2*qy2 + dqx2*qz2))*
-    (4*qw1*ux - 2*qz1*uy + 2*qy1*uz);
-        Cq[4] = (2*h2x*(-(qw2*qy2) + qx2*qz2) + 2*h2y*(qw2*qx2 + qy2*qz2) + 
-      h2z*(-1 + 2*(qw2*qw2 + qz2*qz2)))*(2*dqz1*ux + 2*dqw1*uy)
-     + (2*h2x*(-(dqy2*qw2) + dqz2*qx2 - dqw2*qy2 + dqx2*qz2) + 
-      2*h2y*(dqx2*qw2 + dqw2*qx2 + dqz2*qy2 + dqy2*qz2) + 
-      2*h2z*(2*dqw2*qw2 + 2*dqz2*qz2))*(2*qz1*ux + 2*qw1*uy) + 
-   (h2y*(-1 + 2*(qw2*qw2 + qy2*qy2)) + 
-      2*h2x*(qx2*qy2 + qw2*qz2) + 2*h2z*(-(qw2*qx2) + qy2*qz2))*
-    (2*dqy1*ux - 2*dqw1*uz) + 
-   (h2x*(-1 + 2*qw2*qw2 + 2*qx2*qx2) + 
-      2*h2y*(qx2*qy2 - qw2*qz2) + 2*h2z*(qw2*qy2 + qx2*qz2))*
-    (4*dqx1*ux + 2*dqy1*uy + 2*dqz1*uz) + 
-   (2*h2y*(2*dqw2*qw2 + 2*dqy2*qy2) + 
-      2*h2x*(dqz2*qw2 + dqy2*qx2 + dqx2*qy2 + dqw2*qz2) + 
-      2*h2z*(-(dqx2*qw2) - dqw2*qx2 + dqz2*qy2 + dqy2*qz2))*
-    (2*qy1*ux - 2*qw1*uz) + (h2x*(4*dqw2*qw2 + 4*dqx2*qx2) + 
-      2*h2y*(-(dqz2*qw2) + dqy2*qx2 + dqx2*qy2 - dqw2*qz2) + 
-      2*h2z*(dqy2*qw2 + dqz2*qx2 + dqw2*qy2 + dqx2*qz2))*
-    (4*qx1*ux + 2*qy1*uy + 2*qz1*uz);
-        Cq[5] = (2*h2x*(-(qw2*qy2) + qx2*qz2) + 2*h2y*(qw2*qx2 + qy2*qz2) + 
-      h2z*(-1 + 2*(qw2*qw2 + qz2*qz2)))*
-    (-2*dqw1*ux + 2*dqz1*uy) + 
-   (2*h2x*(-(dqy2*qw2) + dqz2*qx2 - dqw2*qy2 + dqx2*qz2) + 
-      2*h2y*(dqx2*qw2 + dqw2*qx2 + dqz2*qy2 + dqy2*qz2) + 
-      2*h2z*(2*dqw2*qw2 + 2*dqz2*qz2))*(-2*qw1*ux + 2*qz1*uy) + 
-   (h2x*(-1 + 2*qw2*qw2 + 2*qx2*qx2) + 
-      2*h2y*(qx2*qy2 - qw2*qz2) + 2*h2z*(qw2*qy2 + qx2*qz2))*
-    (2*dqx1*uy + 2*dqw1*uz) + 
-   (h2y*(-1 + 2*(qw2*qw2 + qy2*qy2)) + 
-      2*h2x*(qx2*qy2 + qw2*qz2) + 2*h2z*(-(qw2*qx2) + qy2*qz2))*
-    (2*dqx1*ux + 4*dqy1*uy + 2*dqz1*uz) + 
-   (h2x*(4*dqw2*qw2 + 4*dqx2*qx2) + 
-      2*h2y*(-(dqz2*qw2) + dqy2*qx2 + dqx2*qy2 - dqw2*qz2) + 
-      2*h2z*(dqy2*qw2 + dqz2*qx2 + dqw2*qy2 + dqx2*qz2))*
-    (2*qx1*uy + 2*qw1*uz) + (2*h2y*(2*dqw2*qw2 + 2*dqy2*qy2) + 
-      2*h2x*(dqz2*qw2 + dqy2*qx2 + dqx2*qy2 + dqw2*qz2) + 
-      2*h2z*(-(dqx2*qw2) - dqw2*qx2 + dqz2*qy2 + dqy2*qz2))*
-    (2*qx1*ux + 4*qy1*uy + 2*qz1*uz);
-        Cq[6] = (h2x*(-1 + 2*qw2*qw2 + 2*qx2*qx2) + 
-      2*h2y*(qx2*qy2 - qw2*qz2) + 2*h2z*(qw2*qy2 + qx2*qz2))*
-    (-2*dqw1*uy + 2*dqx1*uz) + 
-   (h2y*(-1 + 2*(qw2*qw2 + qy2*qy2)) + 
-      2*h2x*(qx2*qy2 + qw2*qz2) + 2*h2z*(-(qw2*qx2) + qy2*qz2))*
-    (2*dqw1*ux + 2*dqy1*uz) + 
-   (2*h2x*(-(qw2*qy2) + qx2*qz2) + 2*h2y*(qw2*qx2 + qy2*qz2) + 
-      h2z*(-1 + 2*(qw2*qw2 + qz2*qz2)))*
-    (2*dqx1*ux + 2*dqy1*uy + 4*dqz1*uz) + 
-   (h2x*(4*dqw2*qw2 + 4*dqx2*qx2) + 
-      2*h2y*(-(dqz2*qw2) + dqy2*qx2 + dqx2*qy2 - dqw2*qz2) + 
-      2*h2z*(dqy2*qw2 + dqz2*qx2 + dqw2*qy2 + dqx2*qz2))*
-    (-2*qw1*uy + 2*qx1*uz) + (2*h2y*(2*dqw2*qw2 + 2*dqy2*qy2) + 
-      2*h2x*(dqz2*qw2 + dqy2*qx2 + dqx2*qy2 + dqw2*qz2) + 
-      2*h2z*(-(dqx2*qw2) - dqw2*qx2 + dqz2*qy2 + dqy2*qz2))*
-    (2*qw1*ux + 2*qy1*uz) + (2*h2x*
-       (-(dqy2*qw2) + dqz2*qx2 - dqw2*qy2 + dqx2*qz2) + 
-      2*h2y*(dqx2*qw2 + dqw2*qx2 + dqz2*qy2 + dqy2*qz2) + 
-      2*h2z*(2*dqw2*qw2 + 2*dqz2*qz2))*(2*qx1*ux + 2*qy1*uy + 4*qz1*uz);
-
-      default:
-        throw std::runtime_error("Invalid joint constraint index!");
-    }
-  }
-  else
-  {
-    switch (index)
-    {
-      case 0:
-        Cq[0] = (REAL) 0.0;     
-        Cq[1] = (REAL) 0.0;      
-        Cq[2] = (REAL) 0.0;      
-        Cq[3] = -(4*p2x*dqw2 + 2*p2z*dqy2 - 2*p2y*dqz2);
-        Cq[4] = -(4*dqx2*p2x + 2*dqy2*p2y + 2*dqz2*p2z);
-        Cq[5] = -(2*p2z*dqw2 + 2*p2y*dqx2);
-        Cq[6] = -(2*p2z*dqx2 - 2*p2y*dqw2);
-        break;
-
-      case 1:
-        Cq[0] = (REAL) 0.0;      
-        Cq[1] = (REAL) 0.0;     
-        Cq[2] = (REAL) 0.0;      
-        Cq[3] = -(4*p2y*dqw2 - 2*p2z*dqx2 + 2*p2x*dqz2);
-        Cq[4] = -(2*dqy2*p2x - 2*dqw2*p2z);
-        Cq[5] = -(2*p2x*dqx2 + 4*p2y*dqy2 + 2*p2z*dqz2);
-        Cq[6] = -(2*p2x*dqw2 + 2*p2z*dqy2);
-        break;
-
-      case 2:
-        Cq[0] = (REAL) 0.0;
-        Cq[1] = (REAL) 0.0;
-        Cq[2] = (REAL) 0.0;
-        Cq[3] = -(4*p2z*dqw2 + 2*p2y*dqx2 - 2*p2x*dqy2);
-        Cq[4] = -(2*dqz2*p2x + 2*dqw2*p2y);
-        Cq[5] = -(2*p2y*dqz2 - 2*p2x*dqw2);
-        Cq[6] = -(4*p2z*dqz2 + 2*p2y*dqy2 + 2*p2x*dqx2);
-        break;
-
-      case 3:
-        Cq[0] = (REAL) 0.0;
-        Cq[1] = (REAL) 0.0;
-        Cq[2] = (REAL) 0.0;
-        Cq[3] = (4*h2x*qw2 + 2*h2z*qy2 - 2*h2y*qz2)*
-    ((4*dqw1*qw1 + 4*dqx1*qx1)*ux + 
-      2*(-(dqz1*qw1) + dqy1*qx1 + dqx1*qy1 - dqw1*qz1)*uy + 
-      2*(dqy1*qw1 + dqz1*qx1 + dqw1*qy1 + dqx1*qz1)*uz) + 
-   (4*h2y*qw2 - 2*h2z*qx2 + 2*h2x*qz2)*
-    (2*(dqz1*qw1 + dqy1*qx1 + dqx1*qy1 + dqw1*qz1)*ux + 
-      2*(2*dqw1*qw1 + 2*dqy1*qy1)*uy + 
-      2*(-(dqx1*qw1) - dqw1*qx1 + dqz1*qy1 + dqy1*qz1)*uz) + 
-   (4*h2z*qw2 + 2*h2y*qx2 - 2*h2x*qy2)*
-    (2*(-(dqy1*qw1) + dqz1*qx1 - dqw1*qy1 + dqx1*qz1)*ux + 
-      2*(dqx1*qw1 + dqw1*qx1 + dqz1*qy1 + dqy1*qz1)*uy + 
-      2*(2*dqw1*qw1 + 2*dqz1*qz1)*uz) + 
-   (4*dqw2*h2x - 2*dqz2*h2y + 2*dqy2*h2z)*
-    ((-1 + 2*qw1*qw1 + 2*qx1*qx1)*ux + 
-      2*(qx1*qy1 - qw1*qz1)*uy + 2*(qw1*qy1 + qx1*qz1)*uz) + 
-   (2*dqz2*h2x + 4*dqw2*h2y - 2*dqx2*h2z)*
-    (2*(qx1*qy1 + qw1*qz1)*ux + 
-      (-1 + 2*(qw1*qw1 + qy1*qy1))*uy + 
-      2*(-(qw1*qx1) + qy1*qz1)*uz) + 
-   (-2*dqy2*h2x + 2*dqx2*h2y + 4*dqw2*h2z)*
-    (2*(-(qw1*qy1) + qx1*qz1)*ux + 2*(qw1*qx1 + qy1*qz1)*uy + 
-      (-1 + 2*(qw1*qw1 + qz1*qz1))*uz);
-        Cq[4] = (4*h2x*qx2 + 2*h2y*qy2 + 2*h2z*qz2)*
-    ((4*dqw1*qw1 + 4*dqx1*qx1)*ux + 
-      2*(-(dqz1*qw1) + dqy1*qx1 + dqx1*qy1 - dqw1*qz1)*uy + 
-      2*(dqy1*qw1 + dqz1*qx1 + dqw1*qy1 + dqx1*qz1)*uz) + 
-   (-2*h2z*qw2 + 2*h2x*qy2)*(2*
-       (dqz1*qw1 + dqy1*qx1 + dqx1*qy1 + dqw1*qz1)*ux + 
-      2*(2*dqw1*qw1 + 2*dqy1*qy1)*uy + 
-      2*(-(dqx1*qw1) - dqw1*qx1 + dqz1*qy1 + dqy1*qz1)*uz) + 
-   (2*h2y*qw2 + 2*h2x*qz2)*(2*
-       (-(dqy1*qw1) + dqz1*qx1 - dqw1*qy1 + dqx1*qz1)*ux + 
-      2*(dqx1*qw1 + dqw1*qx1 + dqz1*qy1 + dqy1*qz1)*uy + 
-      2*(2*dqw1*qw1 + 2*dqz1*qz1)*uz) + 
-   (4*dqx2*h2x + 2*dqy2*h2y + 2*dqz2*h2z)*
-    ((-1 + 2*qw1*qw1 + 2*qx1*qx1)*ux + 
-      2*(qx1*qy1 - qw1*qz1)*uy + 2*(qw1*qy1 + qx1*qz1)*uz) + 
-   (2*dqy2*h2x - 2*dqw2*h2z)*(2*(qx1*qy1 + qw1*qz1)*ux + 
-      (-1 + 2*(qw1*qw1 + qy1*qy1))*uy + 
-      2*(-(qw1*qx1) + qy1*qz1)*uz) + 
-   (2*dqz2*h2x + 2*dqw2*h2y)*(2*(-(qw1*qy1) + qx1*qz1)*ux + 
-      2*(qw1*qx1 + qy1*qz1)*uy + 
-      (-1 + 2*(qw1*qw1 + qz1*qz1))*uz);
-        Cq[5] = (2*h2z*qw2 + 2*h2y*qx2)*((4*dqw1*qw1 + 4*dqx1*qx1)*ux + 
-      2*(-(dqz1*qw1) + dqy1*qx1 + dqx1*qy1 - dqw1*qz1)*uy + 
-      2*(dqy1*qw1 + dqz1*qx1 + dqw1*qy1 + dqx1*qz1)*uz) + 
-   (2*h2x*qx2 + 4*h2y*qy2 + 2*h2z*qz2)*
-    (2*(dqz1*qw1 + dqy1*qx1 + dqx1*qy1 + dqw1*qz1)*ux + 
-      2*(2*dqw1*qw1 + 2*dqy1*qy1)*uy + 
-      2*(-(dqx1*qw1) - dqw1*qx1 + dqz1*qy1 + dqy1*qz1)*uz) + 
-   (-2*h2x*qw2 + 2*h2y*qz2)*(2*
-       (-(dqy1*qw1) + dqz1*qx1 - dqw1*qy1 + dqx1*qz1)*ux + 
-      2*(dqx1*qw1 + dqw1*qx1 + dqz1*qy1 + dqy1*qz1)*uy + 
-      2*(2*dqw1*qw1 + 2*dqz1*qz1)*uz) + 
-   (2*dqx2*h2y + 2*dqw2*h2z)*((-1 + 2*qw1*qw1 + 2*qx1*qx1)*
-       ux + 2*(qx1*qy1 - qw1*qz1)*uy + 2*(qw1*qy1 + qx1*qz1)*uz) + 
-   (2*dqx2*h2x + 4*dqy2*h2y + 2*dqz2*h2z)*
-    (2*(qx1*qy1 + qw1*qz1)*ux + 
-      (-1 + 2*(qw1*qw1 + qy1*qy1))*uy + 
-      2*(-(qw1*qx1) + qy1*qz1)*uz) + 
-   (-2*dqw2*h2x + 2*dqz2*h2y)*
-    (2*(-(qw1*qy1) + qx1*qz1)*ux + 2*(qw1*qx1 + qy1*qz1)*uy + 
-      (-1 + 2*(qw1*qw1 + qz1*qz1))*uz);
-        Cq[6] = (-2*h2y*qw2 + 2*h2z*qx2)*((4*dqw1*qw1 + 4*dqx1*qx1)*ux + 
-      2*(-(dqz1*qw1) + dqy1*qx1 + dqx1*qy1 - dqw1*qz1)*uy + 
-      2*(dqy1*qw1 + dqz1*qx1 + dqw1*qy1 + dqx1*qz1)*uz) + 
-   (2*h2x*qw2 + 2*h2z*qy2)*(2*
-       (dqz1*qw1 + dqy1*qx1 + dqx1*qy1 + dqw1*qz1)*ux + 
-      2*(2*dqw1*qw1 + 2*dqy1*qy1)*uy + 
-      2*(-(dqx1*qw1) - dqw1*qx1 + dqz1*qy1 + dqy1*qz1)*uz) + 
-   (2*h2x*qx2 + 2*h2y*qy2 + 4*h2z*qz2)*
-    (2*(-(dqy1*qw1) + dqz1*qx1 - dqw1*qy1 + dqx1*qz1)*ux + 
-      2*(dqx1*qw1 + dqw1*qx1 + dqz1*qy1 + dqy1*qz1)*uy + 
-      2*(2*dqw1*qw1 + 2*dqz1*qz1)*uz) + 
-   (-2*dqw2*h2y + 2*dqx2*h2z)*
-    ((-1 + 2*qw1*qw1 + 2*qx1*qx1)*ux + 
-      2*(qx1*qy1 - qw1*qz1)*uy + 2*(qw1*qy1 + qx1*qz1)*uz) + 
-   (2*dqw2*h2x + 2*dqy2*h2z)*(2*(qx1*qy1 + qw1*qz1)*ux + 
-      (-1 + 2*(qw1*qw1 + qy1*qy1))*uy + 
-      2*(-(qw1*qx1) + qy1*qz1)*uz) + 
-   (2*dqx2*h2x + 2*dqy2*h2y + 4*dqz2*h2z)*
-    (2*(-(qw1*qy1) + qx1*qz1)*ux + 2*(qw1*qx1 + qy1*qz1)*uy + 
-      (-1 + 2*(qw1*qw1 + qz1*qz1))*uz);
-
-      default:
-        throw std::runtime_error("Invalid joint constraint index!");
-    }
-  }
+  throw std::runtime_error("Implementation required");
 }
-*/
 
 /// Evaluates the constraint equations
 void UNIVERSALJOINT::evaluate_constraints(REAL C[])
@@ -866,8 +365,8 @@ void UNIVERSALJOINT::evaluate_constraints(REAL C[])
   VECTOR3 h2 = outer->transform_vector(GLOBAL, _h2);
 
   // determine the global positions of the attachment points and subtract them
-  VECTOR3 r1 = get_location(false);
-  VECTOR3 r2 = get_location(true);
+  VECTOR3 r1 = POSE3::transform_point(GLOBAL, get_location(false));
+  VECTOR3 r2 = POSE3::transform_point(GLOBAL, get_location(true));
   VECTOR3 r12 = r1 - r2;
 
   // evaluate the constraint equations

@@ -4,6 +4,40 @@
  * License (obtainable from http://www.apache.org/licenses/LICENSE-2.0).
  ****************************************************************************/
 
+SFORCE& SFORCE::operator+=(const SMOMENTUM& v)
+{
+  #ifndef NEXCEPT
+  if (pose != v.pose)
+    throw FrameException();
+  #endif
+
+  _data[0] += v._data[0];
+  _data[1] += v._data[1];
+  _data[2] += v._data[2];
+  _data[3] += v._data[3];
+  _data[4] += v._data[4];
+  _data[5] += v._data[5];
+ 
+  return *this;
+}
+
+SFORCE& SFORCE::operator-=(const SMOMENTUM& v)
+{
+  #ifndef NEXCEPT
+  if (pose != v.pose)
+    throw FrameException();
+  #endif
+
+  _data[0] -= v._data[0];
+  _data[1] -= v._data[1];
+  _data[2] -= v._data[2];
+  _data[3] -= v._data[3];
+  _data[4] -= v._data[4];
+  _data[5] -= v._data[5];
+ 
+  return *this;
+}
+
 REAL SFORCE::dot(const SVELOCITY& v2) const
 {
   // verify that both vectors are defined in the same frame

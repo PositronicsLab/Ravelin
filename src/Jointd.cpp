@@ -6,10 +6,13 @@
 
 #include <cmath>
 #include <Ravelin/InvalidIndexException.h>
+#include <Ravelin/ArticulatedBodyd.h>
+#include <Ravelin/RCArticulatedBodyd.h>
 #include <Ravelin/Jointd.h>
 
 using std::vector;
 using boost::shared_ptr;
+using boost::dynamic_pointer_cast;
 using namespace Ravelin;
 
 #include <Ravelin/ddefs.h>

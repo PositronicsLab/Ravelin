@@ -15,10 +15,12 @@
 #include <vector>
 #include <boost/shared_ptr.hpp>
 #include <Ravelin/Pose3d.h>
+#include <Ravelin/RigidBodyd.h>
 #include <Ravelin/MatrixNd.h>
 #include <Ravelin/SAcceld.h>
 #include <Ravelin/LinAlgd.h>
 #include <Ravelin/FrameException.h>
+#include <Ravelin/virtual_enable_shared_from_this.hpp>
 
 namespace Ravelin {
 

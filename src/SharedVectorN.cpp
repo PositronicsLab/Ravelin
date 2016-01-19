@@ -42,9 +42,9 @@ SHAREDVECTORN SHAREDVECTORN::segment(unsigned start, unsigned end)
 
   SHAREDVECTORN x;
   x._data = _data;
-  x._start = _start + start;
+  x._start = _start + start*_inc;
   x._len = end - start;
-  x._inc = 1;
+  x._inc = _inc;
   return x;
 }
 
@@ -58,9 +58,9 @@ CONST_SHAREDVECTORN SHAREDVECTORN::segment(unsigned start, unsigned end) const
 
   CONST_SHAREDVECTORN x;
   x._data = _data;
-  x._start = _start + start;
+  x._start = _start + start*_inc;
   x._len = end - start;
-  x._inc = 1;
+  x._inc = _inc;
   return x;
 }
 
@@ -72,6 +72,45 @@ SHAREDVECTORN& SHAREDVECTORN::resize(unsigned N, bool preserve)
   if (_len != N)
     throw std::runtime_error("Attempt to resize shared vector!");
   #endif
+
+  return *this;
+}
+
+/// Copies another vector
+SHAREDVECTORN& SHAREDVECTORN::operator=(const ORIGIN2& source)
+{
+  // check size
+  #ifndef NEXCEPT
+  if (_len != source.size())
+    throw MissizeException();
+  #endif
+
+  // get data
+  REAL* x = data();
+
+  // don't even worry about BLAS for copying
+  *x = source.x(); x += inc();
+  *x = source.y(); 
+
+  return *this;
+}
+
+/// Copies another vector
+SHAREDVECTORN& SHAREDVECTORN::operator=(const ORIGIN3& source)
+{
+  // check size
+  #ifndef NEXCEPT
+  if (_len != source.size())
+    throw MissizeException();
+  #endif
+
+  // get data
+  REAL* x = data();
+
+  // don't even worry about BLAS for copying
+  *x = source.x(); x += inc();
+  *x = source.y(); x += inc();
+  *x = source.z();
 
   return *this;
 }
@@ -197,9 +236,9 @@ CONST_SHAREDVECTORN CONST_SHAREDVECTORN::segment(unsigned start, unsigned end) c
 
   CONST_SHAREDVECTORN x;
   x._data = _data;
-  x._start = _start + start;
+  x._start = _start + start*_inc;
   x._len = end - start;
-  x._inc = 1;
+  x._inc = _inc;
   return x;
 }
 

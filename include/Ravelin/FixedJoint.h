@@ -20,15 +20,13 @@ class FIXEDJOINT : public virtual JOINT
     virtual void evaluate_constraints(REAL C[]);
     virtual void set_inboard_pose(boost::shared_ptr<const POSE3> inboard_pose, bool update_joint_pose);
     virtual void set_outboard_pose(boost::shared_ptr<POSE3> outboard_pose, bool update_joint_pose);
+    virtual void calc_constraint_jacobian(bool inboard, MATRIXN& Cq);
+    virtual void calc_constraint_jacobian_dot(bool inboard, MATRIXN& Cq);
 
     /// Fixed joint can never be in a singular configuration
     virtual bool is_singular_config() const { return false; }
 
   private:
-/*
-    virtual void calc_constraint_jacobian(RigidBodyPtr, unsigned index, REAL Cq[7]);
-    virtual void calc_constraint_jacobian_dot(RigidBodyPtr, unsigned index, REAL Cq[7]);
-*/
     void setup_joint();
 
     /// The relative transform from the inboard link to the outboard link

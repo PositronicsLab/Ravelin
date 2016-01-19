@@ -43,26 +43,32 @@ void FIXEDJOINT::setup_joint()
   MATRIX3 Ri = inboard->q;
   MATRIX3 Ro = outboard->q;
 
-  // TODO: fix this
-  // compute the relative transform
-/*
-  MATRIX3 Rrel = MATRIX3::transpose(Ro) * Ri;
-  _T->q = Rrel;
-  _T->x.set_zero();
-  _T->source = ;
+  // get the poses for the two links
+  POSE3 wP1 = *get_inboard_pose();
+  POSE3 wP2 = *get_outboard_pose();
 
-  // compute the vector from the inner link to the outer link in inner link
-  // frame
-  VECTOR3 ox(outboard->x, To);
-//  _ui = inboard->inverse_transform(ox);
-*/
+  // evaluate the relative position
+  VECTOR3 ui0(wP2.x - wP1.x, GLOBAL); 
+
+  // setup ui
+  _ui = wP1.inverse_transform_vector(ui0);
+
+  // get the poses relative to the global frame
+  wP1.update_relative_pose(GLOBAL);
+  wP2.update_relative_pose(GLOBAL);
+
+  // get the transforms and orientations for the two links
+  MATRIX3 R1 = wP1.q;
+  MATRIX3 R2 = wP2.q;
+
+
   // compute the constant orientation term
   _rconst[X] = VECTOR3(Ri.get_row(X), GLOBAL).dot(VECTOR3(Ro.get_row(X), GLOBAL));
   _rconst[Y] = VECTOR3(Ri.get_row(Y), GLOBAL).dot(VECTOR3(Ro.get_row(Y), GLOBAL));
   _rconst[Z] = VECTOR3(Ri.get_row(Z), GLOBAL).dot(VECTOR3(Ro.get_row(Z), GLOBAL));
 }
 
-/// Sets the inboard link
+/// Sets the inboard pose 
 void FIXEDJOINT::set_inboard_pose(shared_ptr<const POSE3> inboard_pose, bool update_joint_pose)
 {
   // call parent method since it does all of the work
@@ -70,7 +76,7 @@ void FIXEDJOINT::set_inboard_pose(shared_ptr<const POSE3> inboard_pose, bool upd
   setup_joint();
 }
 
-/// Sets the outboard link
+/// Sets the outboard pose 
 void FIXEDJOINT::set_outboard_pose(shared_ptr<POSE3> outboard_pose, bool update_joint_pose)
 {
   // call parent method since it does all of the work
@@ -91,28 +97,53 @@ const vector<SVELOCITY>& FIXEDJOINT::get_spatial_axes_dot()
   return _s_dot;
 }
 
-// TODO: fix this
+/// Computes the constraint Jacobian
+void FIXEDJOINT::calc_constraint_jacobian(bool inboard, MATRIXN& Cq)
+{
+  const unsigned SPATIAL_DIM = 6;
+  MATRIXN tmp;
+
+  // set the index
+  Cq.set_identity(SPATIAL_DIM);
+  if (!inboard)
+    Cq.negate();
+
+  // transform the Jacobian, if necessary
+  if (transform_jacobian(Cq, inboard, tmp))
+    Cq = tmp;  
+}
+
+/// Computes the constraint Jacobian
+void FIXEDJOINT::calc_constraint_jacobian_dot(bool inboard, MATRIXN& Cq)
+{
+  // set the index
+  Cq.set_zero();
+}
+
 /// Evaluates the constraint equations
 void FIXEDJOINT::evaluate_constraints(REAL C[])
 {
-/*
   const unsigned X = 0, Y = 1, Z = 2;
+  const shared_ptr<const POSE3> GLOBAL;
 
-  // get the two links
-  shared_ptr<const POSE3> b1 = get_inboard_pose();
-  shared_ptr<const POSE3> b2 = get_outboard_pose();
+  // get ui in the global frame
+  shared_ptr<const POSE3> P1 = get_inboard_pose();
+  VECTOR3 ui0 = P1->transform_vector(_ui);
 
   // get the poses for the two links
-  shared_ptr<const POSE3> P1 = b1->get_pose();
-  shared_ptr<const POSE3> P2 = b2->get_pose();
+  POSE3 wP1 = *P1;
+  POSE3 wP2 = *get_outboard_pose();
 
+  // get the poses relative to the global frame
+  wP1.update_relative_pose(GLOBAL);
+  wP2.update_relative_pose(GLOBAL);
 
   // get the transforms and orientations for the two links
-  MATRIX3 R1 = P1->q;
-  MATRIX3 R2 = P2->q;
+  MATRIX3 R1 = wP1.q;
+  MATRIX3 R2 = wP2.q;
 
   // evaluate the relative position
-  VECTOR3 rpos = P1->transform(_ui) + P1->x - P2->x; 
+  ORIGIN3 rpos = ORIGIN3(ui0) + wP1.x - wP2.x; 
 
   const REAL XX = VECTOR3(R1.get_row(X), GLOBAL).dot(VECTOR3(R2.get_row(X), GLOBAL));
   const REAL YY = VECTOR3(R1.get_row(Y), GLOBAL).dot(VECTOR3(R2.get_row(Y), GLOBAL));
@@ -125,7 +156,6 @@ void FIXEDJOINT::evaluate_constraints(REAL C[])
   C[3] = XX - _rconst[X];
   C[4] = YY - _rconst[Y];
   C[5] = ZZ - _rconst[Z];
-*/
 }
 
 

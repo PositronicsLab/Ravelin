@@ -20,13 +20,13 @@ class PRISMATICJOINT : public virtual JOINT
     virtual void evaluate_constraints(REAL C[]);
     VECTOR3 get_axis() const { return _u; }
     void set_axis(const VECTOR3& axis);
+    virtual void calc_constraint_jacobian(bool inboard, MATRIXN& Cq);
+    virtual void calc_constraint_jacobian_dot(bool inboard, MATRIXN& Cq);
 
     /// Prismatic joint can never be in a singular configuration
     virtual bool is_singular_config() const { return false; }
 
   protected:
-//    virtual void calc_constraint_jacobian(RigidBodyPtr, unsigned index, REAL Cq[7]);
-//    virtual void calc_constraint_jacobian_dot(RigidBodyPtr, unsigned index, REAL Cq[7]);
 
     /// The axis of the joint (inboard pose frame)
     VECTOR3 _u;
@@ -36,6 +36,9 @@ class PRISMATICJOINT : public virtual JOINT
 
     /// Vector attached to outboard pose and initially orthogonal to joint axis; vector specified in outer pose frame
     VECTOR3 _uj;
+
+    /// Vectors orthogonal to the joint axis defined in the inboard pose
+    VECTOR3 _v1i, _v1j;
 
     /// The joint axis on the outboard pose; vector specified in outboard pose frame 
     VECTOR3 _v2;

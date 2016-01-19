@@ -13,6 +13,8 @@
 #include <Ravelin/MissizeException.h>
 #include <Ravelin/Constants.h>
 #include <Ravelin/Opsd.h>
+#include <Ravelin/Origin3d.h>
+#include <Ravelin/Origin2d.h>
 #include <Ravelin/SharedResizable>
 
 namespace Ravelin {

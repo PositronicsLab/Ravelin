@@ -464,11 +464,38 @@ SACCEL POSE3::inverse_transform(const SACCEL& t) const
 /// Transforms the acceleration 
 SACCEL POSE3::transform(boost::shared_ptr<const POSE3> target, const SACCEL& t)
 {
+  // setup the source pose
+  boost::shared_ptr<const POSE3> source = t.pose; 
+
+  // quick check
+  if (source == target)
+    return t;
+
+  // compute the relative transform
+  TRANSFORM3 Tx = calc_transform(source, target);
+
+  // setup r and E
+  VECTOR3 r;
+  MATRIX3 E;
+  get_r_E(Tx, r, E);
+
+  // the spatial transformation is:
+  // | E    0 |
+  // | Erx' E |
+
   // setup the acceleration 
   SACCEL a;
 
-  // do the transform
-  transform_spatial(target, t, a);
+  // get the components of t
+  VECTOR3 tang = t.get_angular();
+  VECTOR3 tlin = t.get_linear();
+
+  // do the calculations
+  VECTOR3 Etop(E * ORIGIN3(tang), target);
+  VECTOR3 cross = VECTOR3::cross(r, tang);
+  a.set_angular(Etop);
+  a.set_linear(VECTOR3(E * ORIGIN3(tlin - cross), target));
+  a.pose = target;
 
   return a;
 }
@@ -513,7 +540,18 @@ std::vector<SACCEL>& POSE3::transform(boost::shared_ptr<const POSE3> target, con
 
   // transform 
   for (unsigned i=0; i< t.size(); i++)
-    transform_spatial(target, t[i], r, E, result[i]);
+  {
+    // get the components of t[i]
+    VECTOR3 ttop = t[i].get_upper();
+    VECTOR3 tbottom = t[i].get_lower();
+
+    // do the calculations
+    VECTOR3 Etop(E * ORIGIN3(ttop), target);
+    VECTOR3 cross = VECTOR3::cross(r, ttop);
+    result[i].set_upper(Etop);
+    result[i].set_lower(VECTOR3(E * ORIGIN3(tbottom - cross), target));
+    result[i].pose = target;
+  }
 
   return result;
 }
@@ -775,7 +813,7 @@ VECTOR3 POSE3::transform_point(boost::shared_ptr<const POSE3> target, const VECT
 SMOMENTUM POSE3::transform(const SMOMENTUM& t) const { return transform(rpose, t); }
 SFORCE POSE3::transform(const SFORCE& w) const { return transform(rpose, w); }
 SVELOCITY POSE3::transform(const SVELOCITY& t) const { return transform(rpose, t); }
-SACCEL POSE3::transform(const SACCEL& t) const { return transform(rpose, t); }
+SACCEL POSE3::transform(const SACCEL& t) const { return transform(rpose, t); } 
 
 /// Transforms a spatial articulated body inertia 
 SPATIAL_AB_INERTIA POSE3::transform(boost::shared_ptr<const POSE3> target, const SPATIAL_AB_INERTIA& m)

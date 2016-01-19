@@ -7,8 +7,12 @@
 #include <cmath>
 #include <Ravelin/Constants.h>
 #include <Ravelin/UndefinedAxisException.h>
+#include <Ravelin/RCArticulatedBodyd.h>
+#include <Ravelin/RigidBodyd.h>
 #include <Ravelin/RevoluteJointd.h>
 
+using boost::const_pointer_cast;
+using boost::dynamic_pointer_cast;
 using boost::shared_ptr;
 using std::vector;
 using namespace Ravelin;

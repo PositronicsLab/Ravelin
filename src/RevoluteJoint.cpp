@@ -23,7 +23,7 @@ REVOLUTEJOINT::REVOLUTEJOINT() : JOINT()
   _s_dot.clear();
 }
 
-/// Sets the axis of rotation for this joint
+/// Sets the axis of rotation for this joint (MUST BE CALLED AFTER set_location(.))
 void REVOLUTEJOINT::set_axis(const VECTOR3& axis) 
 { 
   // normalize the joint axis, in case the caller didn't 
@@ -35,17 +35,21 @@ void REVOLUTEJOINT::set_axis(const VECTOR3& axis)
   // update the spatial axes
   update_spatial_axes(); 
 
+  // make sure that the inboard and outboard link are set 
+  shared_ptr<RIGIDBODY> inboard_link = get_inboard_link();
+  shared_ptr<RIGIDBODY> outboard_link = get_outboard_link();
+  if (!inboard_link || !outboard_link)
+    throw std::runtime_error("Attempt to set joint axis without setting inboard and outboard links first!");
+
   // setup ui and uj
   VECTOR3::determine_orthonormal_basis(_u, _ui, _uj);
- 
-  // make sure that the two poss are set 
-  shared_ptr<const POSE3> b1 = get_inboard_pose();
-  shared_ptr<const POSE3> b2 = get_outboard_pose();
-  if (!b1 || !b2)
-    throw std::runtime_error("Attempt to set joint axis without setting inboard and outboard links first!");
- 
-  // compute joint axis in outer link frame 
-  _v2 = POSE3::transform_vector(b2, naxis); 
+
+  // transform ui and uj to inboard link inertial pose
+  _ui = POSE3::transform_vector(inboard_link->get_pose(), _ui);
+  _uj = POSE3::transform_vector(inboard_link->get_pose(), _uj);
+
+  // transform normalized axis to outboard link inertial pose
+  _v2 = POSE3::transform_vector(outboard_link->get_pose(), naxis); 
 }        
 
 /// Updates the spatial axis for this joint
@@ -116,22 +120,22 @@ void REVOLUTEJOINT::evaluate_constraints(REAL C[])
   shared_ptr<const POSE3> GLOBAL;
   const unsigned X = 0, Y = 1, Z = 2;
 
-  // get the two poses 
-  shared_ptr<const POSE3> b1 = get_inboard_pose();
-  shared_ptr<const POSE3> b2 = get_outboard_pose();
+  // get the inertial pose for the inboard link 
+  shared_ptr<RIGIDBODY> inboard = get_inboard_link(); 
+  shared_ptr<const POSE3> inboard_pose = inboard->get_pose();
 
   // This code was developed using [Shabana, 2003], p. 435-436; variable names
   // have been altered however
 
   // determine v1, v1i, v1j, and v2 (all in global coordinates)
-  VECTOR3 v1i, v1j;
-  VECTOR3 v1 = POSE3::transform_vector(GLOBAL, _u);
+  TRANSFORM3 wPi = POSE3::calc_relative_pose(inboard_pose, GLOBAL);
+  VECTOR3 v1i = wPi.transform_vector(_ui);
+  VECTOR3 v1j = wPi.transform_vector(_uj);
   VECTOR3 v2 = POSE3::transform_vector(GLOBAL, _v2);
-  VECTOR3::determine_orthonormal_basis(v1, v1i, v1j);
 
   // determine the global positions of the attachment points and subtract them
-  VECTOR3 r1 = get_location(false);
-  VECTOR3 r2 = get_location(true);
+  VECTOR3 r1 = POSE3::transform_point(GLOBAL, get_location(false));
+  VECTOR3 r2 = POSE3::transform_point(GLOBAL, get_location(true));
   VECTOR3 r12 = r1 - r2; 
 
   // evaluate the constraint equations
@@ -140,6 +144,112 @@ void REVOLUTEJOINT::evaluate_constraints(REAL C[])
   C[2] = r12[Z];
   C[3] = v1i.dot(v2);
   C[4] = v1j.dot(v2); 
+}
+
+/// Computes the constraint jacobian with respect to a body
+void REVOLUTEJOINT::calc_constraint_jacobian(bool inboard, MATRIXN& Cq)
+{
+  const unsigned X = 0, Y = 1, Z = 2, SPATIAL_DIM = 6;
+  const shared_ptr<const POSE3> GLOBAL;
+  MATRIXN tmp;
+
+  // resize the matrix
+  Cq.resize(num_constraint_eqns(), SPATIAL_DIM);
+
+  // get the two links
+  shared_ptr<const POSE3> Pi = get_inboard_pose();
+  shared_ptr<const POSE3> Po = get_outboard_pose();
+
+  // get the attachment frames in the global frame
+  TRANSFORM3 wPi = POSE3::calc_relative_pose(_F, GLOBAL);
+  TRANSFORM3 wPo = POSE3::calc_relative_pose(_Fb, GLOBAL);
+
+  // get the vector from the inboard and outboard poses to the joint pose 
+  VECTOR3 joint_pos(0.0, 0.0, 0.0, _F);
+  VECTOR3 ui = POSE3::transform_vector(Pi, joint_pos);
+  VECTOR3 uo = POSE3::transform_vector(Po, joint_pos);
+
+  // setup the constraint equations (from Shabana, p. 432)
+  if (inboard)
+  {
+    // get the vector from the inboard pose to the joint pose 
+    ORIGIN3 u = ORIGIN3(POSE3::transform_point(Pi, joint_pos));
+
+    // get the information necessary to compute the constraint equations
+    const QUAT& R = wPi.q;
+    ORIGIN3 Ru = R*u;
+
+    // get positional components of Cq
+    SHAREDMATRIXN Cq_trans = Cq.block(0, 3, 0, 3);
+    Cq_trans.set_identity();
+    SHAREDMATRIXN Cq_rot = Cq.block(0, 3, 3, 6);
+    Cq_rot = MATRIX3::skew_symmetric(-Ru);
+
+    // Jacobian of dot(Ri* _ui, Ro*_v2) w.r.t. inboard is
+    // dot(w x Ri*_ui, Ro*_v2) = (_v2*Ro)' * (-Ri*_ui) x w 
+    // transpose((_v2 * Ro)' * skew(-Ri*_ui)) = skew(Ri * _ui) * Ro * _v2 
+    ORIGIN3 v2w = wPo.q * ORIGIN3(_v2);
+    ORIGIN3 result = MATRIX3::skew_symmetric(R*ORIGIN3(_ui)) * v2w;
+    SHAREDVECTORN second_to_last_row = Cq.row(3);
+    second_to_last_row.segment(0, 3).set_zero();
+    second_to_last_row.segment(3, 6) = result; 
+
+    // Jacobian of dot(Ri* _uj, Ro*_v2) w.r.t. inboard is
+    // dot(w x Ri*_uj, Ro*h2) = (_v2*Ro)' * (-Ri*_uj) x w 
+    // transpose((_v2 * Ro)' * skew(-Ri*_uj)) = skew(Ri * _uj) * Ro * _v2 
+    result = MATRIX3::skew_symmetric(R*ORIGIN3(_uj)) * v2w;
+    SHAREDVECTORN last_row = Cq.row(4);
+    last_row.segment(0, 3).set_zero();
+    last_row.segment(3, 6) = result; 
+  }
+  else
+  {
+    // get the vector from the outboard pose to the joint pose 
+    ORIGIN3 u = ORIGIN3(POSE3::transform_point(Po, joint_pos));
+
+    // get the information necessary to compute the constraint equations
+    const QUAT& Ri = wPi.q;
+    const QUAT& R = wPo.q;
+    ORIGIN3 Ru = R*u;
+
+    // get positional components of Cq
+    SHAREDMATRIXN Cq_trans = Cq.block(0, 3, 0, 3);
+    Cq_trans.set_identity();
+    Cq_trans *= -1.0;
+    SHAREDMATRIXN Cq_rot = Cq.block(0, 3, 3, 6);
+    Cq_rot = MATRIX3::skew_symmetric(Ru);
+
+    // Jacobian of dot(Ri*_ui, Ro*_v2) w.r.t. outboard is
+    // dot(Ri*_ui, Ro*_v2) = (Ri*_ui)' * (-Ro*_v2) x w 
+    // transpose((Ri * _ui)' * skew(-Ro*_v2)) = skew(Ro * _v2) * Ri * _ui 
+    ORIGIN3 v1w = Ri * ORIGIN3(_ui);
+    ORIGIN3 result = MATRIX3::skew_symmetric(R*ORIGIN3(_v2)) * v1w;
+    SHAREDVECTORN second_to_last_row = Cq.row(3);
+    second_to_last_row.segment(0, 3).set_zero();
+    second_to_last_row.segment(3, 6) = result; 
+
+    // Jacobian of dot(Ri*_uj, Ro*_v2) w.r.t. outboard is
+    // dot(Ri*_uj, Ro*_v2) = (Ri*_uj)' * (-Ro*_v2) x w 
+    // transpose((Ri * _uj)' * skew(-Ro*_v2)) = skew(Ro * _v2) * Ri * _uj 
+    v1w = Ri * ORIGIN3(_uj);
+    result = MATRIX3::skew_symmetric(R*ORIGIN3(_v2)) * v1w;
+    SHAREDVECTORN last_row = Cq.row(4);
+    last_row.segment(0, 3).set_zero();
+    last_row.segment(3, 6) = result; 
+  }
+
+  // transform the Jacobian as necessary
+  if (transform_jacobian(Cq, inboard, tmp))
+    Cq = tmp;
+}
+
+/// Computes the time derivative of the constraint jacobian with respect to a body
+/**
+ * TODO: implement this
+ */
+void REVOLUTEJOINT::calc_constraint_jacobian_dot(bool inboard, MATRIXN& Cq)
+{
+  throw std::runtime_error("Implementation required");
 }
 
 
