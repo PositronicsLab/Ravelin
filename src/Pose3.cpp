@@ -270,6 +270,7 @@ POSE3 POSE3::operator*(const POSE3& p) const
   catch (boost::bad_weak_ptr e)
   {
     std::cerr << "Pose3::operator*() - pose allocated on stack!" << std::endl;
+    throw e;
   }
   if (p.rpose != pose)
     throw FrameException();
@@ -289,6 +290,7 @@ VECTOR3 POSE3::inverse_transform_vector(const VECTOR3& v) const
   catch (boost::bad_weak_ptr e)
   {
     std::cerr << "Pose3::inverse_transform() - pose allocated on stack!" << std::endl;
+    throw e;
   }
   #ifndef NEXCEPT
   if (v.pose != rpose)
@@ -309,6 +311,7 @@ VECTOR3 POSE3::inverse_transform_point(const VECTOR3& p) const
   catch (boost::bad_weak_ptr e)
   {
     std::cerr << "Pose3::inverse_transform() - pose allocated on stack!" << std::endl;
+    throw e;
   }
   #ifndef NEXCEPT
   if (p.pose != rpose)
@@ -330,6 +333,7 @@ SFORCE POSE3::inverse_transform(const SFORCE& w) const
   catch (boost::bad_weak_ptr e)
   {
     std::cerr << "Pose3::inverse_transform() - pose allocated on stack!" << std::endl;
+    throw e;
   }
   #ifndef NEXCEPT
   if (w.pose != rpose)
@@ -452,6 +456,7 @@ SACCEL POSE3::inverse_transform(const SACCEL& t) const
   catch (boost::bad_weak_ptr e)
   {
     std::cerr << "Pose3::inverse_transform() - pose allocated on stack!" << std::endl;
+    throw e;
   }
   #ifndef NEXCEPT
   if (t.pose != rpose)
@@ -568,6 +573,7 @@ SVELOCITY POSE3::inverse_transform(const SVELOCITY& t) const
   catch (boost::bad_weak_ptr e)
   {
     std::cerr << "Pose3::inverse_transform() - pose allocated on stack!" << std::endl;
+    throw e;
   }
   #ifndef NEXCEPT
   if (t.pose != rpose)
@@ -638,6 +644,7 @@ SMOMENTUM POSE3::inverse_transform(const SMOMENTUM& t) const
   catch (boost::bad_weak_ptr e)
   {
     std::cerr << "Pose3::inverse_transform() - pose allocated on stack!" << std::endl;
+    throw e;
   }
   #ifndef NEXCEPT
   if (t.pose != rpose)
@@ -707,6 +714,7 @@ SPATIAL_RB_INERTIA POSE3::inverse_transform(const SPATIAL_RB_INERTIA& J) const
   catch (boost::bad_weak_ptr e)
   {
     std::cerr << "Pose3::inverse_transform() - pose allocated on stack!" << std::endl;
+    throw e;
   }
   #ifndef NEXCEPT
   if (J.pose != rpose)
@@ -727,6 +735,7 @@ SPATIAL_AB_INERTIA POSE3::inverse_transform(const SPATIAL_AB_INERTIA& J) const
   catch (boost::bad_weak_ptr e)
   {
     std::cerr << "Pose3::inverse_transform() - pose allocated on stack!" << std::endl;
+    throw e;
   }
   #ifndef NEXCEPT
   if (J.pose != rpose)

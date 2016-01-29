@@ -51,7 +51,7 @@ void FIXEDJOINT::setup_joint()
   VECTOR3 ui0(wP2.x - wP1.x, GLOBAL); 
 
   // setup ui
-  _ui = wP1.inverse_transform_vector(ui0);
+  _ui = get_inboard_pose()->inverse_transform_vector(ui0);
 
   // get the poses relative to the global frame
   wP1.update_relative_pose(GLOBAL);
