@@ -6,6 +6,7 @@
 using namespace Ravelin;
 using std::endl;
 using std::cerr;
+using std::cout;
 
 MatrixNd random_sparse(unsigned SZ1, unsigned SZ2)
 {
