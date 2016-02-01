@@ -53,6 +53,8 @@ class JOINT : public virtual_enable_shared_from_this<JOINT>
     virtual void update_spatial_axes();
     virtual void evaluate_constraints_dot(REAL C[]);
     virtual void determine_q_tare();
+    virtual void set_q_tare(const VECTORN& tare) { _q_tare = tare; }
+    virtual const VECTORN& get_q_tare() const { return _q_tare; }  
 
     /// Gets the inboard link for this joint
     boost::shared_ptr<RIGIDBODY> get_inboard_link() const { return (_inboard_link.expired()) ? boost::shared_ptr<RIGIDBODY>() : boost::shared_ptr<RIGIDBODY>(_inboard_link); }
