@@ -9,6 +9,8 @@
 #endif
 
 class VECTOR3;
+class CONST_SHAREDVECTORN;
+class SHAREDVECTORN;
 
 /// A two-dimensional floating point vector used for computational geometry calculations
 class ORIGIN3
@@ -17,6 +19,8 @@ class ORIGIN3
     ORIGIN3() {}
     ORIGIN3(REAL x, REAL y, REAL z);
     ORIGIN3(const REAL* array);
+    ORIGIN3(const CONST_SHAREDVECTORN& v) { operator=(v); }
+    ORIGIN3(const SHAREDVECTORN& v) { operator=(v); }
     explicit ORIGIN3(const VECTOR3& v) { operator=(v); }
     REAL norm_inf() const { return std::max(std::max(std::fabs(_data[0]), std::fabs(_data[1])), std::fabs(_data[2])); }
     REAL norm() const { return std::sqrt(norm_sq()); }
@@ -33,6 +37,8 @@ class ORIGIN3
     static ORIGIN3 zero() { return ORIGIN3((REAL) 0.0, (REAL) 0.0, (REAL) 0.0); }
     ORIGIN3& operator=(const ORIGIN3& o);
     ORIGIN3& operator=(const VECTOR3& v);
+    ORIGIN3& operator=(const CONST_SHAREDVECTORN& v);
+    ORIGIN3& operator=(const SHAREDVECTORN& v);
     ORIGIN3 operator+(const ORIGIN3& o) const;
     VECTOR3 operator+(const VECTOR3& v) const;
     ORIGIN3 operator-(const ORIGIN3& v) const;

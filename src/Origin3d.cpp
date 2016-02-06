@@ -8,6 +8,7 @@
 #include <Ravelin/Opsd.h>
 #include <Ravelin/Constants.h>
 #include <Ravelin/InvalidIndexException.h>
+#include <Ravelin/SharedVectorNd.h>
 #include <Ravelin/Origin3d.h>
 
 using namespace Ravelin;

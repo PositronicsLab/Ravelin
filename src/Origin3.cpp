@@ -25,6 +25,34 @@ ORIGIN3::ORIGIN3(const REAL* array)
   _data[Z] = array[Z];
 }
 
+/// Copies a matrix to this one
+ORIGIN3& ORIGIN3::operator=(const SHAREDVECTORN& v)
+{
+  #ifndef NEXCEPT
+  if (v.size() != 3)
+    throw MissizeException();
+  #endif
+  const unsigned SZ = 3;
+  CONST_COLUMN_ITERATOR viter = v.begin();
+  for (unsigned i=0; i< SZ; i++)
+    _data[i] = *viter++;
+  return *this;
+}
+
+/// Copies a matrix to this one
+ORIGIN3& ORIGIN3::operator=(const CONST_SHAREDVECTORN& v)
+{
+  #ifndef NEXCEPT
+  if (v.size() != 3)
+    throw MissizeException();
+  #endif
+  const unsigned SZ = 3;
+  CONST_COLUMN_ITERATOR viter = v.begin();
+  for (unsigned i=0; i< SZ; i++)
+    _data[i] = *viter++;
+  return *this;
+}
+
 /// Assigns this origin using the 3D vector
 ORIGIN3& ORIGIN3::operator=(const VECTOR3& v)
 {
