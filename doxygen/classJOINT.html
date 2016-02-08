@@ -66,13 +66,14 @@ Inheritance diagram for JOINT:</div>
  <div class="center">
   <img src="classJOINT.png" usemap="#JOINT_map" alt=""/>
   <map id="JOINT_map" name="JOINT_map">
-<area href="structRavelin_1_1virtual__enable__shared__from__this.html" alt="Ravelin::virtual_enable_shared_from_this&lt; JOINT &gt;" shape="rect" coords="884,112,1316,136"/>
-<area href="structRavelin_1_1virtual__enable__shared__from__this__base.html" alt="Ravelin::virtual_enable_shared_from_this_base" shape="rect" coords="884,56,1316,80"/>
+<area href="structRavelin_1_1virtual__enable__shared__from__this.html" alt="Ravelin::virtual_enable_shared_from_this&lt; JOINT &gt;" shape="rect" coords="1105,112,1537,136"/>
+<area href="structRavelin_1_1virtual__enable__shared__from__this__base.html" alt="Ravelin::virtual_enable_shared_from_this_base" shape="rect" coords="1105,56,1537,80"/>
 <area href="classFIXEDJOINT.html" title="Defines a joint for fixing two bodies together or fixing one body to the ground. " alt="FIXEDJOINT" shape="rect" coords="0,224,432,248"/>
-<area href="classPRISMATICJOINT.html" title="Defines a sliding joint. " alt="PRISMATICJOINT" shape="rect" coords="442,224,874,248"/>
-<area href="classREVOLUTEJOINT.html" title="Defines a rotary joint. " alt="REVOLUTEJOINT" shape="rect" coords="884,224,1316,248"/>
-<area href="classSPHERICALJOINT.html" title="Defines a joint for purely rotational motion. " alt="SPHERICALJOINT" shape="rect" coords="1326,224,1758,248"/>
-<area href="classUNIVERSALJOINT.html" title="Defines a joint for purely rotational motion. " alt="UNIVERSALJOINT" shape="rect" coords="1768,224,2200,248"/>
+<area href="classPLANARJOINT.html" title="Defines a joint that constrains motion to a plane. " alt="PLANARJOINT" shape="rect" coords="442,224,874,248"/>
+<area href="classPRISMATICJOINT.html" title="Defines a sliding joint. " alt="PRISMATICJOINT" shape="rect" coords="884,224,1316,248"/>
+<area href="classREVOLUTEJOINT.html" title="Defines a rotary joint. " alt="REVOLUTEJOINT" shape="rect" coords="1326,224,1758,248"/>
+<area href="classSPHERICALJOINT.html" title="Defines a joint for purely rotational motion. " alt="SPHERICALJOINT" shape="rect" coords="1768,224,2200,248"/>
+<area href="classUNIVERSALJOINT.html" title="Defines a joint for purely rotational motion. " alt="UNIVERSALJOINT" shape="rect" coords="2210,224,2642,248"/>
 </map>
  </div></div>
 <table class="memberdecls">
@@ -155,6 +156,12 @@ virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hr
 virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classJOINT.html#acb06ff374dd989b6713648d37eafd151">determine_q_tare</a> ()</td></tr>
 <tr class="memdesc:acb06ff374dd989b6713648d37eafd151"><td class="mdescLeft">&#160;</td><td class="mdescRight">Determines q tare. <br/></td></tr>
 <tr class="separator:acb06ff374dd989b6713648d37eafd151"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a93a89d3006927256c182e0bfbb74cc16"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a93a89d3006927256c182e0bfbb74cc16"></a>
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>set_q_tare</b> (const <a class="el" href="classVECTORN.html">VECTORN</a> &amp;tare)</td></tr>
+<tr class="separator:a93a89d3006927256c182e0bfbb74cc16"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a32d86ec550307b6557a3450bb703f4aa"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a32d86ec550307b6557a3450bb703f4aa"></a>
+virtual const <a class="el" href="classVECTORN.html">VECTORN</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>get_q_tare</b> () const </td></tr>
+<tr class="separator:a32d86ec550307b6557a3450bb703f4aa"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a879cb99cc7e8e950f3d478b34bfa4c69"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a879cb99cc7e8e950f3d478b34bfa4c69"></a>
 boost::shared_ptr&lt; <a class="el" href="classRIGIDBODY.html">RIGIDBODY</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classJOINT.html#a879cb99cc7e8e950f3d478b34bfa4c69">get_inboard_link</a> () const </td></tr>
 <tr class="memdesc:a879cb99cc7e8e950f3d478b34bfa4c69"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the inboard link for this joint. <br/></td></tr>
@@ -389,7 +396,7 @@ unsigned&#160;</td><td class="memItemRight" valign="bottom"><b>_constraint_idx</
   </dd>
 </dl>
 
-<p>Implemented in <a class="el" href="classSPHERICALJOINT.html#a5136a161873b2f45137dfddf2b2a1a10">SPHERICALJOINT</a>, <a class="el" href="classUNIVERSALJOINT.html#a1883248d77196cde065e73b224f5e41f">UNIVERSALJOINT</a>, <a class="el" href="classFIXEDJOINT.html#a42f9ba5f6395072e91363fda4d38d2bb">FIXEDJOINT</a>, <a class="el" href="classPRISMATICJOINT.html#abc27ea2900587391f8bf4687f5eddec1">PRISMATICJOINT</a>, and <a class="el" href="classREVOLUTEJOINT.html#a8b4cf4d5cdabd505c7aab0cc774d4806">REVOLUTEJOINT</a>.</p>
+<p>Implemented in <a class="el" href="classSPHERICALJOINT.html#a5136a161873b2f45137dfddf2b2a1a10">SPHERICALJOINT</a>, <a class="el" href="classUNIVERSALJOINT.html#a1883248d77196cde065e73b224f5e41f">UNIVERSALJOINT</a>, <a class="el" href="classFIXEDJOINT.html#a42f9ba5f6395072e91363fda4d38d2bb">FIXEDJOINT</a>, <a class="el" href="classPRISMATICJOINT.html#abc27ea2900587391f8bf4687f5eddec1">PRISMATICJOINT</a>, <a class="el" href="classREVOLUTEJOINT.html#a8b4cf4d5cdabd505c7aab0cc774d4806">REVOLUTEJOINT</a>, and <a class="el" href="classPLANARJOINT.html#a758f4d276fb7d127b20be329ae8de4c3">PLANARJOINT</a>.</p>
 
 </div>
 </div>
@@ -434,7 +441,7 @@ unsigned&#160;</td><td class="memItemRight" valign="bottom"><b>_constraint_idx</
   </dd>
 </dl>
 
-<p>Implemented in <a class="el" href="classSPHERICALJOINT.html#a679123189a40847d271e65ee287c5849">SPHERICALJOINT</a>, <a class="el" href="classUNIVERSALJOINT.html#ae973679d70c1330f545f3a48ee58918c">UNIVERSALJOINT</a>, <a class="el" href="classFIXEDJOINT.html#a2f52f603e81d0c33a11ac46bc7f833b9">FIXEDJOINT</a>, <a class="el" href="classPRISMATICJOINT.html#a1f0265bf01b86df3aed299423e4af9b5">PRISMATICJOINT</a>, and <a class="el" href="classREVOLUTEJOINT.html#aa77962e6194aa6ca4c2d7465512e370f">REVOLUTEJOINT</a>.</p>
+<p>Implemented in <a class="el" href="classSPHERICALJOINT.html#a679123189a40847d271e65ee287c5849">SPHERICALJOINT</a>, <a class="el" href="classUNIVERSALJOINT.html#ae973679d70c1330f545f3a48ee58918c">UNIVERSALJOINT</a>, <a class="el" href="classFIXEDJOINT.html#a2f52f603e81d0c33a11ac46bc7f833b9">FIXEDJOINT</a>, <a class="el" href="classPRISMATICJOINT.html#a1f0265bf01b86df3aed299423e4af9b5">PRISMATICJOINT</a>, <a class="el" href="classREVOLUTEJOINT.html#aa77962e6194aa6ca4c2d7465512e370f">REVOLUTEJOINT</a>, and <a class="el" href="classPLANARJOINT.html#a5cd969ad9b47ba09106e965b29a3bf4e">PLANARJOINT</a>.</p>
 
 </div>
 </div>
@@ -470,7 +477,7 @@ unsigned&#160;</td><td class="memItemRight" valign="bottom"><b>_constraint_idx</
 </dl>
 <dl class="section note"><dt>Note</dt><dd>only used by maximal-coordinate articulated bodies </dd></dl>
 
-<p>Implemented in <a class="el" href="classUNIVERSALJOINT.html#a55ff31cec2ae73efc427df6910536da9">UNIVERSALJOINT</a>, <a class="el" href="classSPHERICALJOINT.html#a3093eff9f233c0c2893a756e5d14b52e">SPHERICALJOINT</a>, <a class="el" href="classFIXEDJOINT.html#ae8f337a8c560fcac34dcd4d37f3dfaa0">FIXEDJOINT</a>, <a class="el" href="classPRISMATICJOINT.html#ada5da106e80362b3ec1348d7f8be2ea0">PRISMATICJOINT</a>, and <a class="el" href="classREVOLUTEJOINT.html#a9657df8651eb4d74558cd83ce80e159f">REVOLUTEJOINT</a>.</p>
+<p>Implemented in <a class="el" href="classUNIVERSALJOINT.html#a55ff31cec2ae73efc427df6910536da9">UNIVERSALJOINT</a>, <a class="el" href="classSPHERICALJOINT.html#a3093eff9f233c0c2893a756e5d14b52e">SPHERICALJOINT</a>, <a class="el" href="classFIXEDJOINT.html#ae8f337a8c560fcac34dcd4d37f3dfaa0">FIXEDJOINT</a>, <a class="el" href="classPRISMATICJOINT.html#ada5da106e80362b3ec1348d7f8be2ea0">PRISMATICJOINT</a>, <a class="el" href="classREVOLUTEJOINT.html#a9657df8651eb4d74558cd83ce80e159f">REVOLUTEJOINT</a>, and <a class="el" href="classPLANARJOINT.html#a4bc268dfbd2b49856abe26a56bd95c1c">PLANARJOINT</a>.</p>
 
 <p>Referenced by <a class="el" href="classJOINT.html#a84e59c6d5ee131c59318e7087f066a71">evaluate_constraints_dot()</a>.</p>
 
@@ -526,7 +533,7 @@ unsigned&#160;</td><td class="memItemRight" valign="bottom"><b>_constraint_idx</
 <p>Abstract method to get the local transform for this joint. </p>
 <p>The local transform for the joint transforms the coordinate frame attached to the joint center and aligned with the inner link frame. </p>
 
-<p>Implemented in <a class="el" href="classUNIVERSALJOINT.html#af8913ffafc5e393396297721822e4bde">UNIVERSALJOINT</a>, <a class="el" href="classSPHERICALJOINT.html#a644aa1494df47f89da65de596349584d">SPHERICALJOINT</a>, <a class="el" href="classFIXEDJOINT.html#a813b506346a7279bc60d53b402337e9a">FIXEDJOINT</a>, <a class="el" href="classPRISMATICJOINT.html#a99db8fc04594a4cc7d7eec9b23d0be9c">PRISMATICJOINT</a>, and <a class="el" href="classREVOLUTEJOINT.html#a711bbfbced430ad621b1b8d522ebab92">REVOLUTEJOINT</a>.</p>
+<p>Implemented in <a class="el" href="classUNIVERSALJOINT.html#af8913ffafc5e393396297721822e4bde">UNIVERSALJOINT</a>, <a class="el" href="classSPHERICALJOINT.html#a644aa1494df47f89da65de596349584d">SPHERICALJOINT</a>, <a class="el" href="classFIXEDJOINT.html#a813b506346a7279bc60d53b402337e9a">FIXEDJOINT</a>, <a class="el" href="classPLANARJOINT.html#ab2a03b61de44f2a8de0cb442b485ad88">PLANARJOINT</a>, <a class="el" href="classPRISMATICJOINT.html#a99db8fc04594a4cc7d7eec9b23d0be9c">PRISMATICJOINT</a>, and <a class="el" href="classREVOLUTEJOINT.html#a711bbfbced430ad621b1b8d522ebab92">REVOLUTEJOINT</a>.</p>
 
 </div>
 </div>
@@ -614,7 +621,7 @@ unsigned&#160;</td><td class="memItemRight" valign="bottom"><b>_constraint_idx</
 <p>Abstract method to get the spatial axes derivatives for this joint. </p>
 <p>Only applicable for reduced-coordinate articulated bodies </p>
 
-<p>Implemented in <a class="el" href="classUNIVERSALJOINT.html#a1a0bc353228e7bd1f3f964ecdbfb306e">UNIVERSALJOINT</a>, <a class="el" href="classSPHERICALJOINT.html#a2187f52effad56ef425feb397fc5e7a6">SPHERICALJOINT</a>, <a class="el" href="classFIXEDJOINT.html#a5306712b269c0893d17e87ba76433434">FIXEDJOINT</a>, <a class="el" href="classPRISMATICJOINT.html#a6b0e4e83a32944e81c87209c80519c01">PRISMATICJOINT</a>, and <a class="el" href="classREVOLUTEJOINT.html#a704dc87004d959cddb20383fbd395fe6">REVOLUTEJOINT</a>.</p>
+<p>Implemented in <a class="el" href="classPLANARJOINT.html#a1b1257c341b9643f2e295c9154aa1eff">PLANARJOINT</a>, <a class="el" href="classUNIVERSALJOINT.html#a1a0bc353228e7bd1f3f964ecdbfb306e">UNIVERSALJOINT</a>, <a class="el" href="classSPHERICALJOINT.html#a2187f52effad56ef425feb397fc5e7a6">SPHERICALJOINT</a>, <a class="el" href="classFIXEDJOINT.html#a5306712b269c0893d17e87ba76433434">FIXEDJOINT</a>, <a class="el" href="classPRISMATICJOINT.html#a6b0e4e83a32944e81c87209c80519c01">PRISMATICJOINT</a>, and <a class="el" href="classREVOLUTEJOINT.html#a704dc87004d959cddb20383fbd395fe6">REVOLUTEJOINT</a>.</p>
 
 </div>
 </div>
@@ -646,7 +653,7 @@ unsigned&#160;</td><td class="memItemRight" valign="bottom"><b>_constraint_idx</
 
 <p>References <a class="el" href="classJOINT.html#ac2b4ab9b8ea14fc7be90567caa42e955">_q_tare</a>, <a class="el" href="classJOINT.html#a0dc227254024a8c0d26f5a76a3c01657">_s</a>, <a class="el" href="classJOINT.html#aa724dbdb3341ea93d63c18c39d9b768f">force</a>, <a class="el" href="classJOINT.html#af177e278d5d0b103a080857f2cfe3d3e">lambda</a>, <a class="el" href="classJOINT.html#a8678e5894723c6776db04a1d69ba34ab">num_constraint_eqns()</a>, <a class="el" href="classJOINT.html#aaa9bd1bd83ef9c447f9b832c3ced1ebd">num_dof()</a>, <a class="el" href="classJOINT.html#a9cde2c6c57b6fe5305120ca8e3ea4512">q</a>, <a class="el" href="classJOINT.html#a49293250960657af50e72dc37aec2241">qd</a>, <a class="el" href="classJOINT.html#a562121d3d4fc2c2f21af6ffd332dafd9">qdd</a>, and <a class="el" href="classVECTORN.html#aac600db8a3bedf949ab39b17e4223af3">VECTORN::set_zero()</a>.</p>
 
-<p>Referenced by <a class="el" href="classFIXEDJOINT.html#ad803e07b662ef533e00e7ccd292e0bc5">FIXEDJOINT::FIXEDJOINT()</a>, <a class="el" href="classREVOLUTEJOINT.html#aa4fa63675a98e86567f695b73690d1e3">REVOLUTEJOINT::REVOLUTEJOINT()</a>, and <a class="el" href="classSPHERICALJOINT.html#a7010c9b2e77c4b347624a925a5d74961">SPHERICALJOINT::SPHERICALJOINT()</a>.</p>
+<p>Referenced by <a class="el" href="classFIXEDJOINT.html#ad803e07b662ef533e00e7ccd292e0bc5">FIXEDJOINT::FIXEDJOINT()</a>, <a class="el" href="classPLANARJOINT.html#ab6f2bc72f00e8f1e3701ab255c2d65f1">PLANARJOINT::PLANARJOINT()</a>, <a class="el" href="classREVOLUTEJOINT.html#aa4fa63675a98e86567f695b73690d1e3">REVOLUTEJOINT::REVOLUTEJOINT()</a>, and <a class="el" href="classSPHERICALJOINT.html#a7010c9b2e77c4b347624a925a5d74961">SPHERICALJOINT::SPHERICALJOINT()</a>.</p>
 
 </div>
 </div>
@@ -674,7 +681,7 @@ unsigned&#160;</td><td class="memItemRight" valign="bottom"><b>_constraint_idx</
 <p>Gets whether this joint is in a singular configuration. </p>
 <dl class="section note"><dt>Note</dt><dd>only used by reduced-coordinate articulated bodies </dd></dl>
 
-<p>Implemented in <a class="el" href="classSPHERICALJOINT.html#a80a1128aaf3b6aef7103f7ee7e97f22a">SPHERICALJOINT</a>, <a class="el" href="classUNIVERSALJOINT.html#a898c8a03c14647a67db022711f0a0bc4">UNIVERSALJOINT</a>, <a class="el" href="classFIXEDJOINT.html#a0d691d23985a738186db0c631ef79055">FIXEDJOINT</a>, <a class="el" href="classPRISMATICJOINT.html#a8e5a6b10ea3cc924ead2c4f322c7dc51">PRISMATICJOINT</a>, and <a class="el" href="classREVOLUTEJOINT.html#a5c3bedf4005db303a4cf94cc73575437">REVOLUTEJOINT</a>.</p>
+<p>Implemented in <a class="el" href="classSPHERICALJOINT.html#a80a1128aaf3b6aef7103f7ee7e97f22a">SPHERICALJOINT</a>, <a class="el" href="classUNIVERSALJOINT.html#a898c8a03c14647a67db022711f0a0bc4">UNIVERSALJOINT</a>, <a class="el" href="classFIXEDJOINT.html#a0d691d23985a738186db0c631ef79055">FIXEDJOINT</a>, <a class="el" href="classPRISMATICJOINT.html#a8e5a6b10ea3cc924ead2c4f322c7dc51">PRISMATICJOINT</a>, <a class="el" href="classREVOLUTEJOINT.html#a5c3bedf4005db303a4cf94cc73575437">REVOLUTEJOINT</a>, and <a class="el" href="classPLANARJOINT.html#a58917bf63b300ad620ba5d5880ba6b4d">PLANARJOINT</a>.</p>
 
 </div>
 </div>
@@ -808,7 +815,7 @@ unsigned&#160;</td><td class="memItemRight" valign="bottom"><b>_constraint_idx</
 
 <p>References <a class="el" href="classARTICULATED__BODY.html#a7fe91d9af86af67de389b0c56b3b2025">ARTICULATED_BODY::calc_jacobian()</a>, <a class="el" href="classJOINT.html#a879cb99cc7e8e950f3d478b34bfa4c69">get_inboard_link()</a>, and <a class="el" href="classJOINT.html#ab7070b18c221b43858b22203bdf95249">get_outboard_link()</a>.</p>
 
-<p>Referenced by <a class="el" href="classFIXEDJOINT.html#a42f9ba5f6395072e91363fda4d38d2bb">FIXEDJOINT::calc_constraint_jacobian()</a>, <a class="el" href="classREVOLUTEJOINT.html#a8b4cf4d5cdabd505c7aab0cc774d4806">REVOLUTEJOINT::calc_constraint_jacobian()</a>, and <a class="el" href="classSPHERICALJOINT.html#a5136a161873b2f45137dfddf2b2a1a10">SPHERICALJOINT::calc_constraint_jacobian()</a>.</p>
+<p>Referenced by <a class="el" href="classPLANARJOINT.html#a758f4d276fb7d127b20be329ae8de4c3">PLANARJOINT::calc_constraint_jacobian()</a>, <a class="el" href="classFIXEDJOINT.html#a42f9ba5f6395072e91363fda4d38d2bb">FIXEDJOINT::calc_constraint_jacobian()</a>, <a class="el" href="classREVOLUTEJOINT.html#a8b4cf4d5cdabd505c7aab0cc774d4806">REVOLUTEJOINT::calc_constraint_jacobian()</a>, and <a class="el" href="classSPHERICALJOINT.html#a5136a161873b2f45137dfddf2b2a1a10">SPHERICALJOINT::calc_constraint_jacobian()</a>.</p>
 
 </div>
 </div>
@@ -836,11 +843,11 @@ unsigned&#160;</td><td class="memItemRight" valign="bottom"><b>_constraint_idx</
 <p>Abstract method to update the local spatial axes. </p>
 <p>Only applicable for reduced-coordinate articulated bodies </p>
 
-<p>Reimplemented in <a class="el" href="classUNIVERSALJOINT.html#a9ffc4ac94bf59fec92f0be18ddb5c0e7">UNIVERSALJOINT</a>, <a class="el" href="classSPHERICALJOINT.html#a07ab23dc0aadeb44fce16a269ed4d142">SPHERICALJOINT</a>, <a class="el" href="classFIXEDJOINT.html#a37e138cd531750c8372283ef6c79305b">FIXEDJOINT</a>, <a class="el" href="classPRISMATICJOINT.html#acec650c0c1f63f47519c4fb6f3415402">PRISMATICJOINT</a>, and <a class="el" href="classREVOLUTEJOINT.html#a1981a3f75b95ea1bf7174e740b8d45a9">REVOLUTEJOINT</a>.</p>
+<p>Reimplemented in <a class="el" href="classUNIVERSALJOINT.html#a9ffc4ac94bf59fec92f0be18ddb5c0e7">UNIVERSALJOINT</a>, <a class="el" href="classSPHERICALJOINT.html#a07ab23dc0aadeb44fce16a269ed4d142">SPHERICALJOINT</a>, <a class="el" href="classFIXEDJOINT.html#a37e138cd531750c8372283ef6c79305b">FIXEDJOINT</a>, <a class="el" href="classPLANARJOINT.html#a72a37b0a96825de2da7c642f9f957a03">PLANARJOINT</a>, <a class="el" href="classPRISMATICJOINT.html#acec650c0c1f63f47519c4fb6f3415402">PRISMATICJOINT</a>, and <a class="el" href="classREVOLUTEJOINT.html#a1981a3f75b95ea1bf7174e740b8d45a9">REVOLUTEJOINT</a>.</p>
 
 <p>References <a class="el" href="classJOINT.html#a0dc227254024a8c0d26f5a76a3c01657">_s</a>, <a class="el" href="classJOINT.html#a1ad149793ba4677b36b9db4f139fdfa4">get_pose()</a>, and <a class="el" href="classJOINT.html#aaa9bd1bd83ef9c447f9b832c3ced1ebd">num_dof()</a>.</p>
 
-<p>Referenced by <a class="el" href="classFIXEDJOINT.html#a37e138cd531750c8372283ef6c79305b">FIXEDJOINT::update_spatial_axes()</a>, <a class="el" href="classREVOLUTEJOINT.html#a1981a3f75b95ea1bf7174e740b8d45a9">REVOLUTEJOINT::update_spatial_axes()</a>, and <a class="el" href="classSPHERICALJOINT.html#a07ab23dc0aadeb44fce16a269ed4d142">SPHERICALJOINT::update_spatial_axes()</a>.</p>
+<p>Referenced by <a class="el" href="classFIXEDJOINT.html#a37e138cd531750c8372283ef6c79305b">FIXEDJOINT::update_spatial_axes()</a>, <a class="el" href="classPLANARJOINT.html#a72a37b0a96825de2da7c642f9f957a03">PLANARJOINT::update_spatial_axes()</a>, <a class="el" href="classREVOLUTEJOINT.html#a1981a3f75b95ea1bf7174e740b8d45a9">REVOLUTEJOINT::update_spatial_axes()</a>, and <a class="el" href="classSPHERICALJOINT.html#a07ab23dc0aadeb44fce16a269ed4d142">SPHERICALJOINT::update_spatial_axes()</a>.</p>
 
 </div>
 </div>
@@ -866,7 +873,7 @@ unsigned&#160;</td><td class="memItemRight" valign="bottom"><b>_constraint_idx</
 <p>The stored "tare" value for the initial joint configuration. </p>
 <p>The tare value is the value that the joint assumes in the an articulated body's initial configuration. This value is necessary so that- when the body's joints are set to the zero vector- the body re-enters the initial configuration. </p>
 
-<p>Referenced by <a class="el" href="classJOINT.html#acb06ff374dd989b6713648d37eafd151">determine_q_tare()</a>, <a class="el" href="classSPHERICALJOINT.html#a84378350247dcb7efbe98ece342be1c0">SPHERICALJOINT::get_axis()</a>, <a class="el" href="classREVOLUTEJOINT.html#a711bbfbced430ad621b1b8d522ebab92">REVOLUTEJOINT::get_induced_pose()</a>, <a class="el" href="classSPHERICALJOINT.html#ab71f1b29ec0b01cd0f01f5a9c229b0cc">SPHERICALJOINT::get_rotation()</a>, <a class="el" href="classSPHERICALJOINT.html#adecc4317dba089232191fd0794e1210b">SPHERICALJOINT::get_spatial_axes()</a>, <a class="el" href="classSPHERICALJOINT.html#a2187f52effad56ef425feb397fc5e7a6">SPHERICALJOINT::get_spatial_axes_dot()</a>, <a class="el" href="classJOINT.html#ac28e5ab7fac7b8e45bb8818fa2fe090f">init_data()</a>, and <a class="el" href="classJOINT.html#a692806618624db5e0de6800f97d0ad51">JOINT()</a>.</p>
+<p>Referenced by <a class="el" href="classJOINT.html#acb06ff374dd989b6713648d37eafd151">determine_q_tare()</a>, <a class="el" href="classSPHERICALJOINT.html#a84378350247dcb7efbe98ece342be1c0">SPHERICALJOINT::get_axis()</a>, <a class="el" href="classPLANARJOINT.html#ab2a03b61de44f2a8de0cb442b485ad88">PLANARJOINT::get_induced_pose()</a>, <a class="el" href="classREVOLUTEJOINT.html#a711bbfbced430ad621b1b8d522ebab92">REVOLUTEJOINT::get_induced_pose()</a>, <a class="el" href="classSPHERICALJOINT.html#ab71f1b29ec0b01cd0f01f5a9c229b0cc">SPHERICALJOINT::get_rotation()</a>, <a class="el" href="classSPHERICALJOINT.html#adecc4317dba089232191fd0794e1210b">SPHERICALJOINT::get_spatial_axes()</a>, <a class="el" href="classSPHERICALJOINT.html#a2187f52effad56ef425feb397fc5e7a6">SPHERICALJOINT::get_spatial_axes_dot()</a>, <a class="el" href="classJOINT.html#ac28e5ab7fac7b8e45bb8818fa2fe090f">init_data()</a>, and <a class="el" href="classJOINT.html#a692806618624db5e0de6800f97d0ad51">JOINT()</a>.</p>
 
 </div>
 </div>
@@ -891,7 +898,7 @@ unsigned&#160;</td><td class="memItemRight" valign="bottom"><b>_constraint_idx</
 <p>The spatial axes (in joint frame) for the joint. </p>
 <p>Spatial axes are used in the dynamics equations for reduced-coordinate articulated bodies only. </p>
 
-<p>Referenced by <a class="el" href="classSPHERICALJOINT.html#adecc4317dba089232191fd0794e1210b">SPHERICALJOINT::get_spatial_axes()</a>, <a class="el" href="classJOINT.html#a4e1e56e4993fbed1b1d2f9092bb12862">get_spatial_axes()</a>, <a class="el" href="classJOINT.html#ac28e5ab7fac7b8e45bb8818fa2fe090f">init_data()</a>, <a class="el" href="classREVOLUTEJOINT.html#a1981a3f75b95ea1bf7174e740b8d45a9">REVOLUTEJOINT::update_spatial_axes()</a>, <a class="el" href="classSPHERICALJOINT.html#a07ab23dc0aadeb44fce16a269ed4d142">SPHERICALJOINT::update_spatial_axes()</a>, and <a class="el" href="classJOINT.html#a8d2bb2db8cb6450e42c4feb46c186193">update_spatial_axes()</a>.</p>
+<p>Referenced by <a class="el" href="classSPHERICALJOINT.html#adecc4317dba089232191fd0794e1210b">SPHERICALJOINT::get_spatial_axes()</a>, <a class="el" href="classJOINT.html#a4e1e56e4993fbed1b1d2f9092bb12862">get_spatial_axes()</a>, <a class="el" href="classJOINT.html#ac28e5ab7fac7b8e45bb8818fa2fe090f">init_data()</a>, <a class="el" href="classREVOLUTEJOINT.html#a1981a3f75b95ea1bf7174e740b8d45a9">REVOLUTEJOINT::update_spatial_axes()</a>, <a class="el" href="classPLANARJOINT.html#a72a37b0a96825de2da7c642f9f957a03">PLANARJOINT::update_spatial_axes()</a>, <a class="el" href="classSPHERICALJOINT.html#a07ab23dc0aadeb44fce16a269ed4d142">SPHERICALJOINT::update_spatial_axes()</a>, and <a class="el" href="classJOINT.html#a8d2bb2db8cb6450e42c4feb46c186193">update_spatial_axes()</a>.</p>
 
 </div>
 </div>
@@ -902,7 +909,7 @@ unsigned&#160;</td><td class="memItemRight" valign="bottom"><b>_constraint_idx</
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Oct 5 2015 22:38:31 for Ravelin by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Sun Feb 7 2016 19:49:15 for Ravelin by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

@@ -98,9 +98,6 @@ void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 <tr class="memitem:a8b1cc0bda49f547ae615851208ea60f2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRIGIDBODY.html#a8b1cc0bda49f547ae615851208ea60f2">set_pose</a> (const <a class="el" href="classPOSE3.html">POSE3</a> &amp;pose)</td></tr>
 <tr class="memdesc:a8b1cc0bda49f547ae615851208ea60f2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the current 3D pose for this rigid body.  <a href="#a8b1cc0bda49f547ae615851208ea60f2">More...</a><br/></td></tr>
 <tr class="separator:a8b1cc0bda49f547ae615851208ea60f2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac9a754b8dbc7091f6ec158728efdcd8c"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRIGIDBODY.html#ac9a754b8dbc7091f6ec158728efdcd8c">set_inertial_pose</a> (const <a class="el" href="classPOSE3.html">POSE3</a> &amp;pose)</td></tr>
-<tr class="memdesc:ac9a754b8dbc7091f6ec158728efdcd8c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the inertial pose for this rigid body.  <a href="#ac9a754b8dbc7091f6ec158728efdcd8c">More...</a><br/></td></tr>
-<tr class="separator:ac9a754b8dbc7091f6ec158728efdcd8c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa10ff77ed8ed633f60e1d3944a7b483c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRIGIDBODY.html#aa10ff77ed8ed633f60e1d3944a7b483c">apply_impulse</a> (const <a class="el" href="classSMOMENTUM.html">SMOMENTUM</a> &amp;w)</td></tr>
 <tr class="memdesc:aa10ff77ed8ed633f60e1d3944a7b483c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Applies a impulse to this link.  <a href="#aa10ff77ed8ed633f60e1d3944a7b483c">More...</a><br/></td></tr>
 <tr class="separator:aa10ff77ed8ed633f60e1d3944a7b483c"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -124,9 +121,6 @@ const <a class="el" href="classSPATIAL__RB__INERTIA.html">SPATIAL_RB_INERTIA</a>
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRIGIDBODY.html#ad4ec073e0b0c83e87249c9c19494878b">set_inertia</a> (const <a class="el" href="classSPATIAL__RB__INERTIA.html">SPATIAL_RB_INERTIA</a> &amp;J)</td></tr>
 <tr class="memdesc:ad4ec073e0b0c83e87249c9c19494878b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the rigid body inertia for this body. <br/></td></tr>
 <tr class="separator:ad4ec073e0b0c83e87249c9c19494878b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afc572a05883f0dd9e6cea8a0c24171d7"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="afc572a05883f0dd9e6cea8a0c24171d7"></a>
-boost::shared_ptr&lt; const <a class="el" href="classPOSE3.html">POSE3</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>get_inertial_pose</b> () const </td></tr>
-<tr class="separator:afc572a05883f0dd9e6cea8a0c24171d7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7f0b04e375adc6a539cb448a3ccbaba6"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a7f0b04e375adc6a539cb448a3ccbaba6"></a>
 bool&#160;</td><td class="memItemRight" valign="bottom"><b>is_child_link</b> (boost::shared_ptr&lt; const <a class="el" href="classRIGIDBODY.html">RIGIDBODY</a> &gt; query) const </td></tr>
 <tr class="separator:a7f0b04e375adc6a539cb448a3ccbaba6"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -167,14 +161,22 @@ virtual <a class="el" href="classSHAREDMATRIXN.html">SHAREDMATRIXN</a> &amp;&#16
 <tr class="memitem:a75d4a628e8a25f7e2f9a9ad2d66089c2"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a75d4a628e8a25f7e2f9a9ad2d66089c2"></a>
 virtual <a class="el" href="classMATRIXN.html">MATRIXN</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>get_generalized_inertia</b> (<a class="el" href="classMATRIXN.html">MATRIXN</a> &amp;M)</td></tr>
 <tr class="separator:a75d4a628e8a25f7e2f9a9ad2d66089c2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a738cbae23b4bfdf468fd9943e1629e84"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a738cbae23b4bfdf468fd9943e1629e84"></a>
-virtual <a class="el" href="classSHAREDVECTORN.html">SHAREDVECTORN</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRIGIDBODY.html#a738cbae23b4bfdf468fd9943e1629e84">get_generalized_coordinates</a> (DYNAMIC_BODY::GeneralizedCoordinateType gctype, <a class="el" href="classSHAREDVECTORN.html">SHAREDVECTORN</a> &amp;<a class="el" href="classDYNAMIC__BODY.html#a105aefb18314e3eeaa3f674f218ca7cc">gc</a>)</td></tr>
-<tr class="memdesc:a738cbae23b4bfdf468fd9943e1629e84"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the generalized position of this rigid body. <br/></td></tr>
-<tr class="separator:a738cbae23b4bfdf468fd9943e1629e84"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0a4acc797f305ad9512d15a8b4664540"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a0a4acc797f305ad9512d15a8b4664540"></a>
+virtual <a class="el" href="classSHAREDVECTORN.html">SHAREDVECTORN</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRIGIDBODY.html#a0a4acc797f305ad9512d15a8b4664540">get_generalized_coordinates_euler</a> (<a class="el" href="classSHAREDVECTORN.html">SHAREDVECTORN</a> &amp;<a class="el" href="classDYNAMIC__BODY.html#a105aefb18314e3eeaa3f674f218ca7cc">gc</a>)</td></tr>
+<tr class="memdesc:a0a4acc797f305ad9512d15a8b4664540"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the generalized position of this rigid body. <br/></td></tr>
+<tr class="separator:a0a4acc797f305ad9512d15a8b4664540"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acfd53a36ea59b1248407a1115941adc8"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="acfd53a36ea59b1248407a1115941adc8"></a>
+virtual <a class="el" href="classVECTORN.html">VECTORN</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRIGIDBODY.html#acfd53a36ea59b1248407a1115941adc8">get_generalized_coordinates_euler</a> (<a class="el" href="classVECTORN.html">VECTORN</a> &amp;<a class="el" href="classDYNAMIC__BODY.html#a105aefb18314e3eeaa3f674f218ca7cc">gc</a>)</td></tr>
+<tr class="memdesc:acfd53a36ea59b1248407a1115941adc8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the generalized coordinates of this body (using Euler parameters for any rigid body orientations, if relevant) <br/></td></tr>
+<tr class="separator:acfd53a36ea59b1248407a1115941adc8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6f5bdbc7816112670db474911da0d202"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a6f5bdbc7816112670db474911da0d202"></a>
 virtual <a class="el" href="classSHAREDVECTORN.html">SHAREDVECTORN</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRIGIDBODY.html#a6f5bdbc7816112670db474911da0d202">get_generalized_velocity</a> (DYNAMIC_BODY::GeneralizedCoordinateType gctype, <a class="el" href="classSHAREDVECTORN.html">SHAREDVECTORN</a> &amp;gv)</td></tr>
 <tr class="memdesc:a6f5bdbc7816112670db474911da0d202"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the generalized velocity of this rigid body. <br/></td></tr>
 <tr class="separator:a6f5bdbc7816112670db474911da0d202"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a24f970ff17120546ff59365d2e275c25"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a24f970ff17120546ff59365d2e275c25"></a>
+virtual <a class="el" href="classVECTORN.html">VECTORN</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRIGIDBODY.html#a24f970ff17120546ff59365d2e275c25">get_generalized_velocity</a> (DYNAMIC_BODY::GeneralizedCoordinateType gctype, <a class="el" href="classVECTORN.html">VECTORN</a> &amp;gv)</td></tr>
+<tr class="memdesc:a24f970ff17120546ff59365d2e275c25"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the generalized velocity of this body. <br/></td></tr>
+<tr class="separator:a24f970ff17120546ff59365d2e275c25"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a57f3d4a9ceafd86306d246d5e871124b"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a57f3d4a9ceafd86306d246d5e871124b"></a>
 virtual <a class="el" href="classSHAREDVECTORN.html">SHAREDVECTORN</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRIGIDBODY.html#a57f3d4a9ceafd86306d246d5e871124b">get_generalized_acceleration</a> (<a class="el" href="classSHAREDVECTORN.html">SHAREDVECTORN</a> &amp;ga)</td></tr>
 <tr class="memdesc:a57f3d4a9ceafd86306d246d5e871124b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the generalized acceleration of this body. <br/></td></tr>
@@ -195,14 +197,14 @@ virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hr
 virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRIGIDBODY.html#a6885e5669ffcb7a0ccefd5d5fad8caeb">apply_generalized_impulse</a> (const <a class="el" href="classVECTORN.html">VECTORN</a> &amp;gj)</td></tr>
 <tr class="memdesc:a6885e5669ffcb7a0ccefd5d5fad8caeb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Applies a generalized impulse to the body. <br/></td></tr>
 <tr class="separator:a6885e5669ffcb7a0ccefd5d5fad8caeb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a842786658fd61e3f052608b9f354b622"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a842786658fd61e3f052608b9f354b622"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRIGIDBODY.html#a842786658fd61e3f052608b9f354b622">set_generalized_coordinates</a> (DYNAMIC_BODY::GeneralizedCoordinateType gctype, const <a class="el" href="classSHAREDVECTORN.html">SHAREDVECTORN</a> &amp;<a class="el" href="classDYNAMIC__BODY.html#a105aefb18314e3eeaa3f674f218ca7cc">gc</a>)</td></tr>
-<tr class="memdesc:a842786658fd61e3f052608b9f354b622"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the generalized coordinates of this rigid body. <br/></td></tr>
-<tr class="separator:a842786658fd61e3f052608b9f354b622"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0a6883d45c5215c91678de765a88bdce"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a0a6883d45c5215c91678de765a88bdce"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRIGIDBODY.html#a0a6883d45c5215c91678de765a88bdce">set_generalized_coordinates</a> (DYNAMIC_BODY::GeneralizedCoordinateType gctype, const <a class="el" href="classVECTORN.html">VECTORN</a> &amp;<a class="el" href="classDYNAMIC__BODY.html#a105aefb18314e3eeaa3f674f218ca7cc">gc</a>)</td></tr>
-<tr class="memdesc:a0a6883d45c5215c91678de765a88bdce"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the generalized coordinates of this body. <br/></td></tr>
-<tr class="separator:a0a6883d45c5215c91678de765a88bdce"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa576a839674ac8aa930980f671f1b316"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aa576a839674ac8aa930980f671f1b316"></a>
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRIGIDBODY.html#aa576a839674ac8aa930980f671f1b316">set_generalized_coordinates_euler</a> (const <a class="el" href="classSHAREDVECTORN.html">SHAREDVECTORN</a> &amp;<a class="el" href="classDYNAMIC__BODY.html#a105aefb18314e3eeaa3f674f218ca7cc">gc</a>)</td></tr>
+<tr class="memdesc:aa576a839674ac8aa930980f671f1b316"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the generalized coordinates of this rigid body. <br/></td></tr>
+<tr class="separator:aa576a839674ac8aa930980f671f1b316"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab3cd483e87a13a2f16e69bc04deb73bf"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ab3cd483e87a13a2f16e69bc04deb73bf"></a>
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRIGIDBODY.html#ab3cd483e87a13a2f16e69bc04deb73bf">set_generalized_coordinates_euler</a> (const <a class="el" href="classVECTORN.html">VECTORN</a> &amp;<a class="el" href="classDYNAMIC__BODY.html#a105aefb18314e3eeaa3f674f218ca7cc">gc</a>)</td></tr>
+<tr class="memdesc:ab3cd483e87a13a2f16e69bc04deb73bf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the generalized coordinates of this body (using Euler parameters for any rigid body orientations, if relevant) <br/></td></tr>
+<tr class="separator:ab3cd483e87a13a2f16e69bc04deb73bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:add60b14845b4acd7aa8f51a17b1722e7"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="add60b14845b4acd7aa8f51a17b1722e7"></a>
 virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRIGIDBODY.html#add60b14845b4acd7aa8f51a17b1722e7">set_generalized_acceleration</a> (const <a class="el" href="classSHAREDVECTORN.html">SHAREDVECTORN</a> &amp;ga)</td></tr>
 <tr class="memdesc:add60b14845b4acd7aa8f51a17b1722e7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the generalized acceleration of this rigid body. <br/></td></tr>
@@ -354,10 +356,10 @@ REAL&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="clas
 virtual REAL&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRIGIDBODY.html#a2e748bb48878f73738b1593b9984b3c4">get_mass</a> () const </td></tr>
 <tr class="memdesc:a2e748bb48878f73738b1593b9984b3c4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the mass of this body. <br/></td></tr>
 <tr class="separator:a2e748bb48878f73738b1593b9984b3c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad4364a0c9d243bb4b85263931ddf525f"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ad4364a0c9d243bb4b85263931ddf525f"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRIGIDBODY.html#ad4364a0c9d243bb4b85263931ddf525f">is_enabled</a> () const </td></tr>
-<tr class="memdesc:ad4364a0c9d243bb4b85263931ddf525f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets whether this body is enabled. <br/></td></tr>
-<tr class="separator:ad4364a0c9d243bb4b85263931ddf525f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a07cd5668d0b0f649e24668d41c13e6e9"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a07cd5668d0b0f649e24668d41c13e6e9"></a>
+virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRIGIDBODY.html#a07cd5668d0b0f649e24668d41c13e6e9">is_enabled</a> () const </td></tr>
+<tr class="memdesc:a07cd5668d0b0f649e24668d41c13e6e9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets whether this body is enabled. <br/></td></tr>
+<tr class="separator:a07cd5668d0b0f649e24668d41c13e6e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a91b1e0f2174b018faa4bfe8e32afa2a3"><td class="memItemLeft" align="right" valign="top">boost::shared_ptr<br class="typebreak"/>
 &lt; <a class="el" href="classARTICULATED__BODY.html">ARTICULATED_BODY</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRIGIDBODY.html#a91b1e0f2174b018faa4bfe8e32afa2a3">get_articulated_body</a> () const </td></tr>
 <tr class="memdesc:a91b1e0f2174b018faa4bfe8e32afa2a3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the articulated body corresponding to this body.  <a href="#a91b1e0f2174b018faa4bfe8e32afa2a3">More...</a><br/></td></tr>
@@ -421,14 +423,6 @@ virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hr
 ReferenceFrameType&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDYNAMIC__BODY.html#a4e8912feb0199b55ab4c85f15ca19914">get_computation_frame_type</a> () const </td></tr>
 <tr class="memdesc:a4e8912feb0199b55ab4c85f15ca19914 inherit pub_methods_classDYNAMIC__BODY"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the computation frame type for this body. <br/></td></tr>
 <tr class="separator:a4e8912feb0199b55ab4c85f15ca19914 inherit pub_methods_classDYNAMIC__BODY"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:acce9e100b53d95bf0fa5a8478ea72d37 inherit pub_methods_classDYNAMIC__BODY"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="acce9e100b53d95bf0fa5a8478ea72d37"></a>
-virtual <a class="el" href="classVECTORN.html">VECTORN</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDYNAMIC__BODY.html#acce9e100b53d95bf0fa5a8478ea72d37">get_generalized_coordinates</a> (GeneralizedCoordinateType gctype, <a class="el" href="classVECTORN.html">VECTORN</a> &amp;<a class="el" href="classDYNAMIC__BODY.html#a105aefb18314e3eeaa3f674f218ca7cc">gc</a>)</td></tr>
-<tr class="memdesc:acce9e100b53d95bf0fa5a8478ea72d37 inherit pub_methods_classDYNAMIC__BODY"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the generalized coordinates of this body. <br/></td></tr>
-<tr class="separator:acce9e100b53d95bf0fa5a8478ea72d37 inherit pub_methods_classDYNAMIC__BODY"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac10121a42f878bf3b6cb1053d9feb157 inherit pub_methods_classDYNAMIC__BODY"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ac10121a42f878bf3b6cb1053d9feb157"></a>
-virtual <a class="el" href="classVECTORN.html">VECTORN</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDYNAMIC__BODY.html#ac10121a42f878bf3b6cb1053d9feb157">get_generalized_velocity</a> (GeneralizedCoordinateType gctype, <a class="el" href="classVECTORN.html">VECTORN</a> &amp;gv)</td></tr>
-<tr class="memdesc:ac10121a42f878bf3b6cb1053d9feb157 inherit pub_methods_classDYNAMIC__BODY"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the generalized velocity of this body. <br/></td></tr>
-<tr class="separator:ac10121a42f878bf3b6cb1053d9feb157 inherit pub_methods_classDYNAMIC__BODY"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:addc5dd207a5e369f6fd6e5b2abcc4c6a inherit pub_methods_classDYNAMIC__BODY"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="addc5dd207a5e369f6fd6e5b2abcc4c6a"></a>
 virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDYNAMIC__BODY.html#addc5dd207a5e369f6fd6e5b2abcc4c6a">set_generalized_acceleration</a> (const <a class="el" href="classVECTORN.html">VECTORN</a> &amp;ga)</td></tr>
 <tr class="memdesc:addc5dd207a5e369f6fd6e5b2abcc4c6a inherit pub_methods_classDYNAMIC__BODY"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the generalized acceleration of this body. <br/></td></tr>
@@ -534,10 +528,6 @@ boost::shared_ptr&lt; <a class="el" href="classPOSE3.html">POSE3</a> &gt;&#160;<
 boost::shared_ptr&lt; <a class="el" href="classPOSE3.html">POSE3</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRIGIDBODY.html#a86adc374c97627c7b70c8ddd32780a79">_F2</a></td></tr>
 <tr class="memdesc:a86adc374c97627c7b70c8ddd32780a79"><td class="mdescLeft">&#160;</td><td class="mdescRight">secondary pose for this body <br/></td></tr>
 <tr class="separator:a86adc374c97627c7b70c8ddd32780a79"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a69bf2ae2d6df32bdf99392cded7bb2a5"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a69bf2ae2d6df32bdf99392cded7bb2a5"></a>
-boost::shared_ptr&lt; <a class="el" href="classPOSE3.html">POSE3</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRIGIDBODY.html#a69bf2ae2d6df32bdf99392cded7bb2a5">_jF</a></td></tr>
-<tr class="memdesc:a69bf2ae2d6df32bdf99392cded7bb2a5"><td class="mdescLeft">&#160;</td><td class="mdescRight">inertial pose for this body <br/></td></tr>
-<tr class="separator:a69bf2ae2d6df32bdf99392cded7bb2a5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2fe8b9b19816718a0217438f27e9cc63"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a2fe8b9b19816718a0217438f27e9cc63"></a>
 boost::weak_ptr&lt; <a class="el" href="classARTICULATED__BODY.html">ARTICULATED_BODY</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRIGIDBODY.html#a2fe8b9b19816718a0217438f27e9cc63">_abody</a></td></tr>
 <tr class="memdesc:a2fe8b9b19816718a0217438f27e9cc63"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pointer to articulated body (if this body is a link) <br/></td></tr>
@@ -613,7 +603,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>JOINT</b></td></tr>
 <p>Default constructor. </p>
 <p>Constructs a rigid body with zero mass, zero inertia tensor, and center of mass at [0,0,0] with position at [0,0,0], identity orientation, and zero linear and angular velocity. Body is enabled by default. </p>
 
-<p>References <a class="el" href="classRIGIDBODY.html#a8e9b511450c5c94ced73c82b3963cf1a">_F</a>, <a class="el" href="classRIGIDBODY.html#a86adc374c97627c7b70c8ddd32780a79">_F2</a>, <a class="el" href="classRIGIDBODY.html#a69bf2ae2d6df32bdf99392cded7bb2a5">_jF</a>, <a class="el" href="classDYNAMIC__BODY.html#ae686948fcbf8f52d569e3f7744dc66cf">DYNAMIC_BODY::_rftype</a>, <a class="el" href="classRIGIDBODY.html#aa6056b3f0b34bcccac20f8c9b74d7b5a">_xddj_valid</a>, <a class="el" href="classRIGIDBODY.html#ac501626cd484ea2374d2f78e92b2ee51">compliance</a>, <a class="el" href="classSPATIAL__RB__INERTIA.html#a6ffb5b4334c297660b22d1d5399897d4">SPATIAL_RB_INERTIA::pose</a>, and <a class="el" href="classSVECTOR6.html#a325a7755e904a872edc681132ad8218c">SVECTOR6::pose</a>.</p>
+<p>References <a class="el" href="classRIGIDBODY.html#a8e9b511450c5c94ced73c82b3963cf1a">_F</a>, <a class="el" href="classRIGIDBODY.html#a86adc374c97627c7b70c8ddd32780a79">_F2</a>, <a class="el" href="classDYNAMIC__BODY.html#ae686948fcbf8f52d569e3f7744dc66cf">DYNAMIC_BODY::_rftype</a>, <a class="el" href="classRIGIDBODY.html#aa6056b3f0b34bcccac20f8c9b74d7b5a">_xddj_valid</a>, <a class="el" href="classRIGIDBODY.html#ac501626cd484ea2374d2f78e92b2ee51">compliance</a>, <a class="el" href="classSPATIAL__RB__INERTIA.html#a6ffb5b4334c297660b22d1d5399897d4">SPATIAL_RB_INERTIA::pose</a>, and <a class="el" href="classSVECTOR6.html#a325a7755e904a872edc681132ad8218c">SVECTOR6::pose</a>.</p>
 
 </div>
 </div>
@@ -650,7 +640,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>JOINT</b></td></tr>
 
 <p>Implements <a class="el" href="classSINGLE__BODY.html#ae9d54978dd3231c8254c8414907b3b03">SINGLE_BODY</a>.</p>
 
-<p>References <a class="el" href="classRIGIDBODY.html#a2fe8b9b19816718a0217438f27e9cc63">_abody</a>, <a class="el" href="classRIGIDBODY.html#a8e9b511450c5c94ced73c82b3963cf1a">_F</a>, <a class="el" href="classRIGIDBODY.html#a86adc374c97627c7b70c8ddd32780a79">_F2</a>, <a class="el" href="classRIGIDBODY.html#a69bf2ae2d6df32bdf99392cded7bb2a5">_jF</a>, <a class="el" href="classRIGIDBODY.html#a675381a4b2a40370bb8229b0c6fd079a">_xdj</a>, <a class="el" href="classRIGIDBODY.html#aa3e750524150d1db295c470d46e36a5f">get_computation_frame()</a>, <a class="el" href="classRIGIDBODY.html#a0be2e35524cbd6693554ce8e8ce2175a">get_inertia()</a>, <a class="el" href="classRIGIDBODY.html#ab20309bef2cf27d1a595c4824e50d670">get_inner_joint_explicit()</a>, <a class="el" href="classRIGIDBODY.html#a20228468b806255f76974a160637b67e">get_pose()</a>, <a class="el" href="classRIGIDBODY.html#ac91834c5306ea40d485c10a0c95e8b26">get_this()</a>, <a class="el" href="classSPATIAL__RB__INERTIA.html#ab518c7539cc795aa6dcb9e80af6639d4">SPATIAL_RB_INERTIA::inverse_mult()</a>, <a class="el" href="classRIGIDBODY.html#a76c01268045e54daf5aa274763eb435f">is_base()</a>, <a class="el" href="classSVECTOR6.html#a325a7755e904a872edc681132ad8218c">SVECTOR6::pose</a>, and <a class="el" href="classRIGIDBODY.html#a3ceba9fce810cbfcd3c8c09f8593aa55">reset_accumulators()</a>.</p>
+<p>References <a class="el" href="classRIGIDBODY.html#a2fe8b9b19816718a0217438f27e9cc63">_abody</a>, <a class="el" href="classRIGIDBODY.html#a8e9b511450c5c94ced73c82b3963cf1a">_F</a>, <a class="el" href="classRIGIDBODY.html#a86adc374c97627c7b70c8ddd32780a79">_F2</a>, <a class="el" href="classRIGIDBODY.html#a675381a4b2a40370bb8229b0c6fd079a">_xdj</a>, <a class="el" href="classRIGIDBODY.html#aa3e750524150d1db295c470d46e36a5f">get_computation_frame()</a>, <a class="el" href="classRIGIDBODY.html#a0be2e35524cbd6693554ce8e8ce2175a">get_inertia()</a>, <a class="el" href="classRIGIDBODY.html#ab20309bef2cf27d1a595c4824e50d670">get_inner_joint_explicit()</a>, <a class="el" href="classRIGIDBODY.html#a20228468b806255f76974a160637b67e">get_pose()</a>, <a class="el" href="classRIGIDBODY.html#ac91834c5306ea40d485c10a0c95e8b26">get_this()</a>, <a class="el" href="classSPATIAL__RB__INERTIA.html#ab518c7539cc795aa6dcb9e80af6639d4">SPATIAL_RB_INERTIA::inverse_mult()</a>, <a class="el" href="classRIGIDBODY.html#a76c01268045e54daf5aa274763eb435f">is_base()</a>, <a class="el" href="classSVECTOR6.html#a325a7755e904a872edc681132ad8218c">SVECTOR6::pose</a>, and <a class="el" href="classRIGIDBODY.html#a3ceba9fce810cbfcd3c8c09f8593aa55">reset_accumulators()</a>.</p>
 
 </div>
 </div>
@@ -927,35 +917,6 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>JOINT</b></td></tr>
 
 </div>
 </div>
-<a class="anchor" id="ac9a754b8dbc7091f6ec158728efdcd8c"></a>
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">void RIGIDBODY::set_inertial_pose </td>
-          <td>(</td>
-          <td class="paramtype">const <a class="el" href="classPOSE3.html">POSE3</a> &amp;&#160;</td>
-          <td class="paramname"><em>P</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Sets the inertial pose for this rigid body. </p>
-<p>Inertial pose should be defined relative to the rigid body pose </p>
-
-<p>References <a class="el" href="classRIGIDBODY.html#a8e9b511450c5c94ced73c82b3963cf1a">_F</a>, <a class="el" href="classRIGIDBODY.html#a69bf2ae2d6df32bdf99392cded7bb2a5">_jF</a>, <a class="el" href="classPOSE3.html#a9985059c54233d81d09284a7384dcd3f">POSE3::rpose</a>, <a class="el" href="classRIGIDBODY.html#acc4813e5aaba75ddee2a55eddc026953">update_mixed_pose()</a>, and <a class="el" href="classPOSE3.html#a7d17335e4501ad7afbc3992c81dc6ed4">POSE3::update_relative_pose()</a>.</p>
-
-</div>
-</div>
 <a class="anchor" id="a8b1cc0bda49f547ae615851208ea60f2"></a>
 <div class="memitem">
 <div class="memproto">
@@ -1001,9 +962,9 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>JOINT</b></td></tr>
 <p>Updates the center-of-mass center / global aligned frame. </p>
 <dl class="section note"><dt>Note</dt><dd>this function is called by <a class="el" href="classRIGIDBODY.html#a8b1cc0bda49f547ae615851208ea60f2" title="Sets the current 3D pose for this rigid body. ">set_pose()</a> and RCArticulatedBody::update_link_poses(.) </dd></dl>
 
-<p>References <a class="el" href="classRIGIDBODY.html#a86adc374c97627c7b70c8ddd32780a79">_F2</a>, <a class="el" href="classRIGIDBODY.html#a69bf2ae2d6df32bdf99392cded7bb2a5">_jF</a>, and <a class="el" href="classRIGIDBODY.html#ae21fa814f6ed3e90fb69e20ebde6aeb9">invalidate_pose_vectors()</a>.</p>
+<p>References <a class="el" href="classRIGIDBODY.html#a8e9b511450c5c94ced73c82b3963cf1a">_F</a>, <a class="el" href="classRIGIDBODY.html#a86adc374c97627c7b70c8ddd32780a79">_F2</a>, and <a class="el" href="classRIGIDBODY.html#ae21fa814f6ed3e90fb69e20ebde6aeb9">invalidate_pose_vectors()</a>.</p>
 
-<p>Referenced by <a class="el" href="classRIGIDBODY.html#a31dd6b0cb6390b785a0a05283dc8dddb">rotate()</a>, <a class="el" href="classRIGIDBODY.html#ac9a754b8dbc7091f6ec158728efdcd8c">set_inertial_pose()</a>, <a class="el" href="classRIGIDBODY.html#a8b1cc0bda49f547ae615851208ea60f2">set_pose()</a>, and <a class="el" href="classRIGIDBODY.html#aaff8561618e320e6a3ede04da9726801">translate()</a>.</p>
+<p>Referenced by <a class="el" href="classRIGIDBODY.html#a31dd6b0cb6390b785a0a05283dc8dddb">rotate()</a>, <a class="el" href="classRIGIDBODY.html#a8b1cc0bda49f547ae615851208ea60f2">set_pose()</a>, and <a class="el" href="classRIGIDBODY.html#aaff8561618e320e6a3ede04da9726801">translate()</a>.</p>
 
 </div>
 </div>
@@ -1015,7 +976,7 @@ class&#160;</td><td class="memItemRight" valign="bottom"><b>JOINT</b></td></tr>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Oct 5 2015 22:38:32 for Ravelin by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Sun Feb 7 2016 19:49:15 for Ravelin by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

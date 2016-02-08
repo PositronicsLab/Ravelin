@@ -166,7 +166,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:ad31c860d642dc6de067719bb3283b858"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the axis for this joint. <br/></td></tr>
 <tr class="separator:ad31c860d642dc6de067719bb3283b858"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abca413e647ad326e4486c9ba996eeb53"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRavelin_1_1UNIVERSALJOINT.html#abca413e647ad326e4486c9ba996eeb53">set_axis</a> (const <a class="el" href="classRavelin_1_1VECTOR3.html">VECTOR3</a> &amp;axis, Axis a)</td></tr>
-<tr class="memdesc:abca413e647ad326e4486c9ba996eeb53"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets an axis of this joint.  <a href="#abca413e647ad326e4486c9ba996eeb53">More...</a><br/></td></tr>
+<tr class="memdesc:abca413e647ad326e4486c9ba996eeb53"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets an axis of rotation of this joint (MUST BE CALLED AFTER set_location(.))  <a href="#abca413e647ad326e4486c9ba996eeb53">More...</a><br/></td></tr>
 <tr class="separator:abca413e647ad326e4486c9ba996eeb53"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae9bec211f1131cce08882efa563ad7ce"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ae9bec211f1131cce08882efa563ad7ce"></a>
 virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRavelin_1_1UNIVERSALJOINT.html#ae9bec211f1131cce08882efa563ad7ce">update_spatial_axes</a> ()</td></tr>
@@ -295,6 +295,12 @@ virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>evaluate_cons
 <tr class="memitem:a5239f78e04e94b8ffb0abfb2e239384f inherit pub_methods_classRavelin_1_1JOINT"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a5239f78e04e94b8ffb0abfb2e239384f"></a>
 virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>determine_q_tare</b> ()</td></tr>
 <tr class="separator:a5239f78e04e94b8ffb0abfb2e239384f inherit pub_methods_classRavelin_1_1JOINT"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6a4e9719c9972e233e081af949722ca4 inherit pub_methods_classRavelin_1_1JOINT"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a6a4e9719c9972e233e081af949722ca4"></a>
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>set_q_tare</b> (const <a class="el" href="classRavelin_1_1VECTORN.html">VECTORN</a> &amp;tare)</td></tr>
+<tr class="separator:a6a4e9719c9972e233e081af949722ca4 inherit pub_methods_classRavelin_1_1JOINT"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a90eaad7bfd58fbba25037fdb905e6022 inherit pub_methods_classRavelin_1_1JOINT"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a90eaad7bfd58fbba25037fdb905e6022"></a>
+virtual const <a class="el" href="classRavelin_1_1VECTORN.html">VECTORN</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>get_q_tare</b> () const </td></tr>
+<tr class="separator:a90eaad7bfd58fbba25037fdb905e6022 inherit pub_methods_classRavelin_1_1JOINT"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a46c861860cbdddf2bf240d594ebef60c inherit pub_methods_classRavelin_1_1JOINT"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a46c861860cbdddf2bf240d594ebef60c"></a>
 boost::shared_ptr&lt; <a class="el" href="classRavelin_1_1RIGIDBODY.html">RIGIDBODY</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRavelin_1_1JOINT.html#a46c861860cbdddf2bf240d594ebef60c">get_inboard_link</a> () const </td></tr>
 <tr class="memdesc:a46c861860cbdddf2bf240d594ebef60c inherit pub_methods_classRavelin_1_1JOINT"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the inboard link for this joint. <br/></td></tr>
@@ -381,6 +387,12 @@ virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>evaluate_cons
 <tr class="memitem:a5239f78e04e94b8ffb0abfb2e239384f inherit pub_methods_classRavelin_1_1JOINT"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a5239f78e04e94b8ffb0abfb2e239384f"></a>
 virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>determine_q_tare</b> ()</td></tr>
 <tr class="separator:a5239f78e04e94b8ffb0abfb2e239384f inherit pub_methods_classRavelin_1_1JOINT"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6a4e9719c9972e233e081af949722ca4 inherit pub_methods_classRavelin_1_1JOINT"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a6a4e9719c9972e233e081af949722ca4"></a>
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>set_q_tare</b> (const <a class="el" href="classRavelin_1_1VECTORN.html">VECTORN</a> &amp;tare)</td></tr>
+<tr class="separator:a6a4e9719c9972e233e081af949722ca4 inherit pub_methods_classRavelin_1_1JOINT"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a90eaad7bfd58fbba25037fdb905e6022 inherit pub_methods_classRavelin_1_1JOINT"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a90eaad7bfd58fbba25037fdb905e6022"></a>
+virtual const <a class="el" href="classRavelin_1_1VECTORN.html">VECTORN</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>get_q_tare</b> () const </td></tr>
+<tr class="separator:a90eaad7bfd58fbba25037fdb905e6022 inherit pub_methods_classRavelin_1_1JOINT"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a46c861860cbdddf2bf240d594ebef60c inherit pub_methods_classRavelin_1_1JOINT"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a46c861860cbdddf2bf240d594ebef60c"></a>
 boost::shared_ptr&lt; <a class="el" href="classRavelin_1_1RIGIDBODY.html">RIGIDBODY</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classRavelin_1_1JOINT.html#a46c861860cbdddf2bf240d594ebef60c">get_inboard_link</a> () const </td></tr>
 <tr class="memdesc:a46c861860cbdddf2bf240d594ebef60c inherit pub_methods_classRavelin_1_1JOINT"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the inboard link for this joint. <br/></td></tr>
@@ -902,7 +914,7 @@ std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hre
       </table>
 </div><div class="memdoc">
 
-<p>Sets an axis of this joint. </p>
+<p>Sets an axis of rotation of this joint (MUST BE CALLED AFTER set_location(.)) </p>
 <p>The local axis for this joint does not take the orientation of the inboard link into account; thus, if the orientation of the inboard link changes, then the local axis remains constant. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
@@ -926,7 +938,7 @@ set_axis_global() </dd></dl>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Oct 5 2015 22:38:36 for Ravelin by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Sun Feb 7 2016 19:49:20 for Ravelin by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

@@ -105,7 +105,7 @@ virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hr
 <tr class="separator:aa0ec07c265b6e1e935546f359a5eeee2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa41beadc679c98d67f488cd552e6610f"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aa41beadc679c98d67f488cd552e6610f"></a>
 void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classREVOLUTEJOINT.html#aa41beadc679c98d67f488cd552e6610f">set_axis</a> (const <a class="el" href="classVECTOR3.html">VECTOR3</a> &amp;axis)</td></tr>
-<tr class="memdesc:aa41beadc679c98d67f488cd552e6610f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the axis of rotation for this joint. <br/></td></tr>
+<tr class="memdesc:aa41beadc679c98d67f488cd552e6610f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the axis of rotation for this joint (MUST BE CALLED AFTER set_location(.)) <br/></td></tr>
 <tr class="separator:aa41beadc679c98d67f488cd552e6610f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8b4cf4d5cdabd505c7aab0cc774d4806"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a8b4cf4d5cdabd505c7aab0cc774d4806"></a>
 virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classREVOLUTEJOINT.html#a8b4cf4d5cdabd505c7aab0cc774d4806">calc_constraint_jacobian</a> (bool inboard, <a class="el" href="classMATRIXN.html">MATRIXN</a> &amp;Cq)</td></tr>
@@ -174,6 +174,12 @@ virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hr
 virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classJOINT.html#acb06ff374dd989b6713648d37eafd151">determine_q_tare</a> ()</td></tr>
 <tr class="memdesc:acb06ff374dd989b6713648d37eafd151 inherit pub_methods_classJOINT"><td class="mdescLeft">&#160;</td><td class="mdescRight">Determines q tare. <br/></td></tr>
 <tr class="separator:acb06ff374dd989b6713648d37eafd151 inherit pub_methods_classJOINT"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a93a89d3006927256c182e0bfbb74cc16 inherit pub_methods_classJOINT"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a93a89d3006927256c182e0bfbb74cc16"></a>
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><b>set_q_tare</b> (const <a class="el" href="classVECTORN.html">VECTORN</a> &amp;tare)</td></tr>
+<tr class="separator:a93a89d3006927256c182e0bfbb74cc16 inherit pub_methods_classJOINT"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a32d86ec550307b6557a3450bb703f4aa inherit pub_methods_classJOINT"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a32d86ec550307b6557a3450bb703f4aa"></a>
+virtual const <a class="el" href="classVECTORN.html">VECTORN</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>get_q_tare</b> () const </td></tr>
+<tr class="separator:a32d86ec550307b6557a3450bb703f4aa inherit pub_methods_classJOINT"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a879cb99cc7e8e950f3d478b34bfa4c69 inherit pub_methods_classJOINT"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a879cb99cc7e8e950f3d478b34bfa4c69"></a>
 boost::shared_ptr&lt; <a class="el" href="classRIGIDBODY.html">RIGIDBODY</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classJOINT.html#a879cb99cc7e8e950f3d478b34bfa4c69">get_inboard_link</a> () const </td></tr>
 <tr class="memdesc:a879cb99cc7e8e950f3d478b34bfa4c69 inherit pub_methods_classJOINT"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the inboard link for this joint. <br/></td></tr>
@@ -421,7 +427,7 @@ boost::shared_ptr&lt; const <a class="el" href="classPOSE3.html">POSE3</a> &gt;&
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Oct 5 2015 22:38:32 for Ravelin by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Sun Feb 7 2016 19:49:15 for Ravelin by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

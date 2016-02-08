@@ -83,6 +83,10 @@ Public Types</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
+<tr class="memitem:a9341f9e01a1f394302fd9dcacba3d8c4"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a9341f9e01a1f394302fd9dcacba3d8c4"></a>
+virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDYNAMIC__BODY.html#a9341f9e01a1f394302fd9dcacba3d8c4">is_enabled</a> () const =0</td></tr>
+<tr class="memdesc:a9341f9e01a1f394302fd9dcacba3d8c4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets whether the body's dynamics are integrated forward. <br/></td></tr>
+<tr class="separator:a9341f9e01a1f394302fd9dcacba3d8c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a15cac3a3c549386f0e0e8faa63b291a8"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a15cac3a3c549386f0e0e8faa63b291a8"></a>
 virtual <a class="el" href="classMATRIXN.html">MATRIXN</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDYNAMIC__BODY.html#a15cac3a3c549386f0e0e8faa63b291a8">calc_jacobian</a> (boost::shared_ptr&lt; const <a class="el" href="classPOSE3.html">POSE3</a> &gt; source_pose, boost::shared_ptr&lt; const <a class="el" href="classPOSE3.html">POSE3</a> &gt; target_pose, boost::shared_ptr&lt; <a class="el" href="classDYNAMIC__BODY.html">DYNAMIC_BODY</a> &gt; body, <a class="el" href="classMATRIXN.html">MATRIXN</a> &amp;J)=0</td></tr>
 <tr class="memdesc:a15cac3a3c549386f0e0e8faa63b291a8"><td class="mdescLeft">&#160;</td><td class="mdescRight">The Jacobian transforms from the generalized coordinate from to the given frame. <br/></td></tr>
@@ -159,14 +163,14 @@ virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" hr
 virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDYNAMIC__BODY.html#a28f756bcf549466efe6301dce00d47e6">apply_generalized_impulse</a> (const <a class="el" href="classVECTORN.html">VECTORN</a> &amp;gj)</td></tr>
 <tr class="memdesc:a28f756bcf549466efe6301dce00d47e6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Applies a generalized impulse to the body. <br/></td></tr>
 <tr class="separator:a28f756bcf549466efe6301dce00d47e6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3932edbe88f0632b0d48e8fc99db78e3"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a3932edbe88f0632b0d48e8fc99db78e3"></a>
-virtual <a class="el" href="classSHAREDVECTORN.html">SHAREDVECTORN</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDYNAMIC__BODY.html#a3932edbe88f0632b0d48e8fc99db78e3">get_generalized_coordinates</a> (GeneralizedCoordinateType gctype, <a class="el" href="classSHAREDVECTORN.html">SHAREDVECTORN</a> &amp;<a class="el" href="classDYNAMIC__BODY.html#a105aefb18314e3eeaa3f674f218ca7cc">gc</a>)=0</td></tr>
-<tr class="memdesc:a3932edbe88f0632b0d48e8fc99db78e3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the generalized coordinates of this body. <br/></td></tr>
-<tr class="separator:a3932edbe88f0632b0d48e8fc99db78e3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:acce9e100b53d95bf0fa5a8478ea72d37"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="acce9e100b53d95bf0fa5a8478ea72d37"></a>
-virtual <a class="el" href="classVECTORN.html">VECTORN</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDYNAMIC__BODY.html#acce9e100b53d95bf0fa5a8478ea72d37">get_generalized_coordinates</a> (GeneralizedCoordinateType gctype, <a class="el" href="classVECTORN.html">VECTORN</a> &amp;<a class="el" href="classDYNAMIC__BODY.html#a105aefb18314e3eeaa3f674f218ca7cc">gc</a>)</td></tr>
-<tr class="memdesc:acce9e100b53d95bf0fa5a8478ea72d37"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the generalized coordinates of this body. <br/></td></tr>
-<tr class="separator:acce9e100b53d95bf0fa5a8478ea72d37"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a96183ec76256e34be3f6b82011edb496"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a96183ec76256e34be3f6b82011edb496"></a>
+virtual <a class="el" href="classSHAREDVECTORN.html">SHAREDVECTORN</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDYNAMIC__BODY.html#a96183ec76256e34be3f6b82011edb496">get_generalized_coordinates_euler</a> (<a class="el" href="classSHAREDVECTORN.html">SHAREDVECTORN</a> &amp;<a class="el" href="classDYNAMIC__BODY.html#a105aefb18314e3eeaa3f674f218ca7cc">gc</a>)=0</td></tr>
+<tr class="memdesc:a96183ec76256e34be3f6b82011edb496"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the generalized coordinates of this body (using Euler parameters for any rigid body orientations, if relevant) <br/></td></tr>
+<tr class="separator:a96183ec76256e34be3f6b82011edb496"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5acc523cce363646ff944258df775926"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a5acc523cce363646ff944258df775926"></a>
+virtual <a class="el" href="classVECTORN.html">VECTORN</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDYNAMIC__BODY.html#a5acc523cce363646ff944258df775926">get_generalized_coordinates_euler</a> (<a class="el" href="classVECTORN.html">VECTORN</a> &amp;<a class="el" href="classDYNAMIC__BODY.html#a105aefb18314e3eeaa3f674f218ca7cc">gc</a>)</td></tr>
+<tr class="memdesc:a5acc523cce363646ff944258df775926"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the generalized coordinates of this body (using Euler parameters for any rigid body orientations, if relevant) <br/></td></tr>
+<tr class="separator:a5acc523cce363646ff944258df775926"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aaec48b9bbc4d2b6609b7056e05e04a93"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="aaec48b9bbc4d2b6609b7056e05e04a93"></a>
 virtual <a class="el" href="classSHAREDVECTORN.html">SHAREDVECTORN</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDYNAMIC__BODY.html#aaec48b9bbc4d2b6609b7056e05e04a93">get_generalized_velocity</a> (GeneralizedCoordinateType gctype, <a class="el" href="classSHAREDVECTORN.html">SHAREDVECTORN</a> &amp;gv)=0</td></tr>
 <tr class="memdesc:aaec48b9bbc4d2b6609b7056e05e04a93"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the generalized velocity of this body. <br/></td></tr>
@@ -191,14 +195,14 @@ virtual <a class="el" href="classSHAREDVECTORN.html">SHAREDVECTORN</a> &amp;&#16
 virtual <a class="el" href="classVECTORN.html">VECTORN</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDYNAMIC__BODY.html#a1c357788bd992d906609e1df49fc55b3">get_generalized_acceleration</a> (<a class="el" href="classVECTORN.html">VECTORN</a> &amp;ga)</td></tr>
 <tr class="memdesc:a1c357788bd992d906609e1df49fc55b3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Gets the generalized acceleration of this body. <br/></td></tr>
 <tr class="separator:a1c357788bd992d906609e1df49fc55b3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad23abc0fb084b8c91b1a84e36f2582ed"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="ad23abc0fb084b8c91b1a84e36f2582ed"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDYNAMIC__BODY.html#ad23abc0fb084b8c91b1a84e36f2582ed">set_generalized_coordinates</a> (GeneralizedCoordinateType gctype, const <a class="el" href="classSHAREDVECTORN.html">SHAREDVECTORN</a> &amp;<a class="el" href="classDYNAMIC__BODY.html#a105aefb18314e3eeaa3f674f218ca7cc">gc</a>)=0</td></tr>
-<tr class="memdesc:ad23abc0fb084b8c91b1a84e36f2582ed"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the generalized coordinates of this body. <br/></td></tr>
-<tr class="separator:ad23abc0fb084b8c91b1a84e36f2582ed"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a55356ca9891d307a65942b1d146f923e"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a55356ca9891d307a65942b1d146f923e"></a>
-virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDYNAMIC__BODY.html#a55356ca9891d307a65942b1d146f923e">set_generalized_coordinates</a> (GeneralizedCoordinateType gctype, const <a class="el" href="classVECTORN.html">VECTORN</a> &amp;<a class="el" href="classDYNAMIC__BODY.html#a105aefb18314e3eeaa3f674f218ca7cc">gc</a>)</td></tr>
-<tr class="memdesc:a55356ca9891d307a65942b1d146f923e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the generalized coordinates of this body. <br/></td></tr>
-<tr class="separator:a55356ca9891d307a65942b1d146f923e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a11af352f314ba0d618d558fa0e22f6d1"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="a11af352f314ba0d618d558fa0e22f6d1"></a>
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDYNAMIC__BODY.html#a11af352f314ba0d618d558fa0e22f6d1">set_generalized_coordinates_euler</a> (const <a class="el" href="classSHAREDVECTORN.html">SHAREDVECTORN</a> &amp;<a class="el" href="classDYNAMIC__BODY.html#a105aefb18314e3eeaa3f674f218ca7cc">gc</a>)=0</td></tr>
+<tr class="memdesc:a11af352f314ba0d618d558fa0e22f6d1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the generalized coordinates of this body (using Euler parameters for any rigid body orientations, if relevant) <br/></td></tr>
+<tr class="separator:a11af352f314ba0d618d558fa0e22f6d1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af064c4ec6f153df284fb3b2496a8bbb8"><td class="memItemLeft" align="right" valign="top"><a class="anchor" id="af064c4ec6f153df284fb3b2496a8bbb8"></a>
+virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDYNAMIC__BODY.html#af064c4ec6f153df284fb3b2496a8bbb8">set_generalized_coordinates_euler</a> (const <a class="el" href="classVECTORN.html">VECTORN</a> &amp;<a class="el" href="classDYNAMIC__BODY.html#a105aefb18314e3eeaa3f674f218ca7cc">gc</a>)</td></tr>
+<tr class="memdesc:af064c4ec6f153df284fb3b2496a8bbb8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the generalized coordinates of this body (using Euler parameters for any rigid body orientations, if relevant) <br/></td></tr>
+<tr class="separator:af064c4ec6f153df284fb3b2496a8bbb8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7e272fdbecb2b8b70638289f0c857a00"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classDYNAMIC__BODY.html#a7e272fdbecb2b8b70638289f0c857a00">set_generalized_velocity</a> (GeneralizedCoordinateType gctype, const <a class="el" href="classSHAREDVECTORN.html">SHAREDVECTORN</a> &amp;gv)=0</td></tr>
 <tr class="memdesc:a7e272fdbecb2b8b70638289f0c857a00"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the generalized velocity of this body.  <a href="#a7e272fdbecb2b8b70638289f0c857a00">More...</a><br/></td></tr>
 <tr class="separator:a7e272fdbecb2b8b70638289f0c857a00"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -544,7 +548,7 @@ ReferenceFrameType&#160;</td><td class="memItemRight" valign="bottom"><a class="
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Oct 5 2015 22:38:31 for Ravelin by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Sun Feb 7 2016 19:49:14 for Ravelin by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>

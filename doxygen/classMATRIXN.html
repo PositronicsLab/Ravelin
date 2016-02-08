@@ -957,7 +957,7 @@ template&lt;class M &gt; </div>
 <p>Resizes this matrix, optionally preserving its existing elements. </p>
 <dl class="section note"><dt>Note</dt><dd>this method keeps from reallocating memory unless absolutely necessary (i.e., if the matrix grows or preserve=true, then memory will need to be reallocated. </dd></dl>
 
-<p>Referenced by <a class="el" href="classREVOLUTEJOINT.html#a8b4cf4d5cdabd505c7aab0cc774d4806">REVOLUTEJOINT::calc_constraint_jacobian()</a>, <a class="el" href="classSPHERICALJOINT.html#a5136a161873b2f45137dfddf2b2a1a10">SPHERICALJOINT::calc_constraint_jacobian()</a>, <a class="el" href="classJOINT.html#ac18d55bd26f6623ec186884300007d64">JOINT::calc_constraint_jacobian_numeric()</a>, <a class="el" href="classFSAB__ALGORITHM.html#ab76b46220302b85e13276b242b0d2945">FSAB_ALGORITHM::calc_inverse_generalized_inertia_noprecalc()</a>, <a class="el" href="classDYNAMIC__BODY.html#a06e0e93405c600792d712519de561c8a">DYNAMIC_BODY::get_generalized_inertia()</a>, <a class="el" href="classMATRIXN.html#ae93d09805da00d0b4594de967dac39ff">MATRIXN()</a>, <a class="el" href="classSPARITH.html#a5c62397099883af1668e1ba811145935">SPARITH::mult()</a>, <a class="el" href="classMATRIXN.html#aea450a4467bcd9f0630ce64b70e16f51">operator=()</a>, <a class="el" href="classMATRIXN.html#a29fc687864518cc2b6474c999ec4282a">set()</a>, <a class="el" href="classMATRIXN.html#aa8b1fc13ee979267035aa9ffaa47710d">set_identity()</a>, <a class="el" href="classDYNAMIC__BODY.html#adf98ea48c7325477aca41b7b29897fa5">DYNAMIC_BODY::solve_generalized_inertia()</a>, <a class="el" href="classMATRIXN.html#a4ce85058160d28a1c4c2ade5c4217ea1">transpose()</a>, <a class="el" href="classRIGIDBODY.html#a68ed4bfdcef2c0167b1b1c453c053985">RIGIDBODY::transpose_solve_generalized_inertia()</a>, <a class="el" href="classDYNAMIC__BODY.html#aac6524788c9029def595081154d480b9">DYNAMIC_BODY::transpose_solve_generalized_inertia()</a>, and <a class="el" href="classRIGIDBODY.html#acff52161c3d04ea7ddbd3b3af5b0d2ef">RIGIDBODY::transpose_solve_generalized_inertia_single()</a>.</p>
+<p>Referenced by <a class="el" href="classPLANARJOINT.html#a758f4d276fb7d127b20be329ae8de4c3">PLANARJOINT::calc_constraint_jacobian()</a>, <a class="el" href="classREVOLUTEJOINT.html#a8b4cf4d5cdabd505c7aab0cc774d4806">REVOLUTEJOINT::calc_constraint_jacobian()</a>, <a class="el" href="classSPHERICALJOINT.html#a5136a161873b2f45137dfddf2b2a1a10">SPHERICALJOINT::calc_constraint_jacobian()</a>, <a class="el" href="classJOINT.html#ac18d55bd26f6623ec186884300007d64">JOINT::calc_constraint_jacobian_numeric()</a>, <a class="el" href="classFSAB__ALGORITHM.html#ab76b46220302b85e13276b242b0d2945">FSAB_ALGORITHM::calc_inverse_generalized_inertia_noprecalc()</a>, <a class="el" href="classDYNAMIC__BODY.html#a06e0e93405c600792d712519de561c8a">DYNAMIC_BODY::get_generalized_inertia()</a>, <a class="el" href="classMATRIXN.html#ae93d09805da00d0b4594de967dac39ff">MATRIXN()</a>, <a class="el" href="classSPARITH.html#a5c62397099883af1668e1ba811145935">SPARITH::mult()</a>, <a class="el" href="classMATRIXN.html#aea450a4467bcd9f0630ce64b70e16f51">operator=()</a>, <a class="el" href="classMATRIXN.html#a29fc687864518cc2b6474c999ec4282a">set()</a>, <a class="el" href="classMATRIXN.html#aa8b1fc13ee979267035aa9ffaa47710d">set_identity()</a>, <a class="el" href="classDYNAMIC__BODY.html#adf98ea48c7325477aca41b7b29897fa5">DYNAMIC_BODY::solve_generalized_inertia()</a>, <a class="el" href="classMATRIXN.html#a4ce85058160d28a1c4c2ade5c4217ea1">transpose()</a>, <a class="el" href="classRIGIDBODY.html#a68ed4bfdcef2c0167b1b1c453c053985">RIGIDBODY::transpose_solve_generalized_inertia()</a>, <a class="el" href="classDYNAMIC__BODY.html#aac6524788c9029def595081154d480b9">DYNAMIC_BODY::transpose_solve_generalized_inertia()</a>, and <a class="el" href="classRIGIDBODY.html#acff52161c3d04ea7ddbd3b3af5b0d2ef">RIGIDBODY::transpose_solve_generalized_inertia_single()</a>.</p>
 
 </div>
 </div>
@@ -996,7 +996,7 @@ template&lt;class M &gt; </div>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>a (row_end - row_start) x (col_end - col_start) sized matrixGets a constant shared vector for a row </dd></dl>
 
-<p>Referenced by <a class="el" href="classREVOLUTEJOINT.html#a8b4cf4d5cdabd505c7aab0cc774d4806">REVOLUTEJOINT::calc_constraint_jacobian()</a>, and <a class="el" href="classFSAB__ALGORITHM.html#ab76b46220302b85e13276b242b0d2945">FSAB_ALGORITHM::calc_inverse_generalized_inertia_noprecalc()</a>.</p>
+<p>Referenced by <a class="el" href="classPLANARJOINT.html#a758f4d276fb7d127b20be329ae8de4c3">PLANARJOINT::calc_constraint_jacobian()</a>, <a class="el" href="classREVOLUTEJOINT.html#a8b4cf4d5cdabd505c7aab0cc774d4806">REVOLUTEJOINT::calc_constraint_jacobian()</a>, and <a class="el" href="classFSAB__ALGORITHM.html#ab76b46220302b85e13276b242b0d2945">FSAB_ALGORITHM::calc_inverse_generalized_inertia_noprecalc()</a>.</p>
 
 </div>
 </div>
@@ -1377,7 +1377,7 @@ template&lt;class M &gt; </div>
 </div><!-- contents -->
 <!-- start footer part -->
 <hr class="footer"/><address class="footer"><small>
-Generated on Mon Oct 5 2015 22:38:31 for Ravelin by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Sun Feb 7 2016 19:49:15 for Ravelin by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.8.6
 </small></address>
