@@ -63,13 +63,6 @@ void JOINT::set_outboard_link(shared_ptr<RIGIDBODY> outboard, bool update_pose)
   set_outboard_pose(outboard->_F, update_pose);
 }
 
-/// Determines q tare
-void JOINT::determine_q_tare()
-{
-  // determine q tare
-  determine_q(_q_tare);
-}
-
 /// Abstract method to update the local spatial axes
 /**
  * Only applicable for reduced-coordinate articulated bodies

@@ -379,11 +379,13 @@ void RC_ARTICULATED_BODY::compile()
 
   // store all joint values and reset to zero; this is necessary because the
   // links are expected to be initialized at the joint zero positions
-  vector<VECTORN> q_save(_ejoints.size());
+  vector<VECTORN> q_save(_ejoints.size()), q_tare_save(_ejoints.size());
   for (unsigned i=0; i< _ejoints.size(); i++)
   {
     q_save[i] = _ejoints[i]->q;
     _ejoints[i]->q.set_zero();
+    q_tare_save[i] = _ejoints[i]->get_q_tare();
+    _ejoints[i]->set_q_tare(_ejoints[i]->q);
   }
 
   // update relative poses for explicit joints only
@@ -396,7 +398,10 @@ void RC_ARTICULATED_BODY::compile()
 
   // restore all joint values
   for (unsigned i=0; i< _ejoints.size(); i++)
+  {
     _ejoints[i]->q = q_save[i];
+    _ejoints[i]->set_q_tare(q_tare_save[i]);
+  }
 
   // point both algorithms to this body
   _crb.set_body(get_this());

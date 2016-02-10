@@ -52,7 +52,6 @@ class JOINT : public virtual_enable_shared_from_this<JOINT>
     virtual void set_outboard_pose(boost::shared_ptr<POSE3> outboard_pose, bool update_joint_pose);
     virtual void update_spatial_axes();
     virtual void evaluate_constraints_dot(REAL C[]);
-    virtual void determine_q_tare();
     virtual void set_q_tare(const VECTORN& tare) { _q_tare = tare; }
     virtual const VECTORN& get_q_tare() const { return _q_tare; }  
 
