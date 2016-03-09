@@ -12,7 +12,7 @@ class VECTOR3;
 class CONST_SHAREDVECTORN;
 class SHAREDVECTORN;
 
-/// A two-dimensional floating point vector used for computational geometry calculations
+/// A three-dimensional floating point vector used for representing points and vectors in 3D and without associated frame information 
 class ORIGIN3
 {
   public:

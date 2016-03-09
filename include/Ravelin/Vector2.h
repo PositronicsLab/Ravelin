@@ -11,7 +11,7 @@
 class ORIGIN2;
 class POSE2;
 
-/// A two-dimensional floating point vector used for computational geometry calculations
+/// A two-dimensional floating point vector used for computational geometry calculations and with associated frame information
 class VECTOR2
 {
   public:

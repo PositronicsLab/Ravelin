@@ -11,7 +11,7 @@
 class POSE3;
 class MATRIX3;
 
-/// A three-dimensional floating point vector
+/// A three-dimensional floating point vector used for representing points and vectors in 3D with associated frame information
 class VECTOR3
 {
   public:

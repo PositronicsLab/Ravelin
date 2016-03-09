@@ -10,7 +10,7 @@
 
 class VECTOR2;
 
-/// A two-dimensional floating point vector used for computational geometry calculations
+/// A two-dimensional floating point vector used for computational geometry calculations and without associated frame information
 class ORIGIN2
 {
   public:
