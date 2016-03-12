@@ -333,10 +333,15 @@ void URDFREADER::read_joint(shared_ptr<const XMLTree> node, URDFData& data, cons
   origin->rpose = inboard->get_pose(); 
   VECTOR3 location_origin(0.0, 0.0, 0.0, origin);
   VECTOR3 location = POSE3::transform_point(GLOBAL, location_origin);
-  origin->update_relative_pose(outboard->get_pose()->rpose);
 
-  // child frame is defined relative to the joint frame
-  outboard->set_pose(*origin);
+  // setup a second pose, which is the inertial frame
+  assert(data.inertial_poses.find(outboard) != data.inertial_poses.end());
+  shared_ptr<POSE3> inertial_frame(new POSE3(*data.inertial_poses[outboard]));
+  inertial_frame->rpose = origin;
+
+  // update the outboard link pose
+  inertial_frame->update_relative_pose(outboard->get_pose()->rpose);
+  outboard->set_pose(*inertial_frame);
 
   // setup the inboard and outboard links for the joint
   joint->set_location(location, inboard, outboard);
@@ -468,10 +473,13 @@ void URDFREADER::read_inertial(shared_ptr<const XMLTree> node, URDFData& data, s
       origin->rpose = link->get_pose();
 
       // set inertial properties
-      SPATIAL_RB_INERTIA J(origin);
+      SPATIAL_RB_INERTIA J(link->get_pose());
       J.m = mass;
       J.J = inertia;
       link->set_inertia(J);
+
+      // add the inertial pose data
+      data.inertial_poses[link] = origin;
 
       // reading inertial was a success, attempt to read no further...
       // (multiple inertial tags not supported)

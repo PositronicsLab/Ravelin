@@ -23,6 +23,7 @@ class URDFREADER
         }
 
         std::map<boost::shared_ptr<JOINT>, boost::shared_ptr<RIGIDBODY> > joint_parent, joint_child;
+        std::map<boost::shared_ptr<RIGIDBODY>, boost::shared_ptr<POSE3> > inertial_poses;
         std::map<std::string, std::pair<VectorNd, std::string> > materials;
     };
 

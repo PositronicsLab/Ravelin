@@ -31,7 +31,7 @@ void calc_dynamics(shared_ptr<RCArticulatedBodyd> body, double t)
   // add forces to the center of each link
   for (unsigned i=0; i< links.size(); i++)
   { 
-    SForced f(links[i]->get_inertial_pose());
+    SForced f(links[i]->get_pose());
     f[0] = std::cos(t*(i*1.01));
     f[1] = std::sin(t*(i*1.01));
     f[2] = std::cos(2*t*(i*1.01));
