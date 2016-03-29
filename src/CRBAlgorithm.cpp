@@ -962,6 +962,7 @@ void CRB_ALGORITHM::calc_generalized_forces(SFORCE& f0, VECTORN& C)
 
     // get the current joint velocity
     const VECTORN& qd = joint->qd;
+    FILE_LOG(LOG_DYNAMICS) << "Joint " << joint->joint_id << " velocity: " << qd << std::endl;
 
     // **** compute acceleration
 
@@ -1076,7 +1077,7 @@ void CRB_ALGORITHM::calc_generalized_forces(SFORCE& f0, VECTORN& C)
     const std::vector<SVELOCITY>& s = joint->get_spatial_axes();
     transform_and_transpose_mult(s, _w[oidx], Csub);
 
-    FILE_LOG(LOG_DYNAMICS) << " -- computing C for link " << ob << std::endl;
+    FILE_LOG(LOG_DYNAMICS) << " -- computing C for link " << ob->body_id << std::endl;
     if (LOGGING(LOG_DYNAMICS))
     {
       SFORCE w_mixed = POSE3::transform(ob->get_mixed_pose(), _w[oidx]);
