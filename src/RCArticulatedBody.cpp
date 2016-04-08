@@ -483,16 +483,14 @@ void RC_ARTICULATED_BODY::set_links_and_joints(const vector<shared_ptr<RIGIDBODY
 
   // find the base link and setup a processed map
   shared_ptr<RIGIDBODY> base;
-  for (unsigned i=0; i< joints.size(); i++)
+  for (unsigned i=0; i< links.size(); i++)
   {
-    shared_ptr<RIGIDBODY> inboard = joints[i]->get_inboard_link();
-    shared_ptr<RIGIDBODY> outboard = joints[i]->get_outboard_link();
-    shared_ptr<RIGIDBODY> parent = inboard->get_parent_link();
+    shared_ptr<RIGIDBODY> parent = links[i]->get_parent_link();
     if (!parent)
     {
-      if (base && inboard != base)
+      if (base)
         throw std::runtime_error("Multiple base links detected!");
-      base = inboard;
+      base = links[i];
     }
   }
 
