@@ -292,10 +292,7 @@ void ARTICULATED_BODY::set_links_and_joints(const vector<shared_ptr<RIGIDBODY> >
 
   // iterate over each joint
   for (unsigned i=0; i< _joints.size(); i++)
-  {
     _joints[i]->set_index(i);
-    _joints[i]->set_articulated_body(get_this());
-  }
 
   compile();
 }

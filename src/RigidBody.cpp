@@ -763,25 +763,6 @@ void RIGIDBODY::add_inner_joint(shared_ptr<JOINT> j)
 
   // update the spatial axes
   j->update_spatial_axes();
-
-  // set the articulated body / inner joint articulated body pointers, if
-  // possible
-  if (!j->get_articulated_body() && !_abody.expired())
-    j->set_articulated_body(shared_ptr<ARTICULATED_BODY>(_abody));
-  else if (j->get_articulated_body() && _abody.expired())
-    set_articulated_body(j->get_articulated_body());
-
-  // again, the articulated body pointers must now be equal; it is
-  // conceivable that the user is updating the art. body pointers in an
-  // unorthodox manner, but we'll look for this anwyway...
-  #ifndef NDEBUG
-  if (!_abody.expired())
-  {
-    shared_ptr<ARTICULATED_BODY> abody1 = j->get_articulated_body();
-    shared_ptr<ARTICULATED_BODY> abody2(_abody);
-    assert(abody1 == abody2);
-  }
-  #endif
 }
 
 /// Adds an outer joint for this link
@@ -796,25 +777,6 @@ void RIGIDBODY::add_outer_joint(shared_ptr<JOINT> j)
 
   // update the spatial axes
   j->update_spatial_axes();
-
-  // set the articulated body / inner joint articulated body pointers, if
-  // possible
-  if (!j->get_articulated_body() && !_abody.expired())
-    j->set_articulated_body(shared_ptr<ARTICULATED_BODY>(_abody));
-  else if (j->get_articulated_body() && _abody.expired())
-    set_articulated_body(j->get_articulated_body());
-
-  // again, the articulated body pointers must now be equal; it is
-  // conceivable that the user is updating the art. body pointers in an
-  // unorthodox manner, but we'll look for this anwyway...
-  #ifndef NDEBUG
-  if (!_abody.expired())
-  {
-    shared_ptr<ARTICULATED_BODY> abody1 = j->get_articulated_body();
-    shared_ptr<ARTICULATED_BODY> abody2(_abody);
-    assert(abody1 == abody2);
-  }
-  #endif
 }
 
 /// Determines whether the given link is a child link of this

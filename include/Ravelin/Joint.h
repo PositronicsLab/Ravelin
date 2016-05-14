@@ -22,6 +22,7 @@ class JOINT : public virtual_enable_shared_from_this<JOINT>
     void add_force(const VECTORN& force);
     void reset_force(); 
     ConstraintType get_constraint_type() const { return _constraint_type; }
+    boost::shared_ptr<ARTICULATED_BODY> get_articulated_body();
 
     /// The ID of this joint
     std::string joint_id;
@@ -29,21 +30,6 @@ class JOINT : public virtual_enable_shared_from_this<JOINT>
     /// Sets whether this constraint is implicit or explicit (or unknown)
     void set_constraint_type(ConstraintType type) { _constraint_type = type; }
 
-    /// Gets the articulated body corresponding to this body
-    /**
-     * \return a pointer to the articulated body, or NULL if this body is not 
-     *         a link an articulated body
-     */
-    boost::shared_ptr<ARTICULATED_BODY> get_articulated_body() { return (_abody.expired()) ? boost::shared_ptr<ARTICULATED_BODY>() : boost::shared_ptr<ARTICULATED_BODY>(_abody); }
-
-    /// Sets the articulated body corresponding to this body
-    /**
-     * \param body a pointer to the articulated body or NULL if this body is
-     *        not a link in an articulated body
-     */
-    void set_articulated_body(boost::shared_ptr<ARTICULATED_BODY> abody) { _abody = abody; }
-
- 
     virtual void set_inboard_link(boost::shared_ptr<RIGIDBODY> link, bool update_pose);
     virtual void set_outboard_link(boost::shared_ptr<RIGIDBODY> link, bool update_pose);
     void set_location(const VECTOR3& p, boost::shared_ptr<RIGIDBODY> inboard, boost::shared_ptr<RIGIDBODY> outboard);
@@ -203,7 +189,6 @@ class JOINT : public virtual_enable_shared_from_this<JOINT>
 
     boost::weak_ptr<RIGIDBODY> _inboard_link;
     boost::weak_ptr<RIGIDBODY> _outboard_link;
-    boost::weak_ptr<ARTICULATED_BODY> _abody;
     ConstraintType _constraint_type;
     unsigned _joint_idx;
     unsigned _coord_idx;

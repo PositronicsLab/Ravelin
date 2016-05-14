@@ -22,6 +22,24 @@ JOINT::JOINT()
   _constraint_type = eUnknown;
 }
 
+/// Gets the articulated body
+boost::shared_ptr<ARTICULATED_BODY> JOINT::get_articulated_body()
+{
+  // get the inboard and outboard links
+  boost::shared_ptr<RIGIDBODY> inboard(_inboard_link);
+  boost::shared_ptr<RIGIDBODY> outboard(_outboard_link);
+
+  // get the two articulated bodies
+  boost::shared_ptr<ARTICULATED_BODY> abi = inboard->get_articulated_body();
+  boost::shared_ptr<ARTICULATED_BODY> abo = outboard->get_articulated_body();
+
+  // see whether the two bodies are equal
+  if (abi == abo)
+    return abi;
+  else
+    return boost::shared_ptr<ARTICULATED_BODY>();
+}
+
 /// Resets the force on the joint
 void JOINT::reset_force()
 {

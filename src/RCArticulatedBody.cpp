@@ -427,9 +427,6 @@ void RC_ARTICULATED_BODY::set_links_and_joints(const vector<shared_ptr<RIGIDBODY
     outboard->_inner_joints.insert(joints[i]);
     inboard->_outer_joints.insert(joints[i]);
 
-    // set pointer for articulated body
-    joints[i]->set_articulated_body(dynamic_pointer_cast<RC_ARTICULATED_BODY>(shared_from_this()));
-
     // set frames for outboard
     outboard->_xdj.pose = joints[i]->get_pose();
     outboard->_xddj.pose = joints[i]->get_pose();
