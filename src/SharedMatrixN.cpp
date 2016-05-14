@@ -190,8 +190,8 @@ bool SHAREDMATRIXN::is_symmetric(REAL tolerance) const
   const unsigned LD = leading_dim();
 
   // loop over columns
-  for (unsigned i=0, ii=0; i< _rows; i++, ii+= LD)
-    for (unsigned j=0, jj=0; j< i; j++, jj+= LD)
+  for (unsigned i=0, ii=_start; i< _rows; i++, ii+= LD)
+    for (unsigned j=0, jj=_start; j< i; j++, jj+= LD)
       if (std::fabs(_data[jj+i] - _data[ii+j]) > tolerance)
         return false;
 
@@ -206,7 +206,7 @@ SHAREDMATRIXN& SHAREDMATRIXN::zero_upper_triangle()
     return *this;
 
   // zero the upper triangle
-  for (unsigned i=0, s=leading_dim(); i< _rows; i++, s+= leading_dim()+1)
+  for (unsigned i=0, s=_start+leading_dim(); i< _rows; i++, s+= leading_dim()+1)
     for (unsigned j=i+1, r=0; j< _columns; j++, r+= leading_dim())
       _data[r+s] = (REAL) 0.0;
 
@@ -221,7 +221,7 @@ SHAREDMATRIXN& SHAREDMATRIXN::zero_lower_triangle()
     return *this;
 
   // zero the lower triangle
-  for (unsigned i=1, s=1; i< _rows; i++, s++)
+  for (unsigned i=1, s=1+_start; i< _rows; i++, s++)
     for (unsigned j=0, r=0; j< std::min(i, _columns); j++, r+= leading_dim())
       _data[r+s] = (REAL) 0.0;
 
@@ -232,7 +232,7 @@ SHAREDMATRIXN& SHAREDMATRIXN::zero_lower_triangle()
 SHAREDMATRIXN& SHAREDMATRIXN::set_identity()
 {
   set_zero();
-  for (unsigned i=0, j=0; i< _rows; i++, j+= leading_dim()+1)
+  for (unsigned i=0, j=_start; i< _rows; i++, j+= leading_dim()+1)
     _data[j] = (REAL) 1.0;
 
   return *this;
