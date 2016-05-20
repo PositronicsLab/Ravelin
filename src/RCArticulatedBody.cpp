@@ -11,6 +11,7 @@ using std::vector;
 using std::queue;
 using std::list;
 using std::map;
+using std::set;
 using std::string;
 
 /// Default constructor
@@ -440,6 +441,7 @@ void RC_ARTICULATED_BODY::set_links_and_joints(const vector<shared_ptr<RIGIDBODY
   
   // start processed at the base link
   map<shared_ptr<RIGIDBODY>, bool> processed;
+  set<shared_ptr<RIGIDBODY> > child_links;
   BOOST_FOREACH(boost::shared_ptr<RIGIDBODY> link, links)
   {
     // if the link has already been processed, no need to process it again
@@ -451,11 +453,12 @@ void RC_ARTICULATED_BODY::set_links_and_joints(const vector<shared_ptr<RIGIDBODY
     {
       // see whether the child has already been processed
       shared_ptr<RIGIDBODY> child(joint->get_outboard_link());
-      if (processed[child])
+      if (child_links.find(child) != child_links.end())
         _ijoints.push_back(joint);
       else
       {
         _ejoints.push_back(joint);
+        child_links.insert(child);
       }
     }
 
