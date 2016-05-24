@@ -115,6 +115,7 @@ class XMLTree : public boost::enable_shared_from_this<XMLTree>
     XMLTree(const std::string& name);
     XMLTree(const std::string& name, const std::list<XMLAttrib>& attributes);
     static boost::shared_ptr<const XMLTree> read_from_xml(const std::string& name);
+    static boost::shared_ptr<const XMLTree> read_from_string(const std::string& content);
     XMLAttrib* get_attrib(const std::string& attrib_name) const;
     std::list<boost::shared_ptr<const XMLTree> > find_child_nodes(const std::string& name) const;
     std::list<boost::shared_ptr<const XMLTree> > find_child_nodes(const std::list<std::string>& name) const;

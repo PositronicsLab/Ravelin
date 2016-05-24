@@ -489,6 +489,33 @@ shared_ptr<const XMLTree> XMLTree::read_from_xml(const std::string& fname)
   return node;
 }
 
+shared_ptr<const XMLTree> XMLTree::read_from_string(const std::string& content)
+{
+  xmlDoc* doc;
+
+  // initialize the library and look for potential ABI mismatches
+  LIBXML_TEST_VERSION
+
+  // read the contents
+  // urdf.xml is not meaningful, but is required to provided a base name for the xml parser
+  if ((doc = xmlReadMemory(content.c_str(), content.size(), "urdf.xml", NULL, 0)) == NULL)
+  {
+    std::cerr << "XMLTree::read_from_string() - unable to read xml from content" << std::endl;
+    return shared_ptr<const XMLTree>();
+  }
+
+  // get the document for parsing
+  xmlNode* root = xmlDocGetRootElement(doc);
+
+  // construct the XML tree
+  shared_ptr<const XMLTree> node = construct_xml_tree(root);
+
+  // free the XML document
+  xmlFreeDoc(doc);
+
+  return node;
+}
+
 /// Constructs an XML tree from a xmlNode object
 shared_ptr<const XMLTree> XMLTree::construct_xml_tree(xmlNode* root)
 {
