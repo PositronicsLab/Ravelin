@@ -1095,13 +1095,13 @@
       <!-- this inertia is made up for now. -->
     </inertial>
   </link>
-  <joint name="wide_stereo_optical_frame_joint" type="fixed">
-    <origin rpy="-1.57079632679 0.0 -1.57079632679" xyz="0 0 0"/>
+  <!-- <joint name="wide_stereo_optical_frame_joint" type="fixed">
+    <origin rpy="-1.57079632679 0.0 -1.57079632679" xyz="0 0 0"/> -->
     <!-- rotate frame from x-forward to z-forward camera coords -->
-    <parent link="wide_stereo_link"/>
+    <!-- <parent link="wide_stereo_link"/>
     <child link="wide_stereo_optical_frame"/>
-  </joint>
-  <link name="wide_stereo_optical_frame" type="camera"/>
+  </joint> -->
+  <!-- <link name="wide_stereo_optical_frame" type="camera"/> -->
   <joint name="wide_stereo_l_stereo_camera_frame_joint" type="fixed">
     <origin rpy="0 0 0" xyz="0 0 0"/>
     <parent link="wide_stereo_link"/>
@@ -1114,12 +1114,12 @@
       <inertia ixx="0.001" ixy="0.0" ixz="0.0" iyy="0.001" iyz="0.0" izz="0.001"/>
     </inertial>
   </link>
-  <joint name="wide_stereo_l_stereo_camera_optical_frame_joint" type="fixed">
+  <!-- <joint name="wide_stereo_l_stereo_camera_optical_frame_joint" type="fixed">
     <origin rpy="-1.57079632679 0.0 -1.57079632679" xyz="0 0 0"/>
     <parent link="wide_stereo_l_stereo_camera_frame"/>
     <child link="wide_stereo_l_stereo_camera_optical_frame"/>
-  </joint>
-  <link name="wide_stereo_l_stereo_camera_optical_frame"/>
+  </joint> -->
+  <!-- <link name="wide_stereo_l_stereo_camera_optical_frame"/> -->
   <gazebo reference="wide_stereo_l_stereo_camera_frame">
     <sensor name="wide_stereo_l_stereo_camera_sensor" type="camera">
       <always_on>true</always_on>
@@ -1172,12 +1172,12 @@
       <inertia ixx="0.001" ixy="0.0" ixz="0.0" iyy="0.001" iyz="0.0" izz="0.001"/>
     </inertial>
   </link>
-  <joint name="wide_stereo_r_stereo_camera_optical_frame_joint" type="fixed">
+  <!-- <joint name="wide_stereo_r_stereo_camera_optical_frame_joint" type="fixed">
     <origin rpy="-1.57079632679 0.0 -1.57079632679" xyz="0 0 0"/>
     <parent link="wide_stereo_r_stereo_camera_frame"/>
     <child link="wide_stereo_r_stereo_camera_optical_frame"/>
-  </joint>
-  <link name="wide_stereo_r_stereo_camera_optical_frame"/>
+  </joint> -->
+  <!-- <link name="wide_stereo_r_stereo_camera_optical_frame"/> -->
   <gazebo reference="wide_stereo_r_stereo_camera_frame">
     <sensor name="wide_stereo_r_stereo_camera_sensor" type="camera">
       <always_on>true</always_on>
@@ -1239,13 +1239,13 @@
       <!-- this inertia is made up for now. -->
     </inertial>
   </link>
-  <joint name="narrow_stereo_optical_frame_joint" type="fixed">
-    <origin rpy="-1.57079632679 0.0 -1.57079632679" xyz="0 0 0"/>
+  <!-- <joint name="narrow_stereo_optical_frame_joint" type="fixed">
+    <origin rpy="-1.57079632679 0.0 -1.57079632679" xyz="0 0 0"/> -->
     <!-- rotate frame from x-forward to z-forward camera coords -->
-    <parent link="narrow_stereo_link"/>
+    <!-- <parent link="narrow_stereo_link"/>
     <child link="narrow_stereo_optical_frame"/>
-  </joint>
-  <link name="narrow_stereo_optical_frame" type="camera"/>
+  </joint> -->
+  <!-- <link name="narrow_stereo_optical_frame" type="camera"/> -->
   <joint name="narrow_stereo_l_stereo_camera_frame_joint" type="fixed">
     <origin rpy="0 0 0" xyz="0 0 0"/>
     <parent link="narrow_stereo_link"/>
@@ -1258,12 +1258,12 @@
       <inertia ixx="0.001" ixy="0.0" ixz="0.0" iyy="0.001" iyz="0.0" izz="0.001"/>
     </inertial>
   </link>
-  <joint name="narrow_stereo_l_stereo_camera_optical_frame_joint" type="fixed">
+  <!-- <joint name="narrow_stereo_l_stereo_camera_optical_frame_joint" type="fixed">
     <origin rpy="-1.57079632679 0.0 -1.57079632679" xyz="0 0 0"/>
     <parent link="narrow_stereo_l_stereo_camera_frame"/>
     <child link="narrow_stereo_l_stereo_camera_optical_frame"/>
-  </joint>
-  <link name="narrow_stereo_l_stereo_camera_optical_frame"/>
+  </joint> -->
+  <!-- <link name="narrow_stereo_l_stereo_camera_optical_frame"/> -->
   <gazebo reference="narrow_stereo_l_stereo_camera_frame">
     <sensor name="narrow_stereo_l_stereo_camera_sensor" type="camera">
       <always_on>true</always_on>
@@ -1316,12 +1316,12 @@
       <inertia ixx="0.001" ixy="0.0" ixz="0.0" iyy="0.001" iyz="0.0" izz="0.001"/>
     </inertial>
   </link>
-  <joint name="narrow_stereo_r_stereo_camera_optical_frame_joint" type="fixed">
+  <!-- <joint name="narrow_stereo_r_stereo_camera_optical_frame_joint" type="fixed">
     <origin rpy="-1.57079632679 0.0 -1.57079632679" xyz="0 0 0"/>
     <parent link="narrow_stereo_r_stereo_camera_frame"/>
     <child link="narrow_stereo_r_stereo_camera_optical_frame"/>
-  </joint>
-  <link name="narrow_stereo_r_stereo_camera_optical_frame"/>
+  </joint> -->
+  <!-- <link name="narrow_stereo_r_stereo_camera_optical_frame"/> -->
   <gazebo reference="narrow_stereo_r_stereo_camera_frame">
     <sensor name="narrow_stereo_r_stereo_camera_sensor" type="camera">
       <always_on>true</always_on>
@@ -1475,12 +1475,12 @@
       </geometry>
     </collision>
   </link>
-  <joint name="head_mount_kinect_ir_optical_frame_joint" type="fixed">
+  <!-- <joint name="head_mount_kinect_ir_optical_frame_joint" type="fixed">
     <origin rpy="-1.57079632679 0.0 -1.57079632679" xyz="0.0            0.01         0.0"/>
     <parent link="head_mount_kinect_ir_link"/>
     <child link="head_mount_kinect_ir_optical_frame"/>
-  </joint>
-  <link name="head_mount_kinect_ir_optical_frame"/>
+  </joint> -->
+  <!-- <link name="head_mount_kinect_ir_optical_frame"/> -->
   <gazebo reference="head_mount_kinect_ir_link">
     <sensor name="head_mount_ir_sensor" type="depth">
       <always_on>true</always_on>
@@ -1547,12 +1547,12 @@
       </geometry>
     </collision>
   </link>
-  <joint name="head_mount_kinect_rgb_optical_frame_joint" type="fixed">
+  <!-- <joint name="head_mount_kinect_rgb_optical_frame_joint" type="fixed">
     <origin rpy="-1.57079632679 0.0 -1.57079632679" xyz="0.0            0.0         0.0"/>
     <parent link="head_mount_kinect_rgb_link"/>
     <child link="head_mount_kinect_rgb_optical_frame"/>
-  </joint>
-  <link name="head_mount_kinect_rgb_optical_frame"/>
+  </joint> -->
+  <!-- <link name="head_mount_kinect_rgb_optical_frame"/> -->
   <gazebo reference="head_mount_kinect_rgb_link">
     <sensor name="head_mount_rgb_sensor" type="depth">
       <always_on>true</always_on>
@@ -1618,12 +1618,12 @@
       </geometry>
     </collision>
   </link>
-  <joint name="head_mount_prosilica_optical_frame_joint" type="fixed">
+  <!-- <joint name="head_mount_prosilica_optical_frame_joint" type="fixed">
     <origin rpy="-1.57079632679 0.0 -1.57079632679" xyz="0.0            0.0         0.0"/>
     <parent link="head_mount_prosilica_link"/>
     <child link="head_mount_prosilica_optical_frame"/>
-  </joint>
-  <link name="head_mount_prosilica_optical_frame"/>
+  </joint> -->
+  <!-- <link name="head_mount_prosilica_optical_frame"/> -->
   <gazebo reference="head_mount_prosilica_link">
     <sensor name="head_mount_prosilica_link_sensor" type="camera">
       <always_on>true</always_on>
@@ -2183,13 +2183,13 @@
       </geometry>
     </collision>
   </link>
-  <joint name="r_gripper_led_joint" type="fixed">
+  <!-- <joint name="r_gripper_led_joint" type="fixed"> -->
     <!--  Need to check if we need a positive or negative Z term -->
-    <origin xyz="0.0513 0.0 .0244"/>
+  <!--  <origin xyz="0.0513 0.0 .0244"/>
     <parent link="r_gripper_palm_link"/>
     <child link="r_gripper_led_frame"/>
-  </joint>
-  <link name="r_gripper_led_frame"/>
+  </joint> -->
+  <!-- <link name="r_gripper_led_frame"/> -->
   <joint name="r_gripper_motor_accelerometer_joint" type="fixed">
     <origin rpy="0 0 0" xyz="0 0 0"/>
     <parent link="r_gripper_palm_link"/>
@@ -2214,12 +2214,12 @@
       </geometry>
     </collision>
   </link>
-  <joint name="r_gripper_tool_joint" type="fixed">
+  <!-- <joint name="r_gripper_tool_joint" type="fixed">
     <origin rpy="0 0 0" xyz="0.18 0 0"/>
     <parent link="r_gripper_palm_link"/>
     <child link="r_gripper_tool_frame"/>
-  </joint>
-  <link name="r_gripper_tool_frame"/>
+  </joint> -->
+  <!-- <link name="r_gripper_tool_frame"/> -->
   <link name="r_gripper_motor_slider_link">
     <inertial>
       <mass value="0.01"/>
@@ -2601,15 +2601,15 @@
     <turnGravityOff>true</turnGravityOff>
     <material value="PR2/Red"/>
   </gazebo>
-  <joint name="r_gripper_joint" type="prismatic">
+  <!-- <joint name="r_gripper_joint" type="prismatic">
     <parent link="r_gripper_r_finger_tip_link"/>
     <child link="r_gripper_l_finger_tip_frame"/>
     <axis xyz="0 1 0"/>
     <dynamics damping="10.0"/>
     <limit effort="1000.0" lower="0.0" upper="0.09" velocity="0.2"/>
     <safety_controller k_position="20.0" k_velocity="5000.0" soft_lower_limit="-0.01" soft_upper_limit="0.088"/>
-  </joint>
-  <link name="r_gripper_l_finger_tip_frame"/>
+  </joint> -->
+  <!-- <link name="r_gripper_l_finger_tip_frame"/> -->
   <gazebo reference="r_gripper_palm_link">
     <turnGravityOff>true</turnGravityOff>
   </gazebo>
@@ -3047,13 +3047,13 @@
       </geometry>
     </collision>
   </link>
-  <joint name="l_gripper_led_joint" type="fixed">
+  <!-- <joint name="l_gripper_led_joint" type="fixed"> -->
     <!--  Need to check if we need a positive or negative Z term -->
-    <origin xyz="0.0513 0.0 .0244"/>
+  <!--  <origin xyz="0.0513 0.0 .0244"/>
     <parent link="l_gripper_palm_link"/>
     <child link="l_gripper_led_frame"/>
-  </joint>
-  <link name="l_gripper_led_frame"/>
+  </joint> -->
+  <!-- <link name="l_gripper_led_frame"/> -->
   <joint name="l_gripper_motor_accelerometer_joint" type="fixed">
     <origin rpy="0 0 0" xyz="0 0 0"/>
     <parent link="l_gripper_palm_link"/>
@@ -3078,12 +3078,12 @@
       </geometry>
     </collision>
   </link>
-  <joint name="l_gripper_tool_joint" type="fixed">
+  <!-- <joint name="l_gripper_tool_joint" type="fixed">
     <origin rpy="0 0 0" xyz="0.18 0 0"/>
     <parent link="l_gripper_palm_link"/>
     <child link="l_gripper_tool_frame"/>
-  </joint>
-  <link name="l_gripper_tool_frame"/>
+  </joint> -->
+  <!-- <link name="l_gripper_tool_frame"/> -->
   <link name="l_gripper_motor_slider_link">
     <inertial>
       <mass value="0.01"/>
@@ -3465,15 +3465,15 @@
     <turnGravityOff>true</turnGravityOff>
     <material value="PR2/Red"/>
   </gazebo>
-  <joint name="l_gripper_joint" type="prismatic">
+  <!-- <joint name="l_gripper_joint" type="prismatic">
     <parent link="l_gripper_r_finger_tip_link"/>
     <child link="l_gripper_l_finger_tip_frame"/>
     <axis xyz="0 1 0"/>
     <dynamics damping="10.0"/>
     <limit effort="1000.0" lower="0.0" upper="0.09" velocity="0.2"/>
     <safety_controller k_position="20.0" k_velocity="5000.0" soft_lower_limit="-0.01" soft_upper_limit="0.088"/>
-  </joint>
-  <link name="l_gripper_l_finger_tip_frame"/>
+  </joint> -->
+  <!-- <link name="l_gripper_l_finger_tip_frame"/> -->
   <gazebo reference="l_gripper_palm_link">
     <turnGravityOff>true</turnGravityOff>
   </gazebo>
@@ -3529,12 +3529,12 @@
       <inertia ixx="0.001" ixy="0.0" ixz="0.0" iyy="0.001" iyz="0.0" izz="0.001"/>
     </inertial>
   </link>
-  <joint name="l_forearm_cam_optical_frame_joint" type="fixed">
+  <!-- <joint name="l_forearm_cam_optical_frame_joint" type="fixed">
     <origin rpy="-1.57079632679 0.0 -1.57079632679" xyz="0 0 0"/>
     <parent link="l_forearm_cam_frame"/>
     <child link="l_forearm_cam_optical_frame"/>
-  </joint>
-  <link name="l_forearm_cam_optical_frame"/>
+  </joint> -->
+  <!-- <link name="l_forearm_cam_optical_frame"/> -->
   <gazebo reference="l_forearm_cam_frame">
     <sensor name="l_forearm_cam_sensor" type="camera">
       <always_on>true</always_on>
@@ -3587,12 +3587,12 @@
       <inertia ixx="0.001" ixy="0.0" ixz="0.0" iyy="0.001" iyz="0.0" izz="0.001"/>
     </inertial>
   </link>
-  <joint name="r_forearm_cam_optical_frame_joint" type="fixed">
+  <!-- <joint name="r_forearm_cam_optical_frame_joint" type="fixed">
     <origin rpy="-1.57079632679 0.0 -1.57079632679" xyz="0 0 0"/>
     <parent link="r_forearm_cam_frame"/>
     <child link="r_forearm_cam_optical_frame"/>
-  </joint>
-  <link name="r_forearm_cam_optical_frame"/>
+  </joint> -->
+  <!-- <link name="r_forearm_cam_optical_frame"/> -->
   <gazebo reference="r_forearm_cam_frame">
     <sensor name="r_forearm_cam_sensor" type="camera">
       <always_on>true</always_on>
