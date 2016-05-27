@@ -13,7 +13,8 @@ class URDFREADER
 {
   public:
     static bool read(const std::string& fname, std::string& name, std::vector<boost::shared_ptr<RIGIDBODY> >& links, std::vector<boost::shared_ptr<JOINT> >& joints);
-    
+    static bool read_from_string(const std::string& content, std::string& name, std::vector<boost::shared_ptr<RIGIDBODY> >& links, std::vector<boost::shared_ptr<JOINT> >& joints);    
+  
   private:
     class URDFData
     {

@@ -97,6 +97,44 @@ bool URDFREADER::read(const string& fname, std::string& name, vector<shared_ptr<
   return true;
 }
 
+/// Reads an XML string and constructs all read objects
+/**
+ * \return a map of IDs to read objects
+ */
+bool URDFREADER::read_from_string(const string& content, std::string& name, vector<shared_ptr<RIGIDBODY> >& links, vector<shared_ptr<JOINT> >& joints)
+{
+  // read the XML Tree 
+  shared_ptr<const XMLTree> tree = XMLTree::read_from_string(content);
+  if (!tree)
+  {
+    std::cerr << "URDFReader::read() - unable to read xml content " << std::endl;
+    return false;
+  }
+  
+  // ********************************************************************
+  // NOTE: read_from_xml() (via process_tag()) treats all nodes at the
+  // same level; it is irrelevant to it whether a RIGIDBODY is
+  // inside or outside of its encapsulating body.  It will construct the
+  // objects properly; nodes that rely on hierarchies in the XML file must
+  // provide this processing themselves (see RCArticulatedBody for an example)
+  // ********************************************************************
+
+  // read and construct (single) robot 
+  if (strcasecmp(tree->name.c_str(), "Robot") == 0)
+  {
+    URDFData data;
+    if (!read_robot(tree, data, name, links, joints))
+      return false;
+  }
+  else
+  {
+    std::cerr << "URDFReader::read() error - root element of URDF is not a 'Robot' tag" << std::endl;
+    return false;
+  }
+
+  return true;
+}
+
 /// Reads and constructs a robot object
 bool URDFREADER::read_robot(shared_ptr<const XMLTree> node, URDFData& data, string& name, vector<shared_ptr<RIGIDBODY> >& links, vector<shared_ptr<JOINT> >& joints)
 {
