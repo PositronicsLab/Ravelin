@@ -485,9 +485,10 @@ void CRB_ALGORITHM::calc_joint_space_inertia(shared_ptr<RC_ARTICULATED_BODY> bod
  */
 void CRB_ALGORITHM::calc_generalized_inertia(SHAREDMATRIXN& M)
 {
-  // do the precalculation
+  // compute spatial isolated inertias and generalized inertia matrix
+  // do the calculations
   shared_ptr<RC_ARTICULATED_BODY> body(_body);
-  precalc(body);
+  calc_generalized_inertia(body);
 
   // get the set of links
   ReferenceFrameType rftype = body->get_computation_frame_type();
