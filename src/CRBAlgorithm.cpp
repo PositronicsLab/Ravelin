@@ -317,8 +317,8 @@ void CRB_ALGORITHM::calc_joint_space_inertia(shared_ptr<RC_ARTICULATED_BODY> bod
 
       // setup the supports
       for (unsigned i=0; i< links.size(); i++)
-        if (_supports[jiidx][i])
-          _supports[jidx][i] = true;
+        if (_supports[jiidx][links[i]->get_index()])
+          _supports[jidx][links[i]->get_index()] = true;
     }  
 
     // add the parent of this link to the queue, if it is not the base and
@@ -377,7 +377,7 @@ void CRB_ALGORITHM::calc_joint_space_inertia(shared_ptr<RC_ARTICULATED_BODY> bod
 
     // process the parent link, if possible
     shared_ptr<RIGIDBODY> parent(link->get_parent_link());
-    if (parent && i > parent->get_index())
+    if (parent)
     {
       // put the parent on the queue
       link_queue.push(parent);
@@ -417,6 +417,7 @@ void CRB_ALGORITHM::calc_joint_space_inertia(shared_ptr<RC_ARTICULATED_BODY> bod
     SPARITH::mult(Ic[oidx], _sprime, _momenta[oidx]);
     if (_sprime.size() > 0)
     {
+      FILE_LOG(LOG_DYNAMICS) << "Jacobian / momentum for " << ejoints[i]->joint_id << " (explicit joint index " << ejoints[i]->get_coord_index() << ")" << std::endl;
       for (unsigned j=0; j< ejoints[i]->num_dof(); j++)
       {
         FILE_LOG(LOG_DYNAMICS) << "s[ " << j << "]: " << _sprime[j] << std::endl;
