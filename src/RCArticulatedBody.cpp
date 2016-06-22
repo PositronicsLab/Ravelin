@@ -71,6 +71,10 @@ bool RC_ARTICULATED_BODY::all_children_processed(shared_ptr<RIGIDBODY> link) con
   const std::set<boost::shared_ptr<JOINT> >& joints = link->get_outer_joints();
   BOOST_FOREACH(boost::shared_ptr<JOINT> j, joints)
   {
+    if (j->get_constraint_type() == JOINT::eImplicit)
+      continue;
+    else
+      assert(j->get_constraint_type() == JOINT::eExplicit); 
     shared_ptr<RIGIDBODY> child = j->get_outboard_link();
     if (!_processed[child->get_index()])
       return false;
@@ -363,6 +367,7 @@ void RC_ARTICULATED_BODY::compile()
   // setup explicit joint generalized coordinate and constraint indices
   for (unsigned i=0, cidx = 0, ridx = 0; i< _ejoints.size(); i++)
   {
+    FILE_LOG(LOG_DYNAMICS) << "Setting explicit joint " << _ejoints[i]->joint_id << " to index " << cidx << std::endl;
     _ejoints[i]->set_coord_index(cidx);
     _ejoints[i]->set_constraint_index(ridx);
     cidx += _ejoints[i]->num_dof();
@@ -454,7 +459,10 @@ void RC_ARTICULATED_BODY::set_links_and_joints(const vector<shared_ptr<RIGIDBODY
       // see whether the child has already been processed
       shared_ptr<RIGIDBODY> child(joint->get_outboard_link());
       if (child_links.find(child) != child_links.end())
+      {
+        FILE_LOG(LOG_DYNAMICS) << "identified implicit joint: " << joint->joint_id << std::endl;
         _ijoints.push_back(joint);
+      }
       else
       {
         _ejoints.push_back(joint);
