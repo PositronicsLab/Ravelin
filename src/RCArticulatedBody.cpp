@@ -456,6 +456,14 @@ void RC_ARTICULATED_BODY::set_links_and_joints(const vector<shared_ptr<RIGIDBODY
     // get all outer joints for this link
     BOOST_FOREACH(boost::shared_ptr<JOINT> joint, link->get_outer_joints())
     {
+      // see if the joint type is already set to implicit
+      if (joint->get_constraint_type() == JOINT::eImplicit)
+      {
+        FILE_LOG(LOG_DYNAMICS) << "identified implicit joint: " << joint->joint_id << std::endl;
+        _ijoints.push_back(joint);
+        continue;
+      }
+
       // see whether the child has already been processed
       shared_ptr<RIGIDBODY> child(joint->get_outboard_link());
       if (child_links.find(child) != child_links.end())
