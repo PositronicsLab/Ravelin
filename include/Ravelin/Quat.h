@@ -23,6 +23,7 @@ class QUAT
   public:
     QUAT();
     QUAT(REAL x, REAL y, REAL z, REAL w);
+    QUAT(REAL* data);
     QUAT(const QUAT& q) { operator=(q); }
     QUAT(const VECTORN& v) { operator=(v); }
     QUAT(const AANGLE& v) { operator=(v); }

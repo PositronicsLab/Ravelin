@@ -29,6 +29,18 @@ QUAT::QUAT(REAL x, REAL y, REAL z, REAL w)
   this->w = w;
 }
 
+/// Constructs a quaternion from four REAL values
+/**
+ * \param data a set of four values 
+ */
+QUAT::QUAT(REAL* data)
+{
+  this->x = data[0];
+  this->y = data[1];
+  this->z = data[2];
+  this->w = data[3];
+}
+
 /// Constructs a zero quaternion
 QUAT QUAT::zero()
 {
